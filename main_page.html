@@ -2,6 +2,34 @@
 <html lang="es" data-theme="light">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Guardia de acceso: bloquea si no hay sesión y no estás en login.html
+    (function () {
+      // Clave del token en localStorage (puedes cambiar el nombre si prefieres)
+      const KEY = 'auth_token';
+
+      // Evita bucles: no aplicar el guard en login.html
+      const isLogin = /(^|\/)login\.html(\?|#|$)/i.test(location.pathname);
+
+      // Si NO estamos en login.html y no hay token => redirige a login
+      if (!isLogin) {
+        try {
+          const token = localStorage.getItem(KEY);
+          if (!token) {
+            // Guarda a dónde quería ir para regresar tras login
+            const next = encodeURIComponent(location.pathname + location.search + location.hash);
+            location.replace('login.html?next=' + next);
+          }
+        } catch (e) {
+          // Si localStorage falla (modo privado muy estricto), igual redirige
+          location.replace('login.html');
+        }
+      }
+    })();
+  </script>
+  <!-- … el resto de tu <head> … -->
+<head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Seguimiento O&M — Fullscreen con Sidebar</title>
   <meta name="description" content="Héroe a pantalla completa con menú lateral fijo e interruptor de tema.">
