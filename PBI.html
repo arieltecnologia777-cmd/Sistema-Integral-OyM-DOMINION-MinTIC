@@ -27,25 +27,62 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Contenedor a pantalla completa con unidades de viewport modernas para móviles */
     .container {
-      /* Fallback para navegadores antiguos */
+      /* Fallback */
       height: 100vh;
       width: 100vw;
-
-      /* Preferir unidades dinámicas en móviles (evita “saltos” por barras del navegador) */
+      /* Preferir unidades dinámicas en móviles */
       height: 100dvh;
 
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden; /* evita scroll por barras del navegador/escala */
+      background: #000; /* negro para evitar bordes blancos al escalar */
     }
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-      display: block; /* evita espacios fantasmas en algunos navegadores */
+      display: block;
+      background: #000;
+    }
+
+    /* 🎯 Escala responsiva real en móviles
+       - Renderiza el iframe como 1280x720 y lo escala para caber a 100vw
+       - El contenedor toma la altura proporcional (56.25vw)
+    */
+    @media (max-width: 768px) {
+      .container {
+        width: 100vw;
+        /* Altura proporcional 16:9 al ancho del dispositivo */
+        height: 56.25vw; /* 9/16 = 0.5625 */
+        max-height: 100dvh; /* no exceder alto útil */
+      }
+
+      iframe {
+        /* Tamaño base de render del reporte (ajustable si tu reporte es otro ratio) */
+        width: 1280px;
+        height: 720px;
+
+        /* Escalar para caber al ancho del dispositivo */
+        transform: scale(calc(100vw / 1280));
+        transform-origin: top left;
+
+        /* Evitar que el propio iframe agregue scrolls internos por la escala */
+        border: 0;
+      }
+    }
+
+    /* Opcional: refinar aún más en pantallas muy pequeñas */
+    @media (max-width: 420px) {
+      .container {
+        height: 56.25vw;
+      }
+      iframe {
+        /* Mantiene la misma lógica; la escala se recalcula automáticamente */
+      }
     }
   </style>
 </head>
@@ -54,7 +91,7 @@
 
     <!-- NUEVO POWER BI PUBLICADO -->
     <iframe 
-      title="Seguimiento O&M MINTIC"
+      title="Seguimiento O&amp;M MINTIC"
       width="600"
       height="373.5"
       src="https://app.powerbi.com/view?r=eyJrIjoiNmVlMDVlMDktYTUxMy00YjM1LTllZDYtYTI1NTJjMWRmYTMwIiwidCI6ImU0ZTFiYzMzLWUyODMtNDMxMi1iYjM3LTg5MDEwMjI0YjdmZSIsImMiOjh9&pageName=0aeee014ab3318b4ff5d"
