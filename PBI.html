@@ -15,9 +15,9 @@
   </script>
 
   <meta charset="UTF-8">
-  <!-- Permite usar todo el alto útil en móviles (incl. iOS notch) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Dashboard Power BI</title>
+
   <style>
     html, body {
       height: 100%;
@@ -27,38 +27,52 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Contenedor a pantalla completa con unidades de viewport modernas para móviles */
+    /* Contenedor general */
     .container {
-      /* Fallback para navegadores antiguos */
       height: 100vh;
+      height: 100dvh; /* mejor soporte móvil */
       width: 100vw;
-
-      /* Preferir unidades dinámicas en móviles (evita “saltos” por barras del navegador) */
-      height: 100dvh;
-
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      background: #000;
     }
 
+    /* Vista normal (PC) */
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-      display: block; /* evita espacios fantasmas en algunos navegadores */
+      display: block;
+      background: #000;
+    }
+
+    /* 🎯 Vista adaptada a móviles */
+    @media (max-width: 768px) {
+      .container {
+        width: 100vw;
+        height: 56.25vw; /* relación 16:9 */
+        max-height: 100dvh;
+      }
+
+      iframe {
+        width: 1280px;      /* tamaño base del reporte */
+        height: 720px;      /* tamaño base del reporte */
+        transform: scale(calc(100vw / 1280));
+        transform-origin: top left;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
 
-    <!-- NUEVO POWER BI PUBLICADO -->
+    <!-- Power BI responsive -->
     <iframe 
       title="Seguimiento O&M MINTIC"
-      width="600"
-      height="373.5"
-      src="https://app.powerbi.com/view?r=eyJrIjoiNmVlMDVlMDktYTUxMy00YjM1LTllZDYtYTI1NTJjMWRmYTMwIiwidCI6ImU0ZTFiYzMzLWUyODMtNDMxMi1iYjM3LTg5MDEwMjI0YjdmZSIsImMiOjh9&pageName=0aeee014ab3318b4ff5d"
-      frameborder="0"
+      src="https://app.powerbi.com/view?r=eyJrIjoiNmVlMDVlMDktYTUxMy00YjM1LTllZDYtYTI1NTJjMWRmYTMwIiwidCI6ImU0ZTFiYzMzLWUyODMtNDMxMi1iYjM3LTg5MDEwMjI0YjdmZSIsImMiOjh9&pageName=0aeee014ab3318b4ff5d&navContentPaneEnabled=false"
       allowFullScreen="true">
     </iframe>
 
