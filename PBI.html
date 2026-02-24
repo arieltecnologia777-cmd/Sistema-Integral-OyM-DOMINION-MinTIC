@@ -4,20 +4,19 @@
   <!-- 🔒 Guard de sesión -->
   <script>
     (function(){
-      try {
-        if (!sessionStorage.getItem('auth_ok')) {
+      try{
+        if(!sessionStorage.getItem('auth_ok')){
           window.location.replace('login.html');
         }
-      } catch(e) {
+      }catch(e){
         window.location.replace('login.html');
       }
     })();
   </script>
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Power BI</title>
-
   <style>
     html, body {
       height: 100%;
@@ -26,63 +25,31 @@
       background: #f5f5f5;
       font-family: Arial, sans-serif;
     }
-
-    /* Contenedor principal */
     .container {
+      height: 100vh;
       width: 100vw;
-      height: 100vh;   /* fallback */
-      height: 100dvh;  /* mejor en móviles */
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden; /* evita desbordes en el escalado */
-      background: #000; /* sin bordes blancos alrededor del reporte */
     }
-
-    /* Comportamiento por defecto (PC): ocupa todo */
     iframe {
       width: 100%;
       height: 100%;
-      border: 0;
-      display: block;
-      background: #000;
-    }
-
-    /* 📱 Adaptación real a móviles:
-       - Escalamos desde un tamaño base 1280x720 (16:9)
-       - El contenedor toma altura proporcional al ancho del dispositivo
-    */
-    @media (max-width: 768px) {
-      .container {
-        width: 100vw;
-        height: 56.25vw;   /* 9/16 = 0.5625 → relación 16:9 */
-        max-height: 100dvh;
-      }
-
-      iframe {
-        width: 1280px;     /* tamaño base del lienzo del reporte */
-        height: 720px;     /* tamaño base del lienzo del reporte */
-        transform: scale(calc(100vw / 1280));
-        transform-origin: top left;
-      }
-    }
-
-    /* Afinar pantallas muy pequeñas (opcional) */
-    @media (max-width: 420px) {
-      .container { height: 56.25vw; }
+      border: none;
     }
   </style>
 </head>
-
 <body>
   <div class="container">
 
-    <!-- Power BI: link público + interfaz limpia -->
-    <iframe
+    <!-- NUEVO POWER BI PUBLICADO -->
+    <iframe 
       title="Seguimiento O&M MINTIC"
-      src="https://app.powerbi.com/view?r=eyJrIjoiNmVlMDVlMDktYTUxMy00YjM1LTllZDYtYTI1NTJjMWRmYTMwIiwidCI6ImU0ZTFiYzMzLWUyODMtNDMxMi1iYjM3LTg5MDEwMjI0YjdmZSIsImMiOjh9&pageName=0aeee014ab3318b4ff5d&navContentPaneEnabled=false"
-      allowfullscreen="true"
-      frameborder="0">
+      width="600"
+      height="373.5"
+      src="https://app.powerbi.com/view?r=eyJrIjoiNmVlMDVlMDktYTUxMy00YjM1LTllZDYtYTI1NTJjMWRmYTMwIiwidCI6ImU0ZTFiYzMzLWUyODMtNDMxMi1iYjM3LTg5MDEwMjI0YjdmZSIsImMiOjh9&pageName=0aeee014ab3318b4ff5d"
+      frameborder="0"
+      allowFullScreen="true">
     </iframe>
 
   </div>
