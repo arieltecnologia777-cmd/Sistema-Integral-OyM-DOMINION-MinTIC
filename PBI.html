@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- 🔒 Guard de sesión -->
+  <script>
+    (function(){
+      try{
+        if(!sessionStorage.getItem('auth_ok')){
+          window.location.replace('login.html');
+        }
+      }catch(e){
+        window.location.replace('login.html');
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <!-- Permite usar todo el alto útil en móviles (incl. iOS notch) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dashboard Power BI</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Contenedor a pantalla completa con unidades de viewport modernas para móviles */
+    .container {
+      /* Fallback para navegadores antiguos */
+      height: 100vh;
+      width: 100vw;
+
+      /* Preferir unidades dinámicas en móviles (evita “saltos” por barras del navegador) */
+      height: 100dvh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block; /* evita espacios fantasmas en algunos navegadores */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- NUEVO POWER BI PUBLICADO -->
+    <iframe 
+      title="Seguimiento O&M MINTIC"
+      width="600"
+      height="373.5"
+      src="https://app.powerbi.com/view?r=eyJrIjoiNmVlMDVlMDktYTUxMy00YjM1LTllZDYtYTI1NTJjMWRmYTMwIiwidCI6ImU0ZTFiYzMzLWUyODMtNDMxMi1iYjM3LTg5MDEwMjI0YjdmZSIsImMiOjh9&pageName=0aeee014ab3318b4ff5d"
+      frameborder="0"
+      allowFullScreen="true">
+    </iframe>
+
+  </div>
+</body>
+</html>
