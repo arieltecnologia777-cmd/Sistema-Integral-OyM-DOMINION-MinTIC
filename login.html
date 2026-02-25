@@ -41,20 +41,19 @@
       --radius: 14px;
       --radius-sm: 12px;
       --gap: clamp(10px, 1.8vmin, 14px);
-      --fs-base: 16px;        /* evita zoom iOS */
+      --fs-base: 16px; /* evita zoom iOS */
       --fs-small: 13px;
       --fs-title: clamp(22px, 2.6vmax, 28px);
     }
-
     html[data-theme="dark"],
     body.theme-dark{
-      --bg:#0e1320; 
-      --panel:#151a2e; 
-      --text:#e5eaf5; 
-      --muted:#9fb0c9; 
+      --bg:#0e1320;
+      --panel:#151a2e;
+      --text:#e5eaf5;
+      --muted:#9fb0c9;
       --line:#24314f;
-      --primary:#6ee7ff; 
-      --accent:#ffd166; 
+      --primary:#6ee7ff;
+      --accent:#ffd166;
       --shadow:0 22px 48px rgba(0,0,0,.35);
     }
 
@@ -112,7 +111,6 @@
       overflow: auto;
       scrollbar-gutter: stable both-edges;
     }
-
     .brand{
       display:flex; align-items:center; gap:12px;
       padding:10px; border-radius:var(--radius-sm); background: var(--panel);
@@ -131,13 +129,11 @@
     .brand-title{ display:flex; flex-direction:column; line-height:1.05 }
     .brand-title strong{ font-size:14px }
     .brand-title small{ color:var(--muted) }
-
     .title{ margin: 2px 2px 0; font-size: var(--fs-title); font-weight: 600; letter-spacing:.25px }
     .lead{ margin: 0 2px 6px; color:var(--muted); font-size: clamp(14px, 1.9vmin, 15px) }
 
     /* ===== Formulario ===== */
     form{ display:flex; flex-direction:column; gap: 12px; margin-top: 6px }
-
     .field{ display:flex; flex-direction:column; gap:6px }
     .label{ font-size: var(--fs-small); color: var(--muted) }
     .control{ position: relative }
@@ -178,9 +174,7 @@
       user-select: none;
     }
     .remember input{ width:18px; height:18px }
-
     .actions{ display:flex; align-items:center; gap:10px; flex-wrap: wrap }
-
     .btn{
       display:inline-flex; align-items:center; justify-content:center; gap:8px;
       min-height: var(--tap-h);
@@ -218,7 +212,6 @@
       .lead{ margin-bottom: 2px }
       .card{ max-height: 92svh }
     }
-
     @media (min-width: 1200px){
       :root{ --card-w: min(640px, calc(100vw - 48px)) }
       .logo{ width:84px; height:84px; padding:10px }
@@ -232,7 +225,6 @@
     }
 
     /* ===== FIX LAPTOP: eliminar scroll interno en la tarjeta ===== */
-
     /* 1440×900 y similares */
     @media (min-width: 1200px) and (max-width: 1536px){
       :root{
@@ -249,7 +241,6 @@
       .lead{ margin-bottom: 4px; }
       .legal{ padding: 6px 8px; }
     }
-
     /* 1366×768 (la más común) y cercanas */
     @media (min-width: 1024px) and (max-width: 1368px){
       :root{
@@ -277,14 +268,12 @@
   </style>
 </head>
 <body>
-
   <!-- Fondo -->
   <div class="bg" aria-hidden="true"></div>
 
   <!-- Contenedor -->
   <main class="wrap" aria-label="Acceso a Seguimiento O&M">
     <section class="card" role="region" aria-labelledby="tituloAcceso">
-
       <!-- Marca -->
       <div class="brand">
         <div class="logo" title="DOMINION">
@@ -352,9 +341,9 @@
     // ===== CONFIGURACIÓN (multiusuario de demostración) =====
     // IMPORTANTE: Solo para DEMO. No usar en producción (las credenciales quedan visibles).
     const USERS = [
-      { user: 'dayana.jimenez@dominion-global.com', email: 'dayana.jimenez@dominion-global.com', pass: 'Camila0406', role: 'admin',  redirect: 'main_page.html' },
+      { user: 'dayana.jimenez@dominion-global.com', email: 'dayana.jimenez@dominion-global.com', pass: 'root2', role: 'admin', redirect: 'main_page.html' },
       { user: 'admin', email: 'ariel.marquez-ext@dominion-global.com', pass: 'root1', role: 'admin', redirect: 'main_page.html' },
-      { user: 'Operador', email: 'operador01@dominion-global.com', pass: 'op123456', role: 'viewer', redirect: 'main_page.html' },
+      { user: 'operador01', email: 'operador01@dominion-global.com', pass: 'op123456', role: 'viewer', redirect: 'main_page.html' },
       // Agrega más usuarios aquí:
       // { user: 'juan', email: 'juan.perez@dominion-global.com', pass: 'xxxxxx', role: 'viewer', redirect: 'main_page.html' },
     ];
@@ -385,8 +374,8 @@
         applyLabel(mode);
       }
       (function initTheme(){
-        const saved = localStorage.getItem(themeKey);
-        const theInitial = saved || docEl.getAttribute('data-theme') || 'light';
+        const saved     = localStorage.getItem(themeKey);
+        const theInitial = saved || document.documentElement.getAttribute('data-theme') || 'light';
         setMode(theInitial);
       })();
       btn?.addEventListener('click', () => {
@@ -411,9 +400,10 @@
 
     // ===== Recordarme (solo usuario) =====
     (function(){
-      const KEY = 'login_saved_user';
-      const chk = document.getElementById('chkRemember');
-      const user= document.getElementById('inpUser');
+      const KEY  = 'login_saved_user';
+      const chk  = document.getElementById('chkRemember');
+      const user = document.getElementById('inpUser');
+
       const saved = localStorage.getItem(KEY);
       if (saved && user){
         user.value = saved;
@@ -462,7 +452,6 @@
         box.style.display = 'none';
         box.textContent = '';
       }
-
       help?.addEventListener('click', (e)=>{
         e.preventDefault();
         showError('Si olvidaste tus credenciales, contacta a: ariel.marquez-ext@dominion-global.com');
@@ -471,6 +460,7 @@
       form?.addEventListener('submit', (e)=>{
         e.preventDefault();
         hideError();
+
         const u = (user?.value || '').trim();
         const p = (pass?.value || '').trim();
         if (!u || !p){
@@ -489,6 +479,12 @@
             sessionStorage.setItem('auth_ok', '1');
             sessionStorage.setItem('auth_user', rec.email || rec.user);
             sessionStorage.setItem('auth_role', rec.role || 'viewer');
+
+            /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+               NUEVO: Forzar que el popup de bienvenida se muestre
+               en este nuevo login (se limpia la marca de la sesión)
+               <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+            sessionStorage.removeItem('welcome_shown');
 
             const dest = rec.redirect || DEFAULT_REDIRECT;
             window.location.assign(dest);
@@ -513,5 +509,4 @@
     window.addEventListener('orientationchange', () => { document.body.offsetHeight; }, {passive:true});
   </script>
 </body>
-
 </html>
