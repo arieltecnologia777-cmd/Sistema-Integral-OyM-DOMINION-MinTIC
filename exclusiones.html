@@ -81,7 +81,7 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
 <!-- HEADER -->
 <div class="header">
   <div class="header-title">Exclusiones de Operatividad</div>
-  <div class="header-sub"><strong>PRUEBA</strong></div>
+  <div class="header-sub">Lee CSV publicado • Escribe vía Web App • Agrupación por <strong>OT</strong></div>
 
   <div class="controls">
     <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
@@ -112,10 +112,9 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
 <script>
 /* ======= CONFIG ======= */
 // 1) CSV publicado (lectura)
-const CSV_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vS_W27zX-XeuQfxQMSdJ5cyE6ez4BegMGL02fC4DQ1dJc0_LLeW1uUyUFQv2exRy_Uz8kN7H5NOHsnO/pub?gid=0&single=true&output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS_W27zX-XeuQfxQMSdJ5cyE6ez4BegMGL02fC4DQ1dJc0_LLeW1uUyUFQv2exRy_Uz8kN7H5NOHsnO/pub?gid=0&single=true&output=csv';
 // 2) Web App de Apps Script (escritura)
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyjlx6t8roa1I8cgZQNIdRVjttsc4VUgNCVx9cQXg7LoVHh5ZDCJUmjMIPeE8muTlHS/exec'; // 👈 pega aquí tu /exec
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyjlx6t8roa1I8cgZQNIdRVjttsc4VUgNCVx9cQXg7LoVHh5ZDCJUmjMIPeE8muTlHS/exec';
 
 /* ======= Estado ======= */
 let datos = [];        // dataset editable (en memoria)
@@ -146,10 +145,11 @@ function setLastUpdate(dateObj){ const el=$('#lastUpdate'); if(el) el.innerHTML 
 function detectarDelimitador(headerLine){ const c=(headerLine.match(/,/g)||[]).length, p=(headerLine.match(/;/g)||[]).length, t=(headerLine.match(/\t/g)||[]).length; return t>c&&t>p?'\t':(p>=c?';':','); }
 function parseCSV(text){
   const src=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n"); const lines=src.split("\n");
-  if(!lines.length) return []; if(lines[0] && lines[0].charCodeAt(0)===0xFEFF) lines[0]=lines[0].slice(1);
+  if(!lines.length) return [];
+  if(lines[0] && lines[0].charCodeAt(0)===0xFEFF) lines[0]=lines[0].slice(1);
   const sep=detectarDelimitador(lines[0]); const rows=[]; let row=[], cur="", q=false;
   for(let i=0;i<src.length;i++){ const ch=src[i], nx=src[i+1];
-    if(ch==='"'){ if(q && nx==='"'){ cur+='"'; i++; } else q=!q; }
+    if(ch=='"'){ if(q && nx=='"'){ cur+='"'; i++; } else q=!q; }
     else if(ch===sep && !q){ row.push(cur); cur=""; }
     else if(ch==='\n' && !q){ row.push(cur); rows.push(row); row=[]; cur=""; }
     else cur+=ch; }
@@ -199,7 +199,8 @@ function construirGruposPorOT(){
 /* ======= Estado del botón por OT ======= */
 function isOTCompleta(ot){
   const items=datos.filter(d => (d.ot||"").toString().trim()===ot.toString().trim());
-  return items.length>0 && items.every(r => (r.causa||"").toString().trim() !== "");
+  if (!items.length) return false;
+  return items.every(r => (r.causa||"").toString().trim() !== "" && (r.fecha||"").toString().trim() !== "");
 }
 function setBtnOTStateById(btnId, enabled){
   const btn=document.getElementById(btnId); if(!btn) return;
@@ -270,7 +271,7 @@ async function postularPorOT(ot){
   const btn = document.getElementById(`btn_ot_${cssId(ot)}`);
   const items = datos.filter(d => (d.ot||"").toString().trim() === ot.toString().trim());
   if(!items.length){ alert(`No hay registros para la OT ${ot}`); return; }
-  if(!isOTCompleta(ot)){ alert('Faltan causas en esta OT. Complétalas para habilitar el envío.'); return; }
+  if(!isOTCompleta(ot)){ alert('Faltan causas o fecha en esta OT. Complétalas para habilitar el envío.'); return; }
 
   // payload ligero (solo causa/fecha)
   const registros = items.map(r => ({ fecha: r.fecha, causa: r.causa }));
@@ -282,17 +283,19 @@ async function postularPorOT(ot){
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ action:'postular_ot', ot, registros })
     });
-    const j = await res.json();
+
+    // Log de diagnóstico
+    const raw = await res.text();
+    console.log('WebApp RESPUESTA RAW:', raw);
+    let j={}; try { j = JSON.parse(raw); } catch(e){ j = { ok:false, error:'Respuesta no-JSON del WebApp', raw }; }
+
     if(!res.ok || !j.ok) throw new Error(j.error || ('HTTP ' + res.status));
 
     alert(`OT ${ot}: guardada correctamente. Actualizados: ${j.updated||0}, nuevos: ${j.appended||0}`);
-    // Nota: la lectura sigue siendo por CSV publicado (puede tardar unos segundos en reflejarse).
-    // Si quieres ver el cambio al instante, podríamos leer también con GET del Web App.
   }catch(err){
-    console.error(err);
+    console.error('POSTULAR ERROR:', err);
     alert('Error al guardar esta OT. Revisa consola para detalles.');
   }finally{
-    // Restaura el estado del botón respecto al llenado
     btn.textContent = 'Postular exclusiones';
     setBtnOTStateById(`btn_ot_${cssId(ot)}`, isOTCompleta(ot));
   }
