@@ -12,20 +12,29 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
 /* Header */
 .header{ background:rgba(255,255,255,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
   padding:14px 24px 10px; box-shadow:0 6px 18px rgba(0,0,0,.06); border-bottom:1px solid rgba(255,255,255,.4); }
-.header-title{ font-size:24px; font-weight:800; color:var(--ink); }
+.header-title{ font-size:24px; font-weight:800; color:#0e2040; }
 .header-sub{ margin-top:2px; color:#4e5d78; font-size:14px; }
 
 /* Controles */
 .controls{ margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .btn{ display:inline-block; padding:8px 18px; border-radius:999px; font-size:13px; border:none; cursor:pointer; }
-.btn-blue{ background:var(--dom-blue); color:#fff; }
+.btn-blue{ background:#0e4aa8; color:#fff; }
 .btn-light{ background:#e8eef7; color:#0e4aa8; }
+.btn[disabled]{ opacity:.65; cursor:not-allowed; }
 
 /* Search pill */
 .search-pill{ display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #d7e0f5; border-radius:999px;
   height:36px; padding:0 12px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
 .search-pill input{ border:none; outline:none; height:100%; font-size:13px; min-width:200px; max-width:320px; }
 .search-icon{ width:16px; height:16px; opacity:.55; }
+
+/* Badge última actualización */
+.badge-ts{
+  background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff;
+  padding:6px 10px; border-radius:999px; font-size:12px;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.badge-dot{ width:8px; height:8px; border-radius:999px; background:#10b981; }
 
 /* Grupos por OT */
 .wrap{ width:92%; margin: 14px auto 0; }
@@ -37,8 +46,8 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
 .sum-right{ display:flex; gap:10px; align-items:center; }
 .badge{ background:#eef3ff; color:#0e3a82; font-weight:700; padding:6px 10px; border-radius:999px; border:1px solid #dbe6ff; }
 
-/* Botón Postular por OT (en la cabecera del grupo) */
-.btn-ot{ padding:8px 14px; border-radius:999px; border:none; cursor:pointer; background:var(--dom-blue); color:#fff; font-size:13px; box-shadow:0 4px 12px rgba(14,74,168,.25); }
+/* Botón Postular por OT */
+.btn-ot{ padding:8px 14px; border-radius:999px; border:none; cursor:pointer; background:#0e4aa8; color:#fff; font-size:13px; box-shadow:0 4px 12px rgba(14,74,168,.25); }
 .btn-ot:hover{ filter:brightness(.95); }
 
 /* Items (cards) */
@@ -82,6 +91,9 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
       </svg>
       <input id="busqueda" type="text" placeholder="Buscar OTs…" autocomplete="off" />
     </div>
+
+    <!-- 🔵 Última actualización -->
+    <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
   </div>
 </div>
 
@@ -97,8 +109,9 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
 <div id="alerta"></div>
 
 <script>
-/* ======= CONFIG: pega aquí el CSV publicado de tu Sheet ======= */
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS_W27zX-XeuQfxQMSdJ5cyE6ez4BegMGL02fC4DQ1dJc0_LLeW1uUyUFQv2exRy_Uz8kN7H5NOHsnO/pub?gid=0&single=true&output=csv'; // 👈 Reemplaza
+/* ======= CONFIG: tu CSV publicado de Google Sheets ======= */
+const CSV_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vS_W27zX-XeuQfxQMSdJ5cyE6ez4BegMGL02fC4DQ1dJc0_LLeW1uUyUFQv2exRy_Uz8kN7H5NOHsnO/pub?gid=0&single=true&output=csv'; // ← tu URL
 
 /* ======= Estado ======= */
 let datos = [];        // dataset editable (en memoria)
@@ -120,8 +133,23 @@ function normalizarClave(obj, clave){
   for(const k of Object.keys(obj)){ if(norm(k).toLowerCase()===goal) return obj[k]; }
   return "";
 }
+function formatTs(d){
+  // dd/mm/yyyy hh:mm:ss en español
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mi = String(d.getMinutes()).padStart(2,'0');
+  const ss = String(d.getSeconds()).padStart(2,'0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss}`;
+}
+function setLastUpdate(dateObj){
+  const el = document.getElementById('lastUpdate');
+  if(!el) return;
+  el.innerHTML = `<span class="badge-dot"></span>Última actualización: ${formatTs(dateObj)}`;
+}
 
-/* ======= Parser CSV (tomado del patrón de tu inventario) ======= */
+/* ======= Parser CSV robusto ======= */
 function detectarDelimitador(headerLine){
   const c=(headerLine.match(/,/g)||[]).length;
   const p=(headerLine.match(/;/g)||[]).length;
@@ -165,9 +193,16 @@ function csvAObjetos(text){
 
 /* ======= Carga desde Google Sheets (CSV publicado) ======= */
 async function cargarDesdeCSV(){
+  const btn = document.getElementById('btnCargar');
   try{
     ocultarAlerta();
-    const res = await fetch(CSV_URL, { cache:'no-store' });
+    btn.disabled = true; btn.textContent = 'Cargando…';
+
+    // cache-buster para minimizar el cacheo del publish de Google
+    const bust = `_=${Date.now()}`;
+    const url  = CSV_URL + (CSV_URL.includes('?') ? '&' : '?') + bust;
+
+    const res = await fetch(url, { cache:'no-store' });
     if(!res.ok) throw new Error('HTTP '+res.status);
     const text = await res.text();
     const objetos = csvAObjetos(text);
@@ -185,9 +220,14 @@ async function cargarDesdeCSV(){
     paginaActual = 1;
     construirGruposPorOT();
     render();
+
+    // 🔵 Actualiza el sello de tiempo
+    setLastUpdate(new Date());
   }catch(err){
     console.error(err);
-    mostrarAlerta('No se pudo cargar el CSV publicado. Verifica la URL & el estado “Publicado en la Web”.');
+    mostrarAlerta('No se pudo cargar el CSV publicado. Verifica la URL / publicación y vuelve a intentar.');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Cargar / Actualizar';
   }
 }
 
