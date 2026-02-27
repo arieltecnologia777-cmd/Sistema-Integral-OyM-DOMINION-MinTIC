@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Admin – Exclusiones</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+:root{ --dom-blue:#0e4aa8; --ink:#0e2040; }
+*{box-sizing:border-box}
+body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linear-gradient(180deg,#eef4ff,#fff); margin:0; color:#1a2333; }
+/* Header (misma línea visual) */
+.header{ background:rgba(255,255,255,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+ padding:14px 24px 10px; box-shadow:0 6px 18px rgba(0,0,0,.06); border-bottom:1px solid rgba(255,255,255,.4); }
+.header-title{ font-size:24px; font-weight:800; color:#0e2040; }
+.header-sub{ margin-top:2px; color:#4e5d78; font-size:14px; }
+.controls{ margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.btn{ display:inline-block; padding:10px 18px; border-radius:999px; font-size:14px; border:none; cursor:pointer; }
+.btn-blue{ background:#0e4aa8; color:#fff; }
+.btn-light{ background:#e8eef7; color:#0e4aa8; }
+.btn[disabled]{ opacity:.65; cursor:not-allowed; }
+/* Contenedor */
+.wrap{ width:92%; margin: 14px auto 0; }
+/* Alertas/estado */
+.state{ margin-top:10px; padding:10px 14px; border-radius:10px; background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff; display:none; }
+.state.error{ background:#fee; color:#a1141e; border-color:#f5b5ba; }
+/* Modal confirmación */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; }
+.modal{ background:#fff; padding:18px; border-radius:14px; width:min(92%, 460px); box-shadow:0 18px 38px rgba(0,0,0,.25); }
+.modal h3{ margin:0 0 8px; color:#0e2040; }
+.modal p { margin:6px 0 16px; color:#4e5d78; }
+.modal .actions{ display:flex; gap:10px; justify-content:flex-end; }
+.modal .btn-no{ background:#e8eef7; color:#0e4aa8; }
+.modal .btn-si{ background:#0e4aa8; color:#fff; }
+.badge-ts{ background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff; padding:6px 10px; border-radius:999px; font-size:12px;
+ display:inline-flex; align-items:center; gap:8px; margin-left:6px; }
+.badge-dot{ width:8px; height:8px; border-radius:999px; background:#10b981; }
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<div class="header">
+ <div class="header-title">Admin – Exclusiones</div>
+ <div class="header-sub"><strong>Panel de carga y descarga</strong></div>
+ <div class="controls">
+ <button id="btnImportar" class="btn btn-blue" type="button">Importar nuevos datos</button>
+ <button id="btnExportar" class="btn btn-light" type="button">Exportar último cambio</button>
+ <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última acción: —</span>
+ </div>
+</div>
+<div class="wrap">
+ <div id="estado" class="state"></div>
+</div>
+<!-- Modal confirmación -->
+<div id="modalConfirm" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mc_title">
+ <div class="modal">
+ <h3 id="mc_title">Confirmación</h3>
+ <p>¿Está seguro que desea sobre escribir la data?</p>
+ <div class="actions">
+ <button id="mc_no" type="button" class="btn btn-no">No</button>
+ <button id="mc_si" type="button" class="btn btn-si">Sí</button>
+ </div>
+ </div>
+</div>
+<!-- Input oculto para archivo -->
+<input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+<!-- SheetJS para manejar Excel en el navegador -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
+const API_BASE = 'https://TU-SUBDOMINIO.workers.dev'; // ⬅️ Cambia por tu dominio Workers
+const ADMIN_TOKEN = 'PON_AQUI_UN_TOKEN_FUERTE';       // ⬅️ Debe coincidir con el secreto en el Worker
+
+/* ====== Utils ====== */
+const $ = s => document.querySelector(s);
+function setBadge(msg){ const el=$('#lastUpdate'); if(el) el.innerHTML = `<span class="badge-dot"></span>${msg}`; }
+function showState(msg, isErr=false){ const el=$('#estado'); el.textContent=msg; el.classList.toggle('error', !!isErr); el.style.display='block'; }
+function hideState(){ const el=$('#estado'); el.textContent=''; el.classList.remove('error'); el.style.display='none'; }
+
+/* ====== Modal confirm ====== */
+function abrirConfirm(){ $('#modalConfirm').style.display='flex'; }
+function cerrarConfirm(){ $('#modalConfirm').style.display='none'; }
+
+/* ====== Importar ====== */
+function leerArchivoComoAOA(file){
+ return new Promise((resolve, reject)=>{
+  const fr = new FileReader();
+  fr.onload = ev=>{
+   try{
+    const data = new Uint8Array(ev.target.result);
+    const wb = XLSX.read(data, { type:'array' });
+    const shName = wb.SheetNames[0];
+    const ws = wb.Sheets[shName];
+    let aoa = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:'' });
+    aoa = aoa.map(row => row.map(v => (v ?? '').toString().trim()));
+    resolve(aoa);
+   }catch(err){ reject(err); }
+  };
+  fr.onerror = err=>reject(err);
+  fr.readAsArrayBuffer(file);
+ });
+}
+async function seleccionarArchivoYConfirmar(){
+ return new Promise((resolve,reject)=>{
+  const finp = $('#fileInput');
+  finp.value = '';
+  const onChange = ()=>{
+   finp.removeEventListener('change', onChange);
+   if(!finp.files || !finp.files.length){ resolve(null); return; }
+   abrirConfirm();
+   const si = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(finp.files[0]); };
+   const no = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(null); };
+   $('#mc_si').addEventListener('click', si);
+   $('#mc_no').addEventListener('click', no);
+  };
+  finp.addEventListener('change', onChange);
+  finp.click();
+ });
+}
+async function importarExcel(){
+ hideState();
+ try{
+  const file = await seleccionarArchivoYConfirmar();
+  if(!file){ showState('Operación cancelada por el usuario.'); return; }
+  $('#btnImportar').disabled = true; $('#btnImportar').textContent = 'Importando…';
+  const aoa = await leerArchivoComoAOA(file);
+  if(!aoa || !aoa.length) throw new Error('El archivo está vacío o no se pudo leer.');
+  const res = await fetch(`${API_BASE}/api/sobrescribir`, {
+    method:'POST',
+    mode:'cors',
+    headers:{
+      'Content-Type':'application/json',
+      'Accept':'application/json',
+      'Authorization': `Bearer ${ADMIN_TOKEN}`
+    },
+    body: JSON.stringify({ aoa })
+  });
+  const j = await res.json().catch(()=>null);
+  if(!res.ok || !j?.ok) throw new Error(j?.error || `HTTP ${res.status}`);
+  showState(`Importación realizada. Se sobreescribió la hoja con ${Math.max(0,(aoa.length-1))} filas (sin contar encabezados).`);
+  setBadge('Última acción: Importación completada');
+ }catch(err){
+  console.error(err);
+  showState('Error al importar: ' + err.message, true);
+  setBadge('Última acción: Error de importación');
+ }finally{
+  $('#btnImportar').disabled = false; $('#btnImportar').textContent = 'Importar nuevos datos';
+ }
+}
+
+/* ====== Exportar ====== */
+async function exportarExcel(){
+ hideState();
+ try{
+  $('#btnExportar').disabled = true; $('#btnExportar').textContent = 'Exportando…';
+  const res = await fetch(`${API_BASE}/api/aoa`, { method:'GET', mode:'cors', headers:{ 'Accept':'application/json' } });
+  const j = await res.json().catch(()=>null);
+  const aoa = Array.isArray(j?.aoa) ? j.aoa : [];
+  if(!aoa.length){ showState('No hay datos para exportar.'); setBadge('Última acción: Exportación vacía'); return; }
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  XLSX.utils.book_append_sheet(wb, ws, 'Exclusiones');
+  const nombre = 'exclusiones_export.xlsx';
+  XLSX.writeFile(wb, nombre);
+  showState(`Exportación completada (${aoa.length-1} filas sin encabezados).`);
+  setBadge('Última acción: Exportación completada');
+ }catch(err){
+  console.error(err);
+  showState('Error al exportar: ' + (err?.message ?? err), true);
+  setBadge('Última acción: Error de exportación');
+ }finally{
+  $('#btnExportar').disabled = false; $('#btnExportar').textContent = 'Exportar último cambio';
+ }
+}
+
+/* ====== Eventos ====== */
+$('#btnImportar').addEventListener('click', importarExcel);
+$('#btnExportar').addEventListener('click', exportarExcel);
+</script>
+</body>
+</html>
