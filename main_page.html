@@ -280,7 +280,7 @@ html[data-theme="dark"] #welcomeModal.modal{
   .carousel{ margin-top: 72px; }
   .hero-copy{ padding-top: 6px; }
   .title-main{ font-size: clamp(28px, 3.2vw, 40px); }
-  .lead{ margin-top:  6px; }
+  .lead{ margin-top: 6px; }
   .carousel-track{ max-height: 300px; }
 }
 @media (max-height: 800px) and (min-width: 1024px){
@@ -441,7 +441,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <!-- Módulo de exclusiones (abre selector o va directo según 'last_module') -->
+        <!-- Botón que abre el selector / o directo a modal de contraseña si hay last_module -->
         <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -855,9 +855,18 @@ html[data-theme="dark"] .exclusiones-card .icon{
       if (val === ACCESS_PASSWORDS[currentRole]){
         // Recordar último módulo para próxima vez
         sessionStorage.setItem('last_module', currentRole);
-        // Cerrar modales y abrir destino en nueva pestaña
+
+        // Cerrar modales
         closePwd();
         window.__closeSelectorIfOpen?.();
+
+        // >>> Ocultar completamente los backdrops para que "desaparezcan"
+        const pwdBack = document.getElementById('pwdBackdrop');
+        const selBack = document.getElementById('exclusionesBackdrop');
+        if (pwdBack) pwdBack.style.display = 'none';
+        if (selBack) selBack.style.display = 'none';
+
+        // Abrir el módulo en nueva pestaña
         window.open(TARGET_URLS[currentRole], '_blank', 'noopener,noreferrer');
       } else {
         alert('No tienes permiso para ingresar al módulo. Por favor, contacta al administrador.');
@@ -1006,7 +1015,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
         sessionStorage.removeItem('auth_user');
         sessionStorage.removeItem('auth_role');
         sessionStorage.removeItem('welcome_shown');
-        // IMPORTANTE: limpiar el módulo recordado para que vuelva a pedir contraseña
+        // Limpiar el módulo recordado para que vuelva a pedir contraseña
         sessionStorage.removeItem('last_module');
       } catch(e){}
       window.location.replace('login.html');
@@ -1044,6 +1053,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
 </script>
 </body>
 </html>
+
 
 
 
