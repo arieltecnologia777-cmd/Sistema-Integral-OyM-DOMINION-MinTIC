@@ -103,7 +103,6 @@ html[data-theme="dark"] #welcomeUser {
     .sb-item svg{ width:18px; height:18px; display:block; color: var(--muted); }
     .sb-item svg *{ stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
     .sb-item svg path, .sb-item svg circle, .sb-item svg rect, .sb-item svg line, .sb-item svg polyline, .sb-item svg polygon{ stroke: currentColor; stroke-width:2; fill:none; }
-    .sb-item svg .fill{ fill: currentColor; stroke:none }
     .sb-item:hover svg{ color: var(--primary); }
 
     .sb-footer{ display:flex; flex-direction:column; gap:10px; padding:0 4px }
@@ -354,12 +353,13 @@ html[data-theme="dark"] #welcomeUser {
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <a class="sb-item" href="main_page.html">
+        <!-- Cambiado: Entrar -> Módulo de exclusiones (abre popup) -->
+        <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <polyline points="13 5 20 12 13 19"></polyline>
           </svg>
-          <span>Entrar</span>
+          <span>Módulo de exclusiones</span>
         </a>
 
         <a class="sb-item" href="PBI.html">
@@ -508,6 +508,29 @@ html[data-theme="dark"] #welcomeUser {
       </div>
     </div>
   </div>
+
+  <!-- ===== Modal Módulo de exclusiones (nuevo) ===== -->
+  <div class="modal-backdrop" id="exclusionesBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exclusionesTitle" id="exclusionesModal">
+      <div class="modal-header">
+        <div class="modal-title" id="exclusionesTitle" tabindex="-1">
+          <span>Bienvenido</span>
+        </div>
+        <button class="btn" id="exclusionesClose" aria-label="Cerrar">Cerrar</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-top:0;">¿Qué deseas hacer hoy?</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn primary" href="admin_exclusiones.html" id="goAdmin">Módulo Admin</a>
+          <a class="btn" href="exclusiones.html" id="goGestor">Módulo Gestor</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="exclusionesBackdropClose">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
 <!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
 <script>
@@ -570,7 +593,7 @@ html[data-theme="dark"] #welcomeUser {
   window.addEventListener('resize', fitLegal);
   window.addEventListener('orientationchange', () => setTimeout(fitLegal, 200));
 
-  /* ========== Controlador genérico de modales (para Ayuda) ========== */
+  /* ========== Controlador genérico de modales (para Ayuda y Exclusiones) ========== */
   function makeModal(backdropId, initialFocusId){
     const backdrop = document.getElementById(backdropId);
     if (!backdrop) return {open:()=>{}, close:()=>{}};
@@ -597,6 +620,14 @@ html[data-theme="dark"] #welcomeUser {
     document.getElementById('btnAyuda')?.addEventListener('click', (e)=>{ e.preventDefault(); help.open(); });
     document.getElementById('helpClose')?.addEventListener('click', help.close);
     document.getElementById('helpBackdropClose')?.addEventListener('click', help.close);
+  })();
+
+  // Modal Módulo de exclusiones (nuevo)
+  (function(){
+    const ex = makeModal('exclusionesBackdrop', 'exclusionesTitle');
+    document.getElementById('btnModuloExclusiones')?.addEventListener('click', (e)=>{ e.preventDefault(); ex.open(); });
+    document.getElementById('exclusionesClose')?.addEventListener('click', ex.close);
+    document.getElementById('exclusionesBackdropClose')?.addEventListener('click', ex.close);
   })();
 
   /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
@@ -700,8 +731,8 @@ html[data-theme="dark"] #welcomeUser {
 
       // Autoplay
       let autoplayId = null;
-      const startAutoplay = ()=>{ if (autoplayId || items.length<2) return; autoplayId = setInterval(goNext, AUTOPLAY_MS); };
-      const stopAutoplay  = ()=>{ if (!autoplayId) return; clearInterval(autoplayId); autoplayId=null; };
+      const startAutoplay = () =>{ if (autoplayId || items.length<2) return; autoplayId = setInterval(goNext, AUTOPLAY_MS); };
+      const stopAutoplay  = () =>{ if (!autoplayId) return; clearInterval(autoplayId); autoplayId=null; };
       startAutoplay();
       document.addEventListener('visibilitychange', () =>{ if (document.hidden) stopAutoplay(); else startAutoplay(); });
 
@@ -754,4 +785,5 @@ html[data-theme="dark"] #welcomeUser {
 </script>
 </body>
 </html>
+
 
