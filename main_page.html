@@ -20,11 +20,12 @@
   <meta name="description" content="Héroe a pantalla completa con menú lateral fijo e interruptor de tema.">
 
   <style>
+/* Color del nombre en bienvenida según tema */
 html[data-theme="light"] #welcomeUser { color: var(--primary); }
 html[data-theme="dark"]  #welcomeUser { color: var(--primary); }
 
+/* ===== Variables ===== */
 :root{
-  /* ===== Tema base (Claro) ===== */
   --bg:#f6f8fc; --panel:#ffffff; --text:#0f172a; --muted:#475569;
   --line:#dbe2f1; --primary:#2563eb; --accent:#f59e0b;
   --shadow:0 22px 48px rgba(15,23,42,.12);
@@ -41,7 +42,7 @@ html[data-theme="dark"]  #welcomeUser { color: var(--primary); }
     0 0 44px rgba(0, 102, 255, 0.18);
 }
 
-/* ===== Modo oscuro (variables) ===== */
+/* Modo oscuro */
 html[data-theme="dark"], body.theme-dark{
   --bg:#0e1320; --panel:#151a2e; --text:#e5eaf5; --muted:#9fb0c9;
   --line:#24314f; --primary:#6ee7ff; --accent:#ffd166;
@@ -49,7 +50,7 @@ html[data-theme="dark"], body.theme-dark{
   --sb-bg:#151a2e; --sb-line:#24314f;
 }
 
-/* Laptops */
+/* Ancho sidebar en laptops */
 @media (min-width: 1200px) and (max-width: 1536px){ :root{ --sb-w: 240px; } }
 
 /* ===== Reset/Global ===== */
@@ -58,7 +59,7 @@ html,body{height:100%; margin:0}
 body{
   color:var(--text); background:var(--bg);
   font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;
-  overflow:hidden;
+  overflow:hidden; /* fullscreen */
 }
 a{color:var(--text); text-decoration:none}
 img{display:block; max-width:100%; height:auto}
@@ -261,7 +262,7 @@ html[data-theme="dark"] #welcomeModal.modal{
 .carousel-btn.prev{ left:12px } .carousel-btn.next{ right:12px }
 .carousel-empty{ color: var(--muted); padding:14px; text-align:center; font-size:14px; background: transparent }
 
-/* Tuning tipográfico */
+/* Tuning */
 @media (max-width: 1440px){
   .carousel{ margin-top: 56px; }
   .hero-copy{ padding-top: 8px; }
@@ -283,7 +284,7 @@ html[data-theme="dark"] #welcomeModal.modal{
   .carousel-track{ max-height: 290px; }
 }
 
-/* ===== Bloque móvil ===== */
+/* ===== Móvil ===== */
 @media (max-width: 960px){
   .menu-toggle{ display:inline-flex }
   .sidebar{ transform: translateX(-100%); transition: transform .25s ease; }
@@ -406,7 +407,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
         <!-- Entrar -> Módulo de exclusiones (abre popup) -->
-        <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
+        <a class="sb-item" href="#" id="btnModuloExclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <polyline points="13 5 20 12 13 19"></polyline>
@@ -485,14 +486,14 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
   <!-- ======= HERO ======= -->
   <section class="hero" aria-label="Héroe a pantalla completa">
-    <!-- Imagen -->
+    <!-- Columna imagen -->
     <div class="photo-side">
       <div class="photo-wrap">
         <img src="dominion.jpg" alt="Imagen institucional DOMINION">
       </div>
     </div>
 
-    <!-- Texto -->
+    <!-- Columna texto -->
     <div class="text-side">
       <div class="hero-copy">
         <div class="super-title"><span class="dot"></span> INGENIERÍA • CONECTIVIDAD • SERVICIO</div>
@@ -545,7 +546,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     </div>
   </div>
 
-  <!-- ===== Modal Bienvenida (1 vez por sesión) ===== -->
+  <!-- ===== Modal Bienvenida (solo 1 vez por sesión) ===== -->
   <div class="modal-backdrop" id="welcomeBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" id="welcomeModal">
       <div class="modal-body" id="welcomeContent">
@@ -565,7 +566,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     <div class="modal modal--xl" role="dialog" aria-modal="true" aria-labelledby="exclusionesTitle" id="exclusionesModal">
       <div class="modal-header">
         <div class="modal-title" id="exclusionesTitle" tabindex="-1">
-          <span>¡Hola!</span>
+          <span>Bienvenido</span>
         </div>
         <button class="btn" id="exclusionesClose" aria-label="Cerrar">Cerrar</button>
       </div>
@@ -590,7 +591,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
             </div>
             <p class="card-desc">Importa/expórtala base, gestiona sobrescrituras y operaciones administrativas.</p>
             <div class="actions">
-              <a class="btn primary" href="admin_exclusiones.html">Abrir Admin</a>
+              <button type="button" class="btn primary" id="btnAccessAdmin">Abrir Admin</button>
             </div>
           </div>
 
@@ -609,7 +610,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
             </div>
             <p class="card-desc">Carga y postula exclusiones por OT, con validación y fotos.</p>
             <div class="actions">
-              <a class="btn primary" href="exclusiones.html">Abrir Gestor</a>
+              <button type="button" class="btn primary" id="btnAccessGestor">Abrir Gestor</button>
             </div>
           </div>
         </div>
@@ -720,6 +721,35 @@ html[data-theme="dark"] .exclusiones-card .icon{
     document.getElementById('exclusionesBackdropClose')?.addEventListener('click', ex.close);
   })();
 
+  /* ========== Acceso con contraseña (en este archivo) ========== */
+  (function(){
+    // Lista permitida de contraseñas (solo pruebas)
+    const ACCESS_PASSWORDS = {
+      admin: '12345',
+      gestor: 'qwertusa'
+    };
+
+    // Destinos (se abrirán en nueva pestaña). Ajustar cuando tengas las URLs finales.
+    const TARGET_URLS = {
+      admin: 'admin_exclusiones.html',
+      gestor: 'exclusiones.html'
+    };
+
+    function handleAccess(role){
+      const niceRole = role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor';
+      const pwd = window.prompt(`Ingrese la contraseña para ${niceRole}:`);
+      if (pwd === null) return; // Cancelado
+      if (pwd === ACCESS_PASSWORDS[role]){
+        window.open(TARGET_URLS[role], '_blank', 'noopener,noreferrer');
+      } else {
+        alert('No tienes permiso para ingresar al módulo. Por favor, contacta al administrador.');
+      }
+    }
+
+    document.getElementById('btnAccessAdmin')?.addEventListener('click', ()=> handleAccess('admin'));
+    document.getElementById('btnAccessGestor')?.addEventListener('click', ()=> handleAccess('gestor'));
+  })();
+
   /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
   (function(){
     const track = document.getElementById('cTrack');
@@ -764,8 +794,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
         empty.className = 'carousel-empty';
         empty.textContent = 'No se encontraron imágenes miniaturaN.jpg en la carpeta.';
         track.appendChild(empty);
-        if (prev) prev.style.display='none';
-        if (next) next.style.display='none';
+        prev && (prev.style.display='none');
+        next && (next.style.display='none');
         if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
         return;
       }
@@ -806,8 +836,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
       const goNext = ()=> show(current + 1);
 
       if (items.length < 2){
-        if (prev) prev.style.display='none';
-        if (next) next.style.display='none';
+        prev && (prev.style.display='none');
+        next && (next.style.display='none');
       } else {
         prev?.addEventListener('click', goPrev);
         next?.addEventListener('click', goNext);
@@ -843,7 +873,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
         sessionStorage.removeItem('auth_ok');
         sessionStorage.removeItem('auth_user');
         sessionStorage.removeItem('auth_role');
-        sessionStorage.removeItem('welcome_shown');
+        sessionStorage.removeItem('welcome_shown'); // para que la bienvenida vuelva a mostrarse en el próximo login
       } catch(e){}
       window.location.replace('login.html');
     });
@@ -880,6 +910,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
   </script>
 </body>
 </html>
+
 
 
 
