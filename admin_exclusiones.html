@@ -4,177 +4,1132 @@
 <meta charset="UTF-8" />
 <title>Admin – Exclusiones</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+
+<!-- Fluent UI MDL2 (íconos oficiales Microsoft) -->
+<link rel="stylesheet" href="https://res.cdn.office.net/files/fabric-cdn-prod_20240201.001/assets/icons/fabric-icons.css" />
+
 <style>
-:root{ --dom-blue:#0e4aa8; --ink:#0e2040; }
-*{box-sizing:border-box}
-body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linear-gradient(180deg,#eef4ff,#fff); margin:0; color:#1a2333; }
-/* Header (misma línea visual) */
-.header{ background:rgba(255,255,255,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
- padding:14px 24px 10px; box-shadow:0 6px 18px rgba(0,0,0,.06); border-bottom:1px solid rgba(255,255,255,.4); }
-.header-title{ font-size:24px; font-weight:800; color:#0e2040; }
-.header-sub{ margin-top:2px; color:#4e5d78; font-size:14px; }
-.controls{ margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.btn{ display:inline-block; padding:10px 18px; border-radius:999px; font-size:14px; border:none; cursor:pointer; }
-.btn-blue{ background:#0e4aa8; color:#fff; }
-.btn-light{ background:#e8eef7; color:#0e4aa8; }
-.btn[disabled]{ opacity:.65; cursor:not-allowed; }
-/* Contenedor */
-.wrap{ width:92%; margin: 14px auto 0; }
-/* Alertas/estado */
-.state{ margin-top:10px; padding:10px 14px; border-radius:10px; background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff; display:none; }
-.state.error{ background:#fee; color:#a1141e; border-color:#f5b5ba; }
-/* Modal confirmación */
+:root{
+  /* ====== CONTROLES RÁPIDOS ====== */
+  --sidebar-w: 290px;
+  --page-gap: 4px;
+  --logo-size: 54px;
+  --glass-blur: 18px;
+  --content-max: 1220px;
+
+  /* ====== Tokens visuales ====== */
+  --radius-xxl: 22px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --ink:#0e2040;
+  --muted:#6b7893;
+
+  /* Sombra y glass */
+  --halo: 0 30px 60px rgba(14, 42, 94, .18), 0 10px 20px rgba(14, 42, 94, .08);
+  --glass: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.58));
+  --glass-border: 1px solid rgba(180, 200, 235, .55);
+  --glass-inner: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.72));
+  --glass-inner-border: 1px solid rgba(200, 215, 245, .75);
+
+  /* ====== Tokens para 3D en elementos (sin paneles blancos) ====== */
+  --elev-1: 0 4px 10px rgba(14,42,94,.10), 0 2px 6px rgba(14,42,94,.08);
+  --elev-2: 0 12px 24px rgba(14,42,94,.14), 0 6px 12px rgba(14,42,94,.10);
+  --elev-3: 0 22px 40px rgba(14,42,94,.16), 0 10px 18px rgba(14,42,94,.12);
+  --tilt: perspective(900px) rotateX(0.6deg);
+}
+
+*{ box-sizing: border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  font-family:"Segoe UI", system-ui, Roboto, Arial, sans-serif;
+  color:#1a2333;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, #eaf1ff 0%, rgba(234,241,255,0) 60%),
+    linear-gradient(180deg, #eef4ff, #ffffff);
+  display:flex;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ===== Sidebar ===== */
+.sidebar-wrap{ width: var(--sidebar-w); padding: var(--page-gap) 14px; flex: 0 0 var(--sidebar-w); }
+.sidebar{
+  position: sticky; top: var(--page-gap);
+  display:flex; flex-direction:column; gap:14px; padding:16px 14px;
+  border-radius: var(--radius-xxl);
+  background: var(--glass); border: var(--glass-border); box-shadow: var(--halo);
+  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+  min-height: calc(100vh - (2 * var(--page-gap)));
+  max-height: calc(100vh - (2 * var(--page-gap)));
+  overflow: hidden; align-items: stretch;
+}
+.sidebar__scroll{ display:flex; flex-direction:column; gap:14px; min-height: 0; overflow: auto; padding-bottom: 6px; }
+
+/* Brand */
+.brand{
+  display:flex; align-items:center; gap:12px;
+  padding:12px; border-radius: var(--radius-lg);
+  background: var(--glass-inner); border: var(--glass-inner-border);
+  box-shadow: 0 8px 18px rgba(30, 60, 120, .10);
+}
+.brand-logo{ width:var(--logo-size); height:var(--logo-size); display:grid; place-items:center; }
+.brand-logo img{ width:100%; height:100%; display:block; object-fit:contain; image-rendering:auto; }
+.brand-logo.has-img .fallback-letter{ display:none; }
+.fallback-letter{ font-weight:800; font-size: calc(var(--logo-size)*0.5); }
+.brand-txt{ line-height:1.15 }
+.brand-title{ font-weight:800; color:var(--ink) }
+.brand-sub{ font-size:12px; color:#6b7893 }
+
+.nav-title{
+  font-size:12px;
+  letter-spacing:.4px;
+  color:#3b455a;
+  text-transform:uppercase;
+  margin:2px 0 2px 6px;
+  font-weight:700;
+}
+
+/* Botonera de tareas en sidebar */
+.side-actions{ display:flex; flex-direction:column; gap:10px; padding:4px; }
+.side-actions .btn{
+  width:100%;
+  justify-content:flex-start;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(210,225,250,.9);
+  box-shadow:0 6px 16px rgba(20, 40, 90, .08);
+  background:#fff;
+  color:#213159;
+  transition:0.15s ease;
+}
+
+/* >>> RESALTADO AZUL AL PASAR / CLIC (solo sidebar) <<< */
+.side-actions .btn:hover,
+.side-actions .btn:focus,
+.side-actions .btn:active{
+  background:#d8e6ff !important;
+  border-color:#0e4aa8 !important;
+  color:#0e4aa8 !important;
+  box-shadow:0 0 0 3px rgba(14,74,168,0.15);
+}
+
+/* Tamaño para los SVG de marca (Outlook/Teams) en sidebar */
+.side-actions .brand-ico{
+  width:18px; height:18px; display:inline-block; flex:0 0 auto;
+  vertical-align:middle;
+  fill:currentColor;
+}
+
+.btn-outlook{ background:#e8eef7; color:#0a5bd3; border-color:#cfe0ff; }
+.btn-teams{ background:#464EB8; color:#fff; border-color:#464EB8; }
+.btn .ms-Icon{ font-size:18px; line-height:1; }
+
+/* Footer chips */
+.side-foot{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
+.chip{
+  display:flex; align-items:center; gap:8px;
+  padding:10px 12px; border-radius:12px;
+  background:#ffffff; border:1px solid rgba(210,225,250,.9);
+  color:#213159;
+  box-shadow: 0 6px 16px rgba(20, 40, 90, .08);
+}
+.side-foot .chip:hover,
+.side-foot .chip:focus,
+.side-foot .chip:active{
+  background:#d8e6ff !important;
+  border-color:#0e4aa8 !important;
+  color:#0e4aa8 !important;
+  box-shadow:0 0 0 3px rgba(14,74,168,0.15);
+}
+.chip .ico{ width:18px; height:18px; }
+
+/* ===== Main / Container ===== */
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.container{ width:100%; max-width: var(--content-max); margin-inline:auto; padding-inline: clamp(16px, 2vw, 24px); }
+
+/* ===== Hero ===== */
+.hero{ padding:18px 0 10px; border-bottom:1px solid rgba(199,215,243,.55); background:rgba(255,255,255,.68); backdrop-filter: blur(8px); }
+.breadcrumb { font-weight:700; padding-top: 2px; }
+.title{ font-size:28px; font-weight:800; color:#0e2040; margin:6px 0 4px; }
+.subtitle{ color:#4e5d78; }
+
+/* ===== LOG GLOBAL ===== */
+.global-log-wrap{
+  display: inline-grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 10px;
+}
+.global-log-label{
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 28px;
+  color: #1a2333;
+  letter-spacing: .2px;
+  margin: 0;
+}
+.global-log{
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size:12px; color:#0e3a82;
+  background:#eef3ff; border:1px solid #dbe6ff;
+  max-width: min(100%, 760px);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+/* Banda del log: sin fondo y un poco más abajo */
+.log-band{
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+
+/* ===== Tiles ===== */
+.tiles{
+  padding-block:16px;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap:14px;
+}
+.tile{
+  position: relative;
+  border-radius:var(--radius-lg);
+  background:#fff; border:1px solid rgba(199,215,243,.7);
+  box-shadow: var(--elev-1), 0 1px 0 rgba(255,255,255,.85) inset;
+  filter: drop-shadow(0 14px 28px rgba(14,42,94,.18));
+  padding:14px; display:flex; gap:12px; align-items:center; cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  min-width:0;
+  transform: var(--tilt);
+}
+.tile:hover{
+  transform: translateY(-3px) var(--tilt);
+  box-shadow: var(--elev-2), 0 1px 0 rgba(255,255,255,.9) inset;
+  filter: drop-shadow(0 22px 36px rgba(14,42,94,.22));
+}
+.tile:active{
+  transform: translateY(-1px) var(--tilt);
+  box-shadow: var(--elev-1);
+  filter: drop-shadow(0 16px 28px rgba(14,42,94,.20));
+}
+.tile .ico{ width:44px; height:44px; border-radius:12px; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
+.ico-blue{ background:#0e4aa8; box-shadow:0 6px 16px rgba(14,74,168,.35); }
+.ico-amber{ background:#f59e0b; box-shadow:0 6px 16px rgba(245,158,11,.35); }
+.ico-sky{ background:#0284c7; box-shadow:0 6px 16px rgba(2,132,199,.35); }
+.tile .t-wrap{ flex:1; min-width:0; }
+.tile .t-title{ font-size:16px; font-weight:800; color:#0e2040; }
+.tile .t-sub{ font-size:12px; color:#6b7893; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tile.soon{ opacity:.95; filter: drop-shadow(0 14px 28px rgba(14,42,94,.14)); }
+
+/* Chip común */
+.tile .badge{
+  margin-left:auto; font-size:11px; font-weight:700; color:#0e3a82;
+  background:#eef3ff; padding:4px 8px; border-radius:999px; border:1px solid #dbe6ff;
+}
+
+/* >>> Chip "Activo" en VERDE solo para Operatividad <<< */
+.tiles [data-key="operatividad"] .badge{
+  background:#e8f7ec;
+  border-color:#b7ebc0;
+  color:#107c10;
+}
+
+/* ===== Tooltip sutil en tiles ===== */
+.tile[data-tooltip]::after{
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -8px;
+  right: 14px;
+  transform: translateY(-100%);
+  background: rgba(14, 32, 64, 0.92);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.20);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease;
+  white-space: nowrap;
+  z-index: 2;
+}
+.tile[data-tooltip]::before{
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 26px;
+  transform: translateY(-100%);
+  border: 6px solid transparent;
+  border-top-color: rgba(14, 32, 64, 0.92);
+  opacity: 0;
+  transition: opacity .15s ease;
+  z-index: 2;
+}
+.tile[data-tooltip]:hover::after,
+.tile[data-tooltip]:hover::before{
+  opacity: 1;
+}
+
+/* ===== Acciones (Import/Export) ===== */
+.actions{
+  padding-block: 4px;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap:14px;
+  align-items:start;
+}
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:9px 7px; border-radius:999px; border:1px solid rgba(210,225,250,.9);
+  cursor:pointer; font-weight:600; background:#fff; color:#0e3a82;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  filter: drop-shadow(0 12px 22px rgba(14,42,94,.16));
+  transition: transform .08s ease, box-shadow .12s ease, filter .12s ease, background .12s ease, color .12s ease;
+}
+.btn:hover{
+  transform: translateY(-2px);
+  box-shadow:0 10px 20px rgba(0,0,0,.10);
+  filter: drop-shadow(0 20px 30px rgba(14,42,94,.20));
+}
+.btn:active{
+  transform: translateY(-1px);
+  box-shadow:0 6px 12px rgba(0,0,0,.10) inset, 0 2px 4px rgba(0,0,0,.06);
+  filter: drop-shadow(0 16px 24px rgba(14,42,94,.18));
+}
+.btn svg{ width:18px; height:18px; flex:0 0 auto; }
+.btn .ms-Icon{ font-size:18px; line-height:1; }
+.btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+.btn-exp{ background:#e8eef7; color:#0e4aa8; border-color:#cfe0ff; }
+.btn[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; filter:none; }
+
+.actions .pair{ display:flex; gap:10px; flex-wrap:nowrap; align-items:center; }
+.actions .btn{
+  padding:6px 10px;
+  font-size:13px;
+  justify-content:center;
+  line-height:1.1;
+}
+.actions .btn svg{ width:16px; height:16px; }
+.actions .btn .lbl{ line-height:1.1; text-align:center; }
+
+/* ======= AYUDA / HELP ======= */
+.help{
+  display:none;                 /* se muestra al click */
+  margin-top: 14px;
+  margin-bottom: 6px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(199,215,243,.70);
+  box-shadow: var(--elev-2);
+  filter: drop-shadow(0 18px 32px rgba(14,42,94,.18));
+
+  /* Ajuste al contenido (no invasivo) */
+  width: fit-content;
+  max-width: min(100%, 860px);
+  min-width: 340px;
+}
+/* >>> Tamaño de texto reducido SOLO dentro del help <<< */
+.help h3 { font-size:14px !important; }
+.help p  { font-size:12px !important; }
+.help ul { font-size:12px !important; }
+.help li { font-size:12px !important; }
+.help .help-close { font-size:11px !important; padding:4px 8px !important; }
+
+.help-head{
+  display:flex; align-items:center; gap:12px; margin-bottom:6px;
+}
+.help h3{
+  margin: 0; font-weight: 800; color:#0e2040; flex:1;
+}
+.help p{ margin: 0 0 8px; color:#4e5d78; }
+.help ul{ margin: 6px 0 0 18px; padding:0; color:#22314a; }
+.help li{ margin: 4px 0; }
+.help .help-close{
+  appearance:none; border:1px solid #cfe0ff; background:#eef3ff;
+  color:#0e3a82; border-radius:999px; cursor:pointer; box-shadow:0 6px 14px rgba(14,42,94,.16);
+}
+.help .help-close:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(14,42,94,.22); }
+.help .help-close:active{ transform: translateY(0); box-shadow:0 6px 12px rgba(14,42,94,.16) inset; }
+
+/* >>> Ajuste específico para Desktop (más compacto) <<< */
+@media (min-width: 1024px){
+  .help{
+    max-width: 640px;   /* compacto en desktop */
+  }
+}
+
+/* En móviles el help ocupa el ancho disponible */
+@media (max-width: 640px){
+  .help{ min-width: 0; width: 100%; max-width: 100%; }
+}
+
+/* ===== Estado/alertas ===== */
+.state{
+  margin: 8px 0 14px;
+  padding:10px 12px; border-radius:12px; display:none;
+  border:1px solid #dbe6ff; background:#eef3ff; color:#0e3a82;
+}
+.state.error{ border-color:#fecaca; background:#fee2e2; color:#991b1b; }
+
+/* Modal */
 .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; }
 .modal{ background:#fff; padding:18px; border-radius:14px; width:min(92%, 460px); box-shadow:0 18px 38px rgba(0,0,0,.25); }
 .modal h3{ margin:0 0 8px; color:#0e2040; }
 .modal p { margin:6px 0 16px; color:#4e5d78; }
 .modal .actions{ display:flex; gap:10px; justify-content:flex-end; }
-.modal .btn-no{ background:#e8eef7; color:#0e4aa8; }
-.modal .btn-si{ background:#0e4aa8; color:#fff; }
-.badge-ts{ background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff; padding:6px 10px; border-radius:999px; font-size:12px;
- display:inline-flex; align-items:center; gap:8px; margin-left:6px; }
-.badge-dot{ width:8px; height:8px; border-radius:999px; background:#10b981; }
+
+/* ===== Ajustes ===== */
+.tiles.container{ margin-top: 60px; }
+.container:last-of-type{ padding-bottom: 0 !important; }
+
+@media (min-width: 1440px){
+  :root{ --content-max: 1280px; }
+  .container{ margin-left: clamp(16px, 2vw, 32px); margin-right: auto; padding-inline: clamp(16px, 1.6vw, 24px); }
+  .hero{ padding:14px 0 8px; }
+  .tiles{ padding-block:14px; gap:12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+}
+
+/* ===== Móvil ===== */
+@media (max-width: 980px){
+  body{ flex-direction:column; }
+  .sidebar-wrap{ width:100%; padding:12px 10px 0; }
+  .sidebar{ position:relative; top:auto; min-height:auto; max-height:none; }
+  .tiles{ padding-block:12px; }
+}
+
+/* ====== Modo oscuro ====== */
+.dark body{
+  background:
+    radial-gradient(1200px 600px at 80% -10%, #0f1a2b 0%, rgba(15,26,43,0) 60%),
+    linear-gradient(180deg, #0f172a, #111827);
+  color:#e5e7eb;
+}
+.dark .help{
+  background: #0f1a2b;
+  border-color:#22314a;
+  box-shadow: 0 12px 24px rgba(0,0,0,.45);
+  filter: drop-shadow(0 18px 32px rgba(0,0,0,.55));
+}
+.dark .help h3{ color:#eaf2ff; }
+.dark .help p{ color:#c7d2fe; }
+.dark .help ul{ color:#dbeafe; }
+.dark .help .help-close{
+  background:#1e2a40; border-color:#2a4266; color:#cfe1ff;
+  box-shadow:0 10px 18px rgba(0,0,0,.45);
+}
+
+/* Sidebar y brand */
+.dark .sidebar{
+  background: linear-gradient(180deg, rgba(30,41,59,.65), rgba(30,41,59,.55));
+  border-color: rgba(148,163,184,.35);
+}
+.dark .brand{
+  background:#0f1a2b;
+  border-color:#243248;
+  color:#eaf2ff;
+}
+.dark #brandLogo{
+  background:#ffffff;
+  border-radius:12px;
+  padding:6px;
+}
+.dark .brand-title{ color:#eaf2ff; }
+.dark .brand-sub{ color:#a7b4c9; }
+.dark .nav-title{ color:#c7d2fe; }
+
+/* Hero */
+.dark .hero{
+  background: rgba(15,23,42,.66);
+  border-bottom-color: rgba(148,163,184,.32);
+}
+.dark .breadcrumb{ color:#dbe4ff; }
+.dark .title{ color:#eaf2ff; }
+.dark .subtitle{ color:#c7d2fe; }
+
+/* Log global */
+.dark .global-log-wrap .global-log-label{ color:#eaf2ff; }
+.dark .global-log{
+  background:#102646;
+  border-color:#345e9e;
+  color:#dbeafe;
+}
+
+/* Tiles (módulos) */
+.dark .tile{
+  background:#0f1a2b;
+  border-color:#22314a;
+  color:#eaf2ff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.45), 0 14px 26px rgba(0,0,0,.40);
+  filter: drop-shadow(0 16px 28px rgba(0,0,0,.45));
+}
+.dark .tile:hover{
+  filter: drop-shadow(0 24px 36px rgba(0,0,0,.55));
+}
+.dark .tile .t-title{ color:#eaf2ff; }
+.dark .tile .t-sub{ color:#c7d2fe; }
+.dark .tile.soon{
+  opacity:.95;
+  filter: drop-shadow(0 16px 28px rgba(0,0,0,.40));
+}
+
+/* Badges */
+.dark .tile .badge{
+  background:#0b1b33;
+  border-color:#274060;
+  color:#a8c3ff;
+}
+.dark .tiles [data-key="operatividad"] .badge{
+  background:#143924; border-color:#2a6d41; color:#95f0a8;
+}
+
+/* Botones acciones */
+.dark .btn{
+  background:#0f1b30;
+  color:#cfe1ff;
+  border-color:#2a4266;
+  box-shadow: 0 10px 22px rgba(0,0,0,.35);
+  filter: drop-shadow(0 14px 24px rgba(0,0,0,.45));
+}
+.dark .btn:hover{
+  filter: drop-shadow(0 22px 34px rgba(0,0,0,.58));
+}
+.dark .btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+.dark .btn-exp{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
+.dark .btn[disabled]{
+  opacity:1;
+  background:#0e1626;
+  color:#7f92b6;
+  border-color:#1f2f48;
+  cursor:not-allowed;
+  box-shadow:none;
+  filter:none;
+}
+
+/* Estado/alertas */
+.dark .state{
+  background:#0b1b33;
+  border-color:#274060;
+  color:#cfe1ff;
+}
+.dark .state.error{
+  background:#3b0f13;
+  border-color:#7f1d1d;
+  color:#fecaca;
+}
+
+/* Movimientos reducidos */
+@media (prefers-reduced-motion: reduce){
+  .tile, .actions .btn, .help { transition: none !important; transform: none !important; filter: none !important; }
+  .tile:hover, .tile:active, .actions .btn:hover, .actions .btn:active { transform: none !important; }
+}
 </style>
 </head>
 <body>
-<!-- HEADER -->
-<div class="header">
- <div class="header-title">Admin – Exclusiones</div>
- <div class="header-sub"><strong>Panel de carga y descarga</strong></div>
- <div class="controls">
- <button id="btnImportar" class="btn btn-blue" type="button">Importar nuevos datos</button>
- <button id="btnExportar" class="btn btn-light" type="button">Exportar último cambio</button>
- <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última acción: —</span>
- </div>
-</div>
-<div class="wrap">
- <div id="estado" class="state"></div>
-</div>
-<!-- Modal confirmación -->
-<div id="modalConfirm" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mc_title">
- <div class="modal">
- <h3 id="mc_title">Confirmación</h3>
- <p>¿Está seguro que desea sobre escribir la data?</p>
- <div class="actions">
- <button id="mc_no" type="button" class="btn btn-no">No</button>
- <button id="mc_si" type="button" class="btn btn-si">Sí</button>
- </div>
- </div>
-</div>
-<!-- Input oculto para archivo -->
-<input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
-<!-- SheetJS para manejar Excel en el navegador -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script>
-/* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
-const API_BASE = "https://exclusiones-worker.modulo-de-exclusiones.workers.dev"; // ⬅️ Cambia por tu dominio Workers
-const ADMIN_TOKEN = 'ADMINARIELITO777';       // ⬅️ Debe coincidir con el secreto en el Worker
+  <!-- SIDEBAR -->
+  <aside class="sidebar-wrap" role="navigation" aria-label="Navegación principal">
+    <div class="sidebar">
+      <!-- Zona scrolleable -->
+      <div class="sidebar__scroll">
+        <div class="brand">
+          <div class="brand-logo" id="brandLogo">
+            <img src="dominion_logo.png" alt="Dominion" onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
+            <span class="fallback-letter" aria-hidden="true">D</span>
+          </div>
+          <div class="brand-txt">
+            <div class="brand-title">MinTIC</div>
+            <div class="brand-sub">Centros Digitales</div>
+          </div>
+        </div>
 
-/* ====== Utils ====== */
-const $ = s => document.querySelector(s);
-function setBadge(msg){ const el=$('#lastUpdate'); if(el) el.innerHTML = `<span class="badge-dot"></span>${msg}`; }
-function showState(msg, isErr=false){ const el=$('#estado'); el.textContent=msg; el.classList.toggle('error', !!isErr); el.style.display='block'; }
-function hideState(){ const el=$('#estado'); el.textContent=''; el.classList.remove('error'); el.style.display='none'; }
+        <!-- Mi lista de tareas -->
+        <div class="nav-title">Mi lista de tareas</div>
+        <div class="side-actions">
+          <!-- Notificar 1 - Outlook SVG -->
+          <button type="button" class="btn btn-outlook" id="btnNotifyR1" title="Enviar correo (Outlook)">
+            <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 6h8a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2h-7V6z" opacity=".12"></path>
+              <path d="M2 7a2 2 0 0 1 2-2h9v14H4a2 2 0 0 1-2-2V7zm2 .5l6.5 4.333a2 2 0 0 0 2.2 0L19 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              <rect x="13" y="6" width="9" height="12" rx="1.2" ry="1.2" fill="currentColor"></rect>
+              <path d="M18 10.4c1.1 0 2 .9 2 2.1s-.9 2.1-2 2.1-2-.9-2-2.1.9-2.1 2-2.1zm0 3.2c.6 0 1.1-.5 1.1-1.1s-.5-1.1-1.1-1.1-1.1.5-1.1 1.1.5 1.1 1.1 1.1z" fill="#fff"></path>
+            </svg>
+            Notificar a líder R1
+          </button>
 
-/* ====== Modal confirm ====== */
-function abrirConfirm(){ $('#modalConfirm').style.display='flex'; }
-function cerrarConfirm(){ $('#modalConfirm').style.display='none'; }
+          <!-- Notificar 2 - Outlook SVG -->
+          <button type="button" class="btn btn-outlook" id="btnNotifyR2" title="Enviar correo (Outlook)">
+            <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 6h8a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2h-7V6z" opacity=".12"></path>
+              <path d="M2 7a2 2 0 0 1 2-2h9v14H4a2 2 0 0 1-2-2V7zm2 .5l6.5 4.333a2 2 0 0 0 2.2 0L19 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              <rect x="13" y="6" width="9" height="12" rx="1.2" ry="1.2" fill="currentColor"></rect>
+              <path d="M18 10.4c1.1 0 2 .9 2 2.1s-.9 2.1-2 2.1-2-.9-2-2.1.9-2.1 2-2.1zm0 3.2c.6 0 1.1-.5 1.1-1.1s-.5-1.1-1.1-1.1-1.1.5-1.1 1.1.5 1.1 1.1 1.1z" fill="#fff"></path>
+            </svg>
+            Notificar a líder R2
+          </button>
 
-/* ====== Importar ====== */
-function leerArchivoComoAOA(file){
- return new Promise((resolve, reject)=>{
-  const fr = new FileReader();
-  fr.onload = ev=>{
-   try{
-    const data = new Uint8Array(ev.target.result);
-    const wb = XLSX.read(data, { type:'array' });
-    const shName = wb.SheetNames[0];
-    const ws = wb.Sheets[shName];
-    let aoa = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:'' });
-    aoa = aoa.map(row => row.map(v => (v ?? '').toString().trim()));
-    resolve(aoa);
-   }catch(err){ reject(err); }
-  };
-  fr.onerror = err=>reject(err);
-  fr.readAsArrayBuffer(file);
- });
-}
-async function seleccionarArchivoYConfirmar(){
- return new Promise((resolve,reject)=>{
-  const finp = $('#fileInput');
-  finp.value = '';
-  const onChange = ()=>{
-   finp.removeEventListener('change', onChange);
-   if(!finp.files || !finp.files.length){ resolve(null); return; }
-   abrirConfirm();
-   const si = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(finp.files[0]); };
-   const no = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(null); };
-   $('#mc_si').addEventListener('click', si);
-   $('#mc_no').addEventListener('click', no);
-  };
-  finp.addEventListener('change', onChange);
-  finp.click();
- });
-}
-async function importarExcel(){
- hideState();
- try{
-  const file = await seleccionarArchivoYConfirmar();
-  if(!file){ showState('Operación cancelada por el usuario.'); return; }
-  $('#btnImportar').disabled = true; $('#btnImportar').textContent = 'Importando…';
-  const aoa = await leerArchivoComoAOA(file);
-  if(!aoa || !aoa.length) throw new Error('El archivo está vacío o no se pudo leer.');
-  const res = await fetch(`${API_BASE}/api/sobrescribir`, {
-    method:'POST',
-    mode:'cors',
-    headers:{
-      'Content-Type':'application/json',
-      'Accept':'application/json',
-      'Authorization': `Bearer ${ADMIN_TOKEN}`
-    },
-    body: JSON.stringify({ aoa })
+          <!-- Teams real SVG -->
+          <button type="button" class="btn btn-teams" id="btnTeamsMeeting" title="Crear evento de Teams (Outlook Web)">
+            <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="7" width="10" height="12" rx="2" ry="2" fill="currentColor" opacity=".95"></rect>
+              <path d="M7.5 10.5h5v1.6h-1.7v4.2H8.9v-4.2H7.5z" fill="#fff"></path>
+              <rect x="14" y="9" width="6.5" height="8.5" rx="1.6" ry="1.6" fill="currentColor" opacity=".6"></rect>
+              <circle cx="16.8" cy="6.7" r="1.9" fill="currentColor"></circle>
+              <circle cx="20.2" cy="9.3" r="1.4" fill="currentColor" opacity=".7"></circle>
+            </svg>
+            Crear evento Teams
+          </button>
+        </div>
+      </div>
+
+      <!-- Pie pegado al fondo (fuera del scroll) -->
+      <div class="side-foot">
+        <button class="chip" type="button" id="btnHome" title="Ir al inicio">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Home
+        </button>
+        <div class="chip" id="temaChip">Tema oscuro</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="breadcrumb">¡Bienvenido(a) al modulo de excluciones!</div>
+        <h1 class="title">Panel admin</h1>
+        <div class="subtitle">Importa datos, valida, revisa resultados y contacta a tu equipo.</div>
+      </div>
+    </section>
+
+    <!-- LOG GLOBAL (sin fondo y un poco más abajo) -->
+    <section class="container log-band" aria-live="polite">
+      <div id="globalLogWrap" class="global-log-wrap">
+        <span class="global-log-label" aria-hidden="true">Última acción:</span>
+        <span id="globalLog" class="global-log">—</span>
+      </div>
+    </section>
+
+    <!-- Tiles -->
+    <section class="tiles container" id="tiles">
+      <div class="tile" data-key="operatividad" data-tooltip="Presioname para asistencia" tabindex="0" role="button" aria-pressed="true">
+        <div class="ico ico-blue">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M12 8V4l8 8-8 8v-4H4V8h8z"/></svg>
+        </div>
+        <div class="t-wrap">
+          <div class="t-title">Exclusiones de operatividad</div>
+          <div class="t-sub">Estado del backend</div>
+        </div>
+        <span class="badge">Activo</span>
+      </div>
+
+      <div class="tile soon" data-key="backlog" data-tooltip="Presiona aquí para ayuda" tabindex="0" role="button" aria-pressed="false">
+        <div class="ico ico-amber">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        </div>
+        <div class="t-wrap">
+          <div class="t-title">Exclusiones indicador backlog</div>
+          <div class="t-sub">Estado del backend</div>
+        </div>
+        <span class="badge">Beta</span>
+      </div>
+
+      <div class="tile soon" data-key="sla" data-tooltip="Presiona aquí para ayuda" tabindex="0" role="button" aria-pressed="false">
+        <div class="ico ico-sky">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M12 2a10 10 0 00-10 10 10 10 0 1010-10zm1 5v6l5 3-.75 1.23L11 13V7h2z"/></svg>
+        </div>
+        <div class="t-wrap">
+          <div class="t-title">Exclusiones SLA</div>
+          <div class="t-sub">Estado del backend</div>
+        </div>
+        <span class="badge">Beta</span>
+      </div>
+    </section>
+
+    <!-- Acciones -->
+    <section class="actions container">
+      <div class="pair">
+        <button id="btnImportar" class="btn btn-imp" type="button" title="Importar datos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 3h16" stroke-linecap="round"/>
+          </svg>
+          <span class="lbl">Importar datos</span>
+        </button>
+
+        <button id="btnExportar" class="btn btn-exp" type="button" title="Exportar datos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 21h16" stroke-linecap="round"/>
+          </svg>
+          <span class="lbl">Exportar datos</span>
+        </button>
+      </div>
+
+      <div class="pair">
+        <button id="btnImportar_backlog" class="btn btn-imp" type="button" title="Importar datos (Próximamente)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 3h16" stroke-linecap="round"/>
+          </svg>
+          <span class="lbl">Importar datos</span>
+        </button>
+
+        <button id="btnExportar_backlog" class="btn btn-exp" type="button" title="Exportar datos (Próximamente)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 21h16" stroke-linecap="round"/>
+          </svg>
+          <span class="lbl">Exportar datos</span>
+        </button>
+      </div>
+
+      <div class="pair">
+        <button id="btnImportar_sla" class="btn btn-imp" type="button" title="Importar datos (Próximamente)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 3h16" stroke-linecap="round"/>
+          </svg>
+          <span class="lbl">Importar datos</span>
+        </button>
+
+        <button id="btnExportar_sla" class="btn btn-exp" type="button" title="Exportar datos (Próximamente)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 21h16" stroke-linecap="round"/>
+          </svg>
+          <span class="lbl">Exportar datos</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- AYUDA -->
+    <section class="container">
+      <div id="helpPanel" class="help" role="region" aria-live="polite"></div>
+    </section>
+
+    <!-- Estado -->
+    <section class="container">
+      <div id="estado" class="state" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- Modal confirmación -->
+  <div id="modalConfirm" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mc_title" style="display:none">
+    <div class="modal">
+      <h3 id="mc_title">Confirmación</h3>
+      <p>¿Está seguro que desea sobreescribir la data del proyecto <span id="projectName"></span>?</p>
+      <div class="actions">
+        <button id="mc_no" type="button" class="btn btn-no">No</button>
+        <button id="mc_si" type="button" class="btn btn-si">Sí</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input oculto para archivo -->
+  <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert"></div>
+
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
+    const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
+    const ADMIN_TOKEN = 'ADMINARIELITO777';
+
+    /* === NUEVO: Backends por módulo === */
+    // Hoy todos apuntan al existente. Para probar "Offline", cambia uno a una URL inválida.
+    // Ejemplo de prueba: BACKENDS.backlog = 'https://no-existe-123.fake.tld';
+    const BACKENDS = {
+      operatividad: API_BASE,
+      backlog: 'AQUI PONES LA URL DEL BACKEND',
+      sla:     'AQUI PONES LA URL DEL BACKEND'
+    };
+
+    /* ======================= CONFIG BOTONES OUTLOOK/TEAMS ======================= */
+    const TEAM1_TO = ['equipo1@dominio.com'];   // ← reemplaza
+    const TEAM1_CC = ['lider1@dominio.com'];    // opcional
+    const TEAM2_TO = ['equipo2@dominio.com'];
+    const TEAM2_CC = ['lider2@dominio.com'];
+
+    const DEFAULT_SUBJECT = 'Seguimiento módulo Exclusiones';
+    const DEFAULT_BODY =
+`Hola equipo,
+
+Por favor revisar el estado de las exclusiones y próximos pasos.
+Enlace módulo: ${window.location.href}
+
+Gracias.`;
+    const DEFAULT_DURATION_MIN = 45;
+    const DEFAULT_LOCATION = 'Microsoft Teams';
+
+    /* ====== Helpers ====== */
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1800); }
+    function showState(msg, isErr=false){
+      const el=$('#estado'); el.textContent=msg; el.classList.toggle('error', !!isErr); el.style.display='block';
+      setGlobalLog(isErr ? 'Error' : 'Info', projectLabels[currentProject] || currentProject, msg);
+    }
+    function hideState(){ const el=$('#estado'); el.textContent=''; el.classList.remove('error'); el.style.display='none'; }
+    function formatTs(d){
+      const pad = n => String(n).padStart(2,'0');
+      return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    // ====== Log global ====== //
+    const projectLabels = {
+      operatividad: 'Exclusiones de operatividad',
+      backlog: 'Exclusiones indicador backlog',
+      sla: 'Exclusiones SLA'
+    };
+    function setGlobalLog(action, moduleLabel, extra=''){
+      const g = $('#globalLog'); if(!g) return;
+      const ts = formatTs(new Date());
+      g.textContent = `${action} • ${moduleLabel}${extra ? ' • ' + extra : ''} • ${ts}`;
+    }
+
+    /* ====== HEALTH CHECK por módulo (usa BACKENDS[*]/health) ====== */
+    function healthUrlFor(key){
+      const base = BACKENDS[key];
+      if(!base) return 'about:blank#offline';
+      return `${base.replace(/\/+$/,'')}/health`;
+    }
+    const ONLINE_STYLE  = { bg:'#e8f7ec', border:'#b7ebc0', color:'#107c10', text:'Activo' };
+    const OFFLINE_STYLE = { bg:'#fee2e2', border:'#fecaca', color:'#991b1b', text:'Offline' };
+
+    function applyBadgeStyle(badge, style){
+      if(!badge) return;
+      badge.textContent = style.text;
+      badge.style.background   = style.bg;
+      badge.style.borderColor  = style.border;
+      badge.style.color        = style.color;
+    }
+    async function checkHealth(url, timeoutMs = 2500){
+      const controller = new AbortController();
+      const id = setTimeout(()=>controller.abort(), timeoutMs);
+      try{
+        const res = await fetch(url, { mode:'cors', cache:'no-store', signal:controller.signal });
+        clearTimeout(id);
+        if(!res.ok) return false;
+        try{
+          const j = await res.clone().json();
+          if (typeof j?.ok === 'boolean') return j.ok;
+        }catch(_){}
+        return true;
+      }catch(_){
+        clearTimeout(id);
+        return false;
+      }
+    }
+    async function updateHealthFor(key){
+      const badge = document.querySelector(`.tile[data-key="${key}"] .badge`);
+      if(!badge) return;
+      const url = healthUrlFor(key);
+      // Estado intermedio (si no deseas mostrar nada, elimina estas 3 líneas):
+      badge.textContent = 'Cheking';
+      badge.style.background  = '#eef3ff';
+      badge.style.borderColor = '#dbe6ff';
+      badge.style.color       = '#0e3a82';
+      const ok = await checkHealth(url);
+      applyBadgeStyle(badge, ok ? ONLINE_STYLE : OFFLINE_STYLE);
+    }
+    async function updateAllHealth(){
+      await Promise.all(['operatividad','backlog','sla'].map(updateHealthFor));
+    }
+
+    /* ====== Tiles ====== */
+    let currentProject = 'operatividad';
+
+    // ====== HELP CONTENT ====== //
+    const helpByModule = {
+      operatividad: {
+        title: 'Ayuda rápida — Exclusiones de operatividad',
+        intro: 'Módulo para cargar, validar y exportar datos.',
+        bullets: [
+          'Usa “Importar datos” para sobrescribir la data con un Excel/CSV (requiere confirmación).',
+          'El archivo debe tener encabezados.',
+          '“Exportar datos” descarga la data actual desde el backend en formato .xlsx.',
+          'Tras importar/exportar verás el log en la banda “Última acción”.'
+        ]
+      },
+      backlog: {
+        title: 'Ayuda rápida — Indicador backlog (beta)',
+        intro: 'Módulo en preparación para gestionar exclusiones del indicador backlog.',
+        bullets: [
+          'Mientras está en “Próximamente”, puedes definir tu plantilla de columnas en Excel.',
+          'La idea es calcular pendientes y exclusiones por OT y periodos (ej. semanal).',
+          'Cuando se active, “Importar datos” actualizará la vista y métricas del backlog.',
+          'Consulta con el equipo qué campos mínimos serán obligatorios.'
+        ]
+      },
+      sla: {
+        title: 'Ayuda rápida — Exclusiones SLA (beta)',
+        intro: 'Módulo pensado para justificar exclusiones frente a métricas de SLA.',
+        bullets: [
+          'Estructura sugerida: OT, tramo temporal, causal, evidencia y estado de validación.',
+          'Se habilitarán reglas para validar causales y generar reportes para auditoría.',
+          'Habrá exportación a Excel con filtros por rango de fechas y causal.',
+          'Prepara tus archivos con encabezados consistentes para una activación sin fricción.'
+        ]
+      }
+    };
+
+    function renderHelp(key){
+      const hp = $('#helpPanel');
+      const data = helpByModule[key];
+      if(!hp || !data){ if(hp) hp.style.display='none'; return; }
+
+      const lis = data.bullets.map(b => `<li>${b}</li>`).join('');
+      hp.innerHTML = `
+        <div class="help-head">
+          <h3>${data.title}</h3>
+          <button type="button" class="help-close" id="helpCloseBtn" aria-label="Ocultar ayuda">Ocultar</button>
+        </div>
+        <p>${data.intro}</p>
+        <ul>${lis}</ul>
+      `;
+      hp.style.display = 'inline-block';  // compacto y adaptado al contenido
+
+      const btnClose = document.getElementById('helpCloseBtn');
+      btnClose?.addEventListener('click', () => { hp.style.display = 'none'; });
+    }
+
+    function selectProject(key){
+      currentProject = key;
+      $$('#tiles .tile').forEach(t => {
+        const k = t.getAttribute('data-key');
+        const active = (k === key);
+        t.setAttribute('aria-pressed', active ? 'true' : 'false');
+        if(active) t.classList.remove('soon');
+      });
+      const enabled = (key === 'operatividad');
+      $('#btnImportar').disabled = !enabled;
+      $('#btnExportar').disabled = !enabled;
+    }
+
+    $$('#tiles .tile').forEach(t=>{
+      t.addEventListener('click', ()=>{
+        const key = t.getAttribute('data-key');
+
+        // Mostrar ayuda SIEMPRE al hacer clic
+        renderHelp(key);
+
+        if(key !== 'operatividad'){ return; }
+        selectProject(key);
+      });
+      t.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+      });
+    });
+    selectProject('operatividad');
+
+    /* ====== Modal confirm ====== */
+    function abrirConfirm(){ $('#modalConfirm').style.display='flex'; }
+    function cerrarConfirm(){ $('#modalConfirm').style.display='none'; }
+
+    async function seleccionarArchivoYConfirmar(){
+      return new Promise((resolve)=>{
+        const finp = $('#fileInput');
+        finp.value = '';
+        const onChange = ()=>{
+          finp.removeEventListener('change', onChange);
+          if(!finp.files || !finp.files.length){ resolve(null); return; }
+          $('#projectName').textContent = (projectLabels[currentProject]||currentProject);
+          abrirConfirm();
+          const si = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(finp.files[0]); };
+          const no = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(null); };
+          $('#mc_si').addEventListener('click', si);
+          $('#mc_no').addEventListener('click', no);
+        };
+        finp.addEventListener('change', onChange);
+        finp.click();
+      });
+    }
+
+    /* ====== Lector Excel a AOA ====== */
+    function leerArchivoComoAOA(file){
+      return new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = ev=>{
+          try{
+            const data = new Uint8Array(ev.target.result);
+            const wb = XLSX.read(data, { type:'array' });
+            const shName = wb.SheetNames[0];
+            const ws = wb.Sheets[shName];
+            let aoa = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:'' });
+            aoa = aoa.map(row => row.map(v => (v ?? '').toString().trim()));
+            resolve(aoa);
+          }catch(err){ reject(err); }
+        };
+        fr.onerror = err=>reject(err);
+        fr.readAsArrayBuffer(file);
+      });
+    }
+
+    /* ====== Importar ====== */
+    async function importarExcel(){
+      if(currentProject !== 'operatividad'){ return; }
+      hideState();
+      const moduleLabel = projectLabels[currentProject] || currentProject;
+      try{
+        const file = await seleccionarArchivoYConfirmar();
+        if(!file){ showState('Operación cancelada por el usuario.'); return; }
+
+        const btn = $('#btnImportar');
+        const lbl = btn.querySelector('.lbl');
+
+        btn.disabled = true;
+        lbl.textContent = 'Importando…';
+
+        const aoa = await leerArchivoComoAOA(file);
+        if(!aoa || !aoa.length) throw new Error('El archivo está vacío o no se pudo leer.');
+
+        // === Usar backend del proyecto seleccionado ===
+        const API = (BACKENDS[currentProject] || API_BASE).replace(/\/+$/,'');
+        const res = await fetch(`${API}/api/sobrescribir`, {
+          method:'POST', mode:'cors',
+          headers:{
+            'Content-Type':'application/json',
+            'Accept':'application/json',
+            'Authorization': `Bearer ${ADMIN_TOKEN}`
+          },
+          body: JSON.stringify({ aoa })
+        });
+        const j = await res.json().catch(()=>null);
+        if(!res.ok || !j?.ok) throw new Error(j?.error || `HTTP ${res.status}`);
+
+        const filas = Math.max(0,(aoa.length-1));
+        showState(`Importación realizada en "${currentProject}". Filas: ${filas}.`);
+        setGlobalLog('Importación completada', moduleLabel, `Filas: ${filas}`);
+      }catch(err){
+        console.error(err);
+        showState('Error al importar: ' + err.message, true);
+        setGlobalLog('Error de importación', moduleLabel, err.message);
+      }finally{
+        const btn = $('#btnImportar');
+        const lbl = btn.querySelector('.lbl');
+        lbl.textContent = 'Importar datos';
+        btn.disabled = false;
+      }
+    }
+
+    /* ====== Exportar ====== */
+    async function exportarExcel(){
+      if(currentProject !== 'operatividad'){ return; }
+      hideState();
+      const moduleLabel = projectLabels[currentProject] || currentProject;
+      try{
+        const btn = $('#btnExportar');
+        const lbl = btn.querySelector('.lbl');
+
+        btn.disabled = true;
+        lbl.textContent = 'Exportando…';
+
+        // === Usar backend del proyecto seleccionado ===
+        const API = (BACKENDS[currentProject] || API_BASE).replace(/\/+$/,'');
+        const res = await fetch(`${API}/api/aoa`, {
+          method:'GET', mode:'cors', headers:{ 'Accept':'application/json' }
+        });
+        const j = await res.json().catch(()=>null);
+        const aoa = Array.isArray(j?.aoa) ? j.aoa : [];
+        if(!aoa.length){
+          showState('No hay datos para exportar.');
+          setGlobalLog('Exportación vacía', moduleLabel, '');
+          return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        XLSX.utils.book_append_sheet(wb, ws, 'Exclusiones');
+        const nombre = `exclusiones_export_${new Date().toISOString().slice(0,10)}.xlsx`;
+        XLSX.writeFile(wb, nombre);
+
+        const filas = Math.max(0,(aoa.length-1));
+        showState(`Exportación completada (${filas} filas sin encabezados).`);
+        setGlobalLog('Exportación completada', moduleLabel, `Filas: ${filas}`);
+      }catch(err){
+        console.error(err);
+        showState('Error al exportar: ' + (err?.message ?? err), true);
+        setGlobalLog('Error de exportación', moduleLabel, err?.message ?? String(err));
+      }finally{
+        const btn = $('#btnExportar');
+        const lbl = btn.querySelector('.lbl');
+        lbl.textContent = 'Exportar datos';
+        btn.disabled = false;
+      }
+    }
+
+    /* ====== Outlook & Teams ====== */
+    function openMailOutlook(toList = [], ccList = [], subject = DEFAULT_SUBJECT, body = DEFAULT_BODY){
+      const to = encodeURIComponent(toList.join(','));
+      const cc = encodeURIComponent(ccList.join(','));
+      const sub = encodeURIComponent(subject);
+      const bod = encodeURIComponent(body);
+      const url = `mailto:${to}?subject=${sub}${cc ? `&cc=${cc}` : ''}&body=${bod}`;
+      window.location.href = url;
+    }
+
+    function createTeamsMeetingInOWA({title = DEFAULT_SUBJECT, body = DEFAULT_BODY, durationMin = DEFAULT_DURATION_MIN, attendees = []} = {}){
+      const now = new Date();
+      const start = new Date(now.getTime() + 5*60000);
+      const end = new Date(start.getTime() + durationMin*60000);
+
+      const pad = n => String(n).padStart(2,'0');
+      const fmtLocal = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+      const qp = new URLSearchParams({
+        path: '/calendar/action/compose',
+        rru: 'addevent',
+        subject: title,
+        body: body,
+        startdt: fmtLocal(start),
+        enddt: fmtLocal(end),
+        isOnlineMeeting: '1',
+        onlineMeetingProvider: 'TeamsForBusiness',
+        location: DEFAULT_LOCATION
+      });
+      if (attendees.length) qp.append('to', attendees.join(';'));
+
+      const href = `https://outlook.office.com/calendar/0/deeplink/compose?${qp.toString()}`;
+      window.open(href, '_blank', 'noopener');
+    }
+
+    /* ====== Eventos ====== */
+    $('#btnNotifyR1')?.addEventListener('click', () => openMailOutlook(TEAM1_TO, TEAM1_CC));
+    $('#btnNotifyR2')?.addEventListener('click', () => openMailOutlook(TEAM2_TO, TEAM2_CC));
+
+    $('#btnTeamsMeeting')?.addEventListener('click', () => createTeamsMeetingInOWA({ attendees: [...TEAM1_TO, ...TEAM1_CC] }));
+
+    $('#btnImportar')?.addEventListener('click', importarExcel);
+    $('#btnExportar')?.addEventListener('click', exportarExcel);
+
+    $('#btnHome')?.addEventListener('click', () => { window.location.href = 'main_page.html'; });
+
+    const temaChip = $('#temaChip');
+    temaChip?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const isDark = root.classList.toggle('dark');
+      temaChip.textContent = isDark ? 'Tema claro' : 'Tema oscuro';
+    });
+
+    // === Lanzar health-check al cargar y cada 60s (no invasivo) ===
+    updateAllHealth();
+    setInterval(updateAllHealth, 60000);
   });
-  const j = await res.json().catch(()=>null);
-  if(!res.ok || !j?.ok) throw new Error(j?.error || `HTTP ${res.status}`);
-  showState(`Importación realizada. Se sobreescribió la hoja con ${Math.max(0,(aoa.length-1))} filas (sin contar encabezados).`);
-  setBadge('Última acción: Importación completada');
- }catch(err){
-  console.error(err);
-  showState('Error al importar: ' + err.message, true);
-  setBadge('Última acción: Error de importación');
- }finally{
-  $('#btnImportar').disabled = false; $('#btnImportar').textContent = 'Importar nuevos datos';
- }
-}
-
-/* ====== Exportar ====== */
-async function exportarExcel(){
- hideState();
- try{
-  $('#btnExportar').disabled = true; $('#btnExportar').textContent = 'Exportando…';
-  const res = await fetch(`${API_BASE}/api/aoa`, { method:'GET', mode:'cors', headers:{ 'Accept':'application/json' } });
-  const j = await res.json().catch(()=>null);
-  const aoa = Array.isArray(j?.aoa) ? j.aoa : [];
-  if(!aoa.length){ showState('No hay datos para exportar.'); setBadge('Última acción: Exportación vacía'); return; }
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  XLSX.utils.book_append_sheet(wb, ws, 'Exclusiones');
-  const nombre = 'exclusiones_export.xlsx';
-  XLSX.writeFile(wb, nombre);
-  showState(`Exportación completada (${aoa.length-1} filas sin encabezados).`);
-  setBadge('Última acción: Exportación completada');
- }catch(err){
-  console.error(err);
-  showState('Error al exportar: ' + (err?.message ?? err), true);
-  setBadge('Última acción: Error de exportación');
- }finally{
-  $('#btnExportar').disabled = false; $('#btnExportar').textContent = 'Exportar último cambio';
- }
-}
-
-/* ====== Eventos ====== */
-$('#btnImportar').addEventListener('click', importarExcel);
-$('#btnExportar').addEventListener('click', exportarExcel);
-</script>
+  </script>
 </body>
 </html>
