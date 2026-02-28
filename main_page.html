@@ -206,7 +206,7 @@ html[data-theme="dark"] #welcomeUser {
     .modal-title{ display:flex; align-items:center; gap:10px; font-weight:600 }
     .modal-body{ padding:16px; overflow:auto; color: var(--text) }
     .modal-footer{ padding:10px 16px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px }
-    .btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; box-shadow: var(--shadow) }
+    .btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; box-shadow:var(--shadow) }
     .btn.primary{ background: var(--primary); color: #fff; border-color: transparent }
     .btn svg{ width:16px; height:16px; stroke: currentColor; fill:none; stroke-width:2 }
 
@@ -354,15 +354,13 @@ html[data-theme="dark"] #welcomeUser {
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <!-- >>> Reemplazado: "Entrar" -> "Módulo de exclusiones" abre popup -->
-        <a class="sb-item" href="#modulo-exclusiones" id="btnModuloExclusiones">
+        <a class="sb-item" href="main_page.html">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <polyline points="13 5 20 12 13 19"></polyline>
           </svg>
-          <span>Módulo de exclusiones</span>
+          <span>Entrar</span>
         </a>
-        <!-- <<< Fin reemplazo -->
 
         <a class="sb-item" href="PBI.html">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -510,27 +508,6 @@ html[data-theme="dark"] #welcomeUser {
       </div>
     </div>
   </div>
-
-  <!-- ===== Modal: Módulo de Exclusiones (Admin/Gestor) ===== -->
-  <div class="modal-backdrop" id="exclusionesBackdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exclusionesTitle" id="exclusionesModal">
-      <div class="modal-header">
-        <div class="modal-title" id="exclusionesTitle" tabindex="-1">
-          <span>Bienvenido</span>
-        </div>
-        <button class="btn" id="exclusionesClose" aria-label="Cerrar">Cerrar</button>
-      </div>
-      <div class="modal-body">
-        <p style="margin:0 0 6px 0;"><strong>¿Qué deseas hacer hoy?</strong></p>
-        <p style="margin:0; color:var(--muted)">Elige una opción para continuar.</p>
-      </div>
-      <div class="modal-footer">
-        <a class="btn" href="https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/exclusiones.html">Módulo Gestor</a>
-        <a class="btn primary" href="https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/admin_exclusiones.html">Módulo Admin</a>
-      </div>
-    </div>
-  </div>
-
   <!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
 <!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
 <script>
@@ -593,7 +570,7 @@ html[data-theme="dark"] #welcomeUser {
   window.addEventListener('resize', fitLegal);
   window.addEventListener('orientationchange', () => setTimeout(fitLegal, 200));
 
-  /* ========== Controlador genérico de modales (para Ayuda/Exclusiones) ========== */
+  /* ========== Controlador genérico de modales (para Ayuda) ========== */
   function makeModal(backdropId, initialFocusId){
     const backdrop = document.getElementById(backdropId);
     if (!backdrop) return {open:()=>{}, close:()=>{}};
@@ -620,13 +597,6 @@ html[data-theme="dark"] #welcomeUser {
     document.getElementById('btnAyuda')?.addEventListener('click', (e)=>{ e.preventDefault(); help.open(); });
     document.getElementById('helpClose')?.addEventListener('click', help.close);
     document.getElementById('helpBackdropClose')?.addEventListener('click', help.close);
-  })();
-
-  // Modal Módulo de exclusiones (Admin/Gestor)
-  (function(){
-    const exclusiones = makeModal('exclusionesBackdrop', 'exclusionesTitle');
-    document.getElementById('btnModuloExclusiones')?.addEventListener('click', (e)=>{ e.preventDefault(); exclusiones.open(); });
-    document.getElementById('exclusionesClose')?.addEventListener('click', exclusiones.close);
   })();
 
   /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
@@ -784,5 +754,4 @@ html[data-theme="dark"] #welcomeUser {
 </script>
 </body>
 </html>
-
 
