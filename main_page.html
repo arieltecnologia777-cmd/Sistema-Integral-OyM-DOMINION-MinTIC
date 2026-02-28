@@ -280,7 +280,7 @@ html[data-theme="dark"] #welcomeModal.modal{
   .carousel{ margin-top: 72px; }
   .hero-copy{ padding-top: 6px; }
   .title-main{ font-size: clamp(28px, 3.2vw, 40px); }
-  .lead{ margin-top: 6px; }
+  .lead{ margin-top:  6px; }
   .carousel-track{ max-height: 300px; }
 }
 @media (max-height: 800px) and (min-width: 1024px){
@@ -789,7 +789,6 @@ html[data-theme="dark"] .exclusiones-card .icon{
       e.preventDefault();
       const last = sessionStorage.getItem('last_module');
       if (last === 'admin' || last === 'gestor') {
-        // Ir directo al modal de contraseña de ese rol
         window.__openPwd?.(last);
       } else {
         selector.open();
@@ -799,7 +798,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     document.getElementById('exclusionesClose')?.addEventListener('click', selector.close);
     document.getElementById('exclusionesBackdropClose')?.addEventListener('click', selector.close);
 
-    // Exponer utilitario para cerrar selector desde fuera (cuando se valida pwd)
+    // Utilitario para cerrar selector desde fuera
     window.__closeSelectorIfOpen = function(){
       const back = document.getElementById('exclusionesBackdrop');
       if (back && back.classList.contains('open')){
