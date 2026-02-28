@@ -20,20 +20,21 @@
   <meta name="description" content="Héroe a pantalla completa con menú lateral fijo e interruptor de tema.">
 
   <style>
-/* Color del nombre en bienvenida según tema */
 html[data-theme="light"] #welcomeUser { color: var(--primary); }
 html[data-theme="dark"]  #welcomeUser { color: var(--primary); }
 
-/* ===== Variables ===== */
 :root{
+  /* ===== Tema base (Claro) ===== */
   --bg:#f6f8fc; --panel:#ffffff; --text:#0f172a; --muted:#475569;
   --line:#dbe2f1; --primary:#2563eb; --accent:#f59e0b;
   --shadow:0 22px 48px rgba(15,23,42,.12);
   --sb-w: 260px; --sb-bg:#ffffff; --sb-line:#dbe2f1;
   --left:1.25fr; --right:1fr;
 
+  /* Letterbox blur (columna izquierda) */
   --lb-blur: 12px; --lb-bright: 0.96; --lb-opacity: 0.50; --lb-scale: 1.08;
 
+  /* Sombra premium (neón suave) reutilizable */
   --neo-shadow:
     26px 0 75px rgba(15, 23, 42, 0.42),
     0 20px 55px rgba(15, 23, 42, 0.28),
@@ -42,16 +43,19 @@ html[data-theme="dark"]  #welcomeUser { color: var(--primary); }
     0 0 44px rgba(0, 102, 255, 0.18);
 }
 
-/* Modo oscuro */
-html[data-theme="dark"], body.theme-dark{
+/* ===== Modo oscuro robusto (solo variables) ===== */
+html[data-theme="dark"],
+body.theme-dark{
   --bg:#0e1320; --panel:#151a2e; --text:#e5eaf5; --muted:#9fb0c9;
   --line:#24314f; --primary:#6ee7ff; --accent:#ffd166;
   --shadow:0 22px 48px rgba(0,0,0,.35);
   --sb-bg:#151a2e; --sb-line:#24314f;
 }
 
-/* Ancho sidebar en laptops */
-@media (min-width: 1200px) and (max-width: 1536px){ :root{ --sb-w: 240px; } }
+/* Ajuste para laptops (1366–1536) */
+@media (min-width: 1200px) and (max-width: 1536px){
+  :root{ --sb-w: 240px; }
+}
 
 /* ===== Reset/Global ===== */
 *{box-sizing:border-box}
@@ -64,7 +68,7 @@ body{
 a{color:var(--text); text-decoration:none}
 img{display:block; max-width:100%; height:auto}
 
-/* ===== SIDEBAR ===== */
+/* ===== SIDEBAR — Tarjeta flotante sin desfasar el hero ===== */
 .sidebar{
   position: fixed; inset: 0 auto 0 0; width: var(--sb-w);
   background: color-mix(in srgb, var(--sb-bg) 50%, transparent);
@@ -99,7 +103,7 @@ img{display:block; max-width:100%; height:auto}
 
 .sb-footer{ display:flex; flex-direction:column; gap:10px; padding:0 4px }
 
-/* Footer buttons */
+/* Botones footer (tema y logout) */
 .btn-logout, .btn-theme{
   display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;
   background: var(--panel); border:1px solid var(--line); color: var(--text); cursor:pointer; box-shadow: var(--shadow);
@@ -111,13 +115,13 @@ img{display:block; max-width:100%; height:auto}
 
 /* Botón hamburguesa (móvil) */
 .menu-toggle{
-  position: fixed; left:10px; top:10px; z-index:260;
+  position: fixed; left:10px; top:10px; z-index:260; /* encima del sidebar */
   background:var(--panel); border:1px solid var(--line); color:var(--text);
   border-radius:10px; padding:10px; display:none; box-shadow:var(--shadow); cursor:pointer;
 }
 .menu-toggle svg{ width:20px; height:20px; stroke: currentColor; stroke-width:2; fill:none }
 
-/* ===== HERO ===== */
+/* ===== HERO FULLSCREEN ===== */
 .hero{
   position:fixed; inset:0 0 0 var(--sb-w);
   width: calc(100svw - var(--sb-w)); height: 100svh; min-height:100vh;
@@ -125,6 +129,7 @@ img{display:block; max-width:100%; height:auto}
   display:grid; grid-template-columns: var(--left) var(--right); align-items:stretch;
   overflow:hidden;
 }
+
 .photo-side{ position:relative; overflow:hidden; background:var(--panel); display:flex; align-items:center; justify-content:center; }
 .photo-side::before{
   content:""; position:absolute; inset:0;
@@ -166,12 +171,12 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
   backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
 }
 
-/* Scrollbar del texto */
+/* ===== Scrollbar lateral del texto ===== */
 .text-side::-webkit-scrollbar{ width:10px }
 .text-side::-webkit-scrollbar-thumb{ background:var(--line); border-radius:8px }
 .text-side:hover::-webkit-scrollbar-thumb{ background:color-mix(in srgb, var(--muted) 40%, transparent) }
 
-/* ===== Modal base ===== */
+/* ===== Modal base (compartida por Ayuda y Bienvenida) ===== */
 .modal-backdrop{
   position: fixed; inset:0; background: rgba(10,15,28,.52);
   display:none; align-items:center; justify-content:center;
@@ -200,7 +205,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
 .btn.primary{ background: var(--primary); color: #fff; border-color: transparent }
 .btn svg{ width:16px; height:16px; stroke: currentColor; fill:none; stroke-width:2 }
 
-/* Frosted para bienvenida */
+/* Frosted Edge + halo (solo para bienvenida) */
 #welcomeModal.modal{
   position: relative; isolation: isolate;
   background: color-mix(in srgb, var(--panel) 94%, #ffffff 6%);
@@ -262,7 +267,7 @@ html[data-theme="dark"] #welcomeModal.modal{
 .carousel-btn.prev{ left:12px } .carousel-btn.next{ right:12px }
 .carousel-empty{ color: var(--muted); padding:14px; text-align:center; font-size:14px; background: transparent }
 
-/* Tuning */
+/* ===== Tuning tipográfico por ancho/alto ===== */
 @media (max-width: 1440px){
   .carousel{ margin-top: 56px; }
   .hero-copy{ padding-top: 8px; }
@@ -284,32 +289,41 @@ html[data-theme="dark"] #welcomeModal.modal{
   .carousel-track{ max-height: 290px; }
 }
 
-/* ===== Móvil ===== */
+/* =========================================================
+   ======= BLOQUE ÚNICO MÓVIL (≤960px) — HERO + MENU =======
+   ========================================================= */
 @media (max-width: 960px){
   .menu-toggle{ display:inline-flex }
   .sidebar{ transform: translateX(-100%); transition: transform .25s ease; }
   body.sb-open .sidebar{ transform: translateX(0) }
+  /* Mueve el botón cuando el menú está abierto */
   body.sb-open .menu-toggle{ left: calc(var(--sb-w) + 18px); }
 
+  /* HERO apilado: foto arriba, texto abajo */
   .hero{ inset: 0; width: 100svw; min-height: 100svh; height: auto; display: flex; flex-direction: column; background: linear-gradient(180deg, rgba(238,243,251,.6), transparent 65%); }
 
+  /* FOTO */
   .photo-side{ height: 38vh; min-height: 240px; max-height: 420px; overflow: hidden; }
   .photo-side::before{ background-repeat: no-repeat; background-size: cover; background-position: center; transform: scale(1.08); }
   .photo-wrap{ width: 100%; height: 100%; }
   .photo-wrap img{ width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
+  /* TEXTO */
   .text-side{ flex: 1; height: auto; overflow: auto; padding: 16px; box-shadow: none; border-left: none !important; }
 
+  /* Título carrusel */
   .hero-copy{ padding-top: 8px; }
   .carousel-title{ margin-top: 8px !important; transform: none; }
 
+  /* Carrusel estable en móvil */
   .carousel{ margin-top: 12px; }
   .carousel-track{ aspect-ratio: 16 / 9; min-height: 180px; max-height: none; }
 
+  /* Legal: ancho disponible sin escala */
   .hero-legal{ left: 10px; right: 10px; transform: none !important; }
 }
 
-/* ===== Modal XL (selector de módulos) ===== */
+/* ===== Modal XL para selector de módulos ===== */
 .modal.modal--xl{
   width: min(980px, calc(100vw - 32px));
   max-height: min(86vh, 920px);
@@ -379,6 +393,27 @@ html[data-theme="dark"] .exclusiones-card .icon{
   color: #fff;
   border-color: transparent;
 }
+
+/* ====== ESTILOS MODAL DE CONTRASEÑA (nuevo, sin afectar lo demás) ====== */
+.form-field label{
+  display:block; margin:0 0 6px 0; font-size:12px; color: var(--muted);
+}
+.input-line{
+  display:flex; align-items:stretch; gap:8px;
+}
+.input-line input{
+  flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+  background: var(--panel); color:var(--text); outline:none;
+}
+.input-line input:focus{
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+.icon-btn{
+  display:inline-flex; align-items:center; gap:6px; padding:10px 12px;
+  border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer;
+}
+.icon-btn svg{ width:18px; height:18px; stroke: currentColor; fill:none; stroke-width:2 }
   </style>
 </head>
 <body>
@@ -396,7 +431,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     <div>
       <div class="sb-brand">
         <div class="sb-logo" title="DOMINION">
-          <img src="dominion_logo.png" alt="DOMINION logo">
+          dominion_logo.png
         </div>
         <div class="sb-title">
           <strong>MinTIC</strong>
@@ -406,8 +441,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <!-- Entrar -> Módulo de exclusiones (abre popup) -->
-        <a class="sb-item" href="#" id="btnModuloExclusiones">
+        <!-- IMPORTANTE: este ítem debe tener id="btnModuloExclusiones" para abrir el popup -->
+        <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <polyline points="13 5 20 12 13 19"></polyline>
@@ -484,7 +519,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     </div>
   </aside>
 
-  <!-- ======= HERO ======= -->
+  <!-- ======= HERO FULLSCREEN ======= -->
   <section class="hero" aria-label="Héroe a pantalla completa">
     <!-- Columna imagen -->
     <div class="photo-side">
@@ -497,7 +532,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     <div class="text-side">
       <div class="hero-copy">
         <div class="super-title"><span class="dot"></span> INGENIERÍA • CONECTIVIDAD • SERVICIO</div>
-        <h1 class="title-main">Seguimiento O&M proyecto MinTIC</h1>
+        <h1 class="title-main">Seguimiento O&amp;M proyecto MinTIC</h1>
         <p class="lead">
           Sistema integral operativo, consulta detalles KPIs, backlog y
           hoja de vida de cada Centro Digital.
@@ -530,9 +565,9 @@ html[data-theme="dark"] .exclusiones-card .icon{
         <button class="btn" id="helpClose" aria-label="Cerrar Ayuda">Cerrar</button>
       </div>
       <div class="modal-body" id="helpContent">
-        <p><strong>¡Bienvenido al centro de ayuda de Seguimiento O&M!</strong></p>
+        <p><strong>¡Bienvenido al centro de ayuda de Seguimiento O&amp;M!</strong></p>
         <ul>
-          <li><strong>Dashboard:</strong> visualiza KPIs y estados en <em>Dashboard O&M</em>.</li>
+          <li><strong>Dashboard:</strong> visualiza KPIs y estados en <em>Dashboard O&amp;M</em>.</li>
           <li><strong>Hoja de vida CDs:</strong> consulta el detalle por Centro Digital, última visita, estado actual entre otros en <em>Hoja de vida CDs</em>.</li>
           <li><strong>Modo claro/oscuro:</strong> usa el botón al final del menú lateral.</li>
           <li><strong>Soporte:</strong> ariel.marquez-ext@dominion-global.com.</li>
@@ -552,7 +587,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
       <div class="modal-body" id="welcomeContent">
         <h2 style="margin:0 0 12px 0; font-size:20px; font-weight:600;">¡Bienvenido(a)!</h2>
         <p style="margin:0; font-size:16px; color:var(--muted)">
-          Hola <strong id="welcomeUser">usuario</strong>, estás ingresando al sistema de Seguimiento O&M.
+          Hola <strong id="welcomeUser">usuario</strong>, estás ingresando al sistema de Seguimiento O&amp;M.
         </p>
       </div>
       <div class="modal-footer">
@@ -623,8 +658,39 @@ html[data-theme="dark"] .exclusiones-card .icon{
     </div>
   </div>
 
-  <!-- ===== Scripts ===== -->
-  <script>
+  <!-- ===== Modal de Contraseña (nuevo) ===== -->
+  <div class="modal-backdrop" id="pwdBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwdTitle" id="pwdModal">
+      <div class="modal-header">
+        <div class="modal-title" id="pwdTitle">Acceso a módulo</div>
+        <button class="btn" id="pwdClose" aria-label="Cerrar">Cerrar</button>
+      </div>
+      <div class="modal-body">
+        <p id="pwdRoleInfo" class="card-desc" style="margin-top:0;margin-bottom:10px;color:var(--muted);">
+          Ingresa la contraseña para <strong>—</strong>.
+        </p>
+        <div class="form-field">
+          <label for="pwdInput">Contraseña</label>
+          <div class="input-line">
+            <input id="pwdInput" type="password" placeholder="•••••••" autocomplete="current-password" />
+            <button type="button" class="icon-btn" id="pwdToggle" aria-label="Mostrar u ocultar contraseña" title="Mostrar/ocultar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="pwdCancel">Cancelar</button>
+        <button class="btn primary" id="pwdConfirm">Acceder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
+<script>
   /* ========== Tema (Claro/Oscuro) ========== */
   (function(){
     const themeKey = 'landing_theme';
@@ -684,7 +750,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
   window.addEventListener('resize', fitLegal);
   window.addEventListener('orientationchange', () => setTimeout(fitLegal, 200));
 
-  /* ========== Controlador genérico de modales (Ayuda / Exclusiones) ========== */
+  /* ========== Controlador genérico de modales (para Ayuda) ========== */
   function makeModal(backdropId, initialFocusId){
     const backdrop = document.getElementById(backdropId);
     if (!backdrop) return {open:()=>{}, close:()=>{}};
@@ -713,7 +779,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     document.getElementById('helpBackdropClose')?.addEventListener('click', help.close);
   })();
 
-  // Modal Módulo de exclusiones
+  // Modal Módulo de exclusiones (selector)
   (function(){
     const ex = makeModal('exclusionesBackdrop', 'exclusionesTitle');
     document.getElementById('btnModuloExclusiones')?.addEventListener('click', (e)=>{ e.preventDefault(); ex.open(); });
@@ -721,7 +787,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     document.getElementById('exclusionesBackdropClose')?.addEventListener('click', ex.close);
   })();
 
-  /* ========== Acceso con contraseña (en este archivo) ========== */
+  /* ========== Acceso con contraseña — MODAL ESTILIZADO (nuevo) ========== */
   (function(){
     // Lista permitida de contraseñas (solo pruebas)
     const ACCESS_PASSWORDS = {
@@ -729,25 +795,82 @@ html[data-theme="dark"] .exclusiones-card .icon{
       gestor: 'qwertusa'
     };
 
-    // Destinos (se abrirán en nueva pestaña). Ajustar cuando tengas las URLs finales.
+    // Destinos (abrirán en otra pestaña). Ajustar aquí cuando tengas las URLs finales.
     const TARGET_URLS = {
       admin: 'admin_exclusiones.html',
       gestor: 'exclusiones.html'
     };
 
-    function handleAccess(role){
-      const niceRole = role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor';
-      const pwd = window.prompt(`Ingrese la contraseña para ${niceRole}:`);
-      if (pwd === null) return; // Cancelado
-      if (pwd === ACCESS_PASSWORDS[role]){
-        window.open(TARGET_URLS[role], '_blank', 'noopener,noreferrer');
-      } else {
-        alert('No tienes permiso para ingresar al módulo. Por favor, contacta al administrador.');
+    // Modal de contraseña
+    const pwdModal = makeModal('pwdBackdrop', 'pwdTitle');
+    const $pwdInput   = document.getElementById('pwdInput');
+    const $pwdToggle  = document.getElementById('pwdToggle');
+    const $pwdCancel  = document.getElementById('pwdCancel');
+    const $pwdClose   = document.getElementById('pwdClose');
+    const $pwdConfirm = document.getElementById('pwdConfirm');
+    const $pwdRoleInfo= document.getElementById('pwdRoleInfo');
+
+    let currentRole = null; // 'admin' | 'gestor'
+
+    function labelForRole(role){
+      return role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor';
+    }
+
+    function openPwd(role){
+      currentRole = role;
+      if ($pwdRoleInfo){
+        $pwdRoleInfo.innerHTML = `Ingresa la contraseña para <strong>${labelForRole(role)}</strong>.`;
+      }
+      if ($pwdInput){
+        $pwdInput.type = 'password';
+        $pwdInput.value = '';
+        setTimeout(()=> $pwdInput.focus(), 30);
+      }
+      pwdModal.open();
+    }
+
+    function closePwd(){
+      pwdModal.close();
+    }
+
+    function closeExclusionesIfOpen(){
+      const back = document.getElementById('exclusionesBackdrop');
+      if (back && back.classList.contains('open')){
+        back.classList.remove('open');
+        back.setAttribute('aria-hidden','true');
       }
     }
 
-    document.getElementById('btnAccessAdmin')?.addEventListener('click', ()=> handleAccess('admin'));
-    document.getElementById('btnAccessGestor')?.addEventListener('click', ()=> handleAccess('gestor'));
+    function confirmPwd(){
+      const val = ($pwdInput?.value ?? '').trim();
+      if (!currentRole) return;
+      if (val === ACCESS_PASSWORDS[currentRole]){
+        closePwd();
+        closeExclusionesIfOpen();
+        window.open(TARGET_URLS[currentRole], '_blank', 'noopener,noreferrer');
+      }else{
+        alert('No tienes permiso para ingresar al módulo. Por favor, contacta al administrador.');
+        $pwdInput?.focus();
+        $pwdInput?.select();
+      }
+    }
+
+    // Wire botones del selector
+    document.getElementById('btnAccessAdmin')?.addEventListener('click', ()=> openPwd('admin'));
+    document.getElementById('btnAccessGestor')?.addEventListener('click', ()=> openPwd('gestor'));
+
+    // Wire controles del modal
+    $pwdCancel?.addEventListener('click', closePwd);
+    $pwdClose?.addEventListener('click', closePwd);
+    $pwdConfirm?.addEventListener('click', confirmPwd);
+    $pwdInput?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
+
+    // Toggle mostrar/ocultar
+    $pwdToggle?.addEventListener('click', ()=>{
+      if (!$pwdInput) return;
+      $pwdInput.type = ($pwdInput.type === 'password') ? 'text' : 'password';
+      $pwdInput.focus();
+    });
   })();
 
   /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
@@ -794,8 +917,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
         empty.className = 'carousel-empty';
         empty.textContent = 'No se encontraron imágenes miniaturaN.jpg en la carpeta.';
         track.appendChild(empty);
-        prev && (prev.style.display='none');
-        next && (next.style.display='none');
+        if (prev) prev.style.display='none';
+        if (next) next.style.display='none';
         if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
         return;
       }
@@ -835,13 +958,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
       const goPrev = ()=> show(current - 1);
       const goNext = ()=> show(current + 1);
 
-      if (items.length < 2){
-        prev && (prev.style.display='none');
-        next && (next.style.display='none');
-      } else {
-        prev?.addEventListener('click', goPrev);
-        next?.addEventListener('click', goNext);
-      }
+      if (items.length < 2){ if (prev) prev.style.display='none'; if (next) next.style.display='none'; }
+      else { prev?.addEventListener('click', goPrev); next?.addEventListener('click', goNext); }
 
       track.setAttribute('tabindex','0');
       track.addEventListener('keydown', (ev)=>{ if (ev.key==='ArrowLeft') goPrev(); if (ev.key==='ArrowRight') goNext(); });
@@ -873,7 +991,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
         sessionStorage.removeItem('auth_ok');
         sessionStorage.removeItem('auth_user');
         sessionStorage.removeItem('auth_role');
-        sessionStorage.removeItem('welcome_shown'); // para que la bienvenida vuelva a mostrarse en el próximo login
+        sessionStorage.removeItem('welcome_shown'); // limpia para que vuelva el popup de bienvenida
       } catch(e){}
       window.location.replace('login.html');
     });
@@ -907,7 +1025,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
       document.addEventListener('keydown', (ev)=>{ if (backdrop.classList.contains('open') && ev.key === 'Escape') closeWelcome(); });
     }
   })();
-  </script>
+</script>
 </body>
 </html>
 
