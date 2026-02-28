@@ -431,7 +431,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     <div>
       <div class="sb-brand">
         <div class="sb-logo" title="DOMINION">
-          dominion_logo.png
+          <img src="dominion_logo.png" alt="DOMINION logo">
         </div>
         <div class="sb-title">
           <strong>MinTIC</strong>
@@ -441,7 +441,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <!-- IMPORTANTE: este ítem debe tener id="btnModuloExclusiones" para abrir el popup -->
+        <!-- Módulo de exclusiones (abre selector o va directo según 'last_module') -->
         <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -532,7 +532,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     <div class="text-side">
       <div class="hero-copy">
         <div class="super-title"><span class="dot"></span> INGENIERÍA • CONECTIVIDAD • SERVICIO</div>
-        <h1 class="title-main">Seguimiento O&amp;M proyecto MinTIC</h1>
+        <h1 class="title-main">Seguimiento O&M proyecto MinTIC</h1>
         <p class="lead">
           Sistema integral operativo, consulta detalles KPIs, backlog y
           hoja de vida de cada Centro Digital.
@@ -565,9 +565,9 @@ html[data-theme="dark"] .exclusiones-card .icon{
         <button class="btn" id="helpClose" aria-label="Cerrar Ayuda">Cerrar</button>
       </div>
       <div class="modal-body" id="helpContent">
-        <p><strong>¡Bienvenido al centro de ayuda de Seguimiento O&amp;M!</strong></p>
+        <p><strong>¡Bienvenido al centro de ayuda de Seguimiento O&M!</strong></p>
         <ul>
-          <li><strong>Dashboard:</strong> visualiza KPIs y estados en <em>Dashboard O&amp;M</em>.</li>
+          <li><strong>Dashboard:</strong> visualiza KPIs y estados en <em>Dashboard O&M</em>.</li>
           <li><strong>Hoja de vida CDs:</strong> consulta el detalle por Centro Digital, última visita, estado actual entre otros en <em>Hoja de vida CDs</em>.</li>
           <li><strong>Modo claro/oscuro:</strong> usa el botón al final del menú lateral.</li>
           <li><strong>Soporte:</strong> ariel.marquez-ext@dominion-global.com.</li>
@@ -587,7 +587,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
       <div class="modal-body" id="welcomeContent">
         <h2 style="margin:0 0 12px 0; font-size:20px; font-weight:600;">¡Bienvenido(a)!</h2>
         <p style="margin:0; font-size:16px; color:var(--muted)">
-          Hola <strong id="welcomeUser">usuario</strong>, estás ingresando al sistema de Seguimiento O&amp;M.
+          Hola <strong id="welcomeUser">usuario</strong>, estás ingresando al sistema de Seguimiento O&M.
         </p>
       </div>
       <div class="modal-footer">
@@ -658,7 +658,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     </div>
   </div>
 
-  <!-- ===== Modal de Contraseña (nuevo) ===== -->
+  <!-- ===== Modal de Contraseña (estilizado) ===== -->
   <div class="modal-backdrop" id="pwdBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwdTitle" id="pwdModal">
       <div class="modal-header">
@@ -750,7 +750,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
   window.addEventListener('resize', fitLegal);
   window.addEventListener('orientationchange', () => setTimeout(fitLegal, 200));
 
-  /* ========== Controlador genérico de modales (para Ayuda) ========== */
+  /* ========== Controlador genérico de modales (Ayuda / Selector / Pwd) ========== */
   function makeModal(backdropId, initialFocusId){
     const backdrop = document.getElementById(backdropId);
     if (!backdrop) return {open:()=>{}, close:()=>{}};
@@ -779,42 +779,61 @@ html[data-theme="dark"] .exclusiones-card .icon{
     document.getElementById('helpBackdropClose')?.addEventListener('click', help.close);
   })();
 
-  // Modal Módulo de exclusiones (selector)
+  // ===== Selector Módulo de exclusiones + recordar último módulo =====
   (function(){
-    const ex = makeModal('exclusionesBackdrop', 'exclusionesTitle');
-    document.getElementById('btnModuloExclusiones')?.addEventListener('click', (e)=>{ e.preventDefault(); ex.open(); });
-    document.getElementById('exclusionesClose')?.addEventListener('click', ex.close);
-    document.getElementById('exclusionesBackdropClose')?.addEventListener('click', ex.close);
+    const selector = makeModal('exclusionesBackdrop', 'exclusionesTitle');
+    const btnOpen  = document.getElementById('btnModuloExclusiones');
+
+    // Abrir: si hay last_module, ir directo al modal de contraseña de ese rol
+    btnOpen?.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const last = sessionStorage.getItem('last_module');
+      if (last === 'admin' || last === 'gestor') {
+        // Ir directo al modal de contraseña de ese rol
+        window.__openPwd?.(last);
+      } else {
+        selector.open();
+      }
+    });
+
+    document.getElementById('exclusionesClose')?.addEventListener('click', selector.close);
+    document.getElementById('exclusionesBackdropClose')?.addEventListener('click', selector.close);
+
+    // Exponer utilitario para cerrar selector desde fuera (cuando se valida pwd)
+    window.__closeSelectorIfOpen = function(){
+      const back = document.getElementById('exclusionesBackdrop');
+      if (back && back.classList.contains('open')){
+        back.classList.remove('open');
+        back.setAttribute('aria-hidden','true');
+      }
+    };
   })();
 
-  /* ========== Acceso con contraseña — MODAL ESTILIZADO (nuevo) ========== */
+  // ===== Modal de contraseña (estilizado) + navegación y recuerdo del módulo =====
   (function(){
-    // Lista permitida de contraseñas (solo pruebas)
+    // Contraseñas de prueba (en este mismo archivo)
     const ACCESS_PASSWORDS = {
       admin: '12345',
       gestor: 'qwertusa'
     };
 
-    // Destinos (abrirán en otra pestaña). Ajustar aquí cuando tengas las URLs finales.
+    // Destinos (ajustar cuando tengas URLs finales)
     const TARGET_URLS = {
       admin: 'admin_exclusiones.html',
       gestor: 'exclusiones.html'
     };
 
-    // Modal de contraseña
-    const pwdModal = makeModal('pwdBackdrop', 'pwdTitle');
-    const $pwdInput   = document.getElementById('pwdInput');
-    const $pwdToggle  = document.getElementById('pwdToggle');
-    const $pwdCancel  = document.getElementById('pwdCancel');
-    const $pwdClose   = document.getElementById('pwdClose');
-    const $pwdConfirm = document.getElementById('pwdConfirm');
-    const $pwdRoleInfo= document.getElementById('pwdRoleInfo');
+    const modal = makeModal('pwdBackdrop', 'pwdTitle');
+    const $pwdInput    = document.getElementById('pwdInput');
+    const $pwdToggle   = document.getElementById('pwdToggle');
+    const $pwdCancel   = document.getElementById('pwdCancel');
+    const $pwdClose    = document.getElementById('pwdClose');
+    const $pwdConfirm  = document.getElementById('pwdConfirm');
+    const $pwdRoleInfo = document.getElementById('pwdRoleInfo');
 
     let currentRole = null; // 'admin' | 'gestor'
 
-    function labelForRole(role){
-      return role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor';
-    }
+    function labelForRole(role){ return role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor'; }
 
     function openPwd(role){
       currentRole = role;
@@ -826,34 +845,34 @@ html[data-theme="dark"] .exclusiones-card .icon{
         $pwdInput.value = '';
         setTimeout(()=> $pwdInput.focus(), 30);
       }
-      pwdModal.open();
+      modal.open();
     }
 
-    function closePwd(){
-      pwdModal.close();
-    }
-
-    function closeExclusionesIfOpen(){
-      const back = document.getElementById('exclusionesBackdrop');
-      if (back && back.classList.contains('open')){
-        back.classList.remove('open');
-        back.setAttribute('aria-hidden','true');
-      }
-    }
+    function closePwd(){ modal.close(); }
 
     function confirmPwd(){
       const val = ($pwdInput?.value ?? '').trim();
       if (!currentRole) return;
       if (val === ACCESS_PASSWORDS[currentRole]){
+        // Recordar último módulo para próxima vez
+        sessionStorage.setItem('last_module', currentRole);
+        // Cerrar modales y abrir destino en nueva pestaña
         closePwd();
-        closeExclusionesIfOpen();
+        window.__closeSelectorIfOpen?.();
         window.open(TARGET_URLS[currentRole], '_blank', 'noopener,noreferrer');
-      }else{
+      } else {
         alert('No tienes permiso para ingresar al módulo. Por favor, contacta al administrador.');
         $pwdInput?.focus();
         $pwdInput?.select();
       }
     }
+
+    // Toggle mostrar/ocultar contraseña
+    $pwdToggle?.addEventListener('click', ()=>{
+      if (!$pwdInput) return;
+      $pwdInput.type = ($pwdInput.type === 'password') ? 'text' : 'password';
+      $pwdInput.focus();
+    });
 
     // Wire botones del selector
     document.getElementById('btnAccessAdmin')?.addEventListener('click', ()=> openPwd('admin'));
@@ -865,12 +884,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
     $pwdConfirm?.addEventListener('click', confirmPwd);
     $pwdInput?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
 
-    // Toggle mostrar/ocultar
-    $pwdToggle?.addEventListener('click', ()=>{
-      if (!$pwdInput) return;
-      $pwdInput.type = ($pwdInput.type === 'password') ? 'text' : 'password';
-      $pwdInput.focus();
-    });
+    // Exponer para apertura directa desde el botón del sidebar cuando existe last_module
+    window.__openPwd = openPwd;
   })();
 
   /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
@@ -991,7 +1006,9 @@ html[data-theme="dark"] .exclusiones-card .icon{
         sessionStorage.removeItem('auth_ok');
         sessionStorage.removeItem('auth_user');
         sessionStorage.removeItem('auth_role');
-        sessionStorage.removeItem('welcome_shown'); // limpia para que vuelva el popup de bienvenida
+        sessionStorage.removeItem('welcome_shown');
+        // IMPORTANTE: limpiar el módulo recordado para que vuelva a pedir contraseña
+        sessionStorage.removeItem('last_module');
       } catch(e){}
       window.location.replace('login.html');
     });
@@ -1028,6 +1045,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
 </script>
 </body>
 </html>
+
 
 
 
