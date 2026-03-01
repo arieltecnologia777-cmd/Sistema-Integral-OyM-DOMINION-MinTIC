@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Exclusiones</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- Fluent UI MDL2 (íconos oficiales Microsoft) -->
+  <link rel="stylesheet" href="https://res.cdn.office.net/files/fabric-cdn-prod_20240201.001/assets/icons/fabric-icons.css" />
+
+  <style>
+  :root{
+    /* ====== CONTROLES RÁPIDOS ====== */
+    --sidebar-w: 290px;
+    --page-gap: 4px;
+    --logo-size: 54px;
+    --glass-blur: 18px;
+    --content-max: 1220px;
+
+    /* ====== Tokens visuales ====== */
+    --radius-xxl: 22px;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --ink:#0e2040;
+    --muted:#6b7893;
+
+    /* Sombra y glass */
+    --halo: 0 30px 60px rgba(14, 42, 94, .18), 0 10px 20px rgba(14, 42, 94, .08);
+    --glass: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.58));
+    --glass-border: 1px solid rgba(180, 200, 235, .55);
+    --glass-inner: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.72));
+    --glass-inner-border: 1px solid rgba(200, 215, 245, .75);
+
+    /* ====== Tokens 3D ====== */
+    --elev-1: 0 4px 10px rgba(14,42,94,.10), 0 2px 6px rgba(14,42,94,.08);
+    --elev-2: 0 12px 24px rgba(14,42,94,.14), 0 6px 12px rgba(14,42,94,.10);
+    --elev-3: 0 22px 40px rgba(14,42,94,.16), 0 10px 18px rgba(14,42,94,.12);
+    --tilt: perspective(900px) rotateX(0.6deg);
+  }
+
+  *{ box-sizing: border-box }
+  html,body{ height:100% }
+  body{
+    margin:0;
+    font-family:"Segoe UI", system-ui, Roboto, Arial, sans-serif;
+    color:#1a2333;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #eaf1ff 0%, rgba(234,241,255,0) 60%),
+      linear-gradient(180deg, #eef4ff, #ffffff);
+    display:flex;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar-wrap{ width: var(--sidebar-w); padding: var(--page-gap) 14px; flex: 0 0 var(--sidebar-w); }
+  .sidebar{
+    position: sticky; top: var(--page-gap);
+    display:flex; flex-direction:column; gap:14px; padding:16px 14px;
+    border-radius: var(--radius-xxl);
+    background: var(--glass); border: var(--glass-border); box-shadow: var(--halo);
+    backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+    min-height: calc(100vh - (2 * var(--page-gap)));
+    max-height: calc(100vh - (2 * var(--page-gap)));
+    overflow: hidden; align-items: stretch;
+  }
+  .sidebar__scroll{ display:flex; flex-direction:column; gap:14px; min-height: 0; overflow: auto; padding-bottom: 6px; }
+
+  /* Brand */
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    padding:12px; border-radius: var(--radius-lg);
+    background: var(--glass-inner); border: var(--glass-inner-border);
+    box-shadow: 0 8px 18px rgba(30, 60, 120, .10);
+  }
+  .brand-logo{ width:var(--logo-size); height:var(--logo-size); display:grid; place-items:center; }
+  .brand-logo img{ width:100%; height:100%; display:block; object-fit:contain; image-rendering:auto; }
+  .brand-logo.has-img .fallback-letter{ display:none; }
+  .fallback-letter{ font-weight:800; font-size: calc(var(--logo-size)*0.5); }
+  .brand-txt{ line-height:1.15 }
+  .brand-title{ font-weight:800; color:var(--ink) }
+  .brand-sub{ font-size:12px; color:#6b7893 }
+
+  .nav-title{
+    font-size:12px;
+    letter-spacing:.4px;
+    color:#3b455a;
+    text-transform:uppercase;
+    margin:2px 0 2px 6px;
+    font-weight:700;
+  }
+
+  /* ====== Botones de Módulos en Sidebar ====== */
+  .side-mods{ display:flex; flex-direction:column; gap:10px; }
+  .sbtn{
+    display:flex; align-items:center; gap:10px;
+    width:100%;
+    border-radius:14px;
+    border:1px solid rgba(199,215,243,.7);
+    background:#fff;
+    padding:10px 12px;
+    box-shadow: var(--elev-1);
+    filter: drop-shadow(0 12px 22px rgba(14,42,94,.12));
+    cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, background .12s ease;
+  }
+  .sbtn:hover{ transform: translateY(-2px); box-shadow: var(--elev-2); filter: drop-shadow(0 18px 28px rgba(14,42,94,.18)); }
+  .sbtn:active{ transform: translateY(-1px); box-shadow: var(--elev-1); }
+
+  .sbtn .ico{ width:32px; height:32px; border-radius:10px; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
+  .sbtn .ico-blue{ background:#0e4aa8; box-shadow:0 4px 12px rgba(14,74,168,.35); }
+  .sbtn .ico-amber{ background:#f59e0b; box-shadow:0 4px 12px rgba(245,158,11,.35); }
+  .sbtn .ico-sky{ background:#0284c7; box-shadow:0 4px 12px rgba(2,132,199,.35); }
+  .sbtn .t-wrap{ flex:1; min-width:0; }
+  .sbtn .t-title{ font-size:14px; font-weight:800; color:#0e2040; }
+  .sbtn .t-sub{ font-size:11px; color:#6b7893; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sbtn .badge{
+    margin-left:auto; font-size:11px; font-weight:700; color:#0e3a82;
+    background:#eef3ff; padding:4px 8px; border-radius:999px; border:1px solid #dbe6ff;
+  }
+
+  /* Footer chips */
+  .side-foot{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
+  .chip{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 12px; border-radius:12px;
+    background:#ffffff; border:1px solid rgba(210,225,250,.9);
+    color:#213159;
+    box-shadow: 0 6px 16px rgba(20, 40, 90, .08);
+  }
+  .side-foot .chip:hover,
+  .side-foot .chip:focus,
+  .side-foot .chip:active{
+    background:#d8e6ff !important;
+    border-color:#0e4aa8 !important;
+    color:#0e4aa8 !important;
+    box-shadow:0 0 0 3px rgba(14,74,168,0.15);
+  }
+  .chip .ico{ width:18px; height:18px; }  /* tamaño correcto del icono Home */
+
+  /* ===== Main / Container ===== */
+  .main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+  .container{ width:100%; max-width: var(--content-max); margin-inline:auto; padding-inline: clamp(16px, 2vw, 24px); }
+
+  /* ======= AYUDA / HELP ======= */
+  .help{
+    display:none;                 /* se muestra al click */
+    margin-top: 14px;
+    margin-bottom: 6px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid rgba(199,215,243,.70);
+    box-shadow: var(--elev-2);
+    filter: drop-shadow(0 18px 32px rgba(14,42,94,.18));
+    width: fit-content;
+    max-width: min(100%, 860px);
+    min-width: 340px;
+  }
+  .help h3 { font-size:14px !important; }
+  .help p  { font-size:12px !important; }
+  .help ul { font-size:12px !important; }
+  .help li { font-size:12px !important; }
+  .help .help-close { font-size:11px !important; padding:4px 8px !important; }
+
+  .help-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .help h3{ margin: 0; font-weight: 800; color:#0e2040; flex:1; }
+  .help p{ margin: 0 0 8px; color:#4e5d78; }
+  .help ul{ margin: 6px 0 0 18px; padding:0; color:#22314a; }
+  .help li{ margin: 4px 0; }
+  .help .help-close{
+    appearance:none; border:1px solid #cfe0ff; background:#eef3ff;
+    color:#0e3a82; border-radius:999px; cursor:pointer; box-shadow:0 6px 14px rgba(14,42,94,.16);
+  }
+  .help .help-close:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(14,42,94,.22); }
+  .help .help-close:active{ transform: translateY(0); box-shadow:0 6px 12px rgba(14,42,94,.16) inset; }
+
+  @media (min-width: 1024px){
+    .help{ max-width: 640px; }
+  }
+  @media (max-width: 640px){
+    .help{ min-width: 0; width: 100%; max-width: 100%; }
+  }
+
+  /* ===== Estado/alertas ===== */
+  .state{
+    margin: 8px 0 14px;
+    padding:10px 12px; border-radius:12px; display:none;
+    border:1px solid #dbe6ff; background:#eef3ff; color:#0e3a82;
+  }
+  .state.error{ border-color:#fecaca; background:#fee2e2; color:#991b1b; }
+
+  /* ===== Ajustes ===== */
+  .container:last-of-type{ padding-bottom: 0 !important; }
+
+  /* ===== Móvil ===== */
+  @media (max-width: 980px){
+    body{ flex-direction:column; }
+    .sidebar-wrap{ width:100%; padding:12px 10px 0; }
+    .sidebar{ position:relative; top:auto; min-height:auto; max-height:none; }
+  }
+
+  /* ====== Modo oscuro ====== */
+  .dark body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #0f1a2b 0%, rgba(15,26,43,0) 60%),
+      linear-gradient(180deg, #0f172a, #111827);
+    color:#e5e7eb;
+  }
+  .dark .help{
+    background: #0f1a2b;
+    border-color:#22314a;
+    box-shadow: 0 12px 24px rgba(0,0,0,.45);
+    filter: drop-shadow(0 18px 32px rgba(0,0,0,.55));
+  }
+  .dark .help h3{ color:#eaf2ff; }
+  .dark .help p{ color:#c7d2fe; }
+  .dark .help ul{ color:#dbeafe; }
+  .dark .help .help-close{
+    background:#1e2a40; border-color:#2a4266; color:#cfe1ff;
+    box-shadow:0 10px 18px rgba(0,0,0,.45);
+  }
+
+  /* Sidebar y brand (dark) */
+  .dark .sidebar{
+    background: linear-gradient(180deg, rgba(30,41,59,.65), rgba(30,41,59,.55));
+    border-color: rgba(148,163,184,.35);
+  }
+  .dark .brand{
+    background:#0f1a2b;
+    border-color:#243248;
+    color:#eaf2ff;
+  }
+  .dark #brandLogo{
+    background:#ffffff;
+    border-radius:12px;
+    padding:6px;
+  }
+  .dark .brand-title{ color:#eaf2ff; }
+  .dark .brand-sub{ color:#a7b4c9; }
+  .dark .nav-title{ color:#c7d2fe; }
+
+  /* NUEVO: Dark para botones sidebar */
+  .dark .sbtn{
+    background:#0f1a2b;
+    border-color:#22314a;
+    color:#eaf2ff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.45);
+    filter: drop-shadow(0 14px 24px rgba(0,0,0,.45));
+  }
+  .dark .sbtn .t-title{ color:#eaf2ff; }
+  .dark .sbtn .t-sub{ color:#c7d2fe; }
+  .dark .sbtn .badge{
+    background:#0b1b33;
+    border-color:#274060;
+    color:#a8c3ff;
+  }
+
+  /* ===== EMBED: a sangre (sin bordes), altura ajustada y un poco más abajo ===== */
+  .container.fullbleed{ padding-inline: 0; }               /* sin padding lateral SOLO aquí */
+  .embed-host{ margin-top: 8px; }                           /* baja un poco desde el top */
+  .embed-host iframe{
+    width: 100%;
+    height: calc(100vh - 160px);                            /* ↓ altura ajustada */
+    min-height: 520px;
+    background: transparent;                                /* sin “panel” */
+    border: none;                                           /* sin borde */
+    border-radius: 0;                                       /* sin esquinas redondeadas */
+    box-shadow: none;                                       /* sin sombra */
+    display:block;
+  }
+  @media (max-width: 640px){
+    .embed-host iframe{ height: calc(100vh - 180px); min-height: 380px; }
+  }
+
+  /* ===== ULTRA WIDE: ocupar todo el ancho desde 1440px ===== */
+  @media (min-width: 1440px){
+    :root{ --content-max: 100vw; }
+    .container{
+      max-width: none;
+      margin-left: 0;
+      margin-right: 0;
+      padding-inline: clamp(16px, 2vw, 32px);
+    }
+    .container.fullbleed{ padding-inline: 0; }              /* mantener a sangre en ultra wide */
+  }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar-wrap" role="navigation" aria-label="Navegación principal">
+    <div class="sidebar">
+      <!-- Zona scrolleable -->
+      <div class="sidebar__scroll">
+        <div class="brand">
+          <div class="brand-logo" id="brandLogo">
+            <img src="dominion_logo.png" alt="Dominion" onload="this.parentElement.classList.add('has-img')" onerror="this.remove()" />
+            <span class="fallback-letter" aria-hidden="true">D</span>
+          </div>
+          <div class="brand-txt">
+            <div class="brand-title">MinTIC</div>
+            <div class="brand-sub">Centros Digitales</div>
+          </div>
+        </div>
+
+        <!-- MÓDULOS en el sidebar -->
+        <div class="nav-title">MÓDULOS GESTORES</div>
+        <div class="side-mods">
+          <!-- 1) Operatividad -->
+          <button type="button" class="sbtn" id="sb_operatividad" data-key="operatividad" title="Exclusiones de operatividad">
+            <div class="ico ico-blue">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 8V4l8 8-8 8v-4H4V8h8z"/></svg>
+            </div>
+            <div class="t-wrap">
+              <div class="t-title">Operatividad</div>
+              <div class="t-sub">Estado del backend</div>
+            </div>
+            <span class="badge">Activo</span>
+          </button>
+
+          <!-- 2) Backlog -->
+          <button type="button" class="sbtn" id="sb_backlog" data-key="backlog" title="Exclusiones indicador backlog">
+            <div class="ico ico-amber">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            </div>
+            <div class="t-wrap">
+              <div class="t-title">IND backlog</div>
+              <div class="t-sub">Estado del backend</div>
+            </div>
+            <span class="badge">Offline</span>
+          </button>
+
+          <!-- 3) SLA -->
+          <button type="button" class="sbtn" id="sb_sla" data-key="sla" title="Exclusiones SLA">
+            <div class="ico ico-sky">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M12 2a10 10 0 00-10 10 10 10 0 1010-10zm1 5v6l5 3-.75 1.23L11 13V7h2z"/></svg>
+            </div>
+            <div class="t-wrap">
+              <div class="t-title">SLA</div>
+              <div class="t-sub">Estado del backend</div>
+            </div>
+            <span class="badge">Offline</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pie pegado al fondo (fuera del scroll) -->
+      <div class="side-foot">
+        <button class="chip" type="button" id="btnHome" title="Ir al inicio">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Home
+        </button>
+        <div class="chip" id="temaChip">Tema oscuro</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- EMBED: a sangre y al top -->
+    <section class="container fullbleed">
+      <div class="embed-host">
+        <iframe
+          src="https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/modulo_exclusiones_operatividad.html"
+          title="Exclusiones embebido"
+          loading="eager"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+    </section>
+
+    <!-- AYUDA -->
+    <section class="container">
+      <div id="helpPanel" class="help" role="region" aria-live="polite"></div>
+    </section>
+
+    <!-- Estado -->
+    <section class="container">
+      <div id="estado" class="state" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert"></div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
+    const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
+
+    /* === Backends por módulo === */
+    const BACKENDS = {
+      operatividad: API_BASE,
+      backlog: 'AQUI PONES LA URL DEL BACKEND',
+      sla:     'AQUI PONES LA URL DEL BACKEND'
+    };
+
+    /* ====== Helpers ====== */
+    const $  = s => document.querySelector(s);
+
+    /* ====== HEALTH CHECK ====== */
+    function healthUrlFor(key){
+      const base = BACKENDS[key];
+      if(!base) return 'about:blank#offline';
+      return `${base.replace(/\/+$/,'')}/health`;
+    }
+    const ONLINE_STYLE  = { bg:'#e8f7ec', border:'#b7ebc0', color:'#107c10', text:'Activo' };
+    const OFFLINE_STYLE = { bg:'#fee2e2', border:'#fecaca', color:'#991b1b', text:'Offline' };
+
+    function applyBadgeStyle(badge, style){
+      if(!badge) return;
+      badge.textContent = style.text;
+      badge.style.background   = style.bg;
+      badge.style.borderColor  = style.border;
+      badge.style.color        = style.color;
+    }
+    async function checkHealth(url, timeoutMs = 2500){
+      const controller = new AbortController();
+      const id = setTimeout(()=>controller.abort(), timeoutMs);
+      try{
+        const res = await fetch(url, { mode:'cors', cache:'no-store', signal:controller.signal });
+        clearTimeout(id);
+        if(!res.ok) return false;
+        try{
+          const j = await res.clone().json();
+          if (typeof j?.ok === 'boolean') return j.ok;
+        }catch(_){}
+        return true;
+      }catch(_){
+        clearTimeout(id);
+        return false;
+      }
+    }
+    async function updateHealthFor(key){
+      const sideBadge = document.querySelector(`.sbtn[data-key="${key}"] .badge`);
+      if (sideBadge){
+        sideBadge.textContent = 'Cheking';
+        sideBadge.style.background  = '#eef3ff';
+        sideBadge.style.borderColor = '#dbe6ff';
+        sideBadge.style.color       = '#0e3a82';
+      }
+      const ok = await checkHealth( healthUrlFor(key) );
+      applyBadgeStyle(sideBadge, ok ? ONLINE_STYLE : OFFLINE_STYLE);
+    }
+    async function updateAllHealth(){
+      await Promise.all(['operatividad','backlog','sla'].map(updateHealthFor));
+    }
+
+    /* ====== Ayuda ====== */
+    const helpByModule = {
+      operatividad: {
+        title: 'Ayuda rápida — Exclusiones de operatividad',
+        intro: 'Módulo para consultar estado del backend y ver ayuda contextual.',
+        bullets: [
+          'Haz clic en el botón del sidebar para ver ayuda.',
+          'El estado del backend se verifica automáticamente cada 60 segundos.',
+          'La banda “Última acción” muestra lo más reciente.'
+        ]
+      },
+      backlog: {
+        title: 'Ayuda rápida — Indicador backlog (beta)',
+        intro: 'Módulo en preparación para gestionar exclusiones del indicador backlog.',
+        bullets: [
+          'Define tu plantilla y reglas de negocio mientras se habilita el módulo.',
+          'Servirá para cálculos de pendientes y exclusiones por OT/periodo.',
+          'Se activará cuando el backend esté listo.'
+        ]
+      },
+      sla: {
+        title: 'Ayuda rápida — Exclusiones SLA (beta)',
+        intro: 'Módulo pensado para justificar exclusiones frente a métricas de SLA.',
+        bullets: [
+          'Definir causales y evidencias para auditoría.',
+          'Se incorporarán reglas y reportes cuando el módulo esté activo.',
+          'Verifica el estado del backend en el sidebar.'
+        ]
+      }
+    };
+
+    function renderHelp(key){
+      const hp = $('#helpPanel');
+      const data = helpByModule[key];
+      if(!hp || !data){ if(hp) hp.style.display='none'; return; }
+
+      const lis = data.bullets.map(b => `<li>${b}</li>`).join('');
+      hp.innerHTML = `
+        <div class="help-head">
+          <h3>${data.title}</h3>
+          <button type="button" class="help-close" id="helpCloseBtn" aria-label="Ocultar ayuda">Ocultar</button>
+        </div>
+        <p>${data.intro}</p>
+        <ul>${lis}</ul>
+      `;
+      hp.style.display = 'inline-block';
+      document.getElementById('helpCloseBtn')?.addEventListener('click', () => { hp.style.display = 'none'; });
+    }
+
+    // Click en botones del sidebar
+    [['sb_operatividad','operatividad'],['sb_backlog','backlog'],['sb_sla','sla']].forEach(([id,key])=>{
+      document.getElementById(id)?.addEventListener('click', () => renderHelp(key));
+    });
+
+    // Home / Tema
+    document.getElementById('btnHome')?.addEventListener('click', () => { window.location.href = 'main_page.html'; });
+    const temaChip = document.getElementById('temaChip');
+    temaChip?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const isDark = root.classList.toggle('dark');
+      temaChip.textContent = isDark ? 'Tema claro' : 'Tema oscuro';
+    });
+
+    // Health-check inicial + cada 60s
+    updateAllHealth();
+    setInterval(updateAllHealth, 60000);
+  });
+  </script>
+</body>
+</html>
