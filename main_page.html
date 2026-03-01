@@ -441,7 +441,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <!-- Botón que abre el selector / o directo a modal de contraseña si hay last_module -->
+        <!-- Módulo de exclusiones -->
         <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -611,7 +611,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
         <div class="exclusiones-grid">
           <!-- Card: Módulo Admin -->
-          <div class="exclusiones-card">
+          <div class="exclusiones-card" id="cardAdmin">
             <div class="card-head">
               <div class="icon" aria-hidden="true">
                 <!-- Icono: usuario con engranaje -->
@@ -631,7 +631,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
           </div>
 
           <!-- Card: Módulo Gestor -->
-          <div class="exclusiones-card">
+          <div class="exclusiones-card" id="cardGestor">
             <div class="card-head">
               <div class="icon" aria-hidden="true">
                 <!-- Icono: usuario con check -->
@@ -779,20 +779,30 @@ html[data-theme="dark"] .exclusiones-card .icon{
     document.getElementById('helpBackdropClose')?.addEventListener('click', help.close);
   })();
 
-  // ===== Selector Módulo de exclusiones + recordar último módulo =====
+  // ===== Selector Módulo de exclusiones (SIEMPRE se muestra al volver) =====
   (function(){
     const selector = makeModal('exclusionesBackdrop', 'exclusionesTitle');
     const btnOpen  = document.getElementById('btnModuloExclusiones');
 
-    // Abrir: si hay last_module, ir directo al modal de contraseña de ese rol
     btnOpen?.addEventListener('click', (e)=>{
       e.preventDefault();
+
+      // Restaurar backdrops si quedaron ocultos tras un acceso anterior
+      const pwdBack = document.getElementById('pwdBackdrop');
+      const selBack = document.getElementById('exclusionesBackdrop');
+      if (pwdBack) pwdBack.style.display = '';
+      if (selBack) selBack.style.display = '';
+
+      // (Opcional) sugerir visualmente el último módulo, sin saltar directo
       const last = sessionStorage.getItem('last_module');
-      if (last === 'admin' || last === 'gestor') {
-        window.__openPwd?.(last);
-      } else {
-        selector.open();
-      }
+      try{
+        document.getElementById('cardAdmin')?.classList.remove('hint');
+        document.getElementById('cardGestor')?.classList.remove('hint');
+      }catch(_){}
+      if (last === 'admin') document.getElementById('cardAdmin')?.classList.add('hint');
+      if (last === 'gestor') document.getElementById('cardGestor')?.classList.add('hint');
+
+      selector.open();
     });
 
     document.getElementById('exclusionesClose')?.addEventListener('click', selector.close);
@@ -833,7 +843,6 @@ html[data-theme="dark"] .exclusiones-card .icon{
     let currentRole = null; // 'admin' | 'gestor'
 
     function labelForRole(role){ return role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor'; }
-
     function openPwd(role){
       currentRole = role;
       if ($pwdRoleInfo){
@@ -846,21 +855,20 @@ html[data-theme="dark"] .exclusiones-card .icon{
       }
       modal.open();
     }
-
     function closePwd(){ modal.close(); }
 
     function confirmPwd(){
       const val = ($pwdInput?.value ?? '').trim();
       if (!currentRole) return;
       if (val === ACCESS_PASSWORDS[currentRole]){
-        // Recordar último módulo para próxima vez
+        // Recordar último módulo para futura sugerencia (no salto directo)
         sessionStorage.setItem('last_module', currentRole);
 
         // Cerrar modales
         closePwd();
         window.__closeSelectorIfOpen?.();
 
-        // >>> Ocultar completamente los backdrops para que "desaparezcan"
+        // Ocultar backdrops (se restauran al volver a abrir el selector)
         const pwdBack = document.getElementById('pwdBackdrop');
         const selBack = document.getElementById('exclusionesBackdrop');
         if (pwdBack) pwdBack.style.display = 'none';
@@ -892,7 +900,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
     $pwdConfirm?.addEventListener('click', confirmPwd);
     $pwdInput?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
 
-    // Exponer para apertura directa desde el botón del sidebar cuando existe last_module
+    // Exponer para usos futuros si hiciera falta
     window.__openPwd = openPwd;
   })();
 
@@ -1015,7 +1023,7 @@ html[data-theme="dark"] .exclusiones-card .icon{
         sessionStorage.removeItem('auth_user');
         sessionStorage.removeItem('auth_role');
         sessionStorage.removeItem('welcome_shown');
-        // Limpiar el módulo recordado para que vuelva a pedir contraseña
+        // Limpiar el módulo recordado para que siempre pregunte al volver
         sessionStorage.removeItem('last_module');
       } catch(e){}
       window.location.replace('login.html');
