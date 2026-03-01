@@ -746,17 +746,15 @@ body{
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
-    /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
+    /* ======================= CONFIG BACKEND (Cloudflare Workers) — p1 ======================= */
     const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
     const ADMIN_TOKEN = 'ADMINARIELITO777';
 
-    /* === NUEVO: Backends por módulo === */
-    // Hoy todos apuntan al existente. Para probar "Offline", cambia uno a una URL inválida.
-    // Ejemplo de prueba: BACKENDS.backlog = 'https://no-existe-123.fake.tld';
+    /* Backends por módulo — p1 */
     const BACKENDS = {
-      operatividad: API_BASE,
-      backlog: 'AQUI PONES LA URL DEL BACKEND',
-      sla:     'AQUI PONES LA URL DEL BACKEND'
+      operatividad: `${API_BASE}/p1`,
+      backlog:      `${API_BASE}/p1`,
+      sla:          `${API_BASE}/p1`
     };
 
     /* ======================= CONFIG BOTONES OUTLOOK/TEAMS ======================= */
@@ -839,8 +837,8 @@ Gracias.`;
       const badge = document.querySelector(`.tile[data-key="${key}"] .badge`);
       if(!badge) return;
       const url = healthUrlFor(key);
-      // Estado intermedio (si no deseas mostrar nada, elimina estas 3 líneas):
-      badge.textContent = 'Cheking';
+      // Estado intermedio:
+      badge.textContent = 'Checking';
       badge.style.background  = '#eef3ff';
       badge.style.borderColor = '#dbe6ff';
       badge.style.color       = '#0e3a82';
@@ -870,17 +868,19 @@ Gracias.`;
         title: 'Ayuda rápida — Indicador backlog (beta)',
         intro: 'Módulo en preparación para gestionar exclusiones del indicador backlog.',
         bullets: [
-          'Modulo para razonar justificaciones frenta a situaciones exogenas.',
-          'Identificar pendientes y exclusiones por OT y periodos (ej. semanal).',
-          'Cuando se active, “Importar datos” actualizará la vista y métricas del backlog.'
+          'Mientras está en “Próximamente”, puedes definir tu plantilla de columnas en Excel.',
+          'La idea es calcular pendientes y exclusiones por OT y periodos (ej. semanal).',
+          'Cuando se active, “Importar datos” actualizará la vista y métricas del backlog.',
+          'Consulta con el equipo qué campos mínimos serán obligatorios.'
         ]
       },
       sla: {
         title: 'Ayuda rápida — Exclusiones SLA (beta)',
         intro: 'Módulo pensado para justificar exclusiones frente a métricas de SLA.',
         bullets: [
-          'Estructura sugerida: IM, tramo temporal, causal, evidencia y estado de validación.',
-          'Se habilitarán reglas para validar causales y generar reportes.',
+          'Estructura sugerida: OT, tramo temporal, causal, evidencia y estado de validación.',
+          'Se habilitarán reglas para validar causales y generar reportes para auditoría.',
+          'Habrá exportación a Excel con filtros por rango de fechas y causal.',
           'Prepara tus archivos con encabezados consistentes para una activación sin fricción.'
         ]
       }
@@ -900,7 +900,7 @@ Gracias.`;
         <p>${data.intro}</p>
         <ul>${lis}</ul>
       `;
-      hp.style.display = 'inline-block';  // compacto y adaptado al contenido
+      hp.style.display = 'inline-block';
 
       const btnClose = document.getElementById('helpCloseBtn');
       btnClose?.addEventListener('click', () => { hp.style.display = 'none'; });
@@ -922,7 +922,6 @@ Gracias.`;
     $$('#tiles .tile').forEach(t=>{
       t.addEventListener('click', ()=>{
         const key = t.getAttribute('data-key');
-
         // Mostrar ayuda SIEMPRE al hacer clic
         renderHelp(key);
 
