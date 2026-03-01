@@ -387,14 +387,14 @@
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
-    const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
+const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
 
-    /* === Backends por módulo === */
-    const BACKENDS = {
-      operatividad: API_BASE,
-      backlog: 'AQUI PONES LA URL DEL BACKEND',
-      sla:     'AQUI PONES LA URL DEL BACKEND'
-    };
+/* === Backends por módulo — p1 === */
+const BACKENDS = {
+  operatividad: `${API_BASE}/p1`,
+  backlog:      `${API_BASE}/p1`,           // puedes dejar /p1 mientras estén en beta
+  sla:          `${API_BASE}/p1`
+};
 
     /* ====== Helpers ====== */
     const $  = s => document.querySelector(s);
@@ -516,4 +516,5 @@
   });
   </script>
 </body>
+
 </html>
