@@ -541,7 +541,8 @@ body{
       <div class="sidebar__scroll">
         <div class="brand">
           <div class="brand-logo" id="brandLogo">
-            <img src="dominion_logo.png" alt="Dominion" onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
+            <img src="dominion_logo.png" alt="Dominion"
+                 onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
             <span class="fallback-letter" aria-hidden="true">D</span>
           </div>
           <div class="brand-txt">
@@ -611,7 +612,7 @@ body{
       </div>
     </section>
 
-    <!-- LOG GLOBAL (sin fondo y un poco más abajo) -->
+    <!-- LOG GLOBAL -->
     <section class="container log-band" aria-live="polite">
       <div id="globalLogWrap" class="global-log-wrap">
         <span class="global-log-label" aria-hidden="true">Última acción:</span>
@@ -816,11 +817,17 @@ Gracias.`;
       badge.style.borderColor  = style.border;
       badge.style.color        = style.color;
     }
+
+    // <<< CORREGIDO: checkHealth tolerante a CORS + cache-buster >>>
     async function checkHealth(url, timeoutMs = 2500){
+      const sep = url.includes('?') ? '&' : '?';
+      const urlNoCache = `${url}${sep}ts=${Date.now()}`;
+
       const controller = new AbortController();
-      const id = setTimeout(()=>controller.abort(), timeoutMs);
+      const id = setTimeout(() => controller.abort(), timeoutMs);
+
       try{
-        const res = await fetch(url, { mode:'cors', cache:'no-store', signal:controller.signal });
+        const res = await fetch(urlNoCache, { mode:'cors', cache:'no-store', signal:controller.signal });
         clearTimeout(id);
         if(!res.ok) return false;
         try{
@@ -830,18 +837,27 @@ Gracias.`;
         return true;
       }catch(_){
         clearTimeout(id);
-        return false;
+        // Fallback: en caso de CORS duro, intenta no-cors; si no lanza, asumimos online
+        try{
+          await fetch(urlNoCache, { mode:'no-cors', cache:'no-store' });
+          return true;
+        }catch(_2){
+          return false;
+        }
       }
     }
+
     async function updateHealthFor(key){
       const badge = document.querySelector(`.tile[data-key="${key}"] .badge`);
       if(!badge) return;
       const url = healthUrlFor(key);
-      // Estado intermedio:
-      badge.textContent = 'Checking';
+
+      // Estado intermedio sutil
+      badge.textContent = '...';
       badge.style.background  = '#eef3ff';
       badge.style.borderColor = '#dbe6ff';
       badge.style.color       = '#0e3a82';
+
       const ok = await checkHealth(url);
       applyBadgeStyle(badge, ok ? ONLINE_STYLE : OFFLINE_STYLE);
     }
