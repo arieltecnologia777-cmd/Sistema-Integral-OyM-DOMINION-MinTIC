@@ -73,15 +73,15 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
  <div class="header-title">Exclusiones de Operatividad</div>
  <div class="header-sub"><strong>¡Bienvenido al modulo de exclusiones!</strong></div>
  <div class="controls">
- <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
- <button id="btnLimpiar" class="btn btn-light" type="button">Limpiar</button>
- <div class="search-pill" title="Buscar por OT">
- <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
- <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
- </svg>
- <input id="busqueda" type="text" placeholder="Buscar OTs…" autocomplete="off" />
- </div>
- <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
+  <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
+  <button id="btnLimpiar" class="btn btn-light" type="button">Limpiar</button>
+  <div class="search-pill" title="Buscar por OT">
+   <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+   </svg>
+   <input id="busqueda" type="text" placeholder="Buscar OTs…" autocomplete="off" />
+  </div>
+  <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
  </div>
 </div>
 <!-- Contenedor -->
@@ -94,7 +94,8 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
 <div id="alerta"></div>
 <script>
 /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
-const API_BASE = "https://exclusiones-worker.modulo-de-exclusiones.workers.dev"; // ⬅️ Cambia por tu dominio Workers
+/* >>> PROYECTO p1: base con prefijo /p1 para todos los endpoints <<< */
+const API_BASE = "https://exclusiones-worker.modulo-de-exclusiones.workers.dev/p1";
 
 /* ======= Estado ======= */
 let datos = [];
@@ -108,7 +109,7 @@ const $ = sel => document.querySelector(sel);
 function mostrarAlerta(msg){ const el=$('#alerta'); el.textContent=msg; el.style.display='block'; }
 function ocultarAlerta(){ const el=$('#alerta'); el.textContent=''; el.style.display='none'; }
 function debounce(fn, wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
-function esc(s){ return (s??"").toString().replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">"); }
+function esc(s){ return (s??"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function cssId(texto){ return btoa(unescape(encodeURIComponent(texto))).replace(/=/g,''); }
 function norm(s){ return (s ?? '').toString().trim(); }
 function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0');
@@ -129,7 +130,8 @@ async function cargarDesdeServidor(){
  const btn=$('#btnCargar');
  try{
   ocultarAlerta(); btn.disabled=true; btn.textContent='Cargando…';
-  const res = await fetch(`${API_BASE}/api/datos`, { method:'GET', mode:'cors', headers:{'Accept':'application/json'} });
+  // cache‑buster para evitar respuestas cacheadas en Pages
+  const res = await fetch(`${API_BASE}/api/datos?ts=${Date.now()}`, { method:'GET', mode:'cors', headers:{'Accept':'application/json'} });
   if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const j = await res.json();
   const arr = Array.isArray(j?.data) ? j.data : [];
