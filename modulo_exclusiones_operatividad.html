@@ -5,7 +5,7 @@
 <title>Exclusiones – Google Sheets (CSV + WebApp por OT)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- Sello de build para diagnosticar versiones renderizadas -->
-<meta name="x-build" content="<?= cacheBuster ?>">
+<meta name="x-build" content="build-2026-03-01">
 <style>
 :root{ --dom-blue:#0e4aa8; --ink:#0e2040; }
 *{box-sizing:border-box}
@@ -84,14 +84,18 @@ body{ font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; background:linea
   <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
  </div>
 </div>
+
 <!-- Contenedor -->
 <div class="wrap" id="wrapGrupos"></div>
+
 <!-- Pie -->
 <div class="pie">
  <div class="info-res" id="infoRes">0 registros</div>
  <div class="paginacion" id="paginacion"></div>
 </div>
+
 <div id="alerta"></div>
+
 <script>
 /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
 /* >>> PROYECTO p1: base con prefijo /p1 para todos los endpoints <<< */
@@ -109,7 +113,12 @@ const $ = sel => document.querySelector(sel);
 function mostrarAlerta(msg){ const el=$('#alerta'); el.textContent=msg; el.style.display='block'; }
 function ocultarAlerta(){ const el=$('#alerta'); el.textContent=''; el.style.display='none'; }
 function debounce(fn, wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
-function esc(s){ return (s??"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function esc(s){
+  return (s??"").toString()
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
 function cssId(texto){ return btoa(unescape(encodeURIComponent(texto))).replace(/=/g,''); }
 function norm(s){ return (s ?? '').toString().trim(); }
 function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0');
