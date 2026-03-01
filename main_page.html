@@ -820,16 +820,16 @@ html[data-theme="dark"] .exclusiones-card .icon{
 
   // ===== Modal de contraseña (estilizado) + navegación y recuerdo del módulo =====
   (function(){
-    // Contraseñas de prueba (en este mismo archivo)
+    // Contraseñas (actualizadas)
     const ACCESS_PASSWORDS = {
-      admin: '12345',
-      gestor: 'qwertusa'
+      admin: 'adm1nroot#',
+      gestor: 'g3st0ruser#'
     };
 
-    // Destinos (ajustar cuando tengas URLs finales)
+    // Destinos (actualizados solo gestor)
     const TARGET_URLS = {
       admin: 'admin_exclusiones.html',
-      gestor: 'exclusiones.html'
+      gestor: 'http://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/gestor_exclusiones.html'
     };
 
     const modal = makeModal('pwdBackdrop', 'pwdTitle');
@@ -986,8 +986,8 @@ html[data-theme="dark"] .exclusiones-card .icon{
         curItem.classList.remove('is-active'); current = nextIndex;
       }
 
-      const goPrev = ()=> show(current - 1);
-      const goNext = ()=> show(current + 1);
+      const goPrev = () => show(current - 1);
+      const goNext = () => show(current + 1);
 
       if (items.length < 2){ if (prev) prev.style.display='none'; if (next) next.style.display='none'; }
       else { prev?.addEventListener('click', goPrev); next?.addEventListener('click', goNext); }
@@ -1061,11 +1061,3 @@ html[data-theme="dark"] .exclusiones-card .icon{
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
