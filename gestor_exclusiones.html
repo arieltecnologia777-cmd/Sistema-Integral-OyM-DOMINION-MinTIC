@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin – Exclusiones</title>
+  <title>Admin – Exclusiones (Gestor)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
 
@@ -169,6 +169,7 @@
   .help p{ margin: 0 0 8px; color:#4e5d78; }
   .help ul{ margin: 6px 0 0 18px; padding:0; color:#22314a; }
   .help li{ margin: 4px 0; }
+
   .help .help-close{
     appearance:none; border:1px solid #cfe0ff; background:#eef3ff;
     color:#0e3a82; border-radius:999px; cursor:pointer; box-shadow:0 6px 14px rgba(14,42,94,.16);
@@ -386,19 +387,15 @@
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
-    <!-- CONFIG BACKEND -->
-<script>
-  const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
+    /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
+    const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
 
-  // === Backends por módulo — p1 ===
-  const BACKENDS = {
-    operatividad: `${API_BASE}/p1`,
-    backlog:      `${API_BASE}/p1`,
-    sla:          `${API_BASE}/p1`
-  };
-
-  // ... (mantén el resto igual)
-</script>
+    /* === Backends por módulo — p1 === */
+    const BACKENDS = {
+      operatividad: `${API_BASE}/p1`,
+      backlog:      `${API_BASE}/p1`,
+      sla:          `${API_BASE}/p1`
+    };
 
     /* ====== Helpers ====== */
     const $  = s => document.querySelector(s);
@@ -419,11 +416,17 @@
       badge.style.borderColor  = style.border;
       badge.style.color        = style.color;
     }
+
+    // <<< checkHealth tolerante a CORS + cache-buster >>>
     async function checkHealth(url, timeoutMs = 2500){
+      const sep = url.includes('?') ? '&' : '?';
+      const urlNoCache = `${url}${sep}ts=${Date.now()}`;
+
       const controller = new AbortController();
-      const id = setTimeout(()=>controller.abort(), timeoutMs);
+      const id = setTimeout(() => controller.abort(), timeoutMs);
+
       try{
-        const res = await fetch(url, { mode:'cors', cache:'no-store', signal:controller.signal });
+        const res = await fetch(urlNoCache, { mode:'cors', cache:'no-store', signal:controller.signal });
         clearTimeout(id);
         if(!res.ok) return false;
         try{
@@ -433,13 +436,20 @@
         return true;
       }catch(_){
         clearTimeout(id);
-        return false;
+        // Fallback: si CORS bloquea lectura, intentamos no-cors y consideramos online si no lanza
+        try{
+          await fetch(urlNoCache, { mode:'no-cors', cache:'no-store' });
+          return true;
+        }catch(_2){
+          return false;
+        }
       }
     }
+
     async function updateHealthFor(key){
       const sideBadge = document.querySelector(`.sbtn[data-key="${key}"] .badge`);
       if (sideBadge){
-        sideBadge.textContent = 'Cheking';
+        sideBadge.textContent = 'Checking';
         sideBadge.style.background  = '#eef3ff';
         sideBadge.style.borderColor = '#dbe6ff';
         sideBadge.style.color       = '#0e3a82';
@@ -520,6 +530,4 @@
   });
   </script>
 </body>
-
 </html>
-
