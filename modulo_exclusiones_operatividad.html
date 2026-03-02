@@ -5,30 +5,25 @@
 <title>Exclusiones – Operatividad (tabla + backend)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- Sello de build para diagnosticar versiones renderizadas -->
-<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1">
+<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1+B-option">
 <style>
 :root{
-  --dom-blue:#0e4aa8;          /* Azul corporativo */
+  --dom-blue:#0e4aa8; /* Azul corporativo */
   --dom-blue-hover:#0c3f8f;
   --ink:#0e2040;
   --head:#ffffff;
-
   /* Líneas de tabla */
   --line:#e4ebf6;
-
   /* Botones / estados */
   --pill:#cfe0ff;
-  --success:#16a34a;           /* Verde de “OT gestionada” */
-
+  --success:#16a34a; /* Verde de “OT gestionada” */
   /* Hover de fila (solo relieve) */
   --row-hover-shadow:0 10px 24px rgba(0,0,0,.10);
   --row-hover-lift:-1px;
   --row-radius:12px;
-
   /* Realce de botones activos al pasar por la fila (excepto Enviar/Success/Eliminar) */
   --chip-bg-strong:#e4efff;
   --chip-border-strong:#bfd6ff;
-
   /* Paleta “danger” (Eliminar) */
   --danger:#b4232c;
   --danger-bg:#fde8ee;
@@ -43,7 +38,6 @@ body{
   background:linear-gradient(180deg,#eef4ff,#fff);
   margin:0; color:#1a2333;
 }
-
 /* ===== Header / Controls ===== */
 .header{
   background:#ffffffcc; backdrop-filter: blur(12px);
@@ -53,7 +47,6 @@ body{
 }
 .header-title{ font-size:30px; font-weight:900; color:#0e2040; letter-spacing:-.2px; }
 .header-sub{ margin-top:4px; color:#2a3348; font-size:15px; }
-
 .controls{
   margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
 }
@@ -61,7 +54,6 @@ body{
 .btn-blue{ background:#0e4aa8; color:#fff; }
 .btn-light{ background:#e8eef7; color:#0e4aa8; }
 .btn[disabled]{ opacity:.65; cursor:not-allowed; }
-
 .search-pill{
   display:flex; align-items:center; gap:8px; background:#fff;
   border:1px solid #d7e0f5; border-radius:10px; height:40px; padding:0 12px;
@@ -69,14 +61,12 @@ body{
 }
 .search-pill input{ border:none; outline:none; height:100%; font-size:14px; min-width:220px; max-width:360px; }
 .search-icon{ width:16px; height:16px; opacity:.55; }
-
 /* Píldora de última actualización */
 .badge-ts{
   background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff;
   padding:8px 12px; border-radius:10px; font-size:12px; display:inline-flex; align-items:center; gap:8px;
 }
 .badge-dot{ width:8px; height:8px; border-radius:999px; background:#10b981; }
-
 /* Píldora estadísticas header (base) */
 #headerStats{
   background:#f6f9ff;
@@ -96,17 +86,15 @@ body{
   border-color:var(--success);
   color:#ffffff;
   text-shadow:
-    0  1px 0 rgba(255,255,255,.18),
+    0 1px 0 rgba(255,255,255,.18),
     0 -1px 0 rgba(255,255,255,.18),
-    1px 0  0 rgba(255,255,255,.18),
-   -1px 0  0 rgba(255,255,255,.18);
+    1px 0 0 rgba(255,255,255,.18),
+    -1px 0 0 rgba(255,255,255,.18);
   box-shadow:0 2px 10px rgba(22,163,74,.18);
 }
 #headerStats.ok::before{ content:"✅"; display:inline-block; margin-right:4px; }
-
 /* ===== Contenedor ===== */
 .wrap{ width:92%; margin:18px auto 0; }
-
 /* ===== Tabla ===== */
 .tabla-box{
   background:#fff; border:1px solid rgba(199,215,243,.40);
@@ -118,7 +106,6 @@ body{
   border-spacing:0;
   table-layout:auto;
 }
-
 /* Encabezados */
 .tabla thead th{
   background:var(--head);
@@ -130,7 +117,6 @@ body{
 }
 .tabla thead th:first-child{ text-align:left; }
 .tabla thead th:last-child{ border-right:none; }
-
 /* Celdas */
 .tabla tbody td{
   padding:14px 16px;
@@ -140,7 +126,6 @@ body{
 }
 .tabla tbody td:last-child{ border-right:none; }
 .col-ot{ font-weight:800; color:#0e2040; white-space:nowrap; }
-
 /* Hover fila (relieve) */
 .tabla tbody tr{
   transition: transform .16s ease, filter .16s ease;
@@ -157,11 +142,9 @@ body{
   border-top-right-radius:var(--row-radius);
   border-bottom-right-radius:var(--row-radius);
 }
-
 /* Contadores */
 .count-total{ font-weight:800; color:#0e2040; }
-.count-pend{  font-weight:800; color:#0e4aa8; }
-
+.count-pend{ font-weight:800; color:#0e4aa8; }
 /* ===== Botones (tabla) ===== */
 .btn-pill{
   appearance:none;
@@ -179,11 +162,9 @@ body{
   background:#f9fbff; color:#6b7893; border-color:#e1eaff; cursor:not-allowed;
 }
 .btn-pill:focus-visible{ outline:2px solid #94b8ff; outline-offset:2px; }
-
 /* Íconos planos */
 .btn-pill .icon{ width:16px; height:16px; display:inline-block; }
 .btn-pill .icon svg{ width:16px; height:16px; display:block; }
-
 /* Hover de fila: realce general (excepto enviar/success/eliminar) */
 .tabla tbody tr:hover .btn-pill:not(:disabled):not([data-mode="enviar"]):not(.success):not(.btn-eliminar){
   background:var(--chip-bg-strong);
@@ -196,7 +177,6 @@ body{
 .tabla tbody tr:hover .btn-primary[data-mode="gestionar"] .icon svg{
   stroke:var(--dom-blue) !important; fill:none; stroke-width:1.8;
 }
-
 /* Botón principal ENVIAR (solo popup) y CONTINUAR (tabla) en azul sólido */
 .btn-primary[data-mode="enviar"],
 .btn-primary[data-mode="continuar"]{
@@ -213,20 +193,17 @@ body{
 .btn-primary[data-mode="continuar"]:focus-visible{
   outline:2px solid #a8c4ff; outline-offset:2px;
 }
-
 /* Éxito */
 .btn-primary.success{
   background:var(--success);
   border-color:var(--success);
   color:#fff;
 }
-
 /* Iconos por estado (engranajes + lápiz) */
 .btn-primary .icon-gear svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
 .btn-primary[data-mode="gestionar"] .icon-gear svg{ stroke:#324a78; }
 .btn-primary .icon-pencil svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
 .btn-primary[data-mode="continuar"] .icon-pencil svg{ stroke:#fff; }
-
 /* Eliminar (por OT) – local */
 .btn-eliminar{ display:inline-flex; align-items:center; gap:8px; }
 .btn-eliminar:not(:disabled){
@@ -237,10 +214,8 @@ body{
   background:var(--danger-bg-hover); border-color:var(--danger-border-hover);
   transform: translateY(-1px); filter: saturate(1.05);
 }
-
 /* Vista previa */
 .btn-preview .icon svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
-
 /* Botón Eliminar registros (HEADER) – local */
 .btn-header-danger{
   display:inline-flex; align-items:center; gap:8px;
@@ -253,7 +228,6 @@ body{
 .btn-header-danger:disabled{
   background:#f6f7fb; color:#8d95a8; border-color:#e4e9f6; box-shadow:none; cursor:not-allowed;
 }
-
 /* Pie / paginación */
 .pie{ width:92%; margin: 14px auto 24px; display:flex; align-items:center; justify-content:flex-start; gap:8px; flex-wrap:wrap; }
 .paginacion{ display:flex; gap:6px; flex-wrap:wrap; }
@@ -261,10 +235,8 @@ body{
   padding:8px 12px; border-radius:10px; border:1px solid var(--pill); background:#fff; color:#0e4aa8; cursor:pointer;
 }
 .paginacion button[aria-current="page"]{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
-
 /* Alertas inline */
 #alerta{ width:92%; margin:8px auto 0; color:#b00020; font-size:13px; display:none; }
-
 /* ===== Modal ===== */
 .modal{ position:fixed; inset:0; display:none; z-index:9999; }
 .modal.show{ display:block; }
@@ -281,7 +253,7 @@ body{
 .modal .dialog header .actions{ display:flex; align-items:center; gap:8px; }
 .modal .dialog header .close{
   background:#fff; color:#0e4aa8;
-  border:1px solid var(--pill); border-radius:999px; padding:6px 10px; cursor:pointer;
+  border:1px solid #e1e8f6; border-radius:999px; padding:6px 10px; cursor:pointer;
 }
 .modal .dialog header .close:hover{ background:#f3f7ff; }
 .btn-send{
@@ -290,7 +262,6 @@ body{
 }
 .btn-send:hover{ background:var(--dom-blue-hover); }
 .btn-send:disabled{ opacity:.6; cursor:not-allowed; background:#a9c3f3; }
-
 .modal .body{
   padding:14px 16px; overflow:auto; background:linear-gradient(180deg,#f8fbff,#fff);
 }
@@ -304,7 +275,6 @@ body{
 .registro textarea:focus{ outline:2px solid #0e4aa822; box-shadow: inset 0 0 0 1px #cbd8ef; }
 .registro .preview{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
 .registro .preview img{ width:70px; height:70px; border-radius:10px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,.2); }
-
 /* ===== Toast ===== */
 .toast-host{
   position:fixed; right:18px; bottom:18px; z-index:10000;
@@ -316,11 +286,10 @@ body{
   box-shadow:0 12px 30px rgba(0,0,0,.18);
   padding:10px 14px; font-size:14px; line-height:1.25; animation:toast-in .2s ease;
 }
-.toast.info{    border-left-color: var(--dom-blue); }
+.toast.info{ border-left-color: var(--dom-blue); }
 .toast.success{ border-left-color: var(--success); }
-.toast.error{   border-left-color: #e11d48; }
+.toast.error{ border-left-color: #e11d48; }
 @keyframes toast-in{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
-
 /* ===== Confirm ===== */
 .confirm{ position:fixed; inset:0; display:none; z-index:11000; }
 .confirm.show{ display:block; }
@@ -338,7 +307,6 @@ body{
 .confirm .btn-accept:hover{ background:var(--dom-blue-hover); border-color:var(--dom-blue-hover); }
 .confirm .btn-cancel{ background:#f4f6fb; color:#34445f; border-color:#e3e9f6; }
 .confirm .btn-cancel:hover{ background:#ecf1fb; }
-
 /* Panel Colores (provisional) */
 .palette-fab{
   position:fixed; right:18px; bottom:18px; z-index:9000;
@@ -366,7 +334,6 @@ body{
 .palette .actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
 .palette .btn-x{ background:#fff; color:#0e4aa8; border:1px solid #cfe0ff; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:13px; }
 .palette .btn-x:hover{ background:#f7fbff; }
-
 /* Mobile */
 @media (max-width: 900px){
   .controls{ gap:8px; }
@@ -381,19 +348,15 @@ body{
   <div class="header-sub"><strong>¡Bienvenido al modulo de exclusiones!</strong></div>
   <div class="controls">
     <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
-
     <!-- Eliminar registros (HEADER) - Local -->
     <button id="btnEliminarGlobal" class="btn-header-danger" type="button" disabled>🗑️ Eliminar registros</button>
-
     <div class="search-pill" title="Buscar por OT">
       <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
       </svg>
       <input id="busqueda" type="text" placeholder="Buscar OTs…" autocomplete="off" />
     </div>
-
     <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
-
     <!-- Stats en header -->
     <span id="headerStats">—</span>
   </div>
@@ -481,10 +444,10 @@ const porPaginaGrupos = 6;
 const $ = sel => document.querySelector(sel);
 
 /* Conjuntos de estado */
-const otsEnviadas  = new Set();  // OTs ya gestionadas (server OK)
-const otsEnEdicion = new Set();  // OTs con edición pendiente (cerraron popup)
-let otModalActual  = null;       // OT abierta en modal
-let modalSoloVista = false;      // Modal en modo vista previa
+const otsEnviadas = new Set(); // OTs ya enviadas al backend (solo tracking)
+const otsEnEdicion = new Set(); // OTs con edición pendiente (cerraron popup)
+let otModalActual = null;       // OT abierta en modal
+let modalSoloVista = false;     // Modal en modo vista previa
 
 /* ======= Utils ======= */
 function mostrarAlerta(msg){ const el=$('#alerta'); el.textContent=msg; el.style.display='block'; }
@@ -493,13 +456,13 @@ function debounce(fn, wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setT
 function esc(s){
   return (s??"").toString()
     .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;");
+    .replace(/\</g,"&lt;")
+    .replace(/\>/g,"&gt;");
 }
 function cssId(texto){ return btoa(unescape(encodeURIComponent(texto))).replace(/=/g,''); }
 function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0');
- const yyyy=d.getFullYear(), hh=String(d.getHours()).padStart(2,'0'), mi=String(d.getMinutes()).padStart(2,'0'), ss=String(d.getSeconds()).padStart(2,'0');
- return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss}`; }
+  const yyyy=d.getFullYear(), hh=String(d.getHours()).padStart(2,'0'), mi=String(d.getMinutes()).padStart(2,'0'), ss=String(d.getSeconds()).padStart(2,'0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss}`; }
 function setLastUpdate(dateObj){ const el=$('#lastUpdate'); if(el) el.innerHTML = `<span class="badge-dot"></span>Última actualización: ${formatTs(dateObj)}`; }
 
 /* Toast */
@@ -521,7 +484,6 @@ const appConfirm = document.getElementById('appConfirm');
 const confirmMsg = document.getElementById('confirmMsg');
 const confirmAccept = document.getElementById('confirmAccept');
 const confirmCancel = document.getElementById('confirmCancel');
-
 function confirmModal(message='¿Confirmas esta acción?'){
   return new Promise(resolve=>{
     confirmMsg.textContent = message;
@@ -529,7 +491,6 @@ function confirmModal(message='¿Confirmas esta acción?'){
     appConfirm.setAttribute('aria-hidden', 'false');
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow='hidden';
-
     const clean = ()=>{
       appConfirm.classList.remove('show');
       appConfirm.setAttribute('aria-hidden','true');
@@ -539,7 +500,6 @@ function confirmModal(message='¿Confirmas esta acción?'){
       confirmAccept.onclick = null;
       confirmCancel.onclick = null;
     };
-
     confirmAccept.onclick = ()=>{ clean(); resolve(true); };
     confirmCancel.onclick = ()=>{ clean(); resolve(false); };
     const onBackdrop = (e)=>{};
@@ -562,20 +522,21 @@ async function cargarDesdeServidor(){
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const j = await res.json();
     const arr = Array.isArray(j?.data) ? j.data : [];
-    /* Normalizamos a estructura local usada por la UI (beta) */
+    /* Normalizamos a estructura local usada por la UI */
     datos = arr.map((r,i)=>({
       id:i+1,
       fecha: r.fecha ?? '',
       ot : (r.ot ?? '').toString(),
       causa: r.causa ?? '',
-      fotos: []   // adjuntos solo locales para UI
+      fotos: [] // adjuntos solo locales para UI
     })).filter(x=>x.ot);
     filtrados=[...datos];
     paginaActual=1;
     construirGruposPorOT();
     render();
     setLastUpdate(new Date());
-    otsEnviadas.clear();
+    // Reseteos
+    // (mantenemos tracking pero el estado "verde" depende SOLO de pendientes=0)
     otsEnEdicion.clear();
     showToast('Datos cargados desde el servidor.', 'info');
   }catch(err){
@@ -590,10 +551,10 @@ async function cargarDesdeServidor(){
 
 /* ======= Cómputos ======= */
 function contarCompletados(ot){
- const items = datos.filter(r => (r.ot??"").trim() === (ot??"").trim());
- const total = items.length;
- const completos = items.filter(r => (r.causa??"").trim() !== "" && (r.fecha??"").trim() !== "").length;
- return { completos, total, pendientes: Math.max(0, total - completos) };
+  const items = datos.filter(r => (r.ot??"").trim() === (ot??"").trim());
+  const total = items.length;
+  const completos = items.filter(r => (r.causa??"").trim() !== "" && (r.fecha??"").trim() !== "").length;
+  return { completos, total, pendientes: Math.max(0, total - completos) };
 }
 function calcularPendientesGlobal(){
   const map = new Map();
@@ -609,7 +570,6 @@ function updateHeaderStats(){
   const map = new Map(); for(const r of datos){ const k=(r.ot??'').toString().trim(); if(!map.has(k)) map.set(k,1); }
   const totalGrupos = map.size;
   const pendientesGlobales = calcularPendientesGlobal();
-
   const statsEl = document.getElementById('headerStats');
   if(statsEl){
     statsEl.textContent = `${totalItems} registros • ${totalGrupos} grupos (por OT) • ${pendientesGlobales} pendientes`;
@@ -621,167 +581,181 @@ function updateHeaderStats(){
 
 /* ======= Búsqueda / agrupación ======= */
 function aplicarBusqueda(){
- const q=($('#busqueda').value??"").toLowerCase().trim();
- filtrados = q ? datos.filter(d => (d.ot??"").toLowerCase().includes(q)) : [...datos];
- paginaActual=1; construirGruposPorOT(); render();
+  const q=($('#busqueda').value??"").toLowerCase().trim();
+  filtrados = q ? datos.filter(d => (d.ot??"").toLowerCase().includes(q)) : [...datos];
+  paginaActual=1; construirGruposPorOT(); render();
 }
 function construirGruposPorOT(){
- const map=new Map();
- for(const r of filtrados){
-  const k=(r.ot ?? '').toString().trim() || "—"; if(!map.has(k)) map.set(k, []); map.get(k).push(r);
- }
- grupos = Array.from(map.entries()).map(([k,items])=>({clave:k,items}));
- grupos.sort((a,b)=> a.clave.localeCompare(b.clave,'es',{numeric:true}));
+  const map=new Map();
+  for(const r of filtrados){
+    const k=(r.ot ?? '').toString().trim();
+    if(!map.has(k)) map.set(k, []);
+    map.get(k).push(r);
+  }
+  grupos = Array.from(map.entries()).map(([k,items])=>({clave:k,items}));
+  grupos.sort((a,b)=> a.clave.localeCompare(b.clave,'es',{numeric:true}));
 }
 
 /* ======= Actualización ligera ======= */
+/* Opción B: El botón principal queda verde si pendientes===0 (independiente del backend) */
 function updateEstadosOT(ot){
   const { pendientes } = contarCompletados(ot);
 
-  // Modal: enviar habilitado/inhabilitado
-  const title = document.getElementById('modalTitle')?.textContent ?? '';
-  const modal = document.getElementById('modalRegistros');
-  if (modal.classList.contains('show') && title.includes(`OT ${ot}`) && !modalSoloVista){
+  // Modal: enviar habilitado/inhabilitado (nunca cambia a "OT gestionada" aquí)
+  if (document.getElementById('modalRegistros').classList.contains('show') && otModalActual === ot && !modalSoloVista){
     const modalEnviarBtn = document.getElementById('modalEnviar');
     if(modalEnviarBtn){
-      if(otsEnviadas.has(ot)){ modalEnviarBtn.textContent = 'OT gestionada'; modalEnviarBtn.disabled = true; }
-      else{ modalEnviarBtn.textContent = 'Enviar registros'; modalEnviarBtn.disabled = pendientes !== 0; }
+      modalEnviarBtn.textContent = 'Enviar registros';
+      modalEnviarBtn.disabled = pendientes !== 0;
     }
   }
 
-  // Tabla: actualizar contador de pendientes
+  // Tabla: contador y estado principal
   const btnPrim = document.getElementById(`btn_primary_${cssId(ot)}`);
   if(btnPrim){
     const tr = btnPrim.closest('tr');
     const pendEl = tr?.querySelector('.count-pend');
     if(pendEl) pendEl.textContent = String(pendientes);
-  }
 
+    if(pendientes === 0){
+      btnPrim.innerHTML = `✅ OT gestionada`;
+      btnPrim.classList.add('success');
+      btnPrim.disabled = true;
+      btnPrim.setAttribute('data-mode','done');
+      otsEnEdicion.delete(ot);
+    }else{
+      btnPrim.classList.remove('success');
+      btnPrim.disabled = false;
+      const enEd = otsEnEdicion.has(ot);
+      if(enEd){
+        btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+        btnPrim.setAttribute('data-mode','continuar');
+      }else{
+        btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
+        btnPrim.setAttribute('data-mode','gestionar');
+      }
+    }
+  }
   updateHeaderStats();
 }
 
-/* ======= SVG helpers (engranajes dobles, lápiz, ojo) ======= */
+/* ======= SVG helpers ======= */
 function svgGear(){
   return `
-    <span class="icon icon-gear" aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-        <!-- grande -->
-        <g transform="translate(-2,1) scale(0.95)">
-          <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z"/>
-          <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0 0 1-.6-1.4l-1.6-.4Z"/>
-        </g>
-        <!-- pequeño -->
-        <g transform="translate(4,-4) scale(0.62)">
-          <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z"/>
-          <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0 0 1-.6-1.4l-1.6-.4Z"/>
-        </g>
-      </svg>
-    </span>`;
+  <span class="icon icon-gear" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <!-- grande -->
+      <g transform="translate(-2,1) scale(0.95)">
+        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0 0 1-.6-1.4l-1.6-.4Z"/>
+      </g>
+      <!-- pequeño -->
+      <g transform="translate(4,-4) scale(0.62)">
+        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0  0 1 0-7Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
+      </g>
+    </svg>
+  </span>`;
 }
 function svgPencil(){
   return `
-    <span class="icon icon-pencil" aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Z"/>
-        <path d="M14.06 6.19l3.75 3.75"/>
-      </svg>
-    </span>`;
+  <span class="icon icon-pencil" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Z"/>
+      <path d="M14.06 6.19l3.75 3.75"/>
+    </svg>
+  </span>`;
 }
 function svgEye(){
   return `
-    <span class="icon icon-eye" aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-        <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6Z" />
-        <circle cx="12" cy="12" r="3.2" />
-      </svg>
-    </span>`;
+  <span class="icon icon-eye" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6Z" />
+      <circle cx="12" cy="12" r="3.2" />
+    </svg>
+  </span>`;
 }
 
 /* ======= Render (tabla por OT + acciones) ======= */
 function render(){
- const wrap=$('#wrapGrupos'); wrap.innerHTML="";
- const totalGrupos=grupos.length;
+  const wrap=$('#wrapGrupos'); wrap.innerHTML="";
+  const totalGrupos=grupos.length;
+  const ini=(paginaActual-1)*porPaginaGrupos, fin=ini+porPaginaGrupos, gruposPagina=grupos.slice(ini,fin);
 
- const ini=(paginaActual-1)*porPaginaGrupos, fin=ini+porPaginaGrupos, gruposPagina=grupos.slice(ini,fin);
+  const box=document.createElement('div'); box.className='tabla-box';
+  const tbl=document.createElement('table'); tbl.className='tabla';
+  tbl.innerHTML=`
+    <thead>
+      <tr>
+        <th>OT</th>
+        <th>Total registros</th>
+        <th>Registros pendientes</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyOTs"></tbody>`;
+  box.appendChild(tbl);
+  wrap.appendChild(box);
 
- const box=document.createElement('div'); box.className='tabla-box';
- const tbl=document.createElement('table'); tbl.className='tabla';
- tbl.innerHTML=`
-   <thead>
-     <tr>
-       <th>OT</th>
-       <th>Total registros</th>
-       <th>Registros pendientes</th>
-       <th>Acciones</th>
-     </tr>
-   </thead>
-   <tbody id="tbodyOTs"></tbody>`;
- box.appendChild(tbl);
- wrap.appendChild(box);
+  const tbody = tbl.querySelector('#tbodyOTs');
+  for(const g of gruposPagina){
+    const otClave = g.clave;
+    const { total, pendientes } = contarCompletados(otClave);
+    const tr=document.createElement('tr');
+    const idPrimario = `btn_primary_${cssId(otClave)}`;
+    const idEliminar = `btn_eliminar_${cssId(otClave)}`;
+    const idPreview = `btn_preview_${cssId(otClave)}`;
+    const yaCompleta = pendientes === 0;
+    const enEdicion = otsEnEdicion.has(otClave) && !yaCompleta;
 
- const tbody = tbl.querySelector('#tbodyOTs');
-
- for(const g of gruposPagina){
-   const otClave = g.clave;
-   const { total, pendientes } = contarCompletados(otClave);
-
-   const tr=document.createElement('tr');
-   const idPrimario = `btn_primary_${cssId(otClave)}`;
-   const idEliminar = `btn_eliminar_${cssId(otClave)}`;
-   const idPreview  = `btn_preview_${cssId(otClave)}`;
-   const yaEnviada = otsEnviadas.has(otClave);
-   const enEdicion = otsEnEdicion.has(otClave) && !yaEnviada;
-
-   tr.innerHTML = `
-     <td class="col-ot">${esc(otClave)}</td>
-     <td><span class="count-total">${total}</span></td>
-     <td><span class="count-pend">${pendientes}</span></td>
-     <td>
-        <button class="btn-pill btn-primary" id="${idPrimario}" data-ot="${esc(otClave)}" data-mode="">
-          <!-- se setea más abajo según estado -->
-        </button>
+    tr.innerHTML = `
+      <td class="col-ot">${esc(otClave)}</td>
+      <td><span class="count-total">${total}</span></td>
+      <td><span class="count-pend">${pendientes}</span></td>
+      <td>
+        <button class="btn-pill btn-primary" id="${idPrimario}" data-ot="${esc(otClave)}" data-mode=""></button>
         <button class="btn-pill btn-preview" id="${idPreview}" data-ot="${esc(otClave)}" title="Ver registros (solo lectura)">
           ${svgEye()}Vista previa
         </button>
-        <button class="btn-pill btn-eliminar" id="${idEliminar}" data-ot="${esc(otClave)}" title="Eliminar todos los registros">🗑️ Eliminar</button>
-     </td>
-   `;
-   tbody.appendChild(tr);
+        <button class="btn-pill btn-eliminar" id="${idEliminar}" data-ot="${esc(otClave)}" title="Eliminar todos los registros" disabled>🗑️ Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
 
-   const btnPrim = tr.querySelector(`#${idPrimario}`);
-   const btnDel  = tr.querySelector(`#${idEliminar}`);
+    const btnPrim = tr.querySelector(`#${idPrimario}`);
+    const btnDel = tr.querySelector(`#${idEliminar}`);
 
-   if(yaEnviada){
-     btnPrim.innerHTML = `✅ OT gestionada`;
-     btnPrim.classList.add('success');
-     btnPrim.disabled = true;
-     btnPrim.setAttribute('data-mode','done');
-     btnDel.disabled = false;   // local only
-   }else if(enEdicion){
-     btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
-     btnPrim.disabled = false;
-     btnPrim.setAttribute('data-mode','continuar');
-     btnDel.disabled = true;    // local only
-   }else{
-     btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
-     btnPrim.disabled = false;
-     btnPrim.setAttribute('data-mode','gestionar');
-     btnDel.disabled = true;    // local only
-   }
- }
-
- renderPaginacion(totalGrupos);
- updateHeaderStats();
+    if(yaCompleta){
+      btnPrim.innerHTML = `✅ OT gestionada`;
+      btnPrim.classList.add('success');
+      btnPrim.disabled = true;
+      btnPrim.setAttribute('data-mode','done');
+      // Mantengo la regla previa: habilitar eliminar solo cuando realmente se envía (backend OK)
+      // (no cambiamos esta política en Opción B)
+      btnDel.disabled = !otsEnviadas.has(otClave);
+    }else if(enEdicion){
+      btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+      btnPrim.disabled = false;
+      btnPrim.setAttribute('data-mode','continuar');
+      btnDel.disabled = true;
+    }else{
+      btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
+      btnPrim.disabled = false;
+      btnPrim.setAttribute('data-mode','gestionar');
+      btnDel.disabled = true;
+    }
+  }
+  renderPaginacion(totalGrupos);
+  updateHeaderStats();
 }
-
 function renderPaginacion(totalGrupos){
- const cont=$('#paginacion'); cont.innerHTML="";
- const total=Math.max(1, Math.ceil(totalGrupos/porPaginaGrupos));
- for(let i=1;i<=total;i++){
-  const b=document.createElement('button'); b.textContent=i;
-  if(i===paginaActual) b.setAttribute('aria-current','page');
-  b.onclick=()=>{ paginaActual=i; render(); }; cont.appendChild(b);
- }
+  const cont=$('#paginacion'); cont.innerHTML="";
+  const total=Math.max(1, Math.ceil(totalGrupos/porPaginaGrupos));
+  for(let i=1;i<=total;i++){
+    const b=document.createElement('button'); b.textContent=i;
+    if(i===paginaActual) b.setAttribute('aria-current','page');
+    b.onclick=()=>{ paginaActual=i; render(); }; cont.appendChild(b);
+  }
 }
 
 /* ======= Modal ======= */
@@ -793,10 +767,8 @@ const modalEnviarBtn = document.getElementById('modalEnviar');
 function abrirModal(ot, {soloVista=false} = {}){
   const regs = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
   if(!regs.length){ showToast(`No hay registros para la OT ${ot}`, 'error'); return; }
-
   otModalActual = ot;
   modalSoloVista = soloVista;
-
   modalTitle.textContent = `${soloVista ? 'Vista previa' : 'Gestionar registros'} — OT ${ot}`;
   modalBody.innerHTML = "";
 
@@ -846,25 +818,21 @@ function abrirModal(ot, {soloVista=false} = {}){
     }
   }
 
-  if(otsEnviadas.has(ot)){
-    modalEnviarBtn.textContent = 'OT gestionada';
+  // En Opción B, el botón del modal siempre se llama "Enviar registros"
+  // y se habilita solo si pendientes===0 (independiente de si se envió antes o no)
+  const { pendientes } = contarCompletados(ot);
+  modalEnviarBtn.textContent = 'Enviar registros';
+  modalEnviarBtn.disabled = pendientes !== 0;
+  modalEnviarBtn.onclick = async ()=>{
+    const ok = await confirmModal(`¿Confirmas el envío de los registros para la OT ${ot}?`);
+    if(!ok) return;
+    modalEnviarBtn.textContent = 'Enviando…';
     modalEnviarBtn.disabled = true;
-  }else{
-    const { pendientes } = contarCompletados(ot);
-    modalEnviarBtn.textContent = 'Enviar registros';
-    modalEnviarBtn.disabled = pendientes !== 0;
-    modalEnviarBtn.onclick = async ()=>{
-      const ok = await confirmModal(`¿Confirmas el envío de los registros para la OT ${ot}?`);
-      if(!ok) return;
-      modalEnviarBtn.textContent = 'Enviando…';
-      modalEnviarBtn.disabled = true;
-      cerrarModal();
-      await enviarRegistrosOT(ot);
-    };
-  }
+    cerrarModal();
+    await enviarRegistrosOT(ot);
+  };
 
   modalEnviarBtn.style.display = soloVista ? 'none' : '';
-
   if(!soloVista) otsEnEdicion.delete(ot);
 
   modal.classList.add('show');
@@ -872,17 +840,32 @@ function abrirModal(ot, {soloVista=false} = {}){
   document.body.style.overflow='hidden';
   updateHeaderStats();
 }
+
 function cerrarModal(){
-  if(otModalActual && !otsEnviadas.has(otModalActual) && !modalSoloVista){
-    otsEnEdicion.add(otModalActual);
+  if(otModalActual && !modalSoloVista){
+    const { pendientes } = contarCompletados(otModalActual);
     const btnPrim = document.getElementById(`btn_primary_${cssId(otModalActual)}`);
-    const btnDel  = document.getElementById(`btn_eliminar_${cssId(otModalActual)}`);
-    if(btnPrim){
-      btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
-      btnPrim.disabled = false; btnPrim.classList.remove('success');
-      btnPrim.setAttribute('data-mode','continuar');
+    const btnDel = document.getElementById(`btn_eliminar_${cssId(otModalActual)}`);
+
+    if(pendientes === 0){
+      otsEnEdicion.delete(otModalActual);
+      if(btnPrim){
+        btnPrim.innerHTML = `✅ OT gestionada`;
+        btnPrim.disabled = true;
+        btnPrim.classList.add('success');
+        btnPrim.setAttribute('data-mode','done');
+      }
+      if(btnDel){ btnDel.disabled = !otsEnviadas.has(otModalActual); } // mantener política previa
+    }else{
+      otsEnEdicion.add(otModalActual);
+      if(btnPrim){
+        btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+        btnPrim.disabled = false;
+        btnPrim.classList.remove('success');
+        btnPrim.setAttribute('data-mode','continuar');
+      }
+      if(btnDel) btnDel.disabled = true;
     }
-    if(btnDel) btnDel.disabled = true;
   }
   modal.classList.remove('show');
   modal.setAttribute('aria-hidden', 'true');
@@ -912,10 +895,9 @@ async function enviarRegistrosOT(ot){
       body: JSON.stringify({ ot, registros })
     });
     const j = await res.json().catch(()=>null);
-
     if(res.ok && j && (j.ok === true || j.result === 'ok')){
       otsEnviadas.add(ot);
-      otsEnEdicion.delete(ot);
+      // En Opción B ya estaba verde por pendientes=0; reafirmamos estado visual
       if(btn){
         btn.innerHTML = `✅ OT gestionada`;
         btn.classList.add('success');
@@ -923,7 +905,7 @@ async function enviarRegistrosOT(ot){
         btn.setAttribute('data-mode','done');
       }
       const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
-      if(btnDel) btnDel.disabled = false; // local only
+      if(btnDel) btnDel.disabled = false; // habilitamos eliminar (solo local) tras envío OK
       showToast(`OT ${ot}: registros enviados y registrados.`, 'success');
     }else{
       throw new Error(j?.error || `HTTP ${res.status}`);
@@ -931,16 +913,22 @@ async function enviarRegistrosOT(ot){
   }catch(err){
     console.error(err);
     if(btn){
-      /* Volvemos al estado según edición */
-      const enEd = otsEnEdicion.has(ot);
-      if(enEd){
+      // Volvemos al estado que corresponda por pendientes
+      const { pendientes } = contarCompletados(ot);
+      if(pendientes === 0){
+        btn.innerHTML = `✅ OT gestionada`;
+        btn.setAttribute('data-mode','done');
+        btn.classList.add('success');
+        btn.disabled = true;
+      }else if(otsEnEdicion.has(ot)){
         btn.innerHTML = `${svgPencil()}Continuar editando`;
         btn.setAttribute('data-mode','continuar');
+        btn.disabled = false;
       }else{
         btn.innerHTML = `${svgGear()}Gestionar registros`;
         btn.setAttribute('data-mode','gestionar');
+        btn.disabled = false;
       }
-      btn.disabled = false;
     }
     showToast('Error de servidor al enviar la OT.', 'error');
   }finally{
@@ -954,8 +942,8 @@ async function eliminarRegistrosOT(ot){
   if(!ok) return;
   const items = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
   for(const it of items){ it.causa = ''; it.fotos = []; }
-  otsEnviadas.delete(ot);
   otsEnEdicion.delete(ot);
+  // No tocamos otsEnviadas aquí para conservar el indicio de envío previo
   render();
   showToast(`OT ${ot}: registros eliminados (solo en memoria).`, 'info');
   updateHeaderStats();
@@ -968,7 +956,6 @@ async function eliminarRegistrosGlobal(){
   const ok = await confirmModal('¿Eliminar TODOS los registros ingresados de TODAS las OTs? (solo en memoria)');
   if(!ok) return;
   for(const it of datos){ it.causa=''; it.fotos=[]; }
-  otsEnviadas.clear();
   otsEnEdicion.clear();
   render();
   showToast('Se eliminaron los registros de todas las OTs (local).', 'info');
@@ -1012,7 +999,7 @@ $('#busqueda').addEventListener('input', debounce(aplicarBusqueda, 250));
 const paletteFab = document.getElementById('paletteFab');
 const palette = document.getElementById('palette');
 const colorHead = document.getElementById('colorHead');
-const colorDom  = document.getElementById('colorDom');
+const colorDom = document.getElementById('colorDom');
 const colorLine = document.getElementById('colorLine');
 const colorPill = document.getElementById('colorPill');
 
@@ -1028,7 +1015,7 @@ function loadPalette(){
     if(!raw) return;
     const p = JSON.parse(raw);
     if(p.head) setCSSVar('--head', p.head);
-    if(p.dom)  setCSSVar('--dom-blue', p.dom);
+    if(p.dom) setCSSVar('--dom-blue', p.dom);
     if(p.line) setCSSVar('--line', p.line);
     if(p.pill) setCSSVar('--pill', p.pill);
   }catch(e){ /* no-op */ }
@@ -1039,7 +1026,7 @@ function syncInputsFromVars(){
   const vLine = getCSSVar('--line') || '#e4ebf6';
   const vPill = getCSSVar('--pill') || '#cfe0ff';
   colorHead.value = vHead.startsWith('#') ? vHead : '#ffffff';
-  colorDom.value  = vDom.startsWith('#')  ? vDom  : '#0e4aa8';
+  colorDom.value  = vDom.startsWith('#') ? vDom : '#0e4aa8';
   colorLine.value = vLine.startsWith('#') ? vLine : '#e4ebf6';
   colorPill.value = vPill.startsWith('#') ? vPill : '#cfe0ff';
 }
@@ -1057,7 +1044,7 @@ if(paletteFab){
     savePalette(); syncInputsFromVars();
   });
   colorHead.addEventListener('input', e => { setCSSVar('--head', e.target.value); savePalette(); });
-  colorDom.addEventListener('input',  e => { setCSSVar('--dom-blue', e.target.value); savePalette(); });
+  colorDom .addEventListener('input', e => { setCSSVar('--dom-blue', e.target.value); savePalette(); });
   colorLine.addEventListener('input', e => { setCSSVar('--line', e.target.value); savePalette(); });
   colorPill.addEventListener('input', e => { setCSSVar('--pill', e.target.value); savePalette(); });
 }
