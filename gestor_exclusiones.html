@@ -363,6 +363,7 @@
     <section class="container fullbleed">
       <div class="embed-host">
         <iframe
+          id="embedOps"  <!-- [CACHE-BUST] id para apuntar desde JS -->
           src="https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/modulo_exclusiones_operatividad.html"
           title="Exclusiones embebido"
           loading="eager"
@@ -387,6 +388,17 @@
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
+    /* ======================= CACHE-BUST AL IFRAME (GitHub Pages) ======================= */
+    // [CACHE-BUST] Forzamos a que siempre cargue una versión fresca del embed
+    (function applyEmbedCacheBust(){
+      const iframe = document.getElementById('embedOps');
+      if (!iframe) return;
+      const base = 'https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/modulo_exclusiones_operatividad.html';
+      const sep  = base.includes('?') ? '&' : '?';
+      iframe.src = `${base}${sep}ts=${Date.now()}`; // cache-buster agresivo
+      // Si prefieres control manual por despliegue, reemplaza Date.now() por '20260302_1205' y vas cambiando ese valor.
+    })();
+
     /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
     const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
 
@@ -516,7 +528,12 @@
     });
 
     // Home / Tema
-    document.getElementById('btnHome')?.addEventListener('click', () => { window.location.href = 'main_page.html'; });
+    // [CACHE-BUST] Home con versión por día para evitar caché al volver
+    document.getElementById('btnHome')?.addEventListener('click', () => {
+      const ver = new Date().toISOString().slice(0,10).replace(/-/g,''); // p.ej. 20260302
+      window.location.href = `main_page.html?v=${ver}`;
+    });
+
     const temaChip = document.getElementById('temaChip');
     temaChip?.addEventListener('click', () => {
       const root = document.documentElement;
