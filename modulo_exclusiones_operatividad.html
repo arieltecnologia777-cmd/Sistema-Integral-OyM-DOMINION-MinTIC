@@ -5,7 +5,7 @@
 <title>Exclusiones – Operatividad (tabla + backend)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- Sello de build para diagnosticar versiones renderizadas -->
-<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1+B-option">
+<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1+B-option+regional-filter">
 <style>
 :root{
   --dom-blue:#0e4aa8; /* Azul corporativo */
@@ -318,6 +318,33 @@ body{
   .controls{ gap:8px; }
   .registro .row{ grid-template-columns: 1fr; }
 }
+
+/* === Regional Filter (misma estética) === */
+.filter-box{
+  position:relative; height:40px; display:flex; align-items:center;
+}
+.filter-trigger{
+  display:inline-flex; align-items:center; gap:8px; height:40px;
+  padding:0 12px; background:#fff;
+  border:1px solid #d7e0f5; border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+  color:#0e4aa8; cursor:pointer; font-size:14px;
+}
+.filter-trigger:hover{ background:#f9fbff; }
+.filter-trigger .icon{ width:16px; height:16px; opacity:.7; }
+.filter-menu{
+  position:absolute; top:44px; left:0; z-index:50;
+  background:#fff; border:1px solid #d7e0f5; border-radius:12px;
+  box-shadow:0 12px 28px rgba(0,0,0,.12);
+  padding:6px; min-width:220px; display:none;
+}
+.filter-menu.show{ display:block; }
+.filter-menu button{
+  width:100%; text-align:left; background:#fff; color:#1b2b48;
+  border:none; border-radius:8px; padding:10px 10px; font-size:14px; cursor:pointer;
+}
+.filter-menu button:hover{ background:#f3f7ff; color:#0e4aa8; }
+.filter-menu .sep{ height:1px; background:#edf2fb; margin:6px 4px; }
 </style>
 </head>
 <body>
@@ -327,8 +354,23 @@ body{
   <div class="header-sub"><strong>¡Bienvenido al modulo de exclusiones!</strong></div>
   <div class="controls">
     <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
+
+    <!-- === Filtro Regional (segunda posición) === -->
+    <div class="filter-box" id="regionalBox">
+      <button id="btnRegional" class="filter-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" title="Filtrar por regional">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 6h18l-7 8v4l-4 2v-6L3 6z"/>
+        </svg>
+        <span id="lblRegional">Regional: Todas</span>
+      </button>
+      <div id="menuRegional" class="filter-menu" role="listbox" aria-label="Regional">
+        <!-- Opciones dinámicas -->
+      </div>
+    </div>
+
     <!-- Eliminar registros (HEADER) - Local -->
     <button id="btnEliminarGlobal" class="btn-header-danger" type="button" disabled>🗑️ Eliminar registros</button>
+
     <div class="search-pill" title="Buscar por OT">
       <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -400,6 +442,10 @@ const otsEnviadas = new Set(); // OTs ya enviadas al backend (solo tracking)
 const otsEnEdicion = new Set(); // OTs con edición pendiente (cerraron popup)
 let otModalActual = null;       // OT abierta en modal
 let modalSoloVista = false;     // Modal en modo vista previa
+
+/* === Regional Filter state === */
+let regionalActual = 'Todas';
+let regionalesDisponibles = []; // se llena dinámicamente tras cargar datos
 
 /* ======= Utils ======= */
 function mostrarAlerta(msg){ const el=$('#alerta'); el.textContent=msg; el.style.display='block'; }
@@ -474,27 +520,48 @@ async function cargarDesdeServidor(){
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const j = await res.json();
     const arr = Array.isArray(j?.data) ? j.data : [];
-    /* Normalizamos a estructura local usada por la UI */
+    /* Normalizamos a estructura local usada por la UI
+       NOTA: ahora esperamos una columna 'regional' desde el backend */
     datos = arr.map((r,i)=>({
       id:i+1,
       fecha: r.fecha ?? '',
       ot : (r.ot ?? '').toString(),
       causa: r.causa ?? '',
+      regional: (r.regional ?? '').toString().trim(), // <<< NUEVO
       fotos: [] // adjuntos solo locales para UI
     })).filter(x=>x.ot);
+
+    // Construimos lista de regionales únicas
+    const setReg = new Set();
+    for(const it of datos){ if((it.regional??'')!=='') setReg.add(it.regional); }
+    regionalesDisponibles = Array.from(setReg).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+    // Si la actual ya no existe, volvemos a 'Todas'
+    if(regionalActual!=='Todas' && !regionalesDisponibles.includes(regionalActual)){
+      regionalActual = 'Todas';
+    }
+
     filtrados=[...datos];
     paginaActual=1;
     construirGruposPorOT();
+
+    // Actualiza UI del filtro
+    buildRegionalMenu();
+    updateRegionalLabel();
+
     render();
     setLastUpdate(new Date());
-    // Reseteos
-    // (mantenemos tracking pero el estado "verde" depende SOLO de pendientes=0)
     otsEnEdicion.clear();
     showToast('Datos cargados desde el servidor.', 'info');
   }catch(err){
     console.error(err);
     mostrarAlerta('No se pudo cargar el dataset del servidor.');
     showToast('Error al cargar datos del servidor.', 'error');
+
+    // Aunque falle, aseguramos que el filtro muestre "Todas" y menú vacío
+    regionalesDisponibles = [];
+    regionalActual = 'Todas';
+    buildRegionalMenu();
+    updateRegionalLabel();
   }finally{
     btn.disabled=false; btn.textContent='Actualizar';
     updateHeaderStats();
@@ -532,11 +599,18 @@ function updateHeaderStats(){
 }
 
 /* ======= Búsqueda / agrupación ======= */
-function aplicarBusqueda(){
+/* Aplica búsqueda por OT + filtro regional */
+function aplicarBusquedaYFiltro(){
   const q=($('#busqueda').value??"").toLowerCase().trim();
-  filtrados = q ? datos.filter(d => (d.ot??"").toLowerCase().includes(q)) : [...datos];
+  filtrados = datos.filter(d => {
+    const okSearch = q ? (d.ot??"").toLowerCase().includes(q) : true;
+    const okReg = (regionalActual==='Todas') ? true : ((d.regional??'') === regionalActual);
+    return okSearch && okReg;
+  });
   paginaActual=1; construirGruposPorOT(); render();
 }
+function aplicarBusqueda(){ aplicarBusquedaYFiltro(); } // alias para compatibilidad
+
 function construirGruposPorOT(){
   const map=new Map();
   for(const r of filtrados){
@@ -604,12 +678,12 @@ function svgGear(){
     <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
       <!-- grande -->
       <g transform="translate(-2,1) scale(0.95)">
-        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z"/>
-        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0  0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
+        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0  0 1 0-7Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0  0 1 0-1.8l1.6-.4a6 6 0  0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
       </g>
       <!-- pequeño -->
       <g transform="translate(4,-4) scale(0.62)">
-        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0  0 1 0-7Z"/>
+        <path d="M12 8.5a3.5 3.5 0  1 1 0 7 3.5 3.5 0  0 1 0-7Z"/>
         <path d="M4.7 12.9a7.8 7.8 0  0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
       </g>
     </svg>
@@ -879,7 +953,6 @@ async function enviarRegistrosOT(ot){
     const j = await res.json().catch(()=>null);
     if(res.ok && j && (j.ok === true || j.result === 'ok')){
       otsEnviadas.add(ot);
-      // En Opción B ya estaba verde por pendientes=0; reafirmamos estado visual
       if(btn){
         btn.innerHTML = `${svgCheck()}OT gestionada`;
         btn.classList.add('success');
@@ -887,7 +960,6 @@ async function enviarRegistrosOT(ot){
         btn.setAttribute('data-mode','done');
       }
       const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
-      // Aunque ya está gestionada (y por nuestra regla está habilitado), reafirmamos:
       if(btnDel) btnDel.disabled = false;
       showToast(`OT ${ot}: registros enviados y registrados.`, 'success');
     }else{
@@ -896,7 +968,6 @@ async function enviarRegistrosOT(ot){
   }catch(err){
     console.error(err);
     if(btn){
-      // Volvemos al estado que corresponda por pendientes
       const { pendientes } = contarCompletados(ot);
       if(pendientes === 0){
         btn.innerHTML = `${svgCheck()}OT gestionada`;
@@ -926,7 +997,6 @@ async function eliminarRegistrosOT(ot){
   const items = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
   for(const it of items){ it.causa = ''; it.fotos = []; }
   otsEnEdicion.delete(ot);
-  // No tocamos otsEnviadas aquí para conservar el indicio de envío previo
   render();
   showToast(`OT ${ot}: registros eliminados (solo en memoria).`, 'info');
   updateHeaderStats();
@@ -977,6 +1047,60 @@ $('#wrapGrupos').addEventListener('click', (e)=>{
 $('#btnCargar').addEventListener('click', cargarDesdeServidor);
 document.getElementById('btnEliminarGlobal').addEventListener('click', eliminarRegistrosGlobal);
 $('#busqueda').addEventListener('input', debounce(aplicarBusqueda, 250));
+
+/* === Interacción del filtro Regional === */
+const btnRegional = document.getElementById('btnRegional');
+const menuRegional = document.getElementById('menuRegional');
+const lblRegional = document.getElementById('lblRegional');
+const regionalBox = document.getElementById('regionalBox');
+
+function updateRegionalLabel(){
+  if(lblRegional){
+    lblRegional.textContent = `Regional: ${regionalActual}`;
+  }
+}
+function buildRegionalMenu(){
+  if(!menuRegional) return;
+  menuRegional.innerHTML = '';
+  // Opción Todas
+  const bAll = document.createElement('button');
+  bAll.type='button';
+  bAll.setAttribute('role','option');
+  bAll.textContent = 'Todas';
+  bAll.onclick = ()=>{ regionalActual='Todas'; closeRegionalMenu(); updateRegionalLabel(); aplicarBusquedaYFiltro(); };
+  menuRegional.appendChild(bAll);
+
+  if(regionalesDisponibles.length){
+    const sep = document.createElement('div'); sep.className='sep'; menuRegional.appendChild(sep);
+  }
+  for(const r of regionalesDisponibles){
+    const b = document.createElement('button');
+    b.type='button'; b.setAttribute('role','option');
+    b.textContent = r;
+    b.onclick = ()=>{ regionalActual=r; closeRegionalMenu(); updateRegionalLabel(); aplicarBusquedaYFiltro(); };
+    menuRegional.appendChild(b);
+  }
+}
+function openRegionalMenu(){
+  if(!menuRegional) return;
+  menuRegional.classList.add('show');
+  btnRegional.setAttribute('aria-expanded','true');
+}
+function closeRegionalMenu(){
+  if(!menuRegional) return;
+  menuRegional.classList.remove('show');
+  btnRegional.setAttribute('aria-expanded','false');
+}
+btnRegional?.addEventListener('click', (e)=>{
+  e.preventDefault(); e.stopPropagation();
+  if(menuRegional.classList.contains('show')) closeRegionalMenu(); else openRegionalMenu();
+});
+document.addEventListener('click', (e)=>{
+  if(!regionalBox.contains(e.target)) closeRegionalMenu();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape') closeRegionalMenu();
+});
 
 /* ======= Panel de colores ======= */
 const paletteFab = document.getElementById('paletteFab');
