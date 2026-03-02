@@ -456,8 +456,8 @@ function debounce(fn, wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setT
 function esc(s){
   return (s??"").toString()
     .replace(/&/g,"&amp;")
-    .replace(/\</g,"&lt;")
-    .replace(/\>/g,"&gt;");
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
 }
 function cssId(texto){ return btoa(unescape(encodeURIComponent(texto))).replace(/=/g,''); }
 function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0');
@@ -617,6 +617,12 @@ function updateEstadosOT(ot){
     const pendEl = tr?.querySelector('.count-pend');
     if(pendEl) pendEl.textContent = String(pendientes);
 
+    // <<<< Ajuste: habilitar Eliminar cuando la OT está gestionada >>>>
+    const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
+    if(btnDel){
+      btnDel.disabled = pendientes !== 0;
+    }
+
     if(pendientes === 0){
       btnPrim.innerHTML = `✅ OT gestionada`;
       btnPrim.classList.add('success');
@@ -647,12 +653,12 @@ function svgGear(){
       <!-- grande -->
       <g transform="translate(-2,1) scale(0.95)">
         <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z"/>
-        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0 0 1-.6-1.4l-1.6-.4Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0  0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
       </g>
       <!-- pequeño -->
       <g transform="translate(4,-4) scale(0.62)">
         <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0  0 1 0-7Z"/>
-        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0  0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
       </g>
     </svg>
   </span>`;
@@ -730,19 +736,18 @@ function render(){
       btnPrim.classList.add('success');
       btnPrim.disabled = true;
       btnPrim.setAttribute('data-mode','done');
-      // Mantengo la regla previa: habilitar eliminar solo cuando realmente se envía (backend OK)
-      // (no cambiamos esta política en Opción B)
-      btnDel.disabled = !otsEnviadas.has(otClave);
+      // <<<< Ajuste: habilitar Eliminar cuando la OT está gestionada >>>>
+      if(btnDel) btnDel.disabled = false;
     }else if(enEdicion){
       btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
       btnPrim.disabled = false;
       btnPrim.setAttribute('data-mode','continuar');
-      btnDel.disabled = true;
+      if(btnDel) btnDel.disabled = true;
     }else{
       btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
       btnPrim.disabled = false;
       btnPrim.setAttribute('data-mode','gestionar');
-      btnDel.disabled = true;
+      if(btnDel) btnDel.disabled = true;
     }
   }
   renderPaginacion(totalGrupos);
@@ -855,7 +860,8 @@ function cerrarModal(){
         btnPrim.classList.add('success');
         btnPrim.setAttribute('data-mode','done');
       }
-      if(btnDel){ btnDel.disabled = !otsEnviadas.has(otModalActual); } // mantener política previa
+      // <<<< Ajuste: habilitar Eliminar cuando la OT está gestionada >>>>
+      if(btnDel){ btnDel.disabled = false; }
     }else{
       otsEnEdicion.add(otModalActual);
       if(btnPrim){
@@ -905,7 +911,8 @@ async function enviarRegistrosOT(ot){
         btn.setAttribute('data-mode','done');
       }
       const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
-      if(btnDel) btnDel.disabled = false; // habilitamos eliminar (solo local) tras envío OK
+      // Aunque ya está gestionada (y por nuestra regla está habilitado), reafirmamos:
+      if(btnDel) btnDel.disabled = false;
       showToast(`OT ${ot}: registros enviados y registrados.`, 'success');
     }else{
       throw new Error(j?.error || `HTTP ${res.status}`);
