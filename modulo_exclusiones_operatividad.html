@@ -1,509 +1,1009 @@
-<div class="hero-legal" id="heroLegal">
-        © 2026 DOMINION — Todos los derechos reservados — WEB desarrollada por Ariel Márquez Rada
-      </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Exclusiones – Operatividad (tabla + backend)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Sello de build para diagnosticar versiones renderizadas -->
+<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1+B-option">
+<style>
+:root{
+  --dom-blue:#0e4aa8; /* Azul corporativo */
+  --dom-blue-hover:#0c3f8f;
+  --ink:#0e2040;
+  --head:#ffffff;
+  /* Líneas de tabla */
+  --line:#e4ebf6;
+  /* Botones / estados */
+  --pill:#cfe0ff;
+  --success:#16a34a; /* Verde de “OT gestionada” */
+  /* Hover de fila (solo relieve) */
+  --row-hover-shadow:0 10px 24px rgba(0,0,0,.10);
+  --row-hover-lift:-1px;
+  --row-radius:12px;
+  /* Realce de botones activos al pasar por la fila (excepto Enviar/Success/Eliminar) */
+  --chip-bg-strong:#e4efff;
+  --chip-border-strong:#bfd6ff;
+  /* Paleta “danger” (Eliminar) */
+  --danger:#b4232c;
+  --danger-bg:#fde8ee;
+  --danger-bg-hover:#fbd0d9;
+  --danger-border:#f1b4bb;
+  --danger-border-hover:#eaa7b1;
+}
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;
+  background:linear-gradient(180deg,#eef4ff,#fff);
+  margin:0; color:#1a2333;
+}
+/* ===== Header / Controls ===== */
+.header{
+  background:#ffffffcc; backdrop-filter: blur(12px);
+  padding:18px 24px 14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  border-bottom:1px solid #eef1f6;
+}
+.header-title{ font-size:30px; font-weight:900; color:#0e2040; letter-spacing:-.2px; }
+.header-sub{ margin-top:4px; color:#2a3348; font-size:15px; }
+.controls{
+  margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px; font-size:14px; border:none; cursor:pointer; }
+.btn-blue{ background:#0e4aa8; color:#fff; }
+.btn-light{ background:#e8eef7; color:#0e4aa8; }
+.btn[disabled]{ opacity:.65; cursor:not-allowed; }
+.search-pill{
+  display:flex; align-items:center; gap:8px; background:#fff;
+  border:1px solid #d7e0f5; border-radius:10px; height:40px; padding:0 12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.search-pill input{ border:none; outline:none; height:100%; font-size:14px; min-width:220px; max-width:360px; }
+.search-icon{ width:16px; height:16px; opacity:.55; }
+/* Píldora de última actualización */
+.badge-ts{
+  background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff;
+  padding:8px 12px; border-radius:10px; font-size:12px; display:inline-flex; align-items:center; gap:8px;
+}
+.badge-dot{ width:8px; height:8px; border-radius:999px; background:#10b981; }
+/* Píldora estadísticas header (base) */
+#headerStats{
+  background:#f6f9ff;
+  color:#19345f;
+  border:1px solid #e1e8f8;
+  padding:8px 12px;
+  border-radius:10px;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+/* Píldora “OK” (verde) */
+#headerStats.ok{
+  background:var(--success);
+  border-color:var(--success);
+  color:#ffffff;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.18),
+    0 -1px 0 rgba(255,255,255,.18),
+    1px 0 0 rgba(255,255,255,.18),
+    -1px 0 0 rgba(255,255,255,.18);
+  box-shadow:0 2px 10px rgba(22,163,74,.18);
+}
+#headerStats.ok::before{ content:"✅"; display:inline-block; margin-right:4px; }
+/* ===== Contenedor ===== */
+.wrap{ width:92%; margin:18px auto 0; }
+/* ===== Tabla ===== */
+.tabla-box{
+  background:#fff; border:1px solid rgba(199,215,243,.40);
+  border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.06); overflow:hidden;
+}
+.tabla{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:auto;
+}
+/* Encabezados */
+.tabla thead th{
+  background:var(--head);
+  color:#1b2b48;
+  text-align:center;
+  padding:14px 16px; font-size:14px; font-weight:800;
+  border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);
+}
+.tabla thead th:first-child{ text-align:left; }
+.tabla thead th:last-child{ border-right:none; }
+/* Celdas */
+.tabla tbody td{
+  padding:14px 16px;
+  font-size:15px; vertical-align:middle; background:#fff;
+  border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);
+}
+.tabla tbody td:last-child{ border-right:none; }
+.col-ot{ font-weight:800; color:#0e2040; white-space:nowrap; }
+/* Hover fila (relieve) */
+.tabla tbody tr{
+  transition: transform .16s ease, filter .16s ease;
+}
+.tabla tbody tr:hover{
+  transform: translateY(var(--row-hover-lift));
+  filter: drop-shadow(var(--row-hover-shadow));
+}
+.tabla tbody tr:hover td:first-child{
+  border-top-left-radius:var(--row-radius);
+  border-bottom-left-radius:var(--row-radius);
+}
+.tabla tbody tr:hover td:last-child{
+  border-top-right-radius:var(--row-radius);
+  border-bottom-right-radius:var(--row-radius);
+}
+/* Contadores */
+.count-total{ font-weight:800; color:#0e2040; }
+.count-pend{ font-weight:800; color:#0e4aa8; }
+/* ===== Botones (tabla) ===== */
+.btn-pill{
+  appearance:none;
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px; line-height:36px;
+  padding:0 14px;
+  background:#fff; color:#0e4aa8;
+  border:1px solid var(--pill); border-radius:12px;
+  font-size:14px; cursor:pointer; margin-right:8px;
+  transition:background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+.btn-pill:last-child{ margin-right:0; }
+.btn-pill:hover{ background:#f9fbff; }
+.btn-pill:disabled{
+  background:#f9fbff; color:#6b7893; border-color:#e1eaff; cursor:not-allowed;
+}
+.btn-pill:focus-visible{ outline:2px solid #94b8ff; outline-offset:2px; }
+/* Íconos planos */
+.btn-pill .icon{ width:16px; height:16px; display:inline-block; }
+.btn-pill .icon svg{ width:16px; height:16px; display:block; }
+/* Hover de fila: realce general (excepto enviar/success/eliminar) */
+.tabla tbody tr:hover .btn-pill:not(:disabled):not([data-mode="enviar"]):not(.success):not(.btn-eliminar){
+  background:var(--chip-bg-strong);
+  color:var(--dom-blue);
+  border-color:var(--chip-border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(14,74,168,.18);
+}
+.tabla tbody tr:hover .btn-preview .icon svg,
+.tabla tbody tr:hover .btn-primary[data-mode="gestionar"] .icon svg{
+  stroke:var(--dom-blue) !important; fill:none; stroke-width:1.8;
+}
+/* Botón principal ENVIAR (solo popup) y CONTINUAR (tabla) en azul sólido */
+.btn-primary[data-mode="enviar"],
+.btn-primary[data-mode="continuar"]{
+  background:var(--dom-blue);
+  color:#fff;
+  border-color:var(--dom-blue);
+}
+.btn-primary[data-mode="enviar"]:hover,
+.btn-primary[data-mode="continuar"]:hover{
+  background:var(--dom-blue-hover);
+  border-color:var(--dom-blue-hover);
+}
+.btn-primary[data-mode="enviar"]:focus-visible,
+.btn-primary[data-mode="continuar"]:focus-visible{
+  outline:2px solid #a8c4ff; outline-offset:2px;
+}
+/* Éxito */
+.btn-primary.success{
+  background:var(--success);
+  border-color:var(--success);
+  color:#fff;
+}
+/* Iconos por estado (engranajes + lápiz) */
+.btn-primary .icon-gear svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
+.btn-primary[data-mode="gestionar"] .icon-gear svg{ stroke:#324a78; }
+.btn-primary .icon-pencil svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
+.btn-primary[data-mode="continuar"] .icon-pencil svg{ stroke:#fff; }
+/* Eliminar (por OT) – local */
+.btn-eliminar{ display:inline-flex; align-items:center; gap:8px; }
+.btn-eliminar:not(:disabled){
+  background:var(--danger-bg); color:var(--danger); border-color:var(--danger-border);
+  box-shadow: inset 0 0 0 1px #f7c7cf, 0 3px 8px rgba(180,35,44,.12);
+}
+.btn-eliminar:not(:disabled):hover{
+  background:var(--danger-bg-hover); border-color:var(--danger-border-hover);
+  transform: translateY(-1px); filter: saturate(1.05);
+}
+/* Vista previa */
+.btn-preview .icon svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
+/* Botón Eliminar registros (HEADER) – local */
+.btn-header-danger{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--danger-bg); color:var(--danger);
+  border:1px solid var(--danger-border);
+  border-radius:12px; padding:10px 14px; font-size:14px; cursor:pointer;
+  box-shadow: inset 0 0 0 1px #f7c7cf, 0 3px 8px rgba(180,35,44,.12);
+}
+.btn-header-danger:hover{ background:var(--danger-bg-hover); border-color:var(--danger-border-hover); }
+.btn-header-danger:disabled{
+  background:#f6f7fb; color:#8d95a8; border-color:#e4e9f6; box-shadow:none; cursor:not-allowed;
+}
+/* Pie / paginación */
+.pie{ width:92%; margin: 14px auto 24px; display:flex; align-items:center; justify-content:flex-start; gap:8px; flex-wrap:wrap; }
+.paginacion{ display:flex; gap:6px; flex-wrap:wrap; }
+.paginacion button{
+  padding:8px 12px; border-radius:10px; border:1px solid var(--pill); background:#fff; color:#0e4aa8; cursor:pointer;
+}
+.paginacion button[aria-current="page"]{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+/* Alertas inline */
+#alerta{ width:92%; margin:8px auto 0; color:#b00020; font-size:13px; display:none; }
+/* ===== Modal ===== */
+.modal{ position:fixed; inset:0; display:none; z-index:9999; }
+.modal.show{ display:block; }
+.modal .backdrop{ position:absolute; inset:0; background:rgba(7,15,30,.45); backdrop-filter: blur(4px); }
+.modal .dialog{
+  position:relative; width:min(1100px, 94vw); height:min(84vh, 860px); margin:4vh auto 0; background:#fff;
+  border-radius:18px; box-shadow:0 30px 80px rgba(0,0,0,.35); display:flex; flex-direction:column; overflow:hidden;
+}
+.modal .dialog header{
+  padding:16px 18px; background:#fff; color:#1b2b48;
+  display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);
+}
+.modal .dialog header .title{ font-weight:900; letter-spacing:-.2px; }
+.modal .dialog header .actions{ display:flex; align-items:center; gap:8px; }
+.modal .dialog header .close{
+  background:#fff; color:#0e4aa8;
+  border:1px solid #e1e8f6; border-radius:999px; padding:6px 10px; cursor:pointer;
+}
+.modal .dialog header .close:hover{ background:#f3f7ff; }
+.btn-send{
+  background:var(--dom-blue); color:#fff; border:none; border-radius:999px;
+  padding:8px 14px; cursor:pointer; font-weight:600;
+}
+.btn-send:hover{ background:var(--dom-blue-hover); }
+.btn-send:disabled{ opacity:.6; cursor:not-allowed; background:#a9c3f3; }
+.modal .body{
+  padding:14px 16px; overflow:auto; background:linear-gradient(180deg,#f8fbff,#fff);
+}
+.registro{
+  background:#fff; border:1px solid #e6eefc; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0 4px 18px rgba(0,0,0,.05);
+}
+.registro .row{ display:grid; grid-template-columns: 150px 1fr 280px; gap:12px; align-items:start; }
+.registro label{ font-weight:700; color:#445; font-size:12px; display:block; margin-bottom:6px; }
+.registro input[readonly]{ background:#eef1f6; height:36px; width:100%; border-radius:10px; border:none; padding:0 10px; }
+.registro textarea{ width:100%; min-height:72px; max-height:140px; resize:vertical; border:1px solid #cbd8ef; border-radius:12px; padding:10px 12px; line-height:1.25; }
+.registro textarea:focus{ outline:2px solid #0e4aa822; box-shadow: inset 0 0 0 1px #cbd8ef; }
+.registro .preview{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+.registro .preview img{ width:70px; height:70px; border-radius:10px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+/* ===== Toast ===== */
+.toast-host{
+  position:fixed; right:18px; bottom:18px; z-index:10000;
+  display:flex; flex-direction:column; gap:10px;
+}
+.toast{
+  min-width:260px; max-width:420px; background:#fff; color:#1b2b48;
+  border:1px solid #e1e8f6; border-left-width:4px; border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  padding:10px 14px; font-size:14px; line-height:1.25; animation:toast-in .2s ease;
+}
+.toast.info{ border-left-color: var(--dom-blue); }
+.toast.success{ border-left-color: var(--success); }
+.toast.error{ border-left-color: #e11d48; }
+@keyframes toast-in{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+/* ===== Confirm ===== */
+.confirm{ position:fixed; inset:0; display:none; z-index:11000; }
+.confirm.show{ display:block; }
+.confirm .backdrop{ position:absolute; inset:0; background:rgba(7,15,30,.45); backdrop-filter: blur(4px); }
+.confirm .card{
+  position:relative; width:min(520px, 94vw); margin:14vh auto 0;
+  background:#fff; border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.35);
+  padding:16px 18px;
+}
+.confirm .title{ font-weight:900; color:#1b2b48; margin:0 0 6px; letter-spacing:-.2px; }
+.confirm .msg{ color:#374560; font-size:14px; line-height:1.35; margin:0 0 12px; }
+.confirm .actions{ display:flex; gap:10px; justify-content:flex-end; }
+.confirm .btn{ padding:10px 16px; border-radius:999px; border:1px solid transparent; cursor:pointer; font-weight:700; font-size:14px; }
+.confirm .btn-accept{ background:var(--dom-blue); color:#fff; border-color:var(--dom-blue); }
+.confirm .btn-accept:hover{ background:var(--dom-blue-hover); border-color:var(--dom-blue-hover); }
+.confirm .btn-cancel{ background:#f4f6fb; color:#34445f; border-color:#e3e9f6; }
+.confirm .btn-cancel:hover{ background:#ecf1fb; }
+/* Mobile */
+@media (max-width: 900px){
+  .controls{ gap:8px; }
+  .registro .row{ grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">Exclusiones de Operatividad</div>
+  <div class="header-sub"><strong>¡Bienvenido al modulo de exclusiones!</strong></div>
+  <div class="controls">
+    <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
+    <!-- Eliminar registros (HEADER) - Local -->
+    <button id="btnEliminarGlobal" class="btn-header-danger" type="button" disabled>🗑️ Eliminar registros</button>
+    <div class="search-pill" title="Buscar por OT">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input id="busqueda" type="text" placeholder="Buscar OTs…" autocomplete="off" />
     </div>
-  </section>
+    <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
+    <!-- Stats en header -->
+    <span id="headerStats">—</span>
+  </div>
+</div>
 
-  <!-- ===== Modal Ayuda ===== -->
-  <div class="modal-backdrop" id="helpBackdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" id="helpModal">
-      <div class="modal-header">
-        <div class="modal-title" id="helpTitle" tabindex="-1"><span>Ayuda</span></div>
-        <button class="btn" id="helpClose" aria-label="Cerrar Ayuda">Cerrar</button>
+<!-- CONTENEDOR -->
+<div class="wrap" id="wrapGrupos"></div>
+
+<!-- Pie (solo paginación) -->
+<div class="pie">
+  <div class="paginacion" id="paginacion"></div>
+</div>
+
+<div id="alerta"></div>
+
+<!-- ===== Modal ===== -->
+<div class="modal" id="modalRegistros" aria-hidden="true">
+  <div class="backdrop" data-close="1"></div>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <header>
+      <div class="title" id="modalTitle">Gestionar registros — OT —</div>
+      <div class="actions">
+        <button id="modalEnviar" class="btn-send" type="button" disabled>Enviar registros</button>
+        <button class="close" data-close="1" type="button">Cerrar</button>
       </div>
-      <div class="modal-body" id="helpContent">
-        <p><strong>¡Bienvenido al centro de ayuda de Seguimiento O&M!</strong></p>
-        <ul>
-          <li><strong>Dashboard:</strong> visualiza KPIs y estados en <em>Dashboard O&M</em>.</li>
-          <li><strong>Hoja de vida CDs:</strong> consulta el detalle por Centro Digital, última visita, estado actual entre otros en <em>Hoja de vida CDs</em>.</li>
-          <li><strong>Modo claro/oscuro:</strong> usa el botón al final del menú lateral.</li>
-          <li><strong>Soporte:</strong> ariel.marquez-ext@dominion-global.com.</li>
-        </ul>
-        <p><em>© 2026 DOMINION — Todos los derechos reservados — WEB desarrollada por Ariel Márquez Rada</em>.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" id="helpBackdropClose">Cerrar</button>
-        <a class="btn primary" href="ayuda.html">Ver ayuda completa</a>
-      </div>
+    </header>
+    <div class="body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===== Confirm Modal ===== -->
+<div id="appConfirm" class="confirm" aria-hidden="true">
+  <div class="backdrop"></div>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg">
+    <h3 id="confirmTitle" class="title">Confirmación</h3>
+    <p id="confirmMsg" class="msg">¿Confirmas esta acción?</p>
+    <div class="actions">
+      <button id="confirmCancel" class="btn btn-cancel" type="button">Cancelar</button>
+      <button id="confirmAccept" class="btn btn-accept" type="button">Aceptar</button>
     </div>
   </div>
+</div>
 
-  <!-- ===== Modal Bienvenida (solo 1 vez por sesión) ===== -->
-  <div class="modal-backdrop" id="welcomeBackdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" id="welcomeModal">
-      <div class="modal-body" id="welcomeContent">
-        <h2 style="margin:0 0 12px 0; font-size:20px; font-weight:600;">¡Bienvenido(a)!</h2>
-        <p style="margin:0; font-size:16px; color:var(--muted)">
-          Hola <strong id="welcomeUser">usuario</strong>, estás ingresando al sistema de Seguimiento O&M.
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn primary" id="welcomeContinue">Entrar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== Modal Módulo de exclusiones (XL con dos tarjetas) ===== -->
-  <div class="modal-backdrop" id="exclusionesBackdrop" aria-hidden="true">
-    <div class="modal modal--xl" role="dialog" aria-modal="true" aria-labelledby="exclusionesTitle" id="exclusionesModal">
-      <div class="modal-header">
-        <div class="modal-title" id="exclusionesTitle" tabindex="-1">
-          <span>Bienvenido</span>
-        </div>
-        <button class="btn" id="exclusionesClose" aria-label="Cerrar">Cerrar</button>
-      </div>
-
-      <div class="modal-body">
-        <p style="margin-top:0;margin-bottom:14px;">¿Qué deseas hacer hoy?</p>
-
-        <div class="exclusiones-grid">
-          <!-- Card: Módulo Admin -->
-          <div class="exclusiones-card" id="cardAdmin">
-            <div class="card-head">
-              <div class="icon" aria-hidden="true">
-                <!-- Icono: usuario con engranaje -->
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M9 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"></path>
-                  <path d="M2 21a7 7 0 0 1 14 0"></path>
-                  <circle cx="19" cy="12" r="2"></circle>
-                  <path d="M19 8v1M19 15v1M22 12h-1M17 12h-1M21 10l-.5.5M17.5 13.5l-.5.5M21 14l-.5-.5M17.5 10.5l-.5-.5"></path>
-                </svg>
-              </div>
-              <h3 class="card-title">Módulo Admin</h3>
-            </div>
-            <p class="card-desc">Importa datos, valida, revisa resultados y contacta a tu equipo.</p>
-            <div class="actions">
-              <button type="button" class="btn primary" id="btnAccessAdmin">Abrir Admin</button>
-            </div>
-          </div>
-
-          <!-- Card: Módulo Gestor -->
-          <div class="exclusiones-card" id="cardGestor">
-            <div class="card-head">
-              <div class="icon" aria-hidden="true">
-                <!-- Icono: usuario con check -->
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M9 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"></path>
-                  <path d="M2 21a7 7 0 0 1 14 0"></path>
-                  <path d="M16 11l2 2 4-4"></path>
-                </svg>
-              </div>
-              <h3 class="card-title">Módulo Gestor</h3>
-            </div>
-            <p class="card-desc">Carga y postula exclusiones por OT, con validación y fotos.</p>
-            <div class="actions">
-              <button type="button" class="btn primary" id="btnAccessGestor">Abrir Gestor</button>
-            </div>
-          </div>
-        </div>
-        <!-- /grid -->
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn" id="exclusionesBackdropClose">Cancelar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== Modal de Contraseña (estilizado) ===== -->
-  <div class="modal-backdrop" id="pwdBackdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwdTitle" id="pwdModal">
-      <div class="modal-header">
-        <div class="modal-title" id="pwdTitle">Acceso a módulo</div>
-        <button class="btn" id="pwdClose" aria-label="Cerrar">Cerrar</button>
-      </div>
-      <div class="modal-body">
-        <p id="pwdRoleInfo" class="card-desc" style="margin-top:0;margin-bottom:10px;color:var(--muted);">
-          Ingresa la contraseña para <strong>—</strong>.
-        </p>
-        <div class="form-field">
-          <label for="pwdInput">Contraseña</label>
-          <div class="input-line">
-            <input id="pwdInput" type="password" placeholder="•••••••" autocomplete="current-password" />
-            <button type="button" class="icon-btn" id="pwdToggle" aria-label="Mostrar u ocultar contraseña" title="Mostrar/ocultar">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" id="pwdCancel">Cancelar</button>
-        <button class="btn primary" id="pwdConfirm">Acceder</button>
-      </div>
-    </div>
-  </div>
-<!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
+<!-- ===== Toast host ===== -->
+<div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
 <script>
-  /* ========== Tema (Claro/Oscuro) ========== */
-  (function(){
-    const themeKey = 'landing_theme';
-    const docEl = document.documentElement;
-    const body  = document.body;
-    const btn   = document.getElementById('btnTheme');
-    const lbl   = document.getElementById('btnThemeText');
+/* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
+/* >>> PROYECTO p1: base con prefijo /p1 para todos los endpoints <<< */
+const API_BASE = "https://exclusiones-worker.modulo-de-exclusiones.workers.dev/p1";
 
-    const applyLabel = (mode)=>{ if (lbl) lbl.textContent = 'Tema: ' + (mode === 'dark' ? 'Oscuro' : 'Claro'); };
-    function setMode(mode){
-      docEl.setAttribute('data-theme', mode);
-      body.classList.toggle('theme-dark', mode==='dark');
-      localStorage.setItem(themeKey, mode);
-      applyLabel(mode);
-    }
-    (function initTheme(){
-      const saved = localStorage.getItem(themeKey);
-      const initial = saved || docEl.getAttribute('data-theme') || 'light';
-      setMode(initial);
-    })();
-    btn?.addEventListener('click', () => {
-      const current = (docEl.getAttribute('data-theme')==='dark') ? 'dark' : 'light';
-      const next = (current==='dark') ? 'light' : 'dark';
-      setMode(next);
-      if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
+/* ======= Estado (local) ======= */
+let datos = [];
+let filtrados = [];
+let grupos = [];
+let paginaActual = 1;
+const porPaginaGrupos = 6;
+const $ = sel => document.querySelector(sel);
+
+/* Conjuntos de estado */
+const otsEnviadas = new Set(); // OTs ya enviadas al backend (solo tracking)
+const otsEnEdicion = new Set(); // OTs con edición pendiente (cerraron popup)
+let otModalActual = null;       // OT abierta en modal
+let modalSoloVista = false;     // Modal en modo vista previa
+
+/* ======= Utils ======= */
+function mostrarAlerta(msg){ const el=$('#alerta'); el.textContent=msg; el.style.display='block'; }
+function ocultarAlerta(){ const el=$('#alerta'); el.textContent=''; el.style.display='none'; }
+function debounce(fn, wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+function esc(s){
+  return (s??"").toString()
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
+function cssId(texto){ return btoa(unescape(encodeURIComponent(texto))).replace(/=/g,''); }
+function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0');
+  const yyyy=d.getFullYear(), hh=String(d.getHours()).padStart(2,'0'), mi=String(d.getMinutes()).padStart(2,'0'), ss=String(d.getSeconds()).padStart(2,'0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss}`; }
+function setLastUpdate(dateObj){ const el=$('#lastUpdate'); if(el) el.innerHTML = `<span class="badge-dot"></span>Última actualización: ${formatTs(dateObj)}`; }
+
+/* Toast */
+function showToast(msg, kind='info', timeout=3200){
+  try{
+    const host = document.getElementById('toastHost');
+    if(!host) return;
+    const el = document.createElement('div');
+    el.className = `toast ${kind}`;
+    el.textContent = msg;
+    host.appendChild(el);
+    setTimeout(()=>{ el.style.transition='opacity .25s ease, transform .25s ease'; el.style.opacity='0'; el.style.transform='translateY(6px)'; }, timeout);
+    setTimeout(()=>{ el.remove(); }, timeout+300);
+  }catch(e){ /* no-op */ }
+}
+
+/* Confirm */
+const appConfirm = document.getElementById('appConfirm');
+const confirmMsg = document.getElementById('confirmMsg');
+const confirmAccept = document.getElementById('confirmAccept');
+const confirmCancel = document.getElementById('confirmCancel');
+function confirmModal(message='¿Confirmas esta acción?'){
+  return new Promise(resolve=>{
+    confirmMsg.textContent = message;
+    appConfirm.classList.add('show');
+    appConfirm.setAttribute('aria-hidden', 'false');
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow='hidden';
+    const clean = ()=>{
+      appConfirm.classList.remove('show');
+      appConfirm.setAttribute('aria-hidden','true');
+      document.body.style.overflow = prevOverflow;
+      appConfirm.removeEventListener('click', onBackdrop);
+      document.removeEventListener('keydown', onKey);
+      confirmAccept.onclick = null;
+      confirmCancel.onclick = null;
+    };
+    confirmAccept.onclick = ()=>{ clean(); resolve(true); };
+    confirmCancel.onclick = ()=>{ clean(); resolve(false); };
+    const onBackdrop = (e)=>{};
+    const onKey = (e)=>{ if(e.key==='Escape'){ clean(); resolve(false); } if(e.key==='Enter'){ clean(); resolve(true); } };
+    appConfirm.addEventListener('click', onBackdrop);
+    document.addEventListener('keydown', onKey);
+    confirmAccept.focus();
+  });
+}
+
+/* ======= Backend: carga de datos ======= */
+async function cargarDesdeServidor(){
+  const btn=$('#btnCargar');
+  try{
+    ocultarAlerta();
+    btn.disabled=true; btn.textContent='Cargando…';
+    const res = await fetch(`${API_BASE}/api/datos?ts=${Date.now()}`, {
+      method:'GET', mode:'cors', headers:{'Accept':'application/json'}
     });
-  })();
-
-  /* ========== Sidebar móvil (hamburguesa) ========== */
-  (function(){
-    const btnMenu = document.getElementById('btnMenu');
-    btnMenu?.addEventListener('click', ()=>{
-      document.body.classList.toggle('sb-open');
-      setTimeout(()=>{ if (typeof fitLegal==='function') fitLegal(); }, 260);
-    });
-  })();
-
-  /* ========== Auto-fit del texto legal ========== */
-  function fitLegal(){
-    const legal = document.getElementById('heroLegal');
-    const col   = document.querySelector('.text-side');
-    if(!legal || !col) return;
-
-    legal.style.transform = 'translateX(-50%) scale(1)';
-    const cs = getComputedStyle(col);
-    const padL = parseFloat(cs.paddingLeft) || 0;
-    const padR = parseFloat(cs.paddingRight) || 0;
-    const available = col.clientWidth - padL - padR - 6;
-    const needed = legal.scrollWidth;
-
-    let scale = 1;
-    if (needed > available) scale = available / needed;
-    legal.style.transformOrigin = 'bottom center';
-    legal.style.transform = `translateX(-50%) scale(${Math.min(1, Math.max(0.7, scale))})`;
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const j = await res.json();
+    const arr = Array.isArray(j?.data) ? j.data : [];
+    /* Normalizamos a estructura local usada por la UI */
+    datos = arr.map((r,i)=>({
+      id:i+1,
+      fecha: r.fecha ?? '',
+      ot : (r.ot ?? '').toString(),
+      causa: r.causa ?? '',
+      fotos: [] // adjuntos solo locales para UI
+    })).filter(x=>x.ot);
+    filtrados=[...datos];
+    paginaActual=1;
+    construirGruposPorOT();
+    render();
+    setLastUpdate(new Date());
+    // Reseteos
+    // (mantenemos tracking pero el estado "verde" depende SOLO de pendientes=0)
+    otsEnEdicion.clear();
+    showToast('Datos cargados desde el servidor.', 'info');
+  }catch(err){
+    console.error(err);
+    mostrarAlerta('No se pudo cargar el dataset del servidor.');
+    showToast('Error al cargar datos del servidor.', 'error');
+  }finally{
+    btn.disabled=false; btn.textContent='Actualizar';
+    updateHeaderStats();
   }
-  window.addEventListener('load', fitLegal);
-  window.addEventListener('resize', fitLegal);
-  window.addEventListener('orientationchange', () => setTimeout(fitLegal, 200));
+}
 
-  /* ========== Controlador genérico de modales (Ayuda / Selector / Pwd) ========== */
-  function makeModal(backdropId, initialFocusId){
-    const backdrop = document.getElementById(backdropId);
-    if (!backdrop) return {open:()=>{}, close:()=>{}};
-    let lastFocused = null;
-    function open(){
-      lastFocused = document.activeElement;
-      backdrop.classList.add('open');
-      backdrop.removeAttribute('aria-hidden');
-      if (initialFocusId) setTimeout(()=> document.getElementById(initialFocusId)?.focus?.(), 10);
+/* ======= Cómputos ======= */
+function contarCompletados(ot){
+  const items = datos.filter(r => (r.ot??"").trim() === (ot??"").trim());
+  const total = items.length;
+  const completos = items.filter(r => (r.causa??"").trim() !== "" && (r.fecha??"").trim() !== "").length;
+  return { completos, total, pendientes: Math.max(0, total - completos) };
+}
+function calcularPendientesGlobal(){
+  const map = new Map();
+  for(const r of datos){ const k=(r.ot??'').toString().trim(); if(!map.has(k)) map.set(k, []); map.get(k).push(r); }
+  let pendientesGlobales = 0;
+  for(const [k] of map){ const { pendientes } = contarCompletados(k); pendientesGlobales += pendientes; }
+  return pendientesGlobales;
+}
+
+/* ======= Header stats ======= */
+function updateHeaderStats(){
+  const totalItems = datos.length;
+  const map = new Map(); for(const r of datos){ const k=(r.ot??'').toString().trim(); if(!map.has(k)) map.set(k,1); }
+  const totalGrupos = map.size;
+  const pendientesGlobales = calcularPendientesGlobal();
+  const statsEl = document.getElementById('headerStats');
+  if(statsEl){
+    statsEl.textContent = `${totalItems} registros • ${totalGrupos} grupos (por OT) • ${pendientesGlobales} pendientes`;
+    if(totalItems > 0 && pendientesGlobales === 0){ statsEl.classList.add('ok'); } else { statsEl.classList.remove('ok'); }
+  }
+  const btnGlobal = document.getElementById('btnEliminarGlobal');
+  if(btnGlobal){ btnGlobal.disabled = !(totalItems>0 && pendientesGlobales===0); }
+}
+
+/* ======= Búsqueda / agrupación ======= */
+function aplicarBusqueda(){
+  const q=($('#busqueda').value??"").toLowerCase().trim();
+  filtrados = q ? datos.filter(d => (d.ot??"").toLowerCase().includes(q)) : [...datos];
+  paginaActual=1; construirGruposPorOT(); render();
+}
+function construirGruposPorOT(){
+  const map=new Map();
+  for(const r of filtrados){
+    const k=(r.ot ?? '').toString().trim();
+    if(!map.has(k)) map.set(k, []);
+    map.get(k).push(r);
+  }
+  grupos = Array.from(map.entries()).map(([k,items])=>({clave:k,items}));
+  grupos.sort((a,b)=> a.clave.localeCompare(b.clave,'es',{numeric:true}));
+}
+
+/* ======= Actualización ligera ======= */
+/* Opción B: El botón principal queda verde si pendientes===0 (independiente del backend) */
+function updateEstadosOT(ot){
+  const { pendientes } = contarCompletados(ot);
+
+  // Modal: enviar habilitado/inhabilitado (nunca cambia a "OT gestionada" aquí)
+  if (document.getElementById('modalRegistros').classList.contains('show') && otModalActual === ot && !modalSoloVista){
+    const modalEnviarBtn = document.getElementById('modalEnviar');
+    if(modalEnviarBtn){
+      modalEnviarBtn.textContent = 'Enviar registros';
+      modalEnviarBtn.disabled = pendientes !== 0;
     }
-    function close(){
-      backdrop.classList.remove('open');
-      backdrop.setAttribute('aria-hidden','true');
-      lastFocused?.focus?.();
-    }
-    backdrop.addEventListener('click', (ev)=>{ if (ev.target === backdrop) close(); });
-    document.addEventListener('keydown', (ev)=>{ if (backdrop.classList.contains('open') && ev.key === 'Escape') close(); });
-    return {open, close};
   }
 
-  // Modal Ayuda
-  (function(){
-    const help = makeModal('helpBackdrop', 'helpTitle');
-    document.getElementById('btnAyuda')?.addEventListener('click', (e)=>{ e.preventDefault(); help.open(); });
-    document.getElementById('helpClose')?.addEventListener('click', help.close);
-    document.getElementById('helpBackdropClose')?.addEventListener('click', help.close);
-  })();
+  // Tabla: contador y estado principal
+  const btnPrim = document.getElementById(`btn_primary_${cssId(ot)}`);
+  if(btnPrim){
+    const tr = btnPrim.closest('tr');
+    const pendEl = tr?.querySelector('.count-pend');
+    if(pendEl) pendEl.textContent = String(pendientes);
 
-  // ===== Selector Módulo de exclusiones (SIEMPRE se muestra al volver) =====
-  (function(){
-    const selector = makeModal('exclusionesBackdrop', 'exclusionesTitle');
-    const btnOpen  = document.getElementById('btnModuloExclusiones');
-
-    btnOpen?.addEventListener('click', (e)=>{
-      e.preventDefault();
-
-      // Restaurar backdrops si quedaron ocultos tras un acceso anterior
-      const pwdBack = document.getElementById('pwdBackdrop');
-      const selBack = document.getElementById('exclusionesBackdrop');
-      if (pwdBack) pwdBack.style.display = '';
-      if (selBack) selBack.style.display = '';
-
-      // (Opcional) sugerir visualmente el último módulo, sin saltar directo
-      const last = sessionStorage.getItem('last_module');
-      try{
-        document.getElementById('cardAdmin')?.classList.remove('hint');
-        document.getElementById('cardGestor')?.classList.remove('hint');
-      }catch(_){}
-      if (last === 'admin') document.getElementById('cardAdmin')?.classList.add('hint');
-      if (last === 'gestor') document.getElementById('cardGestor')?.classList.add('hint');
-
-      selector.open();
-    });
-
-    document.getElementById('exclusionesClose')?.addEventListener('click', selector.close);
-    document.getElementById('exclusionesBackdropClose')?.addEventListener('click', selector.close);
-
-    // Utilitario para cerrar selector desde fuera
-    window.__closeSelectorIfOpen = function(){
-      const back = document.getElementById('exclusionesBackdrop');
-      if (back && back.classList.contains('open')){
-        back.classList.remove('open');
-        back.setAttribute('aria-hidden','true');
-      }
-    };
-  })();
-
-  // ===== Modal de contraseña (estilizado) + navegación y recuerdo del módulo =====
-  (function(){
-    // Contraseñas (actualizadas)
-    const ACCESS_PASSWORDS = {
-      admin: 'adm1nroot#',
-      gestor: 'g3st0rroot#'
-    };
-
-    // Destinos (actualizados solo gestor)
-    const TARGET_URLS = {
-      admin: 'admin_exclusiones.html',
-      gestor: 'http://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/gestor_exclusiones.html'
-    };
-
-    const modal = makeModal('pwdBackdrop', 'pwdTitle');
-    const $pwdInput    = document.getElementById('pwdInput');
-    const $pwdToggle   = document.getElementById('pwdToggle');
-    const $pwdCancel   = document.getElementById('pwdCancel');
-    const $pwdClose    = document.getElementById('pwdClose');
-    const $pwdConfirm  = document.getElementById('pwdConfirm');
-    const $pwdRoleInfo = document.getElementById('pwdRoleInfo');
-
-    let currentRole = null; // 'admin' | 'gestor'
-
-    function labelForRole(role){ return role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor'; }
-    function openPwd(role){
-      currentRole = role;
-      if ($pwdRoleInfo){
-        $pwdRoleInfo.innerHTML = `Ingresa la contraseña para <strong>${labelForRole(role)}</strong>.`;
-      }
-      if ($pwdInput){
-        $pwdInput.type = 'password';
-        $pwdInput.value = '';
-        setTimeout(()=> $pwdInput.focus(), 30);
-      }
-      modal.open();
-    }
-    function closePwd(){ modal.close(); }
-
-    function confirmPwd(){
-      const val = ($pwdInput?.value ?? '').trim();
-      if (!currentRole) return;
-      if (val === ACCESS_PASSWORDS[currentRole]){
-        // Recordar último módulo para futura sugerencia (no salto directo)
-        sessionStorage.setItem('last_module', currentRole);
-
-        // Cerrar modales
-        closePwd();
-        window.__closeSelectorIfOpen?.();
-
-        // Ocultar backdrops (se restauran al volver a abrir el selector)
-        const pwdBack = document.getElementById('pwdBackdrop');
-        const selBack = document.getElementById('exclusionesBackdrop');
-        if (pwdBack) pwdBack.style.display = 'none';
-        if (selBack) selBack.style.display = 'none';
-
-        // Abrir el módulo en nueva pestaña
-        window.open(TARGET_URLS[currentRole], '_blank', 'noopener,noreferrer');
-      } else {
-        alert('No tienes permiso para ingresar al módulo. Por favor, contacta al administrador.');
-        $pwdInput?.focus();
-        $pwdInput?.select();
-      }
+    // <<<< Ajuste: habilitar Eliminar cuando la OT está gestionada >>>>
+    const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
+    if(btnDel){
+      btnDel.disabled = pendientes !== 0;
     }
 
-    // Toggle mostrar/ocultar contraseña
-    $pwdToggle?.addEventListener('click', ()=>{
-      if (!$pwdInput) return;
-      $pwdInput.type = ($pwdInput.type === 'password') ? 'text' : 'password';
-      $pwdInput.focus();
-    });
+    if(pendientes === 0){
+      btnPrim.innerHTML = `✅ OT gestionada`;
+      btnPrim.classList.add('success');
+      btnPrim.disabled = true;
+      btnPrim.setAttribute('data-mode','done');
+      otsEnEdicion.delete(ot);
+    }else{
+      btnPrim.classList.remove('success');
+      btnPrim.disabled = false;
+      const enEd = otsEnEdicion.has(ot);
+      if(enEd){
+        btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+        btnPrim.setAttribute('data-mode','continuar');
+      }else{
+        btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
+        btnPrim.setAttribute('data-mode','gestionar');
+      }
+    }
+  }
+  updateHeaderStats();
+}
 
-    // Wire botones del selector
-    document.getElementById('btnAccessAdmin')?.addEventListener('click', ()=> openPwd('admin'));
-    document.getElementById('btnAccessGestor')?.addEventListener('click', ()=> openPwd('gestor'));
+/* ======= SVG helpers ======= */
+function svgGear(){
+  return `
+  <span class="icon icon-gear" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <!-- grande -->
+      <g transform="translate(-2,1) scale(0.95)">
+        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0 0 1 0-1.8l1.6-.4a6 6 0  0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
+      </g>
+      <!-- pequeño -->
+      <g transform="translate(4,-4) scale(0.62)">
+        <path d="M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0  0 1 0-7Z"/>
+        <path d="M4.7 12.9a7.8 7.8 0  0 1 0-1.8l1.6-.4a6 6 0 0 1 .6-1.4l-1-1.3c.4-.6.9-1.1 1.5-1.5l1.3 1a6 6 0 0 1 1.4-.6l.4-1.6c.6-.1 1.2-.1 1.8 0l.4 1.6c.5.1 1 .3 1.4.6l1.3-1c.6.4 1.1.9 1.5 1.5l-1 1.3c.3.4.5.9.6 1.4l1.6.4c.1.6.1 1.2 0 1.8l-1.6.4c-.1.5-.3 1-.6 1.4l1 1.3c-.4.6-.9 1.1-1.5 1.5l-1.3-1c-.4.3-.9.5-1.4.6l-.4 1.6c-.6.1-1.2.1-1.8 0l-.4-1.6a6 6 0 0 1-1.4-.6l-1.3 1a6 6 0 0 1-1.5-1.5l1-1.3a6 6 0  0 1-.6-1.4l-1.6-.4Z"/>
+      </g>
+    </svg>
+  </span>`;
+}
+function svgPencil(){
+  return `
+  <span class="icon icon-pencil" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Z"/>
+      <path d="M14.06 6.19l3.75 3.75"/>
+    </svg>
+  </span>`;
+}
+function svgEye(){
+  return `
+  <span class="icon icon-eye" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6Z" />
+      <circle cx="12" cy="12" r="3.2" />
+    </svg>
+  </span>`;
+}
 
-    // Wire controles del modal
-    $pwdCancel?.addEventListener('click', closePwd);
-    $pwdClose?.addEventListener('click', closePwd);
-    $pwdConfirm?.addEventListener('click', confirmPwd);
-    $pwdInput?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
+/* ======= Render (tabla por OT + acciones) ======= */
+function render(){
+  const wrap=$('#wrapGrupos'); wrap.innerHTML="";
+  const totalGrupos=grupos.length;
+  const ini=(paginaActual-1)*porPaginaGrupos, fin=ini+porPaginaGrupos, gruposPagina=grupos.slice(ini,fin);
 
-    // Exponer para usos futuros si hiciera falta
-    window.__openPwd = openPwd;
-  })();
+  const box=document.createElement('div'); box.className='tabla-box';
+  const tbl=document.createElement('table'); tbl.className='tabla';
+  tbl.innerHTML=`
+    <thead>
+      <tr>
+        <th>OT</th>
+        <th>Total registros</th>
+        <th>Registros pendientes</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyOTs"></tbody>`;
+  box.appendChild(tbl);
+  wrap.appendChild(box);
 
-  /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
-  (function(){
-    const track = document.getElementById('cTrack');
-    const prev  = document.getElementById('cPrev');
-    const next  = document.getElementById('cNext');
-    if (!track) return;
+  const tbody = tbl.querySelector('#tbodyOTs');
+  for(const g of gruposPagina){
+    const otClave = g.clave;
+    const { total, pendientes } = contarCompletados(otClave);
+    const tr=document.createElement('tr');
+    const idPrimario = `btn_primary_${cssId(otClave)}`;
+    const idEliminar = `btn_eliminar_${cssId(otClave)}`;
+    const idPreview = `btn_preview_${cssId(otClave)}`;
+    const yaCompleta = pendientes === 0;
+    const enEdicion = otsEnEdicion.has(otClave) && !yaCompleta;
 
-    const MAX_TRY = 40;
-    const AUTOPLAY_MS = 7000;
-    const okName   = (i)=> `miniatura${i}.jpg`;
-    const typoName = (i)=> `minuatira${i}.jpg`;
+    tr.innerHTML = `
+      <td class="col-ot">${esc(otClave)}</td>
+      <td><span class="count-total">${total}</span></td>
+      <td><span class="count-pend">${pendientes}</span></td>
+      <td>
+        <button class="btn-pill btn-primary" id="${idPrimario}" data-ot="${esc(otClave)}" data-mode=""></button>
+        <button class="btn-pill btn-preview" id="${idPreview}" data-ot="${esc(otClave)}" title="Ver registros (solo lectura)">
+          ${svgEye()}Vista previa
+        </button>
+        <button class="btn-pill btn-eliminar" id="${idEliminar}" data-ot="${esc(otClave)}" title="Eliminar todos los registros" disabled>🗑️ Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
 
-    function probe(src){
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload  = () => resolve({exists:true, src});
-        img.onerror = () => resolve({exists:false, src});
-        img.src = src + `?v=${Date.now().toString(36)}`;
+    const btnPrim = tr.querySelector(`#${idPrimario}`);
+    const btnDel = tr.querySelector(`#${idEliminar}`);
+
+    if(yaCompleta){
+      btnPrim.innerHTML = `✅ OT gestionada`;
+      btnPrim.classList.add('success');
+      btnPrim.disabled = true;
+      btnPrim.setAttribute('data-mode','done');
+      // <<<< Ajuste: habilitar Eliminar cuando la OT está gestionada >>>>
+      if(btnDel) btnDel.disabled = false;
+    }else if(enEdicion){
+      btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+      btnPrim.disabled = false;
+      btnPrim.setAttribute('data-mode','continuar');
+      if(btnDel) btnDel.disabled = true;
+    }else{
+      btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
+      btnPrim.disabled = false;
+      btnPrim.setAttribute('data-mode','gestionar');
+      if(btnDel) btnDel.disabled = true;
+    }
+  }
+  renderPaginacion(totalGrupos);
+  updateHeaderStats();
+}
+function renderPaginacion(totalGrupos){
+  const cont=$('#paginacion'); cont.innerHTML="";
+  const total=Math.max(1, Math.ceil(totalGrupos/porPaginaGrupos));
+  for(let i=1;i<=total;i++){
+    const b=document.createElement('button'); b.textContent=i;
+    if(i===paginaActual) b.setAttribute('aria-current','page');
+    b.onclick=()=>{ paginaActual=i; render(); }; cont.appendChild(b);
+  }
+}
+
+/* ======= Modal ======= */
+const modal = document.getElementById('modalRegistros');
+const modalBody = document.getElementById('modalBody');
+const modalTitle = document.getElementById('modalTitle');
+const modalEnviarBtn = document.getElementById('modalEnviar');
+
+function abrirModal(ot, {soloVista=false} = {}){
+  const regs = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
+  if(!regs.length){ showToast(`No hay registros para la OT ${ot}`, 'error'); return; }
+  otModalActual = ot;
+  modalSoloVista = soloVista;
+  modalTitle.textContent = `${soloVista ? 'Vista previa' : 'Gestionar registros'} — OT ${ot}`;
+  modalBody.innerHTML = "";
+
+  for(const item of regs){
+    const wrap = document.createElement('div');
+    wrap.className = 'registro';
+    wrap.innerHTML = `
+      <div class="row">
+        <div>
+          <label>Fecha</label>
+          <input value="${esc(item.fecha)}" readonly draggable="false">
+        </div>
+        <div>
+          <label>Justificación</label>
+          <textarea id="m_causa_${item.id}" placeholder="Motivo de exclusión…">${esc(item.causa ?? '')}</textarea>
+        </div>
+        <div>
+          <label>Imágenes</label>
+          <input type="file" id="m_foto_${item.id}" multiple accept="image/*">
+          <div class="preview" id="m_prev_${item.id}"></div>
+        </div>
+      </div>
+    `;
+    modalBody.appendChild(wrap);
+
+    const txt = wrap.querySelector(`#m_causa_${item.id}`);
+    const inp = wrap.querySelector(`#m_foto_${item.id}`);
+
+    if(soloVista){
+      txt.setAttribute('readonly','readonly');
+      txt.setAttribute('disabled','disabled');
+      inp.setAttribute('disabled','disabled');
+    }else{
+      const debouncedUpdate = debounce(()=>updateEstadosOT(item.ot), 150);
+      txt.addEventListener('input', e=>{
+        item.causa = e.target.value;
+        const ref = datos.find(x=>x.id===item.id);
+        if(ref) ref.causa = item.causa;
+        debouncedUpdate();
+      });
+      inp.addEventListener('change', e=>{
+        const files = Array.from(e.target.files??[]);
+        item.fotos = files;
+        const ref=datos.find(x=>x.id===item.id); if(ref) ref.fotos=files;
+        debouncedUpdate();
       });
     }
+  }
 
-    (async function loadImages(){
-      const found = [];
-      const firstOk = await probe(okName(1));
-      if (firstOk.exists){
-        found.push(firstOk.src);
-        for (let i=2; i<=MAX_TRY; i++){
-          const r = await probe(okName(i)); if (!r.exists) break; found.push(r.src);
-        }
-      } else {
-        const firstTypo = await probe(typoName(1));
-        if (firstTypo.exists){
-          found.push(firstTypo.src);
-          for (let i=2; i<=MAX_TRY; i++){
-            const r = await probe(typoName(i)); if (!r.exists) break; found.push(r.src);
-          }
-        }
+  // En Opción B, el botón del modal siempre se llama "Enviar registros"
+  // y se habilita solo si pendientes===0 (independiente de si se envió antes o no)
+  const { pendientes } = contarCompletados(ot);
+  modalEnviarBtn.textContent = 'Enviar registros';
+  modalEnviarBtn.disabled = pendientes !== 0;
+  modalEnviarBtn.onclick = async ()=>{
+    const ok = await confirmModal(`¿Confirmas el envío de los registros para la OT ${ot}?`);
+    if(!ok) return;
+    modalEnviarBtn.textContent = 'Enviando…';
+    modalEnviarBtn.disabled = true;
+    cerrarModal();
+    await enviarRegistrosOT(ot);
+  };
+
+  modalEnviarBtn.style.display = soloVista ? 'none' : '';
+  if(!soloVista) otsEnEdicion.delete(ot);
+
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow='hidden';
+  updateHeaderStats();
+}
+
+function cerrarModal(){
+  if(otModalActual && !modalSoloVista){
+    const { pendientes } = contarCompletados(otModalActual);
+    const btnPrim = document.getElementById(`btn_primary_${cssId(otModalActual)}`);
+    const btnDel = document.getElementById(`btn_eliminar_${cssId(otModalActual)}`);
+
+    if(pendientes === 0){
+      otsEnEdicion.delete(otModalActual);
+      if(btnPrim){
+        btnPrim.innerHTML = `✅ OT gestionada`;
+        btnPrim.disabled = true;
+        btnPrim.classList.add('success');
+        btnPrim.setAttribute('data-mode','done');
       }
-
-      if (found.length === 0){
-        const empty = document.createElement('div');
-        empty.className = 'carousel-empty';
-        empty.textContent = 'No se encontraron imágenes miniaturaN.jpg en la carpeta.';
-        track.appendChild(empty);
-        if (prev) prev.style.display='none';
-        if (next) next.style.display='none';
-        if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
-        return;
+      // <<<< Ajuste: habilitar Eliminar cuando la OT está gestionada >>>>
+      if(btnDel){ btnDel.disabled = false; }
+    }else{
+      otsEnEdicion.add(otModalActual);
+      if(btnPrim){
+        btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+        btnPrim.disabled = false;
+        btnPrim.classList.remove('success');
+        btnPrim.setAttribute('data-mode','continuar');
       }
-
-      const items = found.map((src, idx) => {
-        const item = document.createElement('div');
-        item.className = 'carousel-item' + (idx===0 ? ' is-active' : '');
-        item.setAttribute('role','listitem');
-        item.style.setProperty('--slide-img', `url("${src}")`);
-        const img = document.createElement('img');
-        img.loading = 'lazy'; img.decoding = 'async'; img.alt = `Imagen ${idx+1}`; img.src = src;
-        item.appendChild(img); track.appendChild(item);
-        return item;
-      });
-
-      let current = 0, isAnimating = false;
-
-      function armTransitionUnlock(nextItem){
-        const onEnd = (ev)=>{
-          if (ev.propertyName === 'opacity' || ev.propertyName === 'transform' || ev.propertyName === 'filter'){
-            nextItem.removeEventListener('transitionend', onEnd);
-            isAnimating = false;
-          }
-        };
-        nextItem.addEventListener('transitionend', onEnd);
-        setTimeout(()=>{ isAnimating = false; }, 900);
-      }
-
-      function show(index){
-        const total = items.length; if (total < 2 || isAnimating) return;
-        const nextIndex = (index + total) % total; if (nextIndex === current) return;
-        const curItem = items[current]; const nextItem = items[nextIndex];
-        isAnimating = true; nextItem.classList.add('is-active'); armTransitionUnlock(nextItem);
-        curItem.classList.remove('is-active'); current = nextIndex;
-      }
-
-      const goPrev = () => show(current - 1);
-      const goNext = () => show(current + 1);
-
-      if (items.length < 2){ if (prev) prev.style.display='none'; if (next) next.style.display='none'; }
-      else { prev?.addEventListener('click', goPrev); next?.addEventListener('click', goNext); }
-
-      track.setAttribute('tabindex','0');
-      track.addEventListener('keydown', (ev)=>{ if (ev.key==='ArrowLeft') goPrev(); if (ev.key==='ArrowRight') goNext(); });
-
-      // Swipe
-      let startX=null, startY=null;
-      track.addEventListener('touchstart', (e)=>{ const t=e.touches?.[0]; if(!t) return; startX=t.clientX; startY=t.clientY; }, {passive:true});
-      track.addEventListener('touchend', (e)=>{ const t=e.changedTouches?.[0]; if(!t||startX===null||startY===null) return;
-        const dx=t.clientX-startX, dy=t.clientY-startY;
-        if (Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>30){ if (dx>0) goPrev(); else goNext(); }
-        startX=startY=null;
-      }, {passive:true});
-
-      // Autoplay
-      let autoplayId = null;
-      const startAutoplay = () =>{ if (autoplayId || items.length<2) return; autoplayId = setInterval(goNext, AUTOPLAY_MS); };
-      const stopAutoplay  = () =>{ if (!autoplayId) return; clearInterval(autoplayId); autoplayId=null; };
-      startAutoplay();
-      document.addEventListener('visibilitychange', () =>{ if (document.hidden) stopAutoplay(); else startAutoplay(); });
-
-      if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
-    })();
-  })();
-
-  /* ========== Cerrar sesión ========== */
-  (function(){
-    document.getElementById('btnLogout')?.addEventListener('click', () => {
-      try {
-        sessionStorage.removeItem('auth_ok');
-        sessionStorage.removeItem('auth_user');
-        sessionStorage.removeItem('auth_role');
-        sessionStorage.removeItem('welcome_shown');
-        // Limpiar el módulo recordado para que siempre pregunte al volver
-        sessionStorage.removeItem('last_module');
-      } catch(e){}
-      window.location.replace('login.html');
-    });
-  })();
-
-  /* ========== Bienvenida (1 vez por sesión) ========== */
-  (function(){
-    const backdrop = document.getElementById('welcomeBackdrop');
-    const nameEl   = document.getElementById('welcomeUser');
-    const btnGo    = document.getElementById('welcomeContinue');
-    if (!backdrop) return;
-
-    const isAuth = !!sessionStorage.getItem('auth_ok');
-    const already = sessionStorage.getItem('welcome_shown') === '1';
-
-    if (isAuth && !already) {
-      const user = (sessionStorage.getItem('auth_user') || 'usuario').trim();
-      if (nameEl) nameEl.textContent = user;
-
-      function closeWelcome(){
-        backdrop.classList.remove('open');
-        backdrop.setAttribute('aria-hidden','true');
-        sessionStorage.setItem('welcome_shown','1');
-      }
-
-      // Abrir
-      backdrop.classList.add('open');
-      backdrop.removeAttribute('aria-hidden');
-      btnGo?.addEventListener('click', closeWelcome);
-      backdrop.addEventListener('click', (ev)=>{ if (ev.target === backdrop) closeWelcome(); });
-      document.addEventListener('keydown', (ev)=>{ if (backdrop.classList.contains('open') && ev.key === 'Escape') closeWelcome(); });
+      if(btnDel) btnDel.disabled = true;
     }
-  })();
+  }
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow='';
+  otModalActual = null;
+  modalSoloVista = false;
+  updateHeaderStats();
+}
+modal.addEventListener('click', (e)=>{ if(e.target?.dataset?.close) cerrarModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.classList.contains('show')) cerrarModal(); });
+
+/* ======= Enviar registros (POST backend) ======= */
+async function enviarRegistrosOT(ot){
+  const { pendientes, total } = contarCompletados(ot);
+  if(total === 0){ showToast(`No hay registros para la OT ${ot}.`, 'error'); return; }
+  if(pendientes > 0){ showToast('Aún hay registros pendientes por completar.', 'error'); return; }
+
+  const btn = document.getElementById(`btn_primary_${cssId(ot)}`);
+  if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; btn.classList.remove('success'); btn.setAttribute('data-mode',''); }
+
+  try{
+    const items = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
+    const registros = items.map(r => ({ fecha:r.fecha, ot:r.ot, causa:r.causa }));
+    const res = await fetch(`${API_BASE}/api/guardarOT`, {
+      method:'POST', mode:'cors',
+      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify({ ot, registros })
+    });
+    const j = await res.json().catch(()=>null);
+    if(res.ok && j && (j.ok === true || j.result === 'ok')){
+      otsEnviadas.add(ot);
+      // En Opción B ya estaba verde por pendientes=0; reafirmamos estado visual
+      if(btn){
+        btn.innerHTML = `✅ OT gestionada`;
+        btn.classList.add('success');
+        btn.disabled = true;
+        btn.setAttribute('data-mode','done');
+      }
+      const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
+      // Aunque ya está gestionada (y por nuestra regla está habilitado), reafirmamos:
+      if(btnDel) btnDel.disabled = false;
+      showToast(`OT ${ot}: registros enviados y registrados.`, 'success');
+    }else{
+      throw new Error(j?.error || `HTTP ${res.status}`);
+    }
+  }catch(err){
+    console.error(err);
+    if(btn){
+      // Volvemos al estado que corresponda por pendientes
+      const { pendientes } = contarCompletados(ot);
+      if(pendientes === 0){
+        btn.innerHTML = `✅ OT gestionada`;
+        btn.setAttribute('data-mode','done');
+        btn.classList.add('success');
+        btn.disabled = true;
+      }else if(otsEnEdicion.has(ot)){
+        btn.innerHTML = `${svgPencil()}Continuar editando`;
+        btn.setAttribute('data-mode','continuar');
+        btn.disabled = false;
+      }else{
+        btn.innerHTML = `${svgGear()}Gestionar registros`;
+        btn.setAttribute('data-mode','gestionar');
+        btn.disabled = false;
+      }
+    }
+    showToast('Error de servidor al enviar la OT.', 'error');
+  }finally{
+    updateHeaderStats();
+  }
+}
+
+/* ======= Eliminar por OT (solo local) ======= */
+async function eliminarRegistrosOT(ot){
+  const ok = await confirmModal(`¿Eliminar TODOS los registros ingresados para la OT ${ot}? Esta acción no se puede deshacer (local).`);
+  if(!ok) return;
+  const items = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
+  for(const it of items){ it.causa = ''; it.fotos = []; }
+  otsEnEdicion.delete(ot);
+  // No tocamos otsEnviadas aquí para conservar el indicio de envío previo
+  render();
+  showToast(`OT ${ot}: registros eliminados (solo en memoria).`, 'info');
+  updateHeaderStats();
+}
+
+/* ======= Eliminar GLOBAL (solo local) ======= */
+async function eliminarRegistrosGlobal(){
+  const pend = calcularPendientesGlobal();
+  if(pend !== 0){ showToast('Hay registros pendientes. Completa todos antes de eliminar globalmente.', 'error'); return; }
+  const ok = await confirmModal('¿Eliminar TODOS los registros ingresados de TODAS las OTs? (solo en memoria)');
+  if(!ok) return;
+  for(const it of datos){ it.causa=''; it.fotos=[]; }
+  otsEnEdicion.clear();
+  render();
+  showToast('Se eliminaron los registros de todas las OTs (local).', 'info');
+  updateHeaderStats();
+}
+
+/* ======= Delegación de clic (tabla) ======= */
+$('#wrapGrupos').addEventListener('click', (e)=>{
+  const btnPrim = e.target.closest('.btn-primary');
+  if(btnPrim){
+    e.preventDefault(); e.stopPropagation();
+    const ot = btnPrim.getAttribute('data-ot') ?? '';
+    const mode = btnPrim.getAttribute('data-mode') ?? '';
+    if(!ot) return;
+    if(mode === 'gestionar' || mode === 'continuar'){ abrirModal(ot, {soloVista:false}); return; }
+    if(mode === 'enviar'){ enviarRegistrosOT(ot); return; }
+    return;
+  }
+  const btnPrev = e.target.closest('.btn-preview');
+  if(btnPrev){
+    e.preventDefault(); e.stopPropagation();
+    const ot = btnPrev.getAttribute('data-ot') ?? '';
+    if(ot) abrirModal(ot, {soloVista:true});
+    return;
+  }
+  const btnDel = e.target.closest('.btn-eliminar');
+  if(btnDel){
+    e.preventDefault(); e.stopPropagation();
+    const ot = btnDel.getAttribute('data-ot') ?? '';
+    if(ot && !btnDel.disabled) eliminarRegistrosOT(ot);
+    return;
+  }
+});
+
+/* ======= Acciones de UI ======= */
+$('#btnCargar').addEventListener('click', cargarDesdeServidor);
+document.getElementById('btnEliminarGlobal').addEventListener('click', eliminarRegistrosGlobal);
+$('#busqueda').addEventListener('input', debounce(aplicarBusqueda, 250));
+
+/* ======= Panel de colores ======= */
+const paletteFab = document.getElementById('paletteFab');
+const palette = document.getElementById('palette');
+const colorHead = document.getElementById('colorHead');
+const colorDom = document.getElementById('colorDom');
+const colorLine = document.getElementById('colorLine');
+const colorPill = document.getElementById('colorPill');
+
+function getCSSVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function setCSSVar(name, val){ document.documentElement.style.setProperty(name, val); }
+function savePalette(){
+  const payload = { head:getCSSVar('--head'), dom:getCSSVar('--dom-blue'), line:getCSSVar('--line'), pill:getCSSVar('--pill') };
+  localStorage.setItem('palette_exclusiones', JSON.stringify(payload));
+}
+function loadPalette(){
+  try{
+    const raw = localStorage.getItem('palette_exclusiones');
+    if(!raw) return;
+    const p = JSON.parse(raw);
+    if(p.head) setCSSVar('--head', p.head);
+    if(p.dom) setCSSVar('--dom-blue', p.dom);
+    if(p.line) setCSSVar('--line', p.line);
+    if(p.pill) setCSSVar('--pill', p.pill);
+  }catch(e){ /* no-op */ }
+}
+function syncInputsFromVars(){
+  const vHead = getCSSVar('--head') || '#ffffff';
+  const vDom  = getCSSVar('--dom-blue') || '#0e4aa8';
+  const vLine = getCSSVar('--line') || '#e4ebf6';
+  const vPill = getCSSVar('--pill') || '#cfe0ff';
+  colorHead.value = vHead.startsWith('#') ? vHead : '#ffffff';
+  colorDom.value  = vDom.startsWith('#') ? vDom : '#0e4aa8';
+  colorLine.value = vLine.startsWith('#') ? vLine : '#e4ebf6';
+  colorPill.value = vPill.startsWith('#') ? vPill : '#cfe0ff';
+}
+function openPalette(){ palette.classList.add('show'); palette.setAttribute('aria-hidden','false'); syncInputsFromVars(); }
+function closePalette(){ palette.classList.remove('show'); palette.setAttribute('aria-hidden','true'); }
+
+if(paletteFab){
+  paletteFab.addEventListener('click', () => { if(palette.classList.contains('show')) closePalette(); else openPalette(); });
+  document.getElementById('btnClosePalette').addEventListener('click', closePalette);
+  document.getElementById('btnResetPalette').addEventListener('click', ()=>{
+    setCSSVar('--head', '#ffffff');
+    setCSSVar('--dom-blue', '#0e4aa8');
+    setCSSVar('--line', '#e4ebf6');
+    setCSSVar('--pill', '#cfe0ff');
+    savePalette(); syncInputsFromVars();
+  });
+  colorHead.addEventListener('input', e => { setCSSVar('--head', e.target.value); savePalette(); });
+  colorDom .addEventListener('input', e => { setCSSVar('--dom-blue', e.target.value); savePalette(); });
+  colorLine.addEventListener('input', e => { setCSSVar('--line', e.target.value); savePalette(); });
+  colorPill.addEventListener('input', e => { setCSSVar('--pill', e.target.value); savePalette(); });
+}
+
+/* ======= Arranque ======= */
+loadPalette();
+cargarDesdeServidor();
 </script>
 </body>
 </html>
