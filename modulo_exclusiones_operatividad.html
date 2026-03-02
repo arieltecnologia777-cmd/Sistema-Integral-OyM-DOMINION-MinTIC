@@ -544,7 +544,7 @@ async function cargarDesdeServidor(){
     mostrarAlerta('No se pudo cargar el dataset del servidor.');
     showToast('Error al cargar datos del servidor.', 'error');
   }finally{
-    btn.disabled=false; btn.textContent='Cargar / Actualizar';
+    btn.disabled=false; btn.textContent='Actualizar';
     updateHeaderStats();
   }
 }
