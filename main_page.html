@@ -818,25 +818,30 @@ html[data-theme="dark"] .exclusiones-card .icon{
     };
   })();
 
+  <script>
   // ===== Modal de contraseña (estilizado) + navegación y recuerdo del módulo =====
   (function(){
-   
+
 /* ================================================================
    PUNTO OFICIAL PARA CAMBIAR CONTRASEÑAS POR REGIONAL
-   ================================================================= */
+   (Opción A: sin query string; usamos localStorage para scope)
+   ================================================================ */
 const ACCESS_PASSWORDS = {
   // Admin
-  admin: 'adm1nroot#',
+  admin: 'adm1nroot#',     // <-- AJUSTA si aplica
 
   // Gestor por regional
-  gestor_R1: 'R1admin#',   // → abrirá ?scope=R1
-  gestor_R2: 'R2-admin#'   // → abrirá ?scope=R2
+  gestor_R1: 'R1admin#',   // → scope = R1
+  gestor_R2: 'R2-admin#'   // → scope = R2
 };
 
+/* Ruta del gestor (misma instalación, HTTPS y misma “origin”
+   para compartir localStorage sin problemas). */
 const TARGET_URLS = {
-  admin: 'admin_exclusiones.html',
-  gestor: 'http://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/gestor_exclusiones.html'
+  admin:  'admin_exclusiones.html',
+  gestor: 'https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/gestor_exclusiones.html'
 };
+
     const modal = makeModal('pwdBackdrop', 'pwdTitle');
     const $pwdInput    = document.getElementById('pwdInput');
     const $pwdToggle   = document.getElementById('pwdToggle');
@@ -862,62 +867,66 @@ const TARGET_URLS = {
     }
     function closePwd(){ modal.close(); }
 
+    // 👉 Opción A: guardamos scope en localStorage y abrimos el gestor SIN query string
     function confirmPwd(){
-  const val = ($pwdInput?.value ?? '').trim();
-  if (!currentRole) return;
+      const val = ($pwdInput?.value ?? '').trim();
+      if (!currentRole) return;
 
-  // --- Admin (mismo comportamiento)
-  if (currentRole === 'admin') {
-    if (val !== ACCESS_PASSWORDS.admin) {
-      alert('No tienes permiso para ingresar al módulo Admin.');
-      $pwdInput?.focus();
-      $pwdInput?.select();
-      return;
+      // --- Admin (sin cambios; abre nueva pestaña)
+      if (currentRole === 'admin') {
+        if (val !== ACCESS_PASSWORDS.admin) {
+          alert('No tienes permiso para ingresar al módulo Admin.');
+          $pwdInput?.focus();
+          $pwdInput?.select();
+          return;
+        }
+        sessionStorage.setItem('last_module', 'admin');
+        closePwd();
+        window.__closeSelectorIfOpen?.();
+
+        // Oculta backdrops
+        document.getElementById('pwdBackdrop')?.style && (document.getElementById('pwdBackdrop').style.display = 'none');
+        document.getElementById('exclusionesBackdrop')?.style && (document.getElementById('exclusionesBackdrop').style.display = 'none');
+
+        window.open(TARGET_URLS.admin, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      // --- Gestor (R1/R2) → Opción A: scope en localStorage
+      if (currentRole === 'gestor') {
+        let scope = null;
+        if (val === ACCESS_PASSWORDS.gestor_R1) scope = 'R1';
+        else if (val === ACCESS_PASSWORDS.gestor_R2) scope = 'R2';
+
+        if (!scope) {
+          alert('No tienes permiso para ingresar al Módulo Gestor.\nVerifica la contraseña por regional.');
+          $pwdInput?.focus();
+          $pwdInput?.select();
+          return;
+        }
+
+        sessionStorage.setItem('last_module', 'gestor');
+        closePwd();
+        window.__closeSelectorIfOpen?.();
+
+        // Oculta backdrops
+        document.getElementById('pwdBackdrop')?.style && (document.getElementById('pwdBackdrop').style.display = 'none');
+        document.getElementById('exclusionesBackdrop')?.style && (document.getElementById('exclusionesBackdrop').style.display = 'none');
+
+        // ⬇️ Guardamos el scope en localStorage (para que lo lea gestor_exclusiones)
+        try{
+          localStorage.setItem('ex_scope_region',  scope);     // R1/R2
+          localStorage.setItem('ex_scope_role',    'gestor');  // rol
+          localStorage.setItem('ex_scope_project', 'p1');      // proyecto actual
+        }catch(e){ /* no-op */ }
+
+        // 🔗 Abrimos el GESTOR **SIN** query string (Opción A)
+        window.open(TARGET_URLS.gestor, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      alert('Rol desconocido.');
     }
-    sessionStorage.setItem('last_module', 'admin');
-    closePwd();
-    window.__closeSelectorIfOpen?.();
-
-    // Ocultar backdrops
-    const pwdBack = document.getElementById('pwdBackdrop');
-    const selBack = document.getElementById('exclusionesBackdrop');
-    if (pwdBack) pwdBack.style.display = 'none';
-    if (selBack) selBack.style.display = 'none';
-
-    window.open(TARGET_URLS.admin, '_blank', 'noopener,noreferrer');
-    return;
-  }
-
-  // --- Gestor: dos claves -> dos scopes
-  if (currentRole === 'gestor') {
-    let scope = null;
-
-    if (val === ACCESS_PASSWORDS.gestor_R1) scope = 'R1';
-    else if (val === ACCESS_PASSWORDS.gestor_R2) scope = 'R2';
-
-    if (!scope) {
-      alert('No tienes permiso para ingresar al Módulo Gestor.\nVerifica la contraseña por regional.');
-      $pwdInput?.focus();
-      $pwdInput?.select();
-      return;
-    }
-
-    sessionStorage.setItem('last_module', 'gestor');
-    closePwd();
-    window.__closeSelectorIfOpen?.();
-
-    // Ocultar backdrops
-    const pwdBack = document.getElementById('pwdBackdrop');
-    const selBack = document.getElementById('exclusionesBackdrop');
-    if (pwdBack) pwdBack.style.display = 'none';
-    if (selBack) selBack.style.display = 'none';
-
-    window.open(`${TARGET_URLS.gestor}?scope=${encodeURIComponent(scope)}`, '_blank', 'noopener,noreferrer');
-    return;
-  }
-
-  alert('Rol desconocido.');
-}
 
     // Toggle mostrar/ocultar contraseña
     $pwdToggle?.addEventListener('click', ()=>{
@@ -932,13 +941,14 @@ const TARGET_URLS = {
 
     // Wire controles del modal
     $pwdCancel?.addEventListener('click', closePwd);
-    $pwdClose?.addEventListener('click', closePwd);
+    $pwdClose ?.addEventListener('click', closePwd);
     $pwdConfirm?.addEventListener('click', confirmPwd);
-    $pwdInput?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
+    $pwdInput ?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
 
     // Exponer para usos futuros si hiciera falta
     window.__openPwd = openPwd;
   })();
+</script>
 
   /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
   (function(){
