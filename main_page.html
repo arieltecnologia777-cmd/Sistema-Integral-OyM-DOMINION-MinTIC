@@ -198,7 +198,6 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
     0 0 64px color-mix(in srgb, var(--primary) 38%, transparent);
   z-index:-1; pointer-events:none;
 }
-/* Carrusel — estilos ya presentes más abajo en el JS (sin cambios) */
   </style>
 </head>
 <body>
@@ -226,8 +225,8 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
 
       <div class="sb-section-title">Navegación</div>
       <nav class="sb-nav">
-        <!-- ✅ Botón real que abre el selector de Exclusiones -->
-        <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones">
+        <!-- ✅ Botón correcto que abre el selector de Exclusiones -->
+        <a class="sb-item" href="#exclusiones" id="btnModuloExclusiones" title="Abrir selector de exclusiones">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <polyline points="13 5 20 12 13 19"></polyline>
@@ -364,7 +363,11 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
   <div class="modal-backdrop" id="welcomeBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" id="welcomeModal">
       <div class="modal-body" id="welcomeContent">
-        <h2 styleprimary" id="welcomeContinue">Entrar</button>
+        <h2 style="margin:0 0 12px 0; font-size:20px; font-weight:600;">¡Bienvenido(a)!</h2>
+        <p style="margin:0; font-size:16px; color:var(--muted)">Hola <strong id="welcomeUser">usuario</strong>, estás ingresando al sistema de Seguimiento O&M.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn primary" id="welcomeContinue">Entrar</button>
       </div>
     </div>
   </div>
@@ -383,6 +386,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           <div class="exclusiones-card" id="cardAdmin">
             <div class="card-head">
               <div class="icon" aria-hidden="true">
+                <!-- Icono: usuario con engranaje -->
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M9 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"></path>
                   <path d="M2 21a7 7 0 0 1 14 0"></path>
@@ -402,6 +406,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           <div class="exclusiones-card" id="cardGestor">
             <div class="card-head">
               <div class="icon" aria-hidden="true">
+                <!-- Icono: usuario con check -->
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M9 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"></path>
                   <path d="M2 21a7 7 0 0 1 14 0"></path>
@@ -688,46 +693,85 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
     window.__openPwd = openPwd;
   })();
 
-  /* ========== Carrusel: crossfade + blur, autoplay 7s ========== */
+  /* ========== Carrusel robusto: busca miniaturas en varias rutas y extensiones ========== */
   (function(){
     const track = document.getElementById('cTrack');
     const prev  = document.getElementById('cPrev');
     const next  = document.getElementById('cNext');
     if (!track) return;
-    const MAX_TRY = 40, AUTOPLAY_MS = 7000;
-    const okName = (i)=> `miniatura${i}.jpg`;
-    const typoName = (i)=> `minuatira${i}.jpg`;
+
+    const AUTOPLAY_MS = 7000;
+    const MAX_TRY = 40;
+
+    // Rutas candidatas donde podrían estar las miniaturas
+    const BASES = ['./', './img/', './images/'];
+    // Nombres y typos
+    const NAME_OK   = i => `miniatura${i}`;
+    const NAME_TYPO = i => `minuatira${i}`;
+    // Extensiones permitidas
+    const EXTS = ['jpg','jpeg','png'];
+
     function probe(src){
       return new Promise((resolve) => {
         const img = new Image();
-        img.onload = () => resolve({exists:true, src});
+        img.onload  = () => resolve({exists:true, src});
         img.onerror = () => resolve({exists:false, src});
+        // cache-buster
         img.src = src + `?v=${Date.now().toString(36)}`;
       });
     }
-    (async function loadImages(){
-      const found = [];
-      const firstOk = await probe(okName(1));
-      if (firstOk.exists){
-        found.push(firstOk.src);
-        for (let i=2; i<=MAX_TRY; i++){ const r = await probe(okName(i)); if (!r.exists) break; found.push(r.src); }
-      } else {
-        const firstTypo = await probe(typoName(1));
-        if (firstTypo.exists){
-          found.push(firstTypo.src);
-          for (let i=2; i<=MAX_TRY; i++){ const r = await probe(typoName(i)); if (!r.exists) break; found.push(r.src); }
+
+    async function findFirstExisting(){
+      // Intenta miniatura1 con todas las combinaciones
+      for (const base of BASES){
+        for (const ext of EXTS){
+          const candidate = `${base}${NAME_OK(1)}.${ext}`;
+          const r = await probe(candidate);
+          if (r.exists) return {base, name:NAME_OK, ext};
+        }
+        for (const ext of EXTS){
+          const candidate = `${base}${NAME_TYPO(1)}.${ext}`;
+          const r = await probe(candidate);
+          if (r.exists) return {base, name:NAME_TYPO, ext};
         }
       }
-      if (found.length === 0){
+      return null;
+    }
+
+    (async function loadImages(){
+      const found = [];
+      const first = await findFirstExisting();
+
+      if (!first){
         const empty = document.createElement('div');
         empty.className = 'carousel-empty';
-        empty.textContent = 'No se encontraron imágenes miniaturaN.jpg en la carpeta.';
+        empty.textContent = 'No se encontraron imágenes miniaturaN.jpg|jpeg|png en ./, ./img/ o ./images/.';
         track.appendChild(empty);
         if (prev) prev.style.display='none';
         if (next) next.style.display='none';
         if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
         return;
       }
+
+      // Acumula imágenes secuenciales mientras existan
+      for (let i=1; i<=MAX_TRY; i++){
+        const candidate = `${first.base}${first.name(i)}.${first.ext}`;
+        const r = await probe(candidate);
+        if (!r.exists) break;
+        found.push(r.src);
+      }
+
+      if (found.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'carousel-empty';
+        empty.textContent = 'No se encontraron imágenes de carrusel.';
+        track.appendChild(empty);
+        if (prev) prev.style.display='none';
+        if (next) next.style.display='none';
+        if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
+        return;
+      }
+
       const items = found.map((src, idx) => {
         const item = document.createElement('div');
         item.className = 'carousel-item' + (idx===0 ? ' is-active' : '');
@@ -738,6 +782,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         item.appendChild(img); track.appendChild(item);
         return item;
       });
+
       let current = 0, isAnimating = false;
       function armTransitionUnlock(nextItem){
         const onEnd = (ev)=>{
@@ -762,6 +807,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
       else { prev?.addEventListener('click', goPrev); next?.addEventListener('click', goNext); }
       track.setAttribute('tabindex','0');
       track.addEventListener('keydown', (ev)=>{ if (ev.key==='ArrowLeft') goPrev(); if (ev.key==='ArrowRight') goNext(); });
+
       // Swipe
       let startX=null, startY=null;
       track.addEventListener('touchstart', (e)=>{ const t=e.touches?.[0]; if(!t) return; startX=t.clientX; startY=t.clientY; }, {passive:true});
@@ -770,12 +816,14 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         if (Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>30){ if (dx>0) goPrev(); else goNext(); }
         startX=startY=null;
       }, {passive:true});
+
       // Autoplay
       let autoplayId = null;
       const startAutoplay = () =>{ if (autoplayId || items.length<2) return; autoplayId = setInterval(goNext, AUTOPLAY_MS); };
       const stopAutoplay  = () =>{ if (!autoplayId) return; clearInterval(autoplayId); autoplayId=null; };
       startAutoplay();
       document.addEventListener('visibilitychange', () =>{ if (document.hidden) stopAutoplay(); else startAutoplay(); });
+
       if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
     })();
   })();
