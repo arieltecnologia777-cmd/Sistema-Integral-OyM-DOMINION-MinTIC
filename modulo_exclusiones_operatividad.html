@@ -5,7 +5,8 @@
 <title>Exclusiones – Operatividad (tabla + backend)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- Sello de build para diagnosticar versiones renderizadas -->
-<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1+B-option+regional-filter+col-regional">
+<meta name="x-build" content="build-2026-03-03-child-embed-scope+r1r2+postMessage+p1-dynamic+keep-ui-pill+send-regional">
+
 <style>
 :root{
   --dom-blue:#0e4aa8; /* Azul corporativo */
@@ -312,7 +313,7 @@ body{
 .confirm .btn-cancel{ background:#f4f6fb; color:#34445f; border-color:#e3e9f6; }
 .confirm .btn-cancel:hover{ background:#ecf1fb; }
 
-/* ===== Filtro Regional (misma estética que la search-pill) ===== */
+/* ===== Filtro Regional (visual, controlado por el padre) ===== */
 .filter-box{ position:relative; height:40px; display:flex; align-items:center; }
 .filter-trigger{
   display:inline-flex; align-items:center; gap:8px; height:40px;
@@ -320,6 +321,9 @@ body{
   border:1px solid #d7e0f5; border-radius:10px;
   box-shadow:0 2px 8px rgba(0,0,0,.05);
   color:#0e4aa8; cursor:pointer; font-size:14px;
+}
+.filter-trigger[aria-disabled="true"]{
+  opacity:.9; cursor:default;
 }
 .filter-trigger:hover{ background:#f9fbff; }
 .filter-trigger .icon{ width:16px; height:16px; opacity:.7; }
@@ -352,16 +356,16 @@ body{
   <div class="controls">
     <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
 
-    <!-- === Filtro Regional (segunda posición; restaurado) === -->
+    <!-- === Filtro Regional (mantener visual; controlado por el padre) === -->
     <div class="filter-box" id="regionalBox">
-      <button id="btnRegional" class="filter-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" title="Filtrar por regional">
+      <button id="btnRegional" class="filter-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" title="Filtro regional (controlado por la página padre)" aria-disabled="true">
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M3 6h18l-7 8v4l-4 2v-6L3 6z"/>
         </svg>
         <span id="lblRegional">Regional: Todas</span>
       </button>
       <div id="menuRegional" class="filter-menu" role="listbox" aria-label="Regional">
-        <!-- Opciones dinámicas -->
+        <!-- Controlado por el padre: sin opciones locales -->
       </div>
     </div>
 
@@ -420,10 +424,17 @@ body{
 
 <!-- ===== Toast host ===== -->
 <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+
 <script>
 /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
-/* >>> PROYECTO p1: base con prefijo /p1 para todos los endpoints <<< */
-const API_BASE = "https://exclusiones-worker.modulo-de-exclusiones.workers.dev/p1";
+/* >>> Dinámico por proyecto (p1/p2/p3) controlado por el padre <<< */
+const API_BASE_HOST = "https://exclusiones-worker.modulo-de-exclusiones.workers.dev";
+let projectScope = "p1";
+let API_BASE = `${API_BASE_HOST}/${projectScope}`;
+function setProjectScope(scope){
+  const ok = typeof scope === 'string' && /^p[1-9]\d*$/.test(scope) ? scope : 'p1';
+  projectScope = ok; API_BASE = `${API_BASE_HOST}/${projectScope}`;
+}
 
 /* ======= Estado (local) ======= */
 let datos = [];
@@ -439,10 +450,13 @@ const otsEnEdicion = new Set(); // OTs con edición pendiente (cerraron popup)
 let otModalActual = null;       // OT abierta en modal
 let modalSoloVista = false;     // Modal en modo vista previa
 
-/* === Filtro Regional (estado) === */
+/* === Filtro Regional (estado) (CONTROLADO POR PADRE) === */
 let regionalActual = 'Todas';
-let regionalesDisponibles = []; // se llena tras cargar datos
-
+let regionalesDisponibles = []; // se arma al cargar datos (solo para info visual)
+let controlledByParent = false; // se activa si está embebido
+let currentRole = 'gestor';     // 'gestor' | 'admin' (lo manda el padre)
+const buildMeta = (document.querySelector('meta[name="x-build"]')?.content || '').trim();
+<script>
 /* ======= Utils ======= */
 function mostrarAlerta(msg){ const el=$('#alerta'); el.textContent=msg; el.style.display='block'; }
 function ocultarAlerta(){ const el=$('#alerta'); el.textContent=''; el.style.display='none'; }
@@ -532,21 +546,26 @@ async function cargarDesdeServidor(){
       fotos: [] // adjuntos solo locales para UI
     })).filter(x=>x.ot);
 
-    /* Armar lista de regionales detectadas */
+    /* Armar lista de regionales detectadas (informativo) */
     const setReg = new Set();
     for(const it of datos){ if((it.regional??'')!=='') setReg.add(it.regional); }
     regionalesDisponibles = Array.from(setReg).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
 
-    /* Si el valor actual ya no existe, volver a Todas */
-    if(regionalActual!=='Todas' && !regionalesDisponibles.includes(regionalActual)){
-      regionalActual = 'Todas';
+    // Si el padre controla, no permitimos regional distinta a la recibida
+    if(controlledByParent){
+      // regionalActual la define el padre; si aún no llegó, queda 'Todas'
+    }else{
+      // si local y el valor actual no existe, volver a Todas
+      if(regionalActual!=='Todas' && !regionalesDisponibles.includes(regionalActual)){
+        regionalActual = 'Todas';
+      }
     }
 
     filtrados=[...datos];
     paginaActual=1;
     construirGruposPorOT();
-    buildRegionalMenu();    // poblar menú
-    updateRegionalLabel();  // actualizar etiqueta del botón
+    buildRegionalMenu();    // en modo controlado, no muestra opciones
+    updateRegionalLabel();  // etiqueta del botón
 
     render();
     setLastUpdate(new Date());
@@ -557,9 +576,8 @@ async function cargarDesdeServidor(){
     console.error(err);
     mostrarAlerta('No se pudo cargar el dataset del servidor.');
     showToast('Error al cargar datos del servidor.', 'error');
-    // Filtro vacío si falla
     regionalesDisponibles = [];
-    regionalActual = 'Todas';
+    if(!controlledByParent){ regionalActual = 'Todas'; }
     buildRegionalMenu();
     updateRegionalLabel();
   }finally{
@@ -608,7 +626,7 @@ function aplicarBusquedaYFiltro(){
   });
   paginaActual=1; construirGruposPorOT(); render();
 }
-/* Back-compat (si en algún sitio se invoca aplicarBusqueda()) */
+/* Back-compat */
 function aplicarBusqueda(){ aplicarBusquedaYFiltro(); }
 
 function construirGruposPorOT(){
@@ -936,7 +954,8 @@ async function enviarRegistrosOT(ot){
 
   try{
     const items = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
-    const registros = items.map(r => ({ fecha:r.fecha, ot:r.ot, causa:r.causa }));
+    // >>> Importante: incluimos 'regional' en cada registro para que no se “borre”
+    const registros = items.map(r => ({ fecha:r.fecha, ot:r.ot, causa:r.causa, regional:r.regional }));
     const res = await fetch(`${API_BASE}/api/guardarOT`, {
       method:'POST', mode:'cors',
       headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
@@ -1040,8 +1059,8 @@ $('#btnCargar').addEventListener('click', cargarDesdeServidor);
 document.getElementById('btnEliminarGlobal').addEventListener('click', eliminarRegistrosGlobal);
 /* La búsqueda ahora aplica junto con el filtro */
 $('#busqueda').addEventListener('input', debounce(aplicarBusquedaYFiltro, 250));
-
-/* ======= Interacción del filtro Regional ======= */
+<script>
+/* ======= Interacción del filtro Regional (CONTROLADO POR EL PADRE) ======= */
 const btnRegional = document.getElementById('btnRegional');
 const menuRegional = document.getElementById('menuRegional');
 const lblRegional = document.getElementById('lblRegional');
@@ -1051,9 +1070,17 @@ function updateRegionalLabel(){
   if(lblRegional){ lblRegional.textContent = `Regional: ${regionalActual}`; }
 }
 function buildRegionalMenu(){
+  // En modo controlado por el padre, NO mostramos opciones locales.
   if(!menuRegional) return;
+  if(controlledByParent){
+    menuRegional.innerHTML = '';
+    menuRegional.classList.remove('show');
+    btnRegional.setAttribute('aria-disabled','true');
+    btnRegional.setAttribute('aria-expanded','false');
+    return;
+  }
+  // Si NO está controlado por el padre (uso standalone), se puede usar el menú local.
   menuRegional.innerHTML = '';
-  // Opción Todas
   const bAll = document.createElement('button');
   bAll.type='button';
   bAll.setAttribute('role','option');
@@ -1073,7 +1100,7 @@ function buildRegionalMenu(){
   }
 }
 function openRegionalMenu(){
-  if(!menuRegional) return;
+  if(!menuRegional || controlledByParent) return;
   menuRegional.classList.add('show');
   btnRegional.setAttribute('aria-expanded','true');
 }
@@ -1084,10 +1111,17 @@ function closeRegionalMenu(){
 }
 btnRegional?.addEventListener('click', (e)=>{
   e.preventDefault(); e.stopPropagation();
+  if(controlledByParent){
+    // Enviamos al padre la intención de abrir/cambiar filtro
+    try{ window.parent?.postMessage({ type:'exclusiones:open-filter', region: regionalActual }, '*'); }catch(_){}
+    return;
+  }
   if(menuRegional.classList.contains('show')) closeRegionalMenu(); else openRegionalMenu();
 });
 document.addEventListener('click', (e)=>{
-  if(!regionalBox.contains(e.target)) closeRegionalMenu();
+  if(!controlledByParent){
+    if(!regionalBox.contains(e.target)) closeRegionalMenu();
+  }
 });
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Escape') closeRegionalMenu();
@@ -1147,10 +1181,74 @@ if(paletteFab){
   colorPill?.addEventListener('input', e => { setCSSVar('--pill', e.target.value); savePalette(); });
 }
 
-/* ======= Arranque ======= */
-loadPalette();
-cargarDesdeServidor();
+/* ======= Handshake con la página padre (postMessage) ======= */
+const isEmbedded = (()=>{ try{ return window.self !== window.top; }catch(e){ return true; } })();
+const ALLOWED_PARENTS = []; // opcional: agrega orígenes si quieres validar event.origin
+function allowedOrigin(origin){
+  if(!ALLOWED_PARENTS.length) return true; // acepta todos si no configuras
+  return ALLOWED_PARENTS.includes(origin);
+}
+// Aplica el scope recibido del padre
+function applyScope({region, role, project} = {}){
+  if(typeof project === 'string'){ setProjectScope(project); }
+  if(typeof role === 'string'){ currentRole = role; }
+  if(typeof region === 'string' && region.trim()){
+    regionalActual = region.trim();
+    updateRegionalLabel();
+    aplicarBusquedaYFiltro();
+  }else{
+    // si el padre no manda aún, mantenemos 'Todas' (admin) o lo que toque después
+    updateRegionalLabel();
+  }
+  // Visual: si está controlado, deshabilita el menú local
+  buildRegionalMenu();
+}
+// Mensajes entrantes del padre
+window.addEventListener('message', (event)=>{
+  try{
+    if(!allowedOrigin(event.origin)) return;
+    const data = event.data;
+    if(!data || typeof data !== 'object') return;
+    switch(data.type){
+      case 'exclusiones:set-scope':
+        applyScope(data.payload || data);
+        break;
+      case 'exclusiones:update-region':
+        if(typeof data.region === 'string'){ applyScope({ region: data.region }); }
+        break;
+      case 'exclusiones:update-project':
+        if(typeof data.project === 'string'){ applyScope({ project: data.project }); }
+        break;
+      case 'exclusiones:request-refresh':
+        cargarDesdeServidor();
+        break;
+    }
+  }catch(e){ /* no-op */ }
+});
+
+// Arranque y handshake
+function start(){
+  loadPalette();
+  // Detecta si está embebido => control por el padre
+  controlledByParent = isEmbedded;
+  // Etiqueta inicial
+  updateRegionalLabel();
+  buildRegionalMenu();
+  // Handshake hacia el padre
+  if(controlledByParent){
+    try{
+      window.parent?.postMessage({
+        type: 'exclusiones:child-ready',
+        wants: ['region','role','project'],
+        build: buildMeta || 'n/a',
+        projectScope
+      }, '*');
+    }catch(e){ /* no-op */ }
+  }
+  // Carga inicial de datos
+  cargarDesdeServidor();
+}
+start();
 </script>
 </body>
 </html>
-
