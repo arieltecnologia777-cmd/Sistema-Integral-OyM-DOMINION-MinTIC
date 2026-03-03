@@ -3,23 +3,26 @@
 <head>
   <!-- Guard de sesión (no tocar) -->
   <script>
-  (function(){
-    try{
-      if(!sessionStorage.getItem('auth_ok')){
+    (function(){
+      try{
+        if(!sessionStorage.getItem('auth_ok')){
+          window.location.replace('login.html');
+        }
+      }catch(e){
         window.location.replace('login.html');
       }
-    }catch(e){
-      window.location.replace('login.html');
-    }
-  })();
+    })();
   </script>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Seguimiento O&M — Fullscreen con Sidebar</title>
   <meta name="description" content="Héroe a pantalla completa con menú lateral fijo e interruptor de tema.">
+
   <style>
 html[data-theme="light"] #welcomeUser { color: var(--primary); }
-html[data-theme="dark"] #welcomeUser { color: var(--primary); }
+html[data-theme="dark"]  #welcomeUser { color: var(--primary); }
+
 :root{
   /* ===== Tema base (Claro) ===== */
   --bg:#f6f8fc; --panel:#ffffff; --text:#0f172a; --muted:#475569;
@@ -27,8 +30,10 @@ html[data-theme="dark"] #welcomeUser { color: var(--primary); }
   --shadow:0 22px 48px rgba(15,23,42,.12);
   --sb-w: 260px; --sb-bg:#ffffff; --sb-line:#dbe2f1;
   --left:1.25fr; --right:1fr;
+
   /* Letterbox blur (columna izquierda) */
   --lb-blur: 12px; --lb-bright: 0.96; --lb-opacity: 0.50; --lb-scale: 1.08;
+
   /* Sombra premium (neón suave) reutilizable */
   --neo-shadow:
     26px 0 75px rgba(15, 23, 42, 0.42),
@@ -37,6 +42,7 @@ html[data-theme="dark"] #welcomeUser { color: var(--primary); }
     0 0 22px rgba(0, 102, 255, 0.28),
     0 0 44px rgba(0, 102, 255, 0.18);
 }
+
 /* ===== Modo oscuro robusto (solo variables) ===== */
 html[data-theme="dark"],
 body.theme-dark{
@@ -45,8 +51,12 @@ body.theme-dark{
   --shadow:0 22px 48px rgba(0,0,0,.35);
   --sb-bg:#151a2e; --sb-line:#24314f;
 }
+
 /* Ajuste para laptops (1366–1536) */
-@media (min-width: 1200px) and (max-width: 1536px){ :root{ --sb-w: 240px; } }
+@media (min-width: 1200px) and (max-width: 1536px){
+  :root{ --sb-w: 240px; }
+}
+
 /* ===== Reset/Global ===== */
 *{box-sizing:border-box}
 html,body{height:100%; margin:0}
@@ -57,6 +67,7 @@ body{
 }
 a{color:var(--text); text-decoration:none}
 img{display:block; max-width:100%; height:auto}
+
 /* ===== SIDEBAR — Tarjeta flotante sin desfasar el hero ===== */
 .sidebar{
   position: fixed; inset: 0 auto 0 0; width: var(--sb-w);
@@ -89,7 +100,9 @@ img{display:block; max-width:100%; height:auto}
 .sb-item svg *{ stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .sb-item svg path, .sb-item svg circle, .sb-item svg rect, .sb-item svg line, .sb-item svg polyline, .sb-item svg polygon{ stroke: currentColor; stroke-width:2; fill:none; }
 .sb-item:hover svg{ color: var(--primary); }
+
 .sb-footer{ display:flex; flex-direction:column; gap:10px; padding:0 4px }
+
 /* Botones footer (tema y logout) */
 .btn-logout, .btn-theme{
   display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;
@@ -99,6 +112,7 @@ img{display:block; max-width:100%; height:auto}
 .btn-logout:hover, .btn-theme:hover{ background: rgba(37,99,235,.08); border-color: rgba(37,99,235,.18); }
 .btn-logout:active, .btn-theme:active{ transform: translateY(1px) }
 .btn-logout svg{ width:18px; height:18px; stroke: currentColor; fill:none; stroke-width:2 }
+
 /* Botón hamburguesa (móvil) */
 .menu-toggle{
   position: fixed; left:10px; top:10px; z-index:260; /* encima del sidebar */
@@ -106,6 +120,7 @@ img{display:block; max-width:100%; height:auto}
   border-radius:10px; padding:10px; display:none; box-shadow:var(--shadow); cursor:pointer;
 }
 .menu-toggle svg{ width:20px; height:20px; stroke: currentColor; stroke-width:2; fill:none }
+
 /* ===== HERO FULLSCREEN ===== */
 .hero{
   position:fixed; inset:0 0 0 var(--sb-w);
@@ -114,6 +129,7 @@ img{display:block; max-width:100%; height:auto}
   display:grid; grid-template-columns: var(--left) var(--right); align-items:stretch;
   overflow:hidden;
 }
+
 .photo-side{ position:relative; overflow:hidden; background:var(--panel); display:flex; align-items:center; justify-content:center; }
 .photo-side::before{
   content:""; position:absolute; inset:0;
@@ -122,6 +138,7 @@ img{display:block; max-width:100%; height:auto}
 }
 .photo-wrap{ position:relative; z-index:1; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
 .photo-wrap img{ width:auto; height:auto; max-width:100%; max-height:100%; object-fit:contain; object-position:center; border:0; box-shadow:none; }
+
 .text-side{
   position:relative; padding: clamp(16px, 3.5vmin, 40px);
   display:flex; flex-direction:column; justify-content:space-between;
@@ -130,47 +147,35 @@ img{display:block; max-width:100%; height:auto}
   scrollbar-gutter: stable both-edges;
 }
 html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 0 1px rgba(0,0,0,.18) }
+
 .hero-copy{ align-self:flex-start; padding-top: clamp(8px, 2vmin, 20px); }
 .super-title{ display:flex; align-items:center; gap:10px; color:var(--muted); font-weight:700; letter-spacing:.35px; text-transform:uppercase; font-size:12px; margin-bottom:14px }
 .super-title .dot{width:9px;height:9px;border-radius:99px;background:var(--accent)}
 .title-main{ margin:0; font-size:clamp(32px, 4vw, 52px); font-weight:600; letter-spacing:.5px; line-height:1.05; color:var(--text) }
 .lead{ margin-top:12px; color:var(--muted); font-size:clamp(15px, 1.6vmin, 18px); max-width:62ch }
+
 .carousel-title{
   text-align:center; color: var(--muted); font-weight: 600;
   font-size: clamp(18px, 1.6vmin, 16px); letter-spacing: .2px;
   margin: 0 !important; transform: translateY(clamp(28px, 2.4vw, 46px));
   line-height: 1.1; pointer-events: none;
 }
-/* ===== Carrusel (original) ===== */
-.carousel{ margin-top:87px; position:relative; background: transparent !important; border: none; border-radius: 12px; box-shadow: 0 12px 40px rgba(15,23,42,.18); padding: 0; overflow:hidden; }
-.carousel-track{ position: relative; width: 100%; aspect-ratio: 21 / 9; min-height: clamp(150px, 20vmin, 320px); max-height: 340px; overflow: hidden; z-index: 1; background: transparent !important; border-radius: 12px; }
-.carousel-item{
-  position:absolute; inset:0; opacity:0; transform: scale(1.02);
-  filter: blur(10px) saturate(95%); transition: opacity .65s ease, filter .65s ease, transform .65s ease;
-  border:none; overflow:hidden; pointer-events: none; background: transparent !important; border-radius: 12px;
+
+.hero-legal{
+  position: absolute; left: 50%;
+  bottom: clamp(8px, 2.4vmin, 20px);
+  transform: translateX(-50%) translateZ(0); transform-origin: bottom center;
+  z-index: 2; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 12px; color: var(--muted);
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  padding: 6px 10px; border: none; border-radius:10px; box-shadow: var(--shadow);
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
 }
-.carousel-item::before{
-  content:""; position:absolute; inset:-12%;
-  background-image: var(--slide-img); background-size: cover; background-position: center;
-  filter: blur(22px) saturate(105%) brightness(0.98); transform: scale(1.06); z-index:0;
-}
-.carousel-item.is-active{ opacity:1; transform: scale(1); filter: blur(0); pointer-events: auto }
-.carousel-item img{ position:relative; z-index:1; width:100%; height:100%; object-fit: contain; object-position:center; display:block; background: transparent !important; border-radius: 12px; }
-.carousel-btn{
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
-  background: rgba(0,0,0,.35); border:none; color:#fff; cursor:pointer; z-index: 5; box-shadow:none;
-  transition: background .2s ease, transform .08s ease; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-}
-.carousel-btn:hover{ background: rgba(0,0,0,.5) }
-.carousel-btn:active{ transform: translateY(-50%) scale(.98) }
-.carousel-btn svg{ width:18px; height:18px; stroke: currentColor; fill:none; stroke-width:2 }
-.carousel-btn.prev{ left:12px } .carousel-btn.next{ right:12px }
-.carousel-empty{ color: var(--muted); padding:14px; text-align:center; font-size:14px; background: transparent }
+
 /* ===== Scrollbar lateral del texto ===== */
 .text-side::-webkit-scrollbar{ width:10px }
 .text-side::-webkit-scrollbar-thumb{ background:var(--line); border-radius:8px }
 .text-side:hover::-webkit-scrollbar-thumb{ background:color-mix(in srgb, var(--muted) 40%, transparent) }
+
 /* ===== Modal base (compartida por Ayuda y Bienvenida) ===== */
 .modal-backdrop{
   position: fixed; inset:0; background: rgba(10,15,28,.52);
@@ -196,10 +201,10 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
 .modal-title{ display:flex; align-items:center; gap:10px; font-weight:600 }
 .modal-body{ padding:16px; overflow:auto; color: var(--text) }
 .modal-footer{ padding:10px 16px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px }
-/* Botones */
 .btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; box-shadow: var(--shadow) }
 .btn.primary{ background: var(--primary); color: #fff; border-color: transparent }
 .btn svg{ width:16px; height:16px; stroke: currentColor; fill:none; stroke-width:2 }
+
 /* Frosted Edge + halo (solo para bienvenida) */
 #welcomeModal.modal{
   position: relative; isolation: isolate;
@@ -224,11 +229,191 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
 #welcomeModal.modal::after{
   content:""; position:absolute; inset:-1px; border-radius:16px;
   background: linear-gradient(180deg,
-  color-mix(in srgb, var(--primary) 48%, transparent),
-  color-mix(in srgb, var(--primary) 10%, transparent));
+              color-mix(in srgb, var(--primary) 48%, transparent),
+              color-mix(in srgb, var(--primary) 10%, transparent));
   opacity:.50; mix-blend-mode: screen; pointer-events:none;
 }
-/* ===== Carrusel: tuning y responsive (resto en Parte 2) ===== */
+html[data-theme="dark"] #welcomeModal.modal{
+  box-shadow:
+    0 60px 180px rgba(0,0,0,.80),
+    0 32px 80px rgba(0,0,0,.46),
+    0 0 0 1px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+/* ===== Carrusel ===== */
+.carousel{ margin-top:87px; position:relative; background: transparent !important; border: none; border-radius: 12px; box-shadow: 0 12px 40px rgba(15,23,42,.18); padding: 0; overflow:hidden; }
+.carousel-track{ position: relative; width: 100%; aspect-ratio: 21 / 9; min-height: clamp(150px, 20vmin, 320px); max-height: 340px; overflow: hidden; z-index: 1; background: transparent !important; border-radius: 12px; }
+.carousel-item{
+  position:absolute; inset:0; opacity:0; transform: scale(1.02);
+  filter: blur(10px) saturate(95%); transition: opacity .65s ease, filter .65s ease, transform .65s ease;
+  border:none; overflow:hidden; pointer-events: none; background: transparent !important; border-radius: 12px;
+}
+.carousel-item::before{
+  content:""; position:absolute; inset:-12%;
+  background-image: var(--slide-img); background-size: cover; background-position: center;
+  filter: blur(22px) saturate(105%) brightness(0.98); transform: scale(1.06); z-index:0;
+}
+.carousel-item.is-active{ opacity:1; transform: scale(1); filter: blur(0); pointer-events: auto }
+.carousel-item img{ position:relative; z-index:1; width:100%; height:100%; object-fit: contain; object-position:center; display:block; background: transparent !important; border-radius: 12px; }
+.carousel-btn{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
+  background: rgba(0,0,0,.35); border:none; color:#fff; cursor:pointer; z-index: 5; box-shadow:none;
+  transition: background .2s ease, transform .08s ease; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+}
+.carousel-btn:hover{ background: rgba(0,0,0,.5) }
+.carousel-btn:active{ transform: translateY(-50%) scale(.98) }
+.carousel-btn svg{ width:18px; height:18px; stroke: currentColor; fill:none; stroke-width:2 }
+.carousel-btn.prev{ left:12px } .carousel-btn.next{ right:12px }
+.carousel-empty{ color: var(--muted); padding:14px; text-align:center; font-size:14px; background: transparent }
+
+/* ===== Tuning tipográfico por ancho/alto ===== */
+@media (max-width: 1440px){
+  .carousel{ margin-top: 56px; }
+  .hero-copy{ padding-top: 8px; }
+  .title-main{ font-size: clamp(30px, 3.4vw, 44px); }
+  .super-title{ margin-bottom: 8px; }
+  .lead{ margin-top: 8px; }
+  .carousel-track{ max-height: 320px; }
+}
+@media (max-width: 1366px){
+  .carousel{ margin-top: 72px; }
+  .hero-copy{ padding-top: 6px; }
+  .title-main{ font-size: clamp(28px, 3.2vw, 40px); }
+  .lead{ margin-top: 6px; }
+  .carousel-track{ max-height: 300px; }
+}
+@media (max-height: 800px) and (min-width: 1024px){
+  .carousel{ margin-top: 48px; }
+  .hero-copy{ padding-top: 4px; }
+  .carousel-track{ max-height: 290px; }
+}
+
+/* =========================================================
+   ======= BLOQUE ÚNICO MÓVIL (≤960px) — HERO + MENU =======
+   ========================================================= */
+@media (max-width: 960px){
+  .menu-toggle{ display:inline-flex }
+  .sidebar{ transform: translateX(-100%); transition: transform .25s ease; }
+  body.sb-open .sidebar{ transform: translateX(0) }
+  /* Mueve el botón cuando el menú está abierto */
+  body.sb-open .menu-toggle{ left: calc(var(--sb-w) + 18px); }
+
+  /* HERO apilado: foto arriba, texto abajo */
+  .hero{ inset: 0; width: 100svw; min-height: 100svh; height: auto; display: flex; flex-direction: column; background: linear-gradient(180deg, rgba(238,243,251,.6), transparent 65%); }
+
+  /* FOTO */
+  .photo-side{ height: 38vh; min-height: 240px; max-height: 420px; overflow: hidden; }
+  .photo-side::before{ background-repeat: no-repeat; background-size: cover; background-position: center; transform: scale(1.08); }
+  .photo-wrap{ width: 100%; height: 100%; }
+  .photo-wrap img{ width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+  /* TEXTO */
+  .text-side{ flex: 1; height: auto; overflow: auto; padding: 16px; box-shadow: none; border-left: none !important; }
+
+  /* Título carrusel */
+  .hero-copy{ padding-top: 8px; }
+  .carousel-title{ margin-top: 8px !important; transform: none; }
+
+  /* Carrusel estable en móvil */
+  .carousel{ margin-top: 12px; }
+  .carousel-track{ aspect-ratio: 16 / 9; min-height: 180px; max-height: none; }
+
+  /* Legal: ancho disponible sin escala */
+  .hero-legal{ left: 10px; right: 10px; transform: none !important; }
+}
+
+/* ===== Modal XL para selector de módulos ===== */
+.modal.modal--xl{
+  width: min(980px, calc(100vw - 32px));
+  max-height: min(86vh, 920px);
+}
+
+/* Grid de opciones (Admin / Gestor) */
+.exclusiones-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 720px){
+  .exclusiones-grid{ grid-template-columns: 1fr; }
+}
+
+/* Card opción */
+.exclusiones-card{
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Header de card: icono + título */
+.exclusiones-card .card-head{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.exclusiones-card .icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+html[data-theme="dark"] .exclusiones-card .icon{
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* Texto */
+.exclusiones-card .card-title{
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+.exclusiones-card .card-desc{
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Botón de acción */
+.exclusiones-card .actions{
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+}
+.exclusiones-card .btn.primary{
+  background: var(--primary);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ====== ESTILOS MODAL DE CONTRASEÑA (nuevo, sin afectar lo demás) ====== */
+.form-field label{
+  display:block; margin:0 0 6px 0; font-size:12px; color: var(--muted);
+}
+.input-line{
+  display:flex; align-items:stretch; gap:8px;
+}
+.input-line input{
+  flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+  background: var(--panel); color:var(--text); outline:none;
+}
+.input-line input:focus{
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+.icon-btn{
+  display:inline-flex; align-items:center; gap:6px; padding:10px 12px;
+  border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer;
+}
+.icon-btn svg{ width:18px; height:18px; stroke: currentColor; fill:none; stroke-width:2 }
   </style>
 </head>
 <body>
@@ -264,12 +449,14 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           </svg>
           <span>Módulo de exclusiones</span>
         </a>
+
         <a class="sb-item" href="PBI.html">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path class="fill" d="M4 13.5a2 2 0 1 1 4 0V18a2 2 0 1 1-4 0v-4.5Zm5-3a2 2 0 1 1 4 0V18a2 2 0 1 1-4 0V10.5Zm5-2A2 2 0 1 1 19 8v10a2 2 0 1 1-4 0V8.5Z"></path>
           </svg>
           <span>Dashboard</span>
         </a>
+
         <a class="sb-item" href="inventario_centros_digitales.html">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
@@ -282,6 +469,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           </svg>
           <span>Hoja de vida CDs</span>
         </a>
+
         <a class="sb-item" href="#ayuda" id="btnAyuda">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="9"></circle>
@@ -290,6 +478,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           </svg>
           <span>Ayuda</span>
         </a>
+
         <a class="sb-item" href="#acerca">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="9"></circle>
@@ -298,6 +487,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           </svg>
           <span>Acerca del programa</span>
         </a>
+
         <!-- Manuales -->
         <a class="sb-item" href="manuales.html">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -322,6 +512,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         </svg>
         <span>Cerrar sesión</span>
       </button>
+
       <button class="btn-theme" id="btnTheme" type="button" title="Cambiar tema">
         <span id="btnThemeText">Tema: Claro</span>
       </button>
@@ -336,6 +527,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         <img src="dominion.jpg" alt="Imagen institucional DOMINION">
       </div>
     </div>
+
     <!-- Columna texto -->
     <div class="text-side">
       <div class="hero-copy">
@@ -345,7 +537,9 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           Sistema integral operativo, consulta detalles KPIs, backlog y
           hoja de vida de cada Centro Digital.
         </p>
+
         <div class="carousel-title">Acercamiento a la comunidad</div>
+
         <div class="carousel" id="cdCarousel" aria-label="Galería de imágenes">
           <button class="carousel-btn prev" id="cPrev" aria-label="Anterior">
             <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 6 9 12 15 18"></polyline></svg>
@@ -356,6 +550,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           </button>
         </div>
       </div>
+
       <div class="hero-legal" id="heroLegal">
         © 2026 DOMINION — Todos los derechos reservados — WEB desarrollada por Ariel Márquez Rada
       </div>
@@ -410,8 +605,10 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         </div>
         <button class="btn" id="exclusionesClose" aria-label="Cerrar">Cerrar</button>
       </div>
+
       <div class="modal-body">
         <p style="margin-top:0;margin-bottom:14px;">¿Qué deseas hacer hoy?</p>
+
         <div class="exclusiones-grid">
           <!-- Card: Módulo Admin -->
           <div class="exclusiones-card" id="cardAdmin">
@@ -454,6 +651,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         </div>
         <!-- /grid -->
       </div>
+
       <div class="modal-footer">
         <button class="btn" id="exclusionesBackdropClose">Cancelar</button>
       </div>
@@ -475,7 +673,12 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           <label for="pwdInput">Contraseña</label>
           <div class="input-line">
             <input id="pwdInput" type="password" placeholder="•••••••" autocomplete="current-password" />
-            <button type="button" class="btn" id="pwdToggle" aria-label="Mostrar u ocultar contraseña" title="Mostrar/ocultar">👁</button>
+            <button type="button" class="icon-btn" id="pwdToggle" aria-label="Mostrar u ocultar contraseña" title="Mostrar/ocultar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -485,15 +688,17 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
       </div>
     </div>
   </div>
-<!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
-  <script>
+
+  <!-- ===== Scripts: Tema + Sidebar + Fit Legal + Modales + Carrusel + Logout + Bienvenida ===== -->
+<script>
   /* ========== Tema (Claro/Oscuro) ========== */
   (function(){
     const themeKey = 'landing_theme';
     const docEl = document.documentElement;
-    const body = document.body;
-    const btn = document.getElementById('btnTheme');
-    const lbl = document.getElementById('btnThemeText');
+    const body  = document.body;
+    const btn   = document.getElementById('btnTheme');
+    const lbl   = document.getElementById('btnThemeText');
+
     const applyLabel = (mode)=>{ if (lbl) lbl.textContent = 'Tema: ' + (mode === 'dark' ? 'Oscuro' : 'Claro'); };
     function setMode(mode){
       docEl.setAttribute('data-theme', mode);
@@ -523,17 +728,19 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
     });
   })();
 
-  /* ========== Auto-fit del texto legal (posición y escala correctas) ========== */
+  /* ========== Auto-fit del texto legal ========== */
   function fitLegal(){
     const legal = document.getElementById('heroLegal');
-    const col = document.querySelector('.text-side');
+    const col   = document.querySelector('.text-side');
     if(!legal || !col) return;
+
     legal.style.transform = 'translateX(-50%) scale(1)';
     const cs = getComputedStyle(col);
     const padL = parseFloat(cs.paddingLeft) || 0;
     const padR = parseFloat(cs.paddingRight) || 0;
     const available = col.clientWidth - padL - padR - 6;
     const needed = legal.scrollWidth;
+
     let scale = 1;
     if (needed > available) scale = available / needed;
     legal.style.transformOrigin = 'bottom center';
@@ -575,18 +782,32 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
   // ===== Selector Módulo de exclusiones (SIEMPRE se muestra al volver) =====
   (function(){
     const selector = makeModal('exclusionesBackdrop', 'exclusionesTitle');
-    const btnOpen = document.getElementById('btnModuloExclusiones');
+    const btnOpen  = document.getElementById('btnModuloExclusiones');
+
     btnOpen?.addEventListener('click', (e)=>{
       e.preventDefault();
+
       // Restaurar backdrops si quedaron ocultos tras un acceso anterior
       const pwdBack = document.getElementById('pwdBackdrop');
       const selBack = document.getElementById('exclusionesBackdrop');
       if (pwdBack) pwdBack.style.display = '';
       if (selBack) selBack.style.display = '';
+
+      // (Opcional) sugerir visualmente el último módulo, sin saltar directo
+      const last = sessionStorage.getItem('last_module');
+      try{
+        document.getElementById('cardAdmin')?.classList.remove('hint');
+        document.getElementById('cardGestor')?.classList.remove('hint');
+      }catch(_){}
+      if (last === 'admin') document.getElementById('cardAdmin')?.classList.add('hint');
+      if (last === 'gestor') document.getElementById('cardGestor')?.classList.add('hint');
+
       selector.open();
     });
+
     document.getElementById('exclusionesClose')?.addEventListener('click', selector.close);
     document.getElementById('exclusionesBackdropClose')?.addEventListener('click', selector.close);
+
     // Utilitario para cerrar selector desde fuera
     window.__closeSelectorIfOpen = function(){
       const back = document.getElementById('exclusionesBackdrop');
@@ -597,15 +818,16 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
     };
   })();
 
-  // ===== Modal de contraseña (estilizado) + navegaciòn y recuerdo del módulo =====
+  // ===== Modal de contraseña (estilizado) + navegación y recuerdo del módulo =====
   (function(){
     const modal = makeModal('pwdBackdrop', 'pwdTitle');
-    const $pwdInput = document.getElementById('pwdInput');
-    const $pwdToggle = document.getElementById('pwdToggle');
-    const $pwdCancel = document.getElementById('pwdCancel');
-    const $pwdClose = document.getElementById('pwdClose');
-    const $pwdConfirm = document.getElementById('pwdConfirm');
+    const $pwdInput    = document.getElementById('pwdInput');
+    const $pwdToggle   = document.getElementById('pwdToggle');
+    const $pwdCancel   = document.getElementById('pwdCancel');
+    const $pwdClose    = document.getElementById('pwdClose');
+    const $pwdConfirm  = document.getElementById('pwdConfirm');
     const $pwdRoleInfo = document.getElementById('pwdRoleInfo');
+
     let currentRole = null; // 'admin' | 'gestor'
 
     function labelForRole(role){ return role === 'admin' ? 'Módulo Admin' : 'Módulo Gestor'; }
@@ -624,22 +846,15 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
     function closePwd(){ modal.close(); }
 
     /* ================================================================
-       BLOQUE DE ACCESO (Admin / Gestor)
-       ————> PUNTO OFICIAL PARA CAMBIAR CONTRASEÑAS POR REGIONAL <————
-       Si necesitas modificar las claves de acceso de R1/R2, hazlo aquí.
-       ================================================================= */
+       PUNTO OFICIAL PARA CAMBIAR CONTRASEÑAS POR REGIONAL
+       — Gestor: 2 contraseñas → 2 scopes (R1 / R2)
+       ================================================================ */
     const ACCESS_PASSWORDS = {
-      // Admin (sin cambios)
       admin: 'adm1nroot#',
-
-      // ======== GESTOR POR REGIONAL ========
-      // Clave para entrar al Gestor con scope R1:
-      gestor_R1: 'R1admin#',
-      // Clave para entrar al Gestor con scope R2:
-      gestor_R2: 'R2-admin#'
+      gestor_R1: 'R1admin#',   // ← contraseña para R1
+      gestor_R2: 'R2-admin#'   // ← contraseña para R2
     };
 
-    // Destinos (conserva tus rutas actuales)
     const TARGET_URLS = {
       admin: 'admin_exclusiones.html',
       gestor: 'http://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/gestor_exclusiones.html'
@@ -649,7 +864,6 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
       const val = ($pwdInput?.value ?? '').trim();
       if (!currentRole) return;
 
-      // ---- Admin (sin cambios)
       if (currentRole === 'admin') {
         if (val !== ACCESS_PASSWORDS.admin) {
           alert('No tienes permiso para ingresar al módulo Admin.');
@@ -666,10 +880,9 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         return;
       }
 
-      // ---- Gestor con 2 contraseñas -> scope R1 / R2
       if (currentRole === 'gestor') {
+        // Determinar scope según la contraseña ingresada
         let scope = null;
-
         if (val === ACCESS_PASSWORDS.gestor_R1) scope = 'R1';
         else if (val === ACCESS_PASSWORDS.gestor_R2) scope = 'R2';
 
@@ -686,9 +899,8 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         if (pwdBack) pwdBack.style.display = 'none';
         if (selBack) selBack.style.display = 'none';
 
-        // Abrir Gestor pasando el scope en la URL (R1 | R2)
-        const url = `${TARGET_URLS.gestor}?scope=${encodeURIComponent(scope)}`;
-        window.open(url, '_blank', 'noopener,noreferrer');
+        // Abrir el Gestor con el scope correspondiente
+        window.open(`${TARGET_URLS.gestor}?scope=${encodeURIComponent(scope)}`, '_blank', 'noopener,noreferrer');
         return;
       }
 
@@ -712,28 +924,31 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
     $pwdConfirm?.addEventListener('click', confirmPwd);
     $pwdInput ?.addEventListener('keydown', (ev)=>{ if (ev.key === 'Enter') confirmPwd(); });
 
-    // Exponer para usos futuros si hiciera falta
+    // Exponer si hiciera falta
     window.__openPwd = openPwd;
   })();
 
-  /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico (original) ========== */
+  /* ========== Carrusel: crossfade + blur, autoplay 7s, fondo blur dinámico ========== */
   (function(){
     const track = document.getElementById('cTrack');
-    const prev = document.getElementById('cPrev');
-    const next = document.getElementById('cNext');
+    const prev  = document.getElementById('cPrev');
+    const next  = document.getElementById('cNext');
     if (!track) return;
+
     const MAX_TRY = 40;
-    const AUTOPLAY_MS = 7000;
-    const okName = (i)=> `miniatura${i}.jpg`;
+    aconst AUTOPLAY_MS = 7000;
+    const okName   = (i)=> `miniatura${i}.jpg`;
     const typoName = (i)=> `minuatira${i}.jpg`;
+
     function probe(src){
       return new Promise((resolve) => {
         const img = new Image();
-        img.onload = () => resolve({exists:true, src});
+        img.onload  = () => resolve({exists:true, src});
         img.onerror = () => resolve({exists:false, src});
         img.src = src + `?v=${Date.now().toString(36)}`;
       });
     }
+
     (async function loadImages(){
       const found = [];
       const firstOk = await probe(okName(1));
@@ -751,6 +966,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
           }
         }
       }
+
       if (found.length === 0){
         const empty = document.createElement('div');
         empty.className = 'carousel-empty';
@@ -761,6 +977,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
         return;
       }
+
       const items = found.map((src, idx) => {
         const item = document.createElement('div');
         item.className = 'carousel-item' + (idx===0 ? ' is-active' : '');
@@ -771,12 +988,12 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         item.appendChild(img); track.appendChild(item);
         return item;
       });
+
       let current = 0, isAnimating = false;
+
       function armTransitionUnlock(nextItem){
         const onEnd = (ev)=>{
-          if (ev.propertyName === 'opacity'
-           || ev.propertyName === 'transform'
-           || ev.propertyName === 'filter'){
+          if (ev.propertyName === 'opacity' || ev.propertyName === 'transform' || ev.propertyName === 'filter'){
             nextItem.removeEventListener('transitionend', onEnd);
             isAnimating = false;
           }
@@ -784,6 +1001,7 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         nextItem.addEventListener('transitionend', onEnd);
         setTimeout(()=>{ isAnimating = false; }, 900);
       }
+
       function show(index){
         const total = items.length; if (total < 2 || isAnimating) return;
         const nextIndex = (index + total) % total; if (nextIndex === current) return;
@@ -791,12 +1009,16 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         isAnimating = true; nextItem.classList.add('is-active'); armTransitionUnlock(nextItem);
         curItem.classList.remove('is-active'); current = nextIndex;
       }
+
       const goPrev = () => show(current - 1);
       const goNext = () => show(current + 1);
+
       if (items.length < 2){ if (prev) prev.style.display='none'; if (next) next.style.display='none'; }
       else { prev?.addEventListener('click', goPrev); next?.addEventListener('click', goNext); }
+
       track.setAttribute('tabindex','0');
       track.addEventListener('keydown', (ev)=>{ if (ev.key==='ArrowLeft') goPrev(); if (ev.key==='ArrowRight') goNext(); });
+
       // Swipe
       let startX=null, startY=null;
       track.addEventListener('touchstart', (e)=>{ const t=e.touches?.[0]; if(!t) return; startX=t.clientX; startY=t.clientY; }, {passive:true});
@@ -805,12 +1027,14 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
         if (Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>30){ if (dx>0) goPrev(); else goNext(); }
         startX=startY=null;
       }, {passive:true});
+
       // Autoplay
       let autoplayId = null;
       const startAutoplay = () =>{ if (autoplayId || items.length<2) return; autoplayId = setInterval(goNext, AUTOPLAY_MS); };
-      const stopAutoplay = () =>{ if (!autoplayId) return; clearInterval(autoplayId); autoplayId=null; };
+      const stopAutoplay  = () =>{ if (!autoplayId) return; clearInterval(autoplayId); autoplayId=null; };
       startAutoplay();
       document.addEventListener('visibilitychange', () =>{ if (document.hidden) stopAutoplay(); else startAutoplay(); });
+
       if (typeof fitLegal === 'function') setTimeout(fitLegal, 0);
     })();
   })();
@@ -833,19 +1057,23 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
   /* ========== Bienvenida (1 vez por sesión) ========== */
   (function(){
     const backdrop = document.getElementById('welcomeBackdrop');
-    const nameEl = document.getElementById('welcomeUser');
-    const btnGo = document.getElementById('welcomeContinue');
+    const nameEl   = document.getElementById('welcomeUser');
+    const btnGo    = document.getElementById('welcomeContinue');
     if (!backdrop) return;
+
     const isAuth = !!sessionStorage.getItem('auth_ok');
     const already = sessionStorage.getItem('welcome_shown') === '1';
+
     if (isAuth && !already) {
       const user = (sessionStorage.getItem('auth_user') || 'usuario').trim();
       if (nameEl) nameEl.textContent = user;
+
       function closeWelcome(){
         backdrop.classList.remove('open');
         backdrop.setAttribute('aria-hidden','true');
         sessionStorage.setItem('welcome_shown','1');
       }
+
       // Abrir
       backdrop.classList.add('open');
       backdrop.removeAttribute('aria-hidden');
@@ -854,6 +1082,6 @@ html[data-theme="dark"] .text-side{ box-shadow: -28px 0 56px rgba(0,0,0,.35), 0 
       document.addEventListener('keydown', (ev)=>{ if (backdrop.classList.contains('open') && ev.key === 'Escape') closeWelcome(); });
     }
   })();
-  </script>
+</script>
 </body>
 </html>
