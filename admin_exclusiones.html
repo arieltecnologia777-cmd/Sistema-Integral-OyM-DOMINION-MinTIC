@@ -649,212 +649,607 @@ body{
 
   <!-- SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
-/* ======================= CONFIG BACKEND ======================= */
+/* ======================= CONFIG BACKEND (Cloudflare Workers) — multi-proyecto ======================= */
 const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
 const ADMIN_TOKEN = 'ADMINARIELITO777';
-
+/* Backends por módulo — MATCH ESTRICTO */
 const BACKENDS = {
   operatividad: `${API_BASE}/p1`,
   backlog: `${API_BASE}/p2`,
   sla: `${API_BASE}/p3`
 };
 
-/* ======================= HELPERS ======================= */
+/* ======================= CONFIG BOTONES OUTLOOK/TEAMS ======================= */
+const TEAM1_TO = ['equipo1@dominio.com'];
+const TEAM1_CC = ['lider1@dominio.com'];
+const TEAM2_TO = ['equipo2@dominio.com'];
+const TEAM2_CC = ['lider2@dominio.com'];
+const DEFAULT_SUBJECT = 'Seguimiento módulo Exclusiones';
+const DEFAULT_BODY =
+`Hola equipo,
+Por favor revisar el estado de las exclusiones y próximos pasos.
+Enlace módulo: ${window.location.href}
+Gracias.`;
+const DEFAULT_DURATION_MIN = 45;
+const DEFAULT_LOCATION = 'Microsoft Teams';
+
+/* ====== Helpers ====== */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1800); }
+function showState(msg, isErr=false){
+  const el=$('#estado'); el.textContent=msg; el.classList.toggle('error', !!isErr); el.style.display='block';
+  setGlobalLog(isErr ? 'Error' : 'Info', projectLabels[currentProject] ?? currentProject, msg);
+}
+function hideState(){ const el=$('#estado'); el.textContent=''; el.classList.remove('error'); el.style.display='none'; }
+function formatTs(d){
+  const pad = n => String(n).padStart(2,'0');
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+/* Parse de fechas flexible */
+function parsearFechaFlexible(v){
+  if (v === null || v === undefined || v === '') return null;
+  if (v instanceof Date && !isNaN(v)) return v;
+  const trySerial = (num) => {
+    const ms = Math.round((num - 25569) * 86400 * 1000);
+    const d = new Date(ms);
+    return isNaN(d) ? null : d;
+  };
+  if (typeof v === 'number' && !Number.isNaN(v)) { const d = trySerial(v); if (d) return d; }
+  if (typeof v === 'string') {
+    const s = v.trim();
+    if (/^\d+(\.\d+)?$/.test(s)) { const num = parseFloat(s); if (!Number.isNaN(num)) { const d = trySerial(num); if (d) return d; } }
+    let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) { const [_, dd, mm, yyyy, hh='0', mi='0', ss='0'] = m; const d = new Date(Number(yyyy), Number(mm)-1, Number(dd), Number(hh), Number(mi), Number(ss)); if (!isNaN(d)) return d; }
+    m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) { const [_, yyyy, mm, dd, hh='0', mi='0', ss='0'] = m; const d = new Date(Number(yyyy), Number(mm)-1, Number(dd), Number(hh), Number(mi), Number(ss)); if (!isNaN(d)) return d; }
+    const d = new Date(s); if (!isNaN(d)) return d;
+  }
+  return null;
+}
+/* Log global */
 const projectLabels = {
   operatividad: 'Exclusiones de operatividad',
   backlog: 'Exclusiones indicador backlog',
   sla: 'Exclusiones SLA'
 };
-
 function setGlobalLog(action, moduleLabel, extra=''){
   const g = $('#globalLog'); if(!g) return;
-  const ts = new Date().toLocaleString();
+  const ts = formatTs(new Date());
   g.textContent = `${action} • ${moduleLabel}${extra ? ' • ' + extra : ''} • ${ts}`;
 }
 
-function showState(msg, isErr=false){
-  const el = $('#estado');
-  el.textContent = msg;
-  el.classList.toggle('error', !!isErr);
-  el.style.display = 'block';
-  setGlobalLog(isErr ? 'Error' : 'Info', projectLabels[currentProject] ?? currentProject, msg);
+/* ====== HEALTH CHECK por módulo ====== */
+function healthUrlFor(key){
+  const base = BACKENDS[key];
+  if(!base) return 'about:blank#offline';
+  return `${base.replace(/\/+$/,'')}/health`;
+}
+const ONLINE_STYLE = { bg:'#e8f7ec', border:'#b7ebc0', color:'#107c10', text:'Activo' };
+const OFFLINE_STYLE = { bg:'#fee2e2', border:'#fecaca', color:'#991b1b', text:'Offline' };
+function applyBadgeStyle(badge, style){
+  if(!badge) return;
+  badge.textContent = style.text;
+  badge.style.background = style.bg;
+  badge.style.borderColor = style.border;
+  badge.style.color = style.color;
+}
+async function checkHealth(url, timeoutMs = 2500){
+  const sep = url.includes('?') ? '&' : '?';
+  const urlNoCache = `${url}${sep}ts=${Date.now()}`;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try{
+    const res = await fetch(urlNoCache, { mode:'cors', cache:'no-store', signal:controller.signal });
+    clearTimeout(id);
+    if(!res.ok) return false;
+    try{
+      const j = await res.clone().json();
+      if (typeof j?.ok === 'boolean') return j.ok;
+    }catch(_) {}
+    return true;
+  }catch(_){
+    clearTimeout(id);
+    try{ await fetch(urlNoCache, { mode:'no-cors', cache:'no-store' }); return true; }catch(_2){ return false; }
+  }
+}
+async function updateHealthFor(key){
+  const badge = document.querySelector(`.tile[data-key="${key}"] .badge`);
+  if(!badge) return;
+  const url = healthUrlFor(key);
+  badge.textContent = '...';
+  badge.style.background = '#eef3ff';
+  badge.style.borderColor = '#dbe6ff';
+  badge.style.color = '#0e3a82';
+  const ok = await checkHealth(url);
+  applyBadgeStyle(badge, ok ? ONLINE_STYLE : OFFLINE_STYLE);
+}
+async function updateAllHealth(){
+  await Promise.all(['operatividad','backlog','sla'].map(updateHealthFor));
 }
 
-function hideState(){
-  const el = $('#estado');
-  el.textContent = '';
-  el.classList.remove('error');
-  el.style.display = 'none';
-}
-/* ======================= TILES ======================= */
+/* ====== Tiles ====== */
 let currentProject = 'operatividad';
-
+const helpByModule = {
+  operatividad: {
+    title: 'Ayuda rápida — Exclusiones de operatividad',
+    intro: 'Módulo para cargar, validar y exportar datos.',
+    bullets: [
+      'Usa “Importar datos” para sobrescribir la data con un Excel/CSV (requiere confirmación).',
+      'El archivo debe tener encabezados.',
+      '“Exportar datos” descarga la data actual desde el backend en formato .xlsx.',
+      'Tras importar/exportar verás el log en la banda “Última acción”.'
+    ]
+  },
+  backlog: {
+    title: 'Ayuda rápida — Indicador backlog (activo)',
+    intro: 'Módulo para gestionar exclusiones del indicador backlog.',
+    bullets: [
+      'Importa y exporta como en Operatividad.',
+      'Plantéate columnas consistentes para un reporte limpio.',
+      'El backend responde en /p2/*.'
+    ]
+  },
+  sla: {
+    title: 'Ayuda rápida — Exclusiones SLA (activo)',
+    intro: 'Módulo para justificar exclusiones frente a métricas de SLA.',
+    bullets: [
+      'Importa/Exporta con la misma plantilla base.',
+      'El backend responde en /p3/*.'
+    ]
+  }
+};
+function renderHelp(key){
+  const hp = $('#helpPanel');
+  const data = helpByModule[key];
+  if(!hp || !data){ if(hp) hp.style.display='none'; return; }
+  const lis = data.bullets.map(b => `<li>${b}</li>`).join('');
+  hp.innerHTML = `
+    <div class="help-head">
+      <h3>${data.title}</h3>
+      <button type="button" class="help-close" id="helpCloseBtn" aria-label="Ocultar ayuda">Ocultar</button>
+    </div>
+    <p>${data.intro}</p>
+    <ul>${lis}</ul>
+  `;
+  hp.style.display = 'inline-block';
+  const btnClose = document.getElementById('helpCloseBtn');
+  btnClose?.addEventListener('click', () => { hp.style.display = 'none'; });
+}
 function selectProject(key){
   currentProject = key;
-
-  // Actualiza tiles
   $$('#tiles .tile').forEach(t => {
     const k = t.getAttribute('data-key');
     const active = (k === key);
     t.setAttribute('aria-pressed', active ? 'true' : 'false');
+    if(active) t.classList.remove('soon');
   });
-
-  // Permitir acciones
+  // Habilitar Importar/Exportar para el módulo seleccionado
   $('#btnImportar').disabled = false;
   $('#btnExportar').disabled = false;
-
   setGlobalLog('Módulo seleccionado', projectLabels[key] ?? key, '');
 }
-
 $$('#tiles .tile').forEach(t=>{
   t.addEventListener('click', ()=>{
     const key = t.getAttribute('data-key');
+    renderHelp(key);
     selectProject(key);
   });
+  t.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+  });
 });
-
 selectProject('operatividad');
 
-/* ======================= IMPORTAR ======================= */
+/* ====== Modal confirm (reusable, con blur y labels) ====== */
+function abrirConfirm(){ $('#modalConfirm').style.display='flex'; }
+function cerrarConfirm(){ $('#modalConfirm').style.display='none'; }
+
+/** Abre el modal y devuelve true/false según el botón presionado */
+function abrirModalConfirm({ title='Confirmación', message='', acceptLabel='Aceptar', cancelLabel='Cancelar' } = {}){
+  return new Promise(resolve=>{
+    const titleEl = $('#mc_title');
+    const msgEl = $('#mc_msg');
+    const btnYes = $('#mc_si');
+    const btnNo = $('#mc_no');
+    if(titleEl) titleEl.textContent = title;
+    if(msgEl) msgEl.textContent = message;
+    if(btnYes) btnYes.textContent = acceptLabel;
+    if(btnNo) btnNo.textContent = cancelLabel;
+
+    abrirConfirm();
+    const onYes = ()=>{ cleanup(); resolve(true); };
+    const onNo  = ()=>{ cleanup(); resolve(false); };
+    function cleanup(){
+      btnYes.removeEventListener('click', onYes);
+      btnNo.removeEventListener('click', onNo);
+      cerrarConfirm();
+    }
+    btnYes.addEventListener('click', onYes);
+    btnNo.addEventListener('click', onNo);
+  });
+}
+
+/** Abre el mismo modal, pero permite inyectar HTML (para radios/listados) */
+function abrirModalHTML({ title='Confirmación', html='', acceptLabel='Aceptar', cancelLabel='Cancelar' } = {}){
+  return new Promise(resolve=>{
+    const titleEl = $('#mc_title');
+    const msgEl = $('#mc_msg');
+    const btnYes = $('#mc_si');
+    const btnNo = $('#mc_no');
+    if(titleEl) titleEl.textContent = title;
+    if(msgEl) msgEl.innerHTML = html;
+    if(btnYes) btnYes.textContent = acceptLabel;
+    if(btnNo) btnNo.textContent = cancelLabel;
+
+    abrirConfirm();
+    const onYes = ()=>{ cleanup(); resolve(true); };
+    const onNo  = ()=>{ cleanup(); resolve(false); };
+    function cleanup(){
+      btnYes.removeEventListener('click', onYes);
+      btnNo.removeEventListener('click', onNo);
+      cerrarConfirm();
+    }
+    btnYes.addEventListener('click', onYes);
+    btnNo.addEventListener('click', onNo);
+  });
+}
+
+/** Selector de módulos a vaciar: 'operatividad' | 'backlog' | 'sla' | 'todos' | null */
+async function seleccionarModuloParaVaciar(){
+  const radiosHTML = `
+    <fieldset style="border:0; padding:0; margin:0">
+      <legend style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">Seleccione el/los módulo(s) a vaciar</legend>
+      <label style="display:flex; gap:8px; align-items:center; margin:6px 0">
+        <input type="radio" name="vaciar_mod" value="operatividad" ${currentProject==='operatividad' ? 'checked' : ''}>
+        <span>Exclusiones de operatividad</span>
+      </label>
+      <label style="display:flex; gap:8px; align-items:center; margin:6px 0">
+        <input type="radio" name="vaciar_mod" value="backlog" ${currentProject==='backlog' ? 'checked' : ''}>
+        <span>Exclusiones indicador backlog</span>
+      </label>
+      <label style="display:flex; gap:8px; align-items:center; margin:6px 0">
+        <input type="radio" name="vaciar_mod" value="sla" ${currentProject==='sla' ? 'checked' : ''}>
+        <span>Exclusiones SLA</span>
+      </label>
+      <hr style="border:none; border-top:1px solid rgba(219,230,255,.6); margin:10px 0">
+      <label style="display:flex; gap:8px; align-items:center; margin:6px 0; font-weight:700; color:#0e2040">
+        <input type="radio" name="vaciar_mod" value="todos">
+        <span>Vaciar TODOS los módulos</span>
+      </label>
+    </fieldset>
+  `;
+  const ok = await abrirModalHTML({
+    title: '¿Qué módulo(s) deseas vaciar?',
+    html: radiosHTML,
+    acceptLabel: 'Continuar',
+    cancelLabel: 'Cancelar'
+  });
+  if(!ok) return null;
+
+  const selected = document.querySelector('input[name="vaciar_mod"]:checked');
+  return selected ? selected.value : null;
+}
+
+/** Llama /api/clear del módulo (clave: 'operatividad'|'backlog'|'sla') y devuelve { ok:boolean, error?:string } */
+async function requestClear(modKey){
+  const API = (BACKENDS[modKey] || API_BASE).replace(/\/+$/,'');
+  try{
+    const res = await fetch(`${API}/api/clear`, {
+      method:'POST',
+      mode:'cors',
+      headers:{
+        'Content-Type':'application/json',
+        'Accept':'application/json',
+        'Authorization': `Bearer ${ADMIN_TOKEN}`
+      },
+      body: JSON.stringify({})
+    });
+    const j = await res.json().catch(()=>null);
+    if(!res.ok || !j?.ok){
+      return { ok:false, error: j?.error || `HTTP ${res.status}` };
+    }
+    return { ok:true };
+  }catch(err){
+    return { ok:false, error: err?.message ?? String(err) };
+  }
+}
+
+/* ====== Flujo de selección de archivo con confirm modal ====== */
 async function seleccionarArchivoYConfirmar(){
   return new Promise((resolve)=>{
     const finp = $('#fileInput');
     finp.value = '';
     const onChange = async ()=>{
       finp.removeEventListener('change', onChange);
-      if(!finp.files.length){ resolve(null); return; }
+      if(!finp.files || !finp.files.length){ resolve(null); return; }
       const moduleLabel = (projectLabels[currentProject] ?? currentProject);
-      const ok = confirm(`¿Confirma sobrescribir la data de "${moduleLabel}"?`);
+      const ok = await abrirModalConfirm({
+        title: 'Confirmación',
+        message: `¿Confirma sobrescribir la data del proyecto "${moduleLabel}"?`,
+        acceptLabel: 'Aceptar',
+        cancelLabel: 'Cancelar'
+      });
       resolve(ok ? finp.files[0] : null);
     };
     finp.addEventListener('change', onChange);
     finp.click();
   });
 }
+/* ====== Lector Excel a AOA ====== */
+function leerArchivoComoAOA(file){
+  return new Promise((resolve, reject)=>{
+    const fr = new FileReader();
+    fr.onload = ev=>{
+      try{
+        const data = new Uint8Array(ev.target.result);
+        const wb = XLSX.read(data, { type:'array' });
+        const shName = wb.SheetNames[0];
+        const ws = wb.Sheets[shName];
+        let aoa = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:'' });
+        aoa = aoa.map(row => row.map(v => (v ?? '').toString().trim()));
+        resolve(aoa);
+      }catch(err){ reject(err); }
+    };
+    fr.onerror = err=>reject(err);
+    fr.readAsArrayBuffer(file);
+  });
+}
 
+/* ====== Importar ====== */
 async function importarExcel(){
   hideState();
-  const file = await seleccionarArchivoYConfirmar();
-  if(!file){ showState('Operación cancelada.'); return; }
-
-  const btn = $('#btnImportar');
-  const lbl = btn.querySelector('.lbl');
-  btn.disabled = true;
-  lbl.textContent = 'Importando…';
-
+  const moduleLabel = projectLabels[currentProject] ?? currentProject;
   try{
-    const fr = await file.arrayBuffer();
-    const wb = XLSX.read(new Uint8Array(fr), { type:'array' });
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    let aoa = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:'' });
-    aoa = aoa.map(r=>r.map(v => (v??'').toString().trim()));
-
-    if(!aoa.length) throw new Error('Archivo vacío.');
-
-    const API = BACKENDS[currentProject];
+    const file = await seleccionarArchivoYConfirmar();
+    if(!file){ showState('Operación cancelada por el usuario.'); return; }
+    const btn = $('#btnImportar');
+    const lbl = btn.querySelector('.lbl');
+    btn.disabled = true;
+    lbl.textContent = 'Importando…';
+    const aoa = await leerArchivoComoAOA(file);
+    if(!aoa || !aoa.length) throw new Error('El archivo está vacío o no se pudo leer.');
+    // Backend del proyecto seleccionado
+    const API = (BACKENDS[currentProject] || API_BASE).replace(/\/+$/,'');
     const res = await fetch(`${API}/api/sobrescribir`, {
-      method:'POST',
+      method:'POST', mode:'cors',
       headers:{
         'Content-Type':'application/json',
+        'Accept':'application/json',
         'Authorization': `Bearer ${ADMIN_TOKEN}`
       },
       body: JSON.stringify({ aoa })
     });
-
     const j = await res.json().catch(()=>null);
-    if(!res.ok || !j?.ok) throw new Error(j?.error || 'Error de servidor');
-
-    showState(`Importación realizada en "${currentProject}". Filas: ${aoa.length-1}.`);
-    setGlobalLog('Importación completada', projectLabels[currentProject], `Filas: ${aoa.length-1}`);
-
+    if(!res.ok || !j?.ok) throw new Error(j?.error || `HTTP ${res.status}`);
+    const filas = Math.max(0,(aoa.length-1));
+    showState(`Importación realizada en "${currentProject}". Filas: ${filas}.`);
+    setGlobalLog('Importación completada', moduleLabel, `Filas: ${filas}`);
   }catch(err){
-    showState('Error al importar: '+err, true);
+    console.error(err);
+    showState('Error al importar: ' + err.message, true);
+    setGlobalLog('Error de importación', moduleLabel, err.message);
   }finally{
+    const btn = $('#btnImportar');
+    const lbl = btn.querySelector('.lbl');
     lbl.textContent = 'Importar datos';
     btn.disabled = false;
   }
 }
 
-/* ======================= EXPORTAR ======================= */
+/* ====== Exportar ====== */
 async function exportarExcel(){
   hideState();
+  const moduleLabel = projectLabels[currentProject] ?? currentProject;
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  const toExcelSerialUTC = (y,m,d) => (Date.UTC(y, m, d) / MS_PER_DAY) + 25569;
+  function parseToExcelSerial(raw){
+    if (raw === null || raw === undefined || raw === '') return null;
+    if (typeof raw === 'number' || (typeof raw === 'string' && /^\d+(\.\d+)?$/.test(raw.trim()))) {
+      const num = Number(raw);
+      if (!Number.isNaN(num)) {
+        if (num >= 1e10) { return (num / MS_PER_DAY) + 25569; }
+        else { return num; }
+      }
+      return null;
+    }
+    if (typeof raw === 'string') {
+      const s = raw.trim();
+      let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m) {
+        const dd = Number(m[1]), mm = Number(m[2]), yyyy = Number(m[3]);
+        if (!Number.isNaN(dd) && !Number.isNaN(mm) && !Number.isNaN(yyyy)) {
+          return toExcelSerialUTC(yyyy, mm - 1, dd);
+        }
+      }
+      const d = new Date(s);
+      if (!Number.isNaN(d)) {
+        return toExcelSerialUTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+      }
+    }
+    if (raw instanceof Date && !Number.isNaN(raw)) {
+      return toExcelSerialUTC(raw.getUTCFullYear(), raw.getUTCMonth(), raw.getUTCDate());
+    }
+    return null;
+  }
   try{
-    const API = BACKENDS[currentProject];
-    const res = await fetch(`${API}/api/aoa`, { method:'GET' });
+    const btn = $('#btnExportar');
+    const lbl = btn.querySelector('.lbl');
+    btn.disabled = true;
+    lbl.textContent = 'Exportando…';
+    const API = (BACKENDS[currentProject] || API_BASE).replace(/\/+$/,'');
+    const res = await fetch(`${API}/api/aoa`, { method:'GET', mode:'cors', headers:{ 'Accept':'application/json' } });
     const j = await res.json().catch(()=>null);
     const aoa = Array.isArray(j?.aoa) ? j.aoa : [];
-
     if(!aoa.length){
       showState('No hay datos para exportar.');
+      setGlobalLog('Exportación vacía', moduleLabel, '');
       return;
     }
-
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Datos');
-
-    XLSX.writeFile(wb, `exclusiones_${currentProject}.xlsx`);
-    showState(`Exportación lista — ${aoa.length-1} filas.`);
-
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const fechaCol = 0;
+    for (let r = 1; r < aoa.length; r++) {
+      const addr = XLSX.utils.encode_cell({ r, c: fechaCol });
+      const raw = (Array.isArray(aoa[r]) ? aoa[r][fechaCol] : null);
+      if (raw === null || raw === undefined || raw === '') continue;
+      const serial = parseToExcelSerial(raw);
+      if (serial !== null) { ws[addr] = { t:'n', v: serial, z:'dd/mm/yyyy' }; }
+      else { if (!ws[addr]) { ws[addr] = { t:'s', v: String(raw) }; } }
+    }
+    XLSX.utils.book_append_sheet(wb, ws, (projectLabels[currentProject] ?? currentProject).slice(0,26) || 'Exclusiones');
+    const nombre = `exclusiones_${currentProject}_${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb, nombre);
+    const filas = Math.max(0, aoa.length - 1);
+    showState(`Exportación completada (${filas} filas sin encabezados) en "${currentProject}".`);
+    setGlobalLog('Exportación completada', moduleLabel, `Filas: ${filas}`);
   }catch(err){
-    showState('Error al exportar: '+err, true);
+    console.error(err);
+    showState('Error al exportar: ' + (err?.message ?? err), true);
+    setGlobalLog('Error de exportación', moduleLabel, err?.message ?? String(err));
+  }finally{
+    const btn = $('#btnExportar');
+    const lbl = btn.querySelector('.lbl');
+    lbl.textContent = 'Exportar datos';
+    btn.disabled = false;
   }
 }
-/* ============================================================
-   FIX DEFINITIVO — Sincronizar import/export con módulos
-   ============================================================ */
 
-// ---- Operatividad ----
-$('#btnImportar')?.addEventListener('click', async () => {
-  selectProject('operatividad');
-  sessionStorage.setItem('ex_mod','operatividad');
-  localStorage.setItem('ex_mod','operatividad');
-  await importarExcel();
+/* ====== Vaciar módulo(s): selector + confirmación + ejecución ====== */
+async function vaciarModuloActual(){
+  let originalHTML = null;
+  try{
+    const eleccion = await seleccionarModuloParaVaciar();
+    if(!eleccion){ return; }
+    const human =
+      eleccion === 'todos'
+        ? 'TODOS los módulos (operatividad, backlog y sla)'
+        : (projectLabels[eleccion] ?? eleccion);
+
+    const ok = await abrirModalConfirm({
+      title: 'Confirmación',
+      message: `¿Confirmas vaciar ${human}? Esta acción requiere token de Admin y no se puede deshacer.`,
+      acceptLabel: 'Aceptar',
+      cancelLabel: 'Cancelar'
+    });
+    if(!ok) return;
+
+    const btn = document.getElementById('btnVaciarModulo');
+    if(btn){
+      originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2a10 10 0 1 1-7.07 2.93" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
+      </svg> Vaciando…`;
+    }
+
+    const keys = eleccion === 'todos' ? ['operatividad','backlog','sla'] : [eleccion];
+    const results = await Promise.all(keys.map(async k => ({ k, ...(await requestClear(k)) })));
+
+    const errores = results.filter(r => !r.ok);
+    if(errores.length === 0){
+      const modLabel = eleccion === 'todos' ? 'Todos' : (projectLabels[eleccion] ?? eleccion);
+      showState(`Vaciado completado en: ${modLabel}.`);
+      setGlobalLog('Vaciado completado', modLabel, '');
+    }else{
+      const okKeys = results.filter(r => r.ok).map(r => projectLabels[r.k] ?? r.k);
+      const errList = errores.map(r => `${projectLabels[r.k] ?? r.k}: ${r.error}`).join(' | ');
+      const extra = okKeys.length ? `OK en: ${okKeys.join(', ')}. ` : '';
+      showState(`Vaciado parcial. ${extra}Errores: ${errList}`, true);
+      setGlobalLog('Vaciado parcial', human, errList);
+    }
+  }catch(err){
+    console.error(err);
+    showState('Error al vaciar: ' + (err?.message ?? err), true);
+    setGlobalLog('Error en vaciado', '—', err?.message ?? String(err));
+  }finally{
+    const btn = document.getElementById('btnVaciarModulo');
+    if(btn){
+      btn.disabled = false;
+      if(typeof originalHTML === 'string' && originalHTML.length){
+        btn.innerHTML = originalHTML;
+      }else{
+        btn.innerHTML = `
+          <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.6" fill="none"></path>
+            <rect x="5" y="6" width="14" height="14" rx="2.2" ry="2.2" fill="currentColor" opacity=".06"></rect>
+            <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"></path>
+          </svg>
+          Vaciar módulos`;
+      }
+    }
+  }
+}
+
+/* ====== Outlook & Teams ====== */
+function openMailOutlook(toList = [], ccList = [], subject = DEFAULT_SUBJECT, body = DEFAULT_BODY){
+  const to = encodeURIComponent(toList.join(','));
+  const cc = encodeURIComponent(ccList.join(','));
+  const sub = encodeURIComponent(subject);
+  const bod = encodeURIComponent(body);
+  const url = `mailto:${to}?subject=${sub}${cc ? `&cc=${cc}` : ''}&body=${bod}`;
+  window.location.href = url;
+}
+function createTeamsMeetingInOWA({title = DEFAULT_SUBJECT, body = DEFAULT_BODY, durationMin = DEFAULT_DURATION_MIN, attendees = []} = {}){
+  const now = new Date();
+  const start = new Date(now.getTime() + 5*60000);
+  const end = new Date(start.getTime() + durationMin*60000);
+  const pad = n => String(n).padStart(2,'0');
+  const fmtLocal = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const qp = new URLSearchParams({
+    path: '/calendar/action/compose',
+    rru: 'addevent',
+    subject: title,
+    body: body,
+    startdt: fmtLocal(start),
+    enddt: fmtLocal(end),
+    isOnlineMeeting: '1',
+    onlineMeetingProvider: 'TeamsForBusiness',
+    location: DEFAULT_LOCATION
+  });
+  if (attendees.length) qp.append('to', attendees.join(';'));
+  const href = `https://outlook.office.com/calendar/0/deeplink/compose?${qp.toString()}`;
+  window.open(href, '_blank', 'noopener');
+}
+
+/* ====== Eventos ====== */
+$('#btnNotifyR1')?.addEventListener('click', () => openMailOutlook(TEAM1_TO, TEAM1_CC));
+$('#btnNotifyR2')?.addEventListener('click', () => openMailOutlook(TEAM2_TO, TEAM2_CC));
+$('#btnTeamsMeeting')?.addEventListener('click', () => createTeamsMeetingInOWA({ attendees: [...TEAM1_TO, ...TEAM1_CC] }));
+$('#btnImportar')?.addEventListener('click', importarExcel);
+$('#btnExportar')?.addEventListener('click', exportarExcel);
+document.getElementById('btnVaciarModulo')?.addEventListener('click', vaciarModuloActual);
+$('#btnHome')?.addEventListener('click', () => { window.location.href = 'main_page.html'; });
+const temaChip = $('#temaChip');
+temaChip?.addEventListener('click', () => {
+  const root = document.documentElement;
+  const isDark = root.classList.toggle('dark');
+  temaChip.textContent = isDark ? 'Tema claro' : 'Tema oscuro';
 });
 
-$('#btnExportar')?.addEventListener('click', async () => {
-  selectProject('operatividad');
-  sessionStorage.setItem('ex_mod','operatividad');
-  localStorage.setItem('ex_mod','operatividad');
-  await exportarExcel();
-});
-
-// ---- Backlog ----
+/* <<< NUEVO: listeners dedicados para Backlog y SLA >>> */
 $('#btnImportar_backlog')?.addEventListener('click', async () => {
   selectProject('backlog');
-  sessionStorage.setItem('ex_mod','backlog');
-  localStorage.setItem('ex_mod','backlog');
   await importarExcel();
 });
-
 $('#btnExportar_backlog')?.addEventListener('click', async () => {
   selectProject('backlog');
-  sessionStorage.setItem('ex_mod','backlog');
-  localStorage.setItem('ex_mod','backlog');
   await exportarExcel();
 });
-
-// ---- SLA ----
 $('#btnImportar_sla')?.addEventListener('click', async () => {
   selectProject('sla');
-  sessionStorage.setItem('ex_mod','sla');
-  localStorage.setItem('ex_mod','sla');
   await importarExcel();
 });
-
 $('#btnExportar_sla')?.addEventListener('click', async () => {
   selectProject('sla');
-  sessionStorage.setItem('ex_mod','sla');
-  localStorage.setItem('ex_mod','sla');
   await exportarExcel();
 });
 
-/* ======================= HEALTH-CHECK ======================= */
+/* Health-check al cargar y cada 60s */
 updateAllHealth();
 setInterval(updateAllHealth, 60000);
 
