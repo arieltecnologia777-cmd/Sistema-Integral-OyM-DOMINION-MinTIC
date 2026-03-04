@@ -342,9 +342,176 @@ body{
   .controls{ gap:8px; }
   .registro .row{ grid-template-columns: 1fr; }
 }
+/* =================== SIDEBAR ESCRITORIO =================== */
+.sidebar-mod {
+  width: 260px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #fff;
+  border-right: 1px solid #e4ebf6;
+  box-shadow: 0 8px 18px rgba(14,42,94,.12);
+  padding: 14px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+body {
+  margin-left: 260px;
+}
+
+/* MARCAS DEL SIDEBAR */
+.sb-brand { font-weight: 900; font-size: 18px; color: #0e2040; }
+.sb-t2 { font-size: 12px; color: #6b7893; }
+
+.sb-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #203054;
+  margin-top: 4px;
+}
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #d7e0f5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.sb-item:hover {
+  background: #eef4ff;
+}
+
+.sb-item.active {
+  border-color: #0e4aa8;
+  background: #eaf2ff;
+}
+
+.sb-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e2040;
+}
+
+.sb-ico {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+}
+
+.sb-ico-blue { background: #0e4aa8; }
+.sb-ico-amber { background: #f59e0b; }
+.sb-ico-sky { background: #0284c7; }
+
+/* ========== MÓVIL: drawer + hamburguesa ========== */
+.sidebar-toggle {
+  display: none;
+}
+
+/* MÓVIL */
+@media (max-width:900px){
+  body {
+    margin-left: 0 !important;
+  }
+
+  .sidebar-mod {
+    transform: translateX(-280px);
+    transition: transform .25s ease;
+  }
+
+  .sidebar-mod.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    left: 14px;
+    top: 14px;
+    z-index: 10000;
+    font-size: 24px;
+    background: #0e4aa8;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+  }
+}
+/* ====== LOGO TARJETA SIDEBAR (estilo idéntico al de tu imagen) ====== */
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e8ecf7;
+  box-shadow: 0 4px 12px rgba(14, 42, 94, 0.08);
+}
+
+.sb-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.sb-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.sb-brand-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0e2040;
+}
+
+.sb-brand-sub {
+  font-size: 13px;
+  color: #4a5260;
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
+<!-- ===== SIDEBAR FIJO (ESCRITORIO) + DRAWER (MÓVIL) ===== -->
+<aside id="sidebarMod" class="sidebar-mod">
+ <div class="sb-brand">
+  <img src="dominion_logo.png" alt="DOMINION" class="sb-logo">
+  <div class="sb-brand-text">
+    <div class="sb-brand-title">MinTIC</div>
+    <div class="sb-brand-sub">Centros Digitales</div>
+  </div>
+</div>
+
+  <div class="sb-title">MÓDULOS GESTORES</div>
+
+  <button class="sb-item" data-mod="operatividad">
+    <div class="sb-ico sb-ico-blue"></div>
+    <div class="sb-label">Operatividad</div>
+  </button>
+
+  <button class="sb-item" data-mod="backlog">
+    <div class="sb-ico sb-ico-amber"></div>
+    <div class="sb-label">IND Backlog</div>
+  </button>
+
+  <button class="sb-item" data-mod="sla">
+    <div class="sb-ico sb-ico-sky"></div>
+    <div class="sb-label">SLA</div>
+  </button>
+</aside>
+
+<!-- BOTÓN HAMBURGUESA (SOLO MÓVIL) -->
+<button id="sidebarToggle" class="sidebar-toggle">&#9776;</button>
 <!-- HEADER -->
 <div class="header">
   <div class="header-title">Exclusiones de Operatividad</div>
@@ -1168,6 +1335,33 @@ if(paletteFab){
 /* ======= Arranque ======= */
 loadPalette();
 cargarDesdeServidor();
+/* ======================
+   SIDEBAR NAV + HAMBURGER
+====================== */
+
+// Activar módulo actual
+document.querySelectorAll(".sb-item").forEach(btn=>{
+  if(btn.dataset.mod === __MOD){
+    btn.classList.add("active");
+  }
+});
+
+// Navegación entre módulos
+document.querySelectorAll(".sb-item").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const mod = btn.dataset.mod;
+    const base = window.location.pathname.split("/").pop();
+    window.location.href = `${base}?m=${mod}`;
+  });
+});
+
+// Hamburguesa abrir/cerrar
+const sb = document.getElementById("sidebarMod");
+const toggle = document.getElementById("sidebarToggle");
+
+toggle.addEventListener("click", ()=>{
+  sb.classList.toggle("open");
+});
 </script>
 </body>
 </html>
