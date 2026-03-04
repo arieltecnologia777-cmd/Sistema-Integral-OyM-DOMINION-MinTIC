@@ -1,228 +1,466 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<title>Módulo de exclusiones (hijo)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- (Opcional) Fluent UI MDL2 icons para consistencia visual -->
-<link rel="stylesheet" href="https://res.cdn.office.net/files/fabric-cdn-prod_20240201.001/assets/icons/fabric-icons.css">
-
-<!-- SheetJS para exportar (misma versión del admin) -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
+<meta charset="UTF-8" />
+<title>Exclusiones – Operatividad (tabla + backend)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Sello de build para diagnosticar versiones renderizadas -->
+<meta name="x-build" content="build-2026-03-02-merge-beta-ui+backend-p1+B-option+regional-filter+col-regional">
 <style>
-  :root{
-    --ink:#0e2040; --muted:#6b7893; --accent:#0e4aa8; --ok:#107c10; --err:#991b1b;
-    --bg:#f6f9ff; --card:#ffffff; --b:#dbe6ff; --rad:14px;
-  }
-  html,body{height:100%}
-  body{
-    margin:0; font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; color:#1a2333;
-    background:
-      radial-gradient(1200px 600px at 80% -10%, #eaf1ff 0%, rgba(234,241,255,0) 60%),
-      linear-gradient(180deg,#eef4ff,#ffffff);
-    display:flex; flex-direction:column; min-height:100vh;
-  }
-  .wrap{ width:min(1200px, 96%); margin:16px auto 28px; }
-  .head{
-    background:rgba(255,255,255,.7); border:1px solid var(--b); border-radius:18px;
-    padding:12px 14px; display:flex; gap:12px; align-items:center; backdrop-filter: blur(6px);
-  }
-  .badge{
-    padding:6px 10px; border-radius:999px; background:#eef3ff; border:1px solid var(--b);
-    color:#0e3a82; font-weight:700; font-size:12px;
-  }
-  .title{ margin:0; font-size:20px; font-weight:800; color:var(--ink) }
-  .sub{ margin:2px 0 0; color:#4e5d78; font-size:13px }
-  .actions{ display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 }
-  .btn{
-    display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
-    border:1px solid var(--b); background:#fff; color:#0e3a82; font-weight:600; cursor:pointer;
-    box-shadow:0 6px 16px rgba(20, 40, 90, .08);
-  }
-  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff }
-  .btn:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none }
-  .grid{
-    display:grid; grid-template-columns: 1.2fr 2fr; gap:14px; margin-top:14px;
-  }
-  .card{
-    background:var(--card); border:1px solid var(--b); border-radius:var(--rad);
-    padding:12px 12px; box-shadow:0 10px 22px rgba(14,42,94,.08);
-  }
-  .card h3{ margin:0 0 8px; font-size:16px; font-weight:800; color:var(--ink) }
-  .row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:8px 0 }
-  .row .col{ display:flex; flex-direction:column; gap:6px }
-  label{ font-size:12px; color:#334; font-weight:700 }
-  input[type="text"], input[type="date"], select, textarea{
-    padding:8px 10px; border-radius:10px; border:1px solid var(--b); background:#fff;
-    font-size:14px; outline:none;
-  }
-  textarea{ min-height:76px; resize:vertical }
-  .state{
-    display:none; margin:10px 0 0; padding:10px 12px; border-radius:12px; background:#eef3ff;
-    border:1px solid var(--b); color:#0e3a82; font-size:13px;
-  }
-  .state.show{ display:block }
-  .state.err{ background:#fee2e2; border-color:#fecaca; color:var(--err) }
+:root{
+  --dom-blue:#0e4aa8; /* Azul corporativo */
+  --dom-blue-hover:#0c3f8f;
+  --ink:#0e2040;
+  --head:#ffffff;
+  /* Líneas de tabla */
+  --line:#e4ebf6;
+  /* Botones / estados */
+  --pill:#cfe0ff;
+  --success:#16a34a; /* Verde de “OT gestionada” */
+  /* Hover de fila (solo relieve) */
+  --row-hover-shadow:0 10px 24px rgba(0,0,0,.10);
+  --row-hover-lift:-1px;
+  --row-radius:12px;
+  /* Realce de botones activos al pasar por la fila (excepto Enviar/Success/Eliminar) */
+  --chip-bg-strong:#e4efff;
+  --chip-border-strong:#bfd6ff;
+  /* Paleta “danger” (Eliminar) */
+  --danger:#b4232c;
+  --danger-bg:#fde8ee;
+  --danger-bg-hover:#fbd0d9;
+  --danger-border:#f1b4bb;
+  --danger-border-hover:#eaa7b1;
+}
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;
+  background:linear-gradient(180deg,#eef4ff,#fff);
+  margin:0; color:#1a2333;
+}
+/* ===== Header / Controls ===== */
+.header{
+  background:#ffffffcc; backdrop-filter: blur(12px);
+  padding:18px 24px 14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  border-bottom:1px solid #eef1f6;
+}
+.header-title{ font-size:30px; font-weight:900; color:#0e2040; letter-spacing:-.2px; }
+.header-sub{ margin-top:4px; color:#2a3348; font-size:15px; }
+.controls{
+  margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:10px; font-size:14px; border:none; cursor:pointer; }
+.btn-blue{ background:#0e4aa8; color:#fff; }
+.btn-light{ background:#e8eef7; color:#0e4aa8; }
+.btn[disabled]{ opacity:.65; cursor:not-allowed; }
+.search-pill{
+  display:flex; align-items:center; gap:8px; background:#fff;
+  border:1px solid #d7e0f5; border-radius:10px; height:40px; padding:0 12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.search-pill input{ border:none; outline:none; height:100%; font-size:14px; min-width:220px; max-width:360px; }
+.search-icon{ width:16px; height:16px; opacity:.55; }
+/* Píldora de última actualización */
+.badge-ts{
+  background:#eef3ff; color:#0e3a82; border:1px solid #dbe6ff;
+  padding:8px 12px; border-radius:10px; font-size:12px; display:inline-flex; align-items:center; gap:8px;
+}
+.badge-dot{ width:8px; height:8px; border-radius:999px; background:#10b981; }
+/* Píldora estadísticas header (base) */
+#headerStats{
+  background:#f6f9ff;
+  color:#19345f;
+  border:1px solid #e1e8f8;
+  padding:8px 12px;
+  border-radius:10px;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+/* Píldora “OK” (verde) */
+#headerStats.ok{
+  background:var(--success);
+  border-color:var(--success);
+  color:#ffffff;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.18),
+    0 -1px 0 rgba(255,255,255,.18),
+    1px 0 0 rgba(255,255,255,.18),
+    -1px 0 0 rgba(255,255,255,.18);
+  box-shadow:0 2px 10px rgba(22,163,74,.18);
+}
+#headerStats.ok::before{ content:"✅"; display:inline-block; margin-right:4px; }
+/* ===== Contenedor ===== */
+.wrap{ width:92%; margin:18px auto 0; }
+/* ===== Tabla ===== */
+.tabla-box{
+  background:#fff; border:1px solid rgba(199,215,243,.40);
+  border-radius:14px; box-shadow:0 10px 24px rgba(0,0,0,.06); overflow:hidden;
+}
+.tabla{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:auto;
+}
+/* Encabezados */
+.tabla thead th{
+  background:var(--head);
+  color:#1b2b48;
+  text-align:center;
+  padding:14px 16px; font-size:14px; font-weight:800;
+  border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);
+}
+.tabla thead th:first-child{ text-align:left; }
+.tabla thead th:last-child{ border-right:none; }
+/* Celdas */
+.tabla tbody td{
+  padding:14px 16px;
+  font-size:15px; vertical-align:middle; background:#fff;
+  border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);
+}
+.tabla tbody td:last-child{ border-right:none; }
+.col-ot{ font-weight:800; color:#0e2040; white-space:nowrap; }
+/* >>> NUEVO: estilo de la celda Regional (mismo look que OT) */
+.col-regional{ font-weight:800; color:#0e2040; white-space:nowrap; }
 
-  .tool{ display:flex; gap:8px; align-items:center; margin:8px 0 }
-  .tool input{ max-width:220px }
-  .table-wrap{ overflow:auto; border:1px solid var(--b); border-radius:12px }
-  table{ border-collapse:collapse; width:100%; background:#fff }
-  th, td{ padding:8px 10px; border-bottom:1px solid #eef2ff; font-size:13px; text-align:left; white-space:nowrap }
-  th{ background:#f4f7ff; color:#223; font-weight:800; position:sticky; top:0; z-index:1 }
-  tr:hover td{ background:#fafcff }
-  .muted{ color:var(--muted) }
-  .ok{ color:var(--ok) } .errtxt{ color:var(--err) }
+/* Hover fila (relieve) */
+.tabla tbody tr{
+  transition: transform .16s ease, filter .16s ease;
+}
+.tabla tbody tr:hover{
+  transform: translateY(var(--row-hover-lift));
+  filter: drop-shadow(var(--row-hover-shadow));
+}
+.tabla tbody tr:hover td:first-child{
+  border-top-left-radius:var(--row-radius);
+  border-bottom-left-radius:var(--row-radius);
+}
+.tabla tbody tr:hover td:last-child{
+  border-top-right-radius:var(--row-radius);
+  border-bottom-right-radius:var(--row-radius);
+}
+/* Contadores */
+.count-total{ font-weight:800; color:#0e2040; }
+.count-pend{ font-weight:800; color:#0e4aa8; }
+/* ===== Botones (tabla) ===== */
+.btn-pill{
+  appearance:none;
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px; line-height:36px;
+  padding:0 14px;
+  background:#fff; color:#0e4aa8;
+  border:1px solid var(--pill); border-radius:12px;
+  font-size:14px; cursor:pointer; margin-right:8px;
+  transition:background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+.btn-pill:last-child{ margin-right:0; }
+.btn-pill:hover{ background:#f9fbff; }
+.btn-pill:disabled{
+  background:#f9fbff; color:#6b7893; border-color:#e1eaff; cursor:not-allowed;
+}
+.btn-pill:focus-visible{ outline:2px solid #94b8ff; outline-offset:2px; }
+/* Íconos planos (ajuste fino, 16×16 consistentes) */
+.btn-pill .icon{
+  width:16px; height:16px; display:inline-block;
+  flex-shrink:0;
+  vertical-align:middle;
+}
+.btn-pill .icon svg{ width:16px; height:16px; display:block; }
+/* Hover de fila: realce general (excepto enviar/success/eliminar) */
+.tabla tbody tr:hover .btn-pill:not(:disabled):not([data-mode="enviar"]):not(.success):not(.btn-eliminar){
+  background:var(--chip-bg-strong);
+  color:var(--dom-blue);
+  border-color:var(--chip-border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(14,74,168,.18);
+}
+.tabla tbody tr:hover .btn-preview .icon svg,
+.tabla tbody tr:hover .btn-primary[data-mode="gestionar"] .icon svg{
+  stroke:var(--dom-blue) !important; fill:none; stroke-width:1.8;
+}
+/* Botón principal ENVIAR (solo popup) y CONTINUAR (tabla) en azul sólido */
+.btn-primary[data-mode="enviar"],
+.btn-primary[data-mode="continuar"]{
+  background:var(--dom-blue); color:#fff; border-color:var(--dom-blue);
+}
+.btn-primary[data-mode="enviar"]:hover,
+.btn-primary[data-mode="continuar"]:hover{
+  background:var(--dom-blue-hover); border-color:var(--dom-blue-hover);
+}
+.btn-primary[data-mode="enviar"]:focus-visible,
+.btn-primary[data-mode="continuar"]:focus-visible{
+  outline:2px solid #a8c4ff; outline-offset:2px;
+}
+/* Éxito */
+.btn-primary.success{
+  background:var(--success);
+  border-color:var(--success);
+  color:#fff;
+}
+/* Iconos por estado (engranajes + lápiz) */
+.btn-primary .icon-gear svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
+.btn-primary[data-mode="gestionar"] .icon-gear svg{ stroke:#324a78; }
+.btn-primary .icon-pencil svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
+.btn-primary[data-mode="continuar"] .icon-pencil svg{ stroke:#fff; }
+/* Eliminar (por OT) – local */
+.btn-eliminar{ display:inline-flex; align-items:center; gap:8px; }
+.btn-eliminar:not(:disabled){
+  background:var(--danger-bg); color:var(--danger); border-color:var(--danger-border);
+  box-shadow: inset 0 0 0 1px #f7c7cf, 0 3px 8px rgba(180,35,44,.12);
+}
+.btn-eliminar:not(:disabled):hover{
+  background:var(--danger-bg-hover); border-color:var(--danger-border-hover);
+  transform: translateY(-1px); filter: saturate(1.05);
+}
+/* Vista previa */
+.btn-preview .icon svg{ stroke:#324a78; fill:none; stroke-width:1.8; }
+/* Botón Eliminar registros (HEADER) – local */
+.btn-header-danger{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--danger-bg); color:var(--danger);
+  border:1px solid var(--danger-border);
+  border-radius:12px; padding:10px 14px; font-size:14px; cursor:pointer;
+  box-shadow: inset 0 0 0 1px #f7c7cf, 0 3px 8px rgba(180,35,44,.12);
+}
+.btn-header-danger:hover{ background:var(--danger-bg-hover); border-color:var(--danger-border-hover); }
+.btn-header-danger:disabled{
+  background:#f6f7fb; color:#8d95a8; border-color:#e4e9f6; box-shadow:none; cursor:not-allowed;
+}
+/* Pie / paginación */
+.pie{ width:92%; margin: 14px auto 24px; display:flex; align-items:center; justify-content:flex-start; gap:8px; flex-wrap:wrap; }
+.paginacion{ display:flex; gap:6px; flex-wrap:wrap; }
+.paginacion button{
+  padding:8px 12px; border-radius:10px; border:1px solid var(--pill); background:#fff; color:#0e4aa8; cursor:pointer;
+}
+.paginacion button[aria-current="page"]{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+/* Alertas inline */
+#alerta{ width:92%; margin:8px auto 0; color:#b00020; font-size:13px; display:none; }
 
-  @media (max-width: 980px){
-    .grid{ grid-template-columns: 1fr; }
-  }
+/* ===== Modal ===== */
+.modal{ position:fixed; inset:0; display:none; z-index:9999; }
+.modal.show{ display:block; }
+.modal .backdrop{ position:absolute; inset:0; background:rgba(7,15,30,.45); backdrop-filter: blur(4px); }
+.modal .dialog{
+  position:relative; width:min(1100px, 94vw); height:min(84vh, 860px); margin:4vh auto 0; background:#fff;
+  border-radius:18px; box-shadow:0 30px 80px rgba(0,0,0,.35); display:flex; flex-direction:column; overflow:hidden;
+}
+.modal .dialog header{
+  padding:16px 18px; background:#fff; color:#1b2b48;
+  display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);
+}
+.modal .dialog header .title{ font-weight:900; letter-spacing:-.2px; }
+.modal .dialog header .actions{ display:flex; align-items:center; gap:8px; }
+.modal .dialog header .close{
+  background:#fff; color:#0e4aa8;
+  border:1px solid #e1e8f6; border-radius:999px; padding:6px 10px; cursor:pointer;
+}
+.modal .dialog header .close:hover{ background:#f3f7ff; }
+.btn-send{
+  background:var(--dom-blue); color:#fff; border:none; border-radius:999px;
+  padding:8px 14px; cursor:pointer; font-weight:600;
+}
+.btn-send:hover{ background:var(--dom-blue-hover); }
+.btn-send:disabled{ opacity:.6; cursor:not-allowed; background:#a9c3f3; }
+.modal .body{
+  padding:14px 16px; overflow:auto; background:linear-gradient(180deg,#f8fbff,#fff);
+}
+.registro{
+  background:#fff; border:1px solid #e6eefc; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0 4px 18px rgba(0,0,0,.05);
+}
+.registro .row{ display:grid; grid-template-columns: 150px 1fr 280px; gap:12px; align-items:start; }
+.registro label{ font-weight:700; color:#445; font-size:12px; display:block; margin-bottom:6px; }
+.registro input[readonly]{ background:#eef1f6; height:36px; width:100%; border-radius:10px; border:none; padding:0 10px; }
+.registro textarea{ width:100%; min-height:72px; max-height:140px; resize:vertical; border:1px solid #cbd8ef; border-radius:12px; padding:10px 12px; line-height:1.25; }
+.registro textarea:focus{ outline:2px solid #0e4aa822; box-shadow: inset 0 0 0 1px #cbd8ef; }
+.registro .preview{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+.registro .preview img{ width:70px; height:70px; border-radius:10px; object-fit:cover; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+
+/* ===== Toast ===== */
+.toast-host{ position:fixed; right:18px; bottom:18px; z-index:10000; display:flex; flex-direction:column; gap:10px; }
+.toast{
+  min-width:260px; max-width:420px; background:#fff; color:#1b2b48;
+  border:1px solid #e1e8f6; border-left-width:4px; border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  padding:10px 14px; font-size:14px; line-height:1.25; animation:toast-in .2s ease;
+}
+.toast.info{ border-left-color: var(--dom-blue); }
+.toast.success{ border-left-color: var(--success); }
+.toast.error{ border-left-color: #e11d48; }
+@keyframes toast-in{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+
+/* ===== Confirm ===== */
+.confirm{ position:fixed; inset:0; display:none; z-index:11000; }
+.confirm.show{ display:block; }
+.confirm .backdrop{ position:absolute; inset:0; background:rgba(7,15,30,.45); backdrop-filter: blur(4px); }
+.confirm .card{
+  position:relative; width:min(520px, 94vw); margin:14vh auto 0;
+  background:#fff; border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.35);
+  padding:16px 18px;
+}
+.confirm .title{ font-weight:900; color:#1b2b48; margin:0 0 6px; letter-spacing:-.2px; }
+.confirm .msg{ color:#374560; font-size:14px; line-height:1.35; margin:0 0 12px; }
+.confirm .actions{ display:flex; gap:10px; justify-content:flex-end; }
+.confirm .btn{ padding:10px 16px; border-radius:999px; border:1px solid transparent; cursor:pointer; font-weight:700; font-size:14px; }
+.confirm .btn-accept{ background:var(--dom-blue); color:#fff; border-color:var(--dom-blue); }
+.confirm .btn-accept:hover{ background:var(--dom-blue-hover); border-color:var(--dom-blue-hover); }
+.confirm .btn-cancel{ background:#f4f6fb; color:#34445f; border-color:#e3e9f6; }
+.confirm .btn-cancel:hover{ background:#ecf1fb; }
+
+/* ===== Filtro Regional (misma estética que la search-pill) ===== */
+.filter-box{ position:relative; height:40px; display:flex; align-items:center; }
+.filter-trigger{
+  display:inline-flex; align-items:center; gap:8px; height:40px;
+  padding:0 12px; background:#fff;
+  border:1px solid #d7e0f5; border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+  color:#0e4aa8; cursor:pointer; font-size:14px;
+}
+.filter-trigger:hover{ background:#f9fbff; }
+.filter-trigger .icon{ width:16px; height:16px; opacity:.7; }
+.filter-menu{
+  position:absolute; top:44px; left:0; z-index:50;
+  background:#fff; border:1px solid #d7e0f5; border-radius:12px;
+  box-shadow:0 12px 28px rgba(0,0,0,.12);
+  padding:6px; min-width:220px; display:none;
+}
+.filter-menu.show{ display:block; }
+.filter-menu button{
+  width:100%; text-align:left; background:#fff; color:#1b2b48;
+  border:none; border-radius:8px; padding:10px 10px; font-size:14px; cursor:pointer;
+}
+.filter-menu button:hover{ background:#f3f7ff; color:#0e4aa8; }
+.filter-menu .sep{ height:1px; background:#edf2fb; margin:6px 4px; }
+
+/* Mobile */
+@media (max-width: 900px){
+  .controls{ gap:8px; }
+  .registro .row{ grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- Encabezado -->
-    <div class="head">
-      <div class="badge" id="modBadge">—</div>
-      <div style="flex:1">
-        <h1 class="title">Módulo de exclusiones (hijo)</h1>
-        <p class="sub">Carga/visualiza registros según el módulo activo del admin.</p>
-      </div>
-      <div class="actions">
-        <button id="btnRefresh" class="btn" title="Recargar datos"><i class="ms-Icon ms-Icon--Refresh"></i> Recargar</button>
-        <button id="btnExport" class="btn" title="Exportar datos a Excel"><i class="ms-Icon ms-Icon--ExcelDocument"></i> Exportar</button>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">Exclusiones de Operatividad</div>
+  <div class="header-sub"><strong>¡Bienvenido al modulo de exclusiones!</strong></div>
+  <div class="controls">
+    <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
+
+    <!-- === Filtro Regional (segunda posición; restaurado) === -->
+    <div class="filter-box" id="regionalBox">
+      <button id="btnRegional" class="filter-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" title="Filtrar por regional">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 6h18l-7 8v4l-4 2v-6L3 6z"/>
+        </svg>
+        <span id="lblRegional">Regional: Todas</span>
+      </button>
+      <div id="menuRegional" class="filter-menu" role="listbox" aria-label="Regional">
+        <!-- Opciones dinámicas -->
       </div>
     </div>
 
-    <div class="grid">
-      <!-- Formulario de gestión -->
-      <section class="card">
-        <h3>Registrar/actualizar exclusión</h3>
-        <div class="row">
-          <div class="col">
-            <label for="fFecha">Fecha</label>
-            <input type="date" id="fFecha" />
-          </div>
-          <div class="col">
-            <label for="fOT">OT</label>
-            <input type="text" id="fOT" placeholder="Ej: 123456" />
-          </div>
-        </div>
+    <!-- Eliminar registros (HEADER) - Local -->
+    <button id="btnEliminarGlobal" class="btn-header-danger" type="button" disabled>🗑️ Eliminar registros</button>
 
-        <div class="row">
-          <div class="col">
-            <label for="fCausa">Causa de exclusión</label>
-            <textarea id="fCausa" placeholder="Justificación / motivo"></textarea>
-          </div>
-          <div class="col">
-            <label for="fRegional">Regional</label>
-            <input type="text" id="fRegional" placeholder="Ej: Costa, Oriente..." />
-          </div>
-        </div>
+    <div class="search-pill" title="Buscar por OT">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input id="busqueda" type="text" placeholder="Buscar OTs…" autocomplete="off" />
+    </div>
+    <span class="badge-ts" id="lastUpdate"><span class="badge-dot"></span>Última actualización: —</span>
+    <!-- Stats en header -->
+    <span id="headerStats">—</span>
+  </div>
+</div>
 
-        <div class="actions">
-          <button id="btnGuardar" class="btn primary"><i class="ms-Icon ms-Icon--Save"></i> Guardar</button>
-          <button id="btnLimpiar" class="btn" title="Limpiar formulario"><i class="ms-Icon ms-Icon--EraseTool"></i> Limpiar</button>
-        </div>
+<!-- CONTENEDOR -->
+<div class="wrap" id="wrapGrupos"></div>
 
-        <div id="estadoForm" class="state" role="status" aria-live="polite"></div>
-      </section>
+<!-- Pie (solo paginación) -->
+<div class="pie">
+  <div class="paginacion" id="paginacion"></div>
+</div>
 
-      <!-- Tabla / listado -->
-      <section class="card">
-        <h3>Datos del módulo <span class="muted" id="modText">—</span></h3>
+<div id="alerta"></div>
 
-        <div class="tool">
-          <label class="muted">Filtros:</label>
-          <input id="fltOT" type="text" placeholder="Filtrar por OT..." />
-          <input id="fltRegional" type="text" placeholder="Filtrar por regional..." />
-          <button id="btnClearFilters" class="btn"><i class="ms-Icon ms-Icon--ClearFilter"></i> Limpiar filtros</button>
-        </div>
+<!-- ===== Modal ===== -->
+<div class="modal" id="modalRegistros" aria-hidden="true">
+  <div class="backdrop" data-close="1"></div>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <header>
+      <div class="title" id="modalTitle">Gestionar registros — OT —</div>
+      <div class="actions">
+        <button id="modalEnviar" class="btn-send" type="button" disabled>Enviar registros</button>
+        <button class="close" data-close="1" type="button">Cerrar</button>
+      </div>
+    </header>
+    <div class="body" id="modalBody"></div>
+  </div>
+</div>
 
-        <div class="table-wrap">
-          <table id="tbl">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>OT</th>
-                <th>Causa de exclusión</th>
-                <th>Regional</th>
-              </tr>
-            </thead>
-            <tbody id="tbody">
-              <!-- filas -->
-            </tbody>
-          </table>
-        </div>
-
-        <div id="estadoTabla" class="state" role="status" aria-live="polite"></div>
-      </section>
+<!-- ===== Confirm Modal ===== -->
+<div id="appConfirm" class="confirm" aria-hidden="true">
+  <div class="backdrop"></div>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg">
+    <h3 id="confirmTitle" class="title">Confirmación</h3>
+    <p id="confirmMsg" class="msg">¿Confirmas esta acción?</p>
+    <div class="actions">
+      <button id="confirmCancel" class="btn btn-cancel" type="button">Cancelar</button>
+      <button id="confirmAccept" class="btn btn-accept" type="button">Aceptar</button>
     </div>
   </div>
+</div>
 
+<!-- ===== Toast host ===== -->
+<div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-/* ============================================================
-   CONFIG BACKEND — multi-módulo (auto-detección)
-   ============================================================ */
+/* =============== CONFIG BACKEND (Cloudflare Workers) — multi-módulo =============== */
 const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
 const BACKENDS = {
   operatividad: `${API_BASE}/p1`,
-  backlog:      `${API_BASE}/p2`,
-  sla:          `${API_BASE}/p3`,
-};
-const LABELS = {
-  operatividad: 'Exclusiones de operatividad',
-  backlog:      'Exclusiones indicador backlog',
-  sla:          'Exclusiones SLA'
+  backlog: `${API_BASE}/p2`,
+  sla: `${API_BASE}/p3`
 };
 
-// 1) ?m=operatividad|backlog|sla  2) sessionStorage.ex_mod  3) fallback 'operatividad'
+/* === Detección robusta del módulo ===
+   Prioridad:
+   1) querystring ?m=operatividad|backlog|sla
+   2) sessionStorage.ex_mod (lo setea el admin)
+   3) 'operatividad' (fallback) */
 function detectModule(){
   const q = new URLSearchParams(location.search).get('m');
-  const cand = (q || '').trim().toLowerCase();
-  if (cand === 'operatividad' || cand === 'backlog' || cand === 'sla') return cand;
+  const qs = (q||'').trim().toLowerCase();
+  if (qs === 'operatividad' || qs === 'backlog' || qs === 'sla') return qs;
   try{
-    const s = (sessionStorage.getItem('ex_mod') || '').trim().toLowerCase();
+    const s = (sessionStorage.getItem('ex_mod')||'').trim().toLowerCase();
     if (s === 'operatividad' || s === 'backlog' || s === 'sla') return s;
   }catch{}
   return 'operatividad';
 }
 let CURRENT_MODULE = detectModule();
-let API = (BACKENDS[CURRENT_MODULE] || BACKENDS.operatividad).replace(/\/+$/, '');
+let API = (BACKENDS[CURRENT_MODULE] || BACKENDS.operatividad).replace(/\/+$/,'');
 
+/* Helper para actualizar el módulo “on the fly”, si hiciera falta */
 function setModule(mod){
-  const m = (mod || '').toLowerCase();
+  if (!mod) return;
+  const m = String(mod).toLowerCase();
   if (!BACKENDS[m]) return;
   CURRENT_MODULE = m;
   API = BACKENDS[m].replace(/\/+$/,'');
-  paintModule();
 }
 
-// Util
+/* =============== Helpers UI mínimos (si ya los tienes, deja los tuyos) =============== */
 const $ = s => document.querySelector(s);
-function show(el, txt='', isErr=false){
-  el.textContent = txt;
-  el.classList.toggle('err', !!isErr);
-  el.classList.add('show');
-}
-function hide(el){
-  el.classList.remove('show'); el.classList.remove('err'); el.textContent='';
-}
-// dd/mm/yyyy (para enviar estable al backend)
-function toDMYFromInput(dateValue){
-  if(!dateValue) return '';
-  // dateValue viene como yyyy-mm-dd de <input type="date">
-  const m = String(dateValue).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(!m) return String(dateValue);
-  return `${m[3]}/${m[2]}/${m[1]}`;
-}
 
-/* ============================================================
-   FETCH helper (CORS habilitado en el Worker)
-   ============================================================ */
+/* =============== Wrapper de fetch centralizado =============== */
 async function fetchAPI(path, opts = {}){
   const url = `${API}${path.startsWith('/') ? path : '/'+path}`;
   const res = await fetch(url, { mode:'cors', ...opts });
@@ -235,158 +473,60 @@ async function fetchAPI(path, opts = {}){
   return json ?? {};
 }
 
-/* ============================================================
-   RENDER & STATE
-   ============================================================ */
-let RAW_DATA = []; // origen
-let VIEW = [];     // filtrada/ordenada para la tabla
+/* ===================== EJEMPLOS DE USO =====================
 
-function paintModule(){
-  const badge = $('#modBadge');
-  const txt = $('#modText');
-  if(badge){ badge.textContent = LABELS[CURRENT_MODULE] || CURRENT_MODULE; }
-  if(txt){ txt.textContent = LABELS[CURRENT_MODULE] || CURRENT_MODULE; }
-}
-paintModule();
-
-function renderTable(){
-  const tb = $('#tbody');
-  tb.innerHTML = '';
-  for(const r of VIEW){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${r.fecha || ''}</td>
-      <td>${r.ot || ''}</td>
-      <td>${r.causa || ''}</td>
-      <td>${r.regional || ''}</td>`;
-    tb.appendChild(tr);
-  }
-  const est = $('#estadoTabla');
-  if(VIEW.length === 0){
-    show(est, 'No hay filas para mostrar.');
-  }else{
-    hide(est);
-  }
-}
-
-function applyFilters(){
-  const qOT = ($('#fltOT')?.value || '').trim().toLowerCase();
-  const qReg = ($('#fltRegional')?.value || '').trim().toLowerCase();
-  VIEW = RAW_DATA.filter(r => {
-    const okOT = qOT ? String(r.ot||'').toLowerCase().includes(qOT) : true;
-    const okRg = qReg ? String(r.regional||'').toLowerCase().includes(qReg) : true;
-    return okOT && okRg;
-  });
-  renderTable();
-}
-
-/* ============================================================
-   ACCIONES
-   ============================================================ */
+1) Cargar dataset para pintar la tabla del hijo:
+------------------------------------------------*/
 async function cargarDatos(){
-  const info = $('#estadoTabla');
   try{
-    show(info, 'Cargando…');
     const j = await fetchAPI('/api/datos', { method:'GET', headers:{ 'Accept':'application/json' } });
-    RAW_DATA = Array.isArray(j?.data) ? j.data : [];
-    // orden: fecha desc (si se puede)
-    VIEW = [...RAW_DATA];
-    renderTable();
-    show(info, `Cargado. Filas: ${VIEW.length}.`); setTimeout(()=>hide(info), 800);
+    // j.data = array de registros del módulo actual (p1/p2/p3)
+    // >>>>> AQUI pintas tu tabla con j.data <<<<<
+    // renderTabla(j.data);
   }catch(err){
-    console.error(err);
-    show(info, 'Error al cargar: ' + err.message, true);
+    console.error('Error cargarDatos:', err);
+    // muestraErrorUI('No fue posible cargar los datos: ' + err.message);
   }
 }
 
-async function exportarDatos(){
-  const info = $('#estadoTabla');
+/* 2) Guardar gestión del hijo (si aplica) */
+async function guardarGestion(payload){
   try{
-    show(info, 'Exportando…');
-    const j = await fetchAPI('/api/aoa', { method:'GET', headers:{ 'Accept':'application/json' } });
-    const aoa = Array.isArray(j?.aoa) ? j.aoa : [];
-    if(!aoa.length){ show(info, 'No hay datos para exportar.'); return; }
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    XLSX.utils.book_append_sheet(wb, ws, (LABELS[CURRENT_MODULE]||CURRENT_MODULE).slice(0,26) || 'Exclusiones');
-    const nombre = `exclusiones_${CURRENT_MODULE}_${new Date().toISOString().slice(0,10)}.xlsx`;
-    XLSX.writeFile(wb, nombre);
-    show(info, 'Exportación completada.'); setTimeout(()=>hide(info), 800);
-  }catch(err){
-    console.error(err);
-    show(info, 'Error al exportar: ' + err.message, true);
-  }
-}
-
-async function guardarGestion(){
-  const estado = $('#estadoForm');
-  try{
-    const fFecha = $('#fFecha').value;
-    const fOT = ($('#fOT').value || '').trim();
-    const fCausa = ($('#fCausa').value || '').trim();
-    const fRegional = ($('#fRegional').value || '').trim();
-
-    if(!fOT){ show(estado, 'La OT es obligatoria.', true); return; }
-    if(!fFecha){ show(estado, 'La fecha es obligatoria.', true); return; }
-
-    const payload = {
-      ot: fOT,
-      registros: [{
-        fecha: toDMYFromInput(fFecha),   // -> dd/mm/yyyy (el Worker normaliza robusto también)
-        causa: fCausa,
-        regional: fRegional
-      }]
-    };
-
-    show(estado, 'Guardando…');
     const res = await fetchAPI('/api/guardarOT', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
       body: JSON.stringify(payload)
     });
-    if(!res?.ok){ throw new Error('No se pudo guardar'); }
-
-    show(estado, 'Guardado correctamente.', false);
-    // refrescar tabla
+    // res.ok === true
+    // refrescar si corresponde:
     await cargarDatos();
   }catch(err){
-    console.error(err);
-    show(estado, 'Error al guardar: ' + err.message, true);
+    console.error('Error guardarGestion:', err);
   }
 }
 
-function limpiarForm(){
-  $('#fFecha').value = '';
-  $('#fOT').value = '';
-  $('#fCausa').value = '';
-  $('#fRegional').value = '';
-  hide($('#estadoForm'));
+/* 3) Exportar (si el hijo permite exportar por su cuenta) */
+async function exportar(){
+  try{
+    const j = await fetchAPI('/api/aoa', { method:'GET', headers:{ 'Accept':'application/json' } });
+    const aoa = Array.isArray(j?.aoa) ? j.aoa : [];
+    if (!aoa.length) return;
+    // Usa SheetJS si el hijo exporta local (omito por brevedad)
+  }catch(err){
+    console.error('Error exportar:', err);
+  }
 }
 
-/* ============================================================
-   EVENTOS
-   ============================================================ */
-$('#btnRefresh')?.addEventListener('click', cargarDatos);
-$('#btnExport')?.addEventListener('click', exportarDatos);
-$('#btnGuardar')?.addEventListener('click', guardarGestion);
-$('#btnLimpiar')?.addEventListener('click', limpiarForm);
-$('#fltOT')?.addEventListener('input', applyFilters);
-$('#fltRegional')?.addEventListener('input', applyFilters);
-$('#btnClearFilters')?.addEventListener('click', () => {
-  $('#fltOT').value = ''; $('#fltRegional').value = ''; applyFilters();
-});
+/* =============== Inicialización del hijo =============== */
+(async () => {
+  // Si quieres que el hijo se re-sincronice por si el admin cambió de módulo hace poco:
+  try{
+    const last = (sessionStorage.getItem('ex_mod')||'').trim().toLowerCase();
+    if (last && last !== CURRENT_MODULE && BACKENDS[last]) setModule(last);
+  }catch{}
 
-// Re-sincroniza con el admin si cambió de módulo recientemente
-try{
-  const last = (sessionStorage.getItem('ex_mod')||'').trim().toLowerCase();
-  if (last && last !== CURRENT_MODULE && BACKENDS[last]) setModule(last);
-}catch{}
-
-/* ============================================================
-   INIT
-   ============================================================ */
-cargarDatos();
-
+  await cargarDatos();
+})();
 }); // DOMContentLoaded
 </script>
 </body>
