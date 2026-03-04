@@ -1232,22 +1232,35 @@ temaChip?.addEventListener('click', () => {
 });
 
 /* <<< NUEVO: listeners dedicados para Backlog y SLA >>> */
+
+/* ============================================================
+   FIX DEFINITIVO: IMPORTAR Y EXPORTAR SELECCIONAN EL MÓDULO
+   AUTOMÁTICAMENTE (SIN TOCAR LAS TARJETAS)
+   ============================================================ */
+
+// ---- Operatividad ----
+$('#btnImportar')?.addEventListener('click', async () => {
+  selectProject('operatividad');                // módulo activo
+  sessionStorage.setItem('ex_mod','operatividad');
+  localStorage.setItem('ex_mod','operatividad');
+  await importarExcel();
+});
+$('#btnExportar')?.addEventListener('click', async () => {
+  selectProject('operatividad');
+  sessionStorage.setItem('ex_mod','operatividad');
+  localStorage.setItem('ex_mod','operatividad');
+  await exportarExcel();
+});
+
+// ---- Backlog ----
 $('#btnImportar_backlog')?.addEventListener('click', async () => {
   selectProject('backlog');
+  sessionStorage.setItem('ex_mod','backlog');
+  localStorage.setItem('ex_mod','backlog');
   await importarExcel();
 });
 $('#btnExportar_backlog')?.addEventListener('click', async () => {
-  selectProject('backlog');
-  await exportarExcel();
-});
-$('#btnImportar_sla')?.addEventListener('click', async () => {
-  selectProject('sla');
-  await importarExcel();
-});
-$('#btnExportar_sla')?.addEventListener('click', async () => {
-  selectProject('sla');
-  await exportarExcel();
-});
+  selectProject('backlog
 
 /* Health-check al cargar y cada 60s */
 updateAllHealth();
