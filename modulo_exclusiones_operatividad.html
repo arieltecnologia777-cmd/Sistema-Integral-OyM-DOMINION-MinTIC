@@ -1362,6 +1362,17 @@ const toggle = document.getElementById("sidebarToggle");
 toggle.addEventListener("click", ()=>{
   sb.classList.toggle("open");
 });
+  // === Ajustar el título visual según __MOD (solo rótulo, no afecta datos) ===
+(function(){
+  const h1 = document.querySelector('.header-title');
+  if(!h1) return;
+  const map = {
+    operatividad: 'Exclusiones de Operatividad',
+    backlog: 'Exclusiones IND Backlog',
+    sla: 'Exclusiones SLA'
+  };
+  h1.textContent = map[__MOD] || 'Exclusiones';
+})();
 </script>
 </body>
 </html>
