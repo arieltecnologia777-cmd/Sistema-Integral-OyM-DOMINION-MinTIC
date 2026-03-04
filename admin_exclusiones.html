@@ -272,30 +272,18 @@ body{
  filter: drop-shadow(0 12px 22px rgba(14,42,94,.16));
  transition: transform .08s ease, box-shadow .12s ease, filter .12s ease, background .12s ease, color .12s ease;
 }
-.btn:hover{
- transform: translateY(-2px);
- box-shadow:0 10px 20px rgba(0,0,0,.10);
- filter: drop-shadow(0 20px 30px rgba(14,42,94,.20));
-}
-.btn:active{
- transform: translateY(-1px);
- box-shadow:0 6px 12px rgba(0,0,0,.10) inset, 0 2px 4px rgba(0,0,0,.06);
- filter: drop-shadow(0 16px 24px rgba(14,42,94,.18));
-}
+.btn:hover{ transform: translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,.10); filter: drop-shadow(0 20px 30px rgba(14,42,94,.20)); }
+.btn:active{ transform: translateY(-1px); box-shadow:0 6px 12px rgba(0,0,0,.10) inset, 0 2px 4px rgba(0,0,0,.06); filter: drop-shadow(0 16px 24px rgba(14,42,94,.18)); }
 .btn svg{ width:18px; height:18px; flex:0 0 auto; }
 .btn .ms-Icon{ font-size:18px; line-height:1; }
 .btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
 .btn-exp{ background:#e8eef7; color:#0e4aa8; border-color:#cfe0ff; }
 .btn[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; filter:none; }
 .actions .pair{ display:flex; gap:10px; flex-wrap:nowrap; align-items:center; }
-.actions .btn{
- padding:6px 10px;
- font-size:13px;
- justify-content:center;
- line-height:1.1;
-}
+.actions .btn{ padding:6px 10px; font-size:13px; justify-content:center; line-height:1.1; }
 .actions .btn svg{ width:16px; height:16px; }
 .actions .btn .lbl{ line-height:1.1; text-align:center; }
+
 /* ======= AYUDA / HELP ======= */
 .help{
  display:none; /* se muestra al click */
@@ -307,7 +295,6 @@ body{
  border: 1px solid rgba(199,215,243,.70);
  box-shadow: var(--elev-2);
  filter: drop-shadow(0 18px 32px rgba(14,42,94,.18));
- /* Ajuste al contenido (no invasivo) */
  width: fit-content;
  max-width: min(100%, 860px);
  min-width: 340px;
@@ -318,12 +305,8 @@ body{
 .help ul { font-size:12px !important; }
 .help li { font-size:12px !important; }
 .help .help-close { font-size:11px !important; padding:4px 8px !important; }
-.help-head{
- display:flex; align-items:center; gap:12px; margin-bottom:6px;
-}
-.help h3{
- margin: 0; font-weight: 800; color:#0e2040; flex:1;
-}
+.help-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+.help h3{ margin: 0; font-weight: 800; color:#0e2040; flex:1; }
 .help p{ margin: 0 0 8px; color:#4e5d78; }
 .help ul{ margin: 6px 0 0 18px; padding:0; color:#22314a; }
 .help li{ margin: 4px 0; }
@@ -334,28 +317,32 @@ body{
 .help .help-close:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(14,42,94,.22); }
 .help .help-close:active{ transform: translateY(0); box-shadow:0 6px 12px rgba(14,42,94,.16) inset; }
 /* >>> Ajuste específico para Desktop (más compacto) <<< */
-@media (min-width: 1024px){
- .help{
-  max-width: 640px; /* compacto en desktop */
- }
-}
-/* En móviles el help ocupa el ancho disponible */
-@media (max-width: 640px){
- .help{ min-width: 0; width: 100%; max-width: 100%; }
-}
+@media (min-width: 1024px){ .help{ max-width: 640px; } }
+@media (max-width: 640px){ .help{ min-width: 0; width: 100%; max-width: 100%; } }
+
 /* ===== Estado/alertas ===== */
-.state{
- margin: 8px 0 14px;
- padding:10px 12px; border-radius:12px; display:none;
- border:1px solid #dbe6ff; background:#eef3ff; color:#0e3a82;
-}
+.state{ margin: 8px 0 14px; padding:10px 12px; border-radius:12px; display:none; border:1px solid #dbe6ff; background:#eef3ff; color:#0e3a82; }
 .state.error{ border-color:#fecaca; background:#fee2e2; color:#991b1b; }
-/* Modal */
-.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; }
-.modal{ background:#fff; padding:18px; border-radius:14px; width:min(92%, 460px); box-shadow:0 18px 38px rgba(0,0,0,.25); }
-.modal h3{ margin:0 0 8px; color:#0e2040; }
-.modal p { margin:6px 0 16px; color:#4e5d78; }
-.modal .actions{ display:flex; gap:10px; justify-content:flex-end; }
+
+/* ===== Modal de confirmación (con fondo difuminado) ===== */
+.modal-backdrop{
+ position:fixed; inset:0;
+ background: rgba(15,23,42,.28); /* tenue */
+ backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); /* << difumina el resto */
+ display:none; align-items:center; justify-content:center;
+}
+.modal{
+ background:#fff; padding:16px; border-radius:16px;
+ width: min(92%, 420px);
+ box-shadow: 0 18px 38px rgba(14,42,94,.25);
+}
+.modal h3{ margin:0 0 6px; color:#0e2040; font-weight:800; font-size:16px; }
+.modal p { margin:6px 0 0; color:#4e5d78; font-size:13px; }
+.modal .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; }
+.modal .btn{ padding:7px 12px; font-size:13px; border-radius:999px; }
+.modal .btn-si{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+.modal .btn-no{ background:#e8eef7; color:#0e3a82; border-color:#cfe0ff; }
+
 /* ===== Ajustes ===== */
 .tiles.container{ margin-top: 60px; }
 .container:last-of-type{ padding-bottom: 0 !important; }
@@ -372,6 +359,7 @@ body{
  .sidebar{ position:relative; top:auto; min-height:auto; max-height:none; }
  .tiles{ padding-block:12px; }
 }
+
 /* ====== Modo oscuro ====== */
 .dark body{
  background:
@@ -380,8 +368,7 @@ body{
  color:#e5e7eb;
 }
 .dark .help{
- background: #0f1a2b;
- border-color:#22314a;
+ background: #0f1a2b; border-color:#22314a;
  box-shadow: 0 12px 24px rgba(0,0,0,.45);
  filter: drop-shadow(0 18px 32px rgba(0,0,0,.55));
 }
@@ -393,100 +380,50 @@ body{
  box-shadow:0 10px 18px rgba(0,0,0,.45);
 }
 /* Sidebar y brand */
-.dark .sidebar{
- background: linear-gradient(180deg, rgba(30,41,59,.65), rgba(30,41,59,.55));
- border-color: rgba(148,163,184,.35);
-}
-.dark .brand{
- background:#0f1a2b;
- border-color:#243248;
- color:#eaf2ff;
-}
-.dark #brandLogo{
- background:#ffffff;
- border-radius:12px;
- padding:6px;
-}
+.dark .sidebar{ background: linear-gradient(180deg, rgba(30,41,59,.65), rgba(30,41,59,.55)); border-color: rgba(148,163,184,.35); }
+.dark .brand{ background:#0f1a2b; border-color:#243248; color:#eaf2ff; }
+.dark #brandLogo{ background:#ffffff; border-radius:12px; padding:6px; }
 .dark .brand-title{ color:#eaf2ff; }
 .dark .brand-sub{ color:#a7b4c9; }
 .dark .nav-title{ color:#c7d2fe; }
 /* Hero */
-.dark .hero{
- background: rgba(15,23,42,.66);
- border-bottom-color: rgba(148,163,184,.32);
-}
+.dark .hero{ background: rgba(15,23,42,.66); border-bottom-color: rgba(148,163,184,.32); }
 .dark .breadcrumb{ color:#dbe4ff; }
 .dark .title{ color:#eaf2ff; }
 .dark .subtitle{ color:#c7d2fe; }
 /* Log global */
 .dark .global-log-wrap .global-log-label{ color:#eaf2ff; }
-.dark .global-log{
- background:#102646;
- border-color:#345e9e;
- color:#dbeafe;
-}
+.dark .global-log{ background:#102646; border-color:#345e9e; color:#dbeafe; }
 /* Tiles (módulos) */
-.dark .tile{
- background:#0f1a2b;
- border-color:#22314a;
- color:#eaf2ff;
+.dark .tile{ background:#0f1a2b; border-color:#22314a; color:#eaf2ff;
  box-shadow: 0 2px 6px rgba(0,0,0,.45), 0 14px 26px rgba(0,0,0,.40);
- filter: drop-shadow(0 16px 28px rgba(0,0,0,.45));
-}
-.dark .tile:hover{
- filter: drop-shadow(0 24px 36px rgba(0,0,0,.55));
-}
+ filter: drop-shadow(0 16px 28px rgba(0,0,0,.45)); }
+.dark .tile:hover{ filter: drop-shadow(0 24px 36px rgba(0,0,0,.55)); }
 .dark .tile .t-title{ color:#eaf2ff; }
 .dark .tile .t-sub{ color:#c7d2fe; }
-.dark .tile.soon{
- opacity:.95;
- filter: drop-shadow(0 16px 28px rgba(0,0,0,.40));
-}
+.dark .tile.soon{ opacity:.95; filter: drop-shadow(0 16px 28px rgba(0,0,0,.40)); }
 /* Badges */
-.dark .tile .badge{
- background:#0b1b33;
- border-color:#274060;
- color:#a8c3ff;
-}
-.dark .tiles [data-key="operatividad"] .badge{
- background:#143924; border-color:#2a6d41; color:#95f0a8;
-}
+.dark .tile .badge{ background:#0b1b33; border-color:#274060; color:#a8c3ff; }
+.dark .tiles [data-key="operatividad"] .badge{ background:#143924; border-color:#2a6d41; color:#95f0a8; }
 /* Botones acciones */
-.dark .btn{
- background:#0f1b30;
- color:#cfe1ff;
- border-color:#2a4266;
- box-shadow: 0 10px 22px rgba(0,0,0,.35);
- filter: drop-shadow(0 14px 24px rgba(0,0,0,.45));
-}
-.dark .btn:hover{
- filter: drop-shadow(0 22px 34px rgba(0,0,0,.58));
-}
+.dark .btn{ background:#0f1b30; color:#cfe1ff; border-color:#2a4266; box-shadow: 0 10px 22px rgba(0,0,0,.35); filter: drop-shadow(0 14px 24px rgba(0,0,0,.45)); }
+.dark .btn:hover{ filter: drop-shadow(0 22px 34px rgba(0,0,0,.58)); }
 .dark .btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
 .dark .btn-exp{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
-.dark .btn[disabled]{
- opacity:1;
- background:#0e1626;
- color:#7f92b6;
- border-color:#1f2f48;
- cursor:not-allowed;
- box-shadow:none;
- filter:none;
-}
+.dark .btn[disabled]{ opacity:1; background:#0e1626; color:#7f92b6; border-color:#1f2f48; cursor:not-allowed; box-shadow:none; filter:none; }
 /* Estado/alertas */
-.dark .state{
- background:#0b1b33;
- border-color:#274060;
- color:#cfe1ff;
-}
-.dark .state.error{
- background:#3b0f13;
- border-color:#7f1d1d;
- color:#fecaca;
-}
+.dark .state{ background:#0b1b33; border-color:#274060; color:#cfe1ff; }
+.dark .state.error{ background:#3b0f13; border-color:#7f1d1d; color:#fecaca; }
+/* Modal dark */
+.dark .modal-backdrop{ background: rgba(0,0,0,.35); backdrop-filter: blur(8px); }
+.dark .modal{ background:#0f1a2b; box-shadow: 0 18px 38px rgba(0,0,0,.5); }
+.dark .modal h3{ color:#eaf2ff; }
+.dark .modal p{ color:#c7d2fe; }
+.dark .modal .btn-no{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
+
 /* Movimientos reducidos */
 @media (prefers-reduced-motion: reduce){
- .tile, .actions .btn, .help { transition: none !important; transform: none !important; filter: none !important; }
+ .tile, .actions .btn, .help, .modal { transition: none !important; transform: none !important; filter: none !important; }
  .tile:hover, .tile:active, .actions .btn:hover, .actions .btn:active { transform: none !important; }
 }
 </style>
@@ -545,6 +482,18 @@ body{
             </svg>
             Crear evento Teams
           </button>
+
+          <!-- NUEVO: Vaciar módulo (movido al sidebar) -->
+          <button type="button" class="btn" id="btnVaciarModulo" title="Vaciar datos del módulo actual">
+            <!-- Icono papelera (SVG limpio) -->
+            <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.6" fill="none"></path>
+              <rect x="5" y="6" width="14" height="14" rx="2.2" ry="2.2" fill="currentColor" opacity=".06"></rect>
+              <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"></path>
+            </svg>
+            Vaciar módulo
+          </button>
         </div>
       </div>
 
@@ -558,7 +507,6 @@ body{
       </div>
     </div>
   </aside>
-
   <!-- MAIN -->
   <main class="main">
     <!-- HERO -->
@@ -619,15 +567,15 @@ body{
       <div class="pair">
         <button id="btnImportar" class="btn btn-imp" type="button" title="Importar datos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 3h16" stroke-linecap="round"/>
+            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 3h16" stroke-linecap="round"></path>
           </svg>
           <span class="lbl">Importar datos</span>
         </button>
         <button id="btnExportar" class="btn btn-exp" type="button" title="Exportar datos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 21h16" stroke-linecap="round"/>
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 21h16" stroke-linecap="round"></path>
           </svg>
           <span class="lbl">Exportar datos</span>
         </button>
@@ -636,15 +584,15 @@ body{
       <div class="pair">
         <button id="btnImportar_backlog" class="btn btn-imp" type="button" title="Importar datos (Próximamente)" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 3h16" stroke-linecap="round"/>
+            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 3h16" stroke-linecap="round"></path>
           </svg>
           <span class="lbl">Importar datos</span>
         </button>
         <button id="btnExportar_backlog" class="btn btn-exp" type="button" title="Exportar datos (Próximamente)" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 21h16" stroke-linecap="round"/>
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 21h16" stroke-linecap="round"></path>
           </svg>
           <span class="lbl">Exportar datos</span>
         </button>
@@ -653,32 +601,21 @@ body{
       <div class="pair">
         <button id="btnImportar_sla" class="btn btn-imp" type="button" title="Importar datos (Próximamente)" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 3h16" stroke-linecap="round"/>
+            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 3h16" stroke-linecap="round"></path>
           </svg>
           <span class="lbl">Importar datos</span>
         </button>
         <button id="btnExportar_sla" class="btn btn-exp" type="button" title="Exportar datos (Próximamente)" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 21h16" stroke-linecap="round"/>
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 21h16" stroke-linecap="round"></path>
           </svg>
           <span class="lbl">Exportar datos</span>
         </button>
       </div>
 
-      <!-- NUEVO: Vaciar módulo actual -->
-      <div class="pair">
-        <button id="btnVaciarModulo" class="btn btn-exp" type="button" title="Vaciar datos del módulo actual">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M3 6h18" stroke-linecap="round"/>
-            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-            <path d="M5 6v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6" />
-            <path d="M10 11v6M14 11v6" stroke-linecap="round"/>
-          </svg>
-          <span class="lbl">Vaciar módulo</span>
-        </button>
-      </div>
+      <!-- NOTA: Se eliminó el botón "Vaciar módulo" de aquí (fue movido al sidebar). -->
     </section>
 
     <!-- AYUDA -->
@@ -692,14 +629,14 @@ body{
     </section>
   </main>
 
-  <!-- Modal confirmación -->
+  <!-- Modal confirmación (reusable y con blur) -->
   <div id="modalConfirm" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mc_title" style="display:none">
-    <div class="modal">
+    <div class="modal" role="document">
       <h3 id="mc_title">Confirmación</h3>
-      <p>¿Está seguro que desea sobreescribir la data del proyecto <span id="projectName"></span>?</p>
+      <p id="mc_msg">—</p>
       <div class="actions">
-        <button id="mc_no" type="button" class="btn btn-no">No</button>
-        <button id="mc_si" type="button" class="btn btn-si">Sí</button>
+        <button id="mc_no" type="button" class="btn btn-no">Cancelar</button>
+        <button id="mc_si" type="button" class="btn btn-si">Aceptar</button>
       </div>
     </div>
   </div>
@@ -720,14 +657,14 @@ const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
 const ADMIN_TOKEN = 'ADMINARIELITO777';
 /* Backends por módulo — MATCH ESTRICTO */
 const BACKENDS = {
-  operatividad: `${API_BASE}/p1`, // ⇄ usuario /p1
+  operatividad: `${API_BASE}/p1`,
   backlog: `${API_BASE}/p2`,
   sla: `${API_BASE}/p3`
-}; /* (proviene de tu archivo original) */  // [1]( /
+};
 
 /* ======================= CONFIG BOTONES OUTLOOK/TEAMS ======================= */
-const TEAM1_TO = ['equipo1@dominio.com']; // ← reemplaza
-const TEAM1_CC = ['lider1@dominio.com']; // opcional
+const TEAM1_TO = ['equipo1@dominio.com'];
+const TEAM1_CC = ['lider1@dominio.com'];
 const TEAM2_TO = ['equipo2@dominio.com'];
 const TEAM2_CC = ['lider2@dominio.com'];
 const DEFAULT_SUBJECT = 'Seguimiento módulo Exclusiones';
@@ -752,11 +689,10 @@ function formatTs(d){
   const pad = n => String(n).padStart(2,'0');
   return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
-// ====== NUEVO HELPER (robusto) para parsear fechas desde strings / serial Excel ======
+/* Parse de fechas flexible */
 function parsearFechaFlexible(v){
   if (v === null || v === undefined || v === '') return null;
   if (v instanceof Date && !isNaN(v)) return v;
-  // Serial de Excel
   const trySerial = (num) => {
     const ms = Math.round((num - 25569) * 86400 * 1000);
     const d = new Date(ms);
@@ -774,7 +710,7 @@ function parsearFechaFlexible(v){
   }
   return null;
 }
-// ====== Log global ====== //
+/* Log global */
 const projectLabels = {
   operatividad: 'Exclusiones de operatividad',
   backlog: 'Exclusiones indicador backlog',
@@ -911,28 +847,56 @@ $$('#tiles .tile').forEach(t=>{
 });
 selectProject('operatividad');
 
-/* ====== Modal confirm ====== */
+/* ====== Modal confirm (reusable, con blur y labels) ====== */
 function abrirConfirm(){ $('#modalConfirm').style.display='flex'; }
 function cerrarConfirm(){ $('#modalConfirm').style.display='none'; }
+
+/** Abre el modal y devuelve true/false según el botón presionado */
+function abrirModalConfirm({ title='Confirmación', message='', acceptLabel='Aceptar', cancelLabel='Cancelar' } = {}){
+  return new Promise(resolve=>{
+    const titleEl = $('#mc_title');
+    const msgEl = $('#mc_msg');
+    const btnYes = $('#mc_si');
+    const btnNo = $('#mc_no');
+    if(titleEl) titleEl.textContent = title;
+    if(msgEl) msgEl.textContent = message;
+    if(btnYes) btnYes.textContent = acceptLabel;
+    if(btnNo) btnNo.textContent = cancelLabel;
+
+    abrirConfirm();
+    const onYes = ()=>{ cleanup(); resolve(true); };
+    const onNo  = ()=>{ cleanup(); resolve(false); };
+    function cleanup(){
+      btnYes.removeEventListener('click', onYes);
+      btnNo.removeEventListener('click', onNo);
+      cerrarConfirm();
+    }
+    btnYes.addEventListener('click', onYes);
+    btnNo.addEventListener('click', onNo);
+  });
+}
+
+/* ====== Flujo de selección de archivo con confirm modal ====== */
 async function seleccionarArchivoYConfirmar(){
   return new Promise((resolve)=>{
     const finp = $('#fileInput');
     finp.value = '';
-    const onChange = ()=>{
+    const onChange = async ()=>{
       finp.removeEventListener('change', onChange);
       if(!finp.files || !finp.files.length){ resolve(null); return; }
-      $('#projectName').textContent = (projectLabels[currentProject] ?? currentProject);
-      abrirConfirm();
-      const si = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(finp.files[0]); };
-      const no = ()=>{ $('#mc_si').removeEventListener('click', si); $('#mc_no').removeEventListener('click', no); cerrarConfirm(); resolve(null); };
-      $('#mc_si').addEventListener('click', si);
-      $('#mc_no').addEventListener('click', no);
+      const moduleLabel = (projectLabels[currentProject] ?? currentProject);
+      const ok = await abrirModalConfirm({
+        title: 'Confirmación',
+        message: `¿Confirma sobrescribir la data del proyecto "${moduleLabel}"?`,
+        acceptLabel: 'Aceptar',
+        cancelLabel: 'Cancelar'
+      });
+      resolve(ok ? finp.files[0] : null);
     };
     finp.addEventListener('change', onChange);
     finp.click();
   });
 }
-
 /* ====== Lector Excel a AOA ====== */
 function leerArchivoComoAOA(file){
   return new Promise((resolve, reject)=>{
@@ -966,7 +930,7 @@ async function importarExcel(){
     lbl.textContent = 'Importando…';
     const aoa = await leerArchivoComoAOA(file);
     if(!aoa || !aoa.length) throw new Error('El archivo está vacío o no se pudo leer.');
-    // === Usar backend del proyecto seleccionado ===
+    // Backend del proyecto seleccionado
     const API = (BACKENDS[currentProject] || API_BASE).replace(/\/+$/,'');
     const res = await fetch(`${API}/api/sobrescribir`, {
       method:'POST', mode:'cors',
@@ -1072,15 +1036,22 @@ async function exportarExcel(){
   }
 }
 
-/* ====== Vaciar módulo actual (p1/p2/p3) ====== */
+/* ====== Vaciar módulo actual (usa el NUEVO modal con blur) ====== */
 async function vaciarModuloActual(){
   try{
     const moduloLabel = projectLabels[currentProject] ?? currentProject;
-    const ok = confirm(`¿Vaciar TODOS los registros del módulo "${moduloLabel}"?\nEsta acción requiere token de Admin y no se puede deshacer.`);
+    const ok = await abrirModalConfirm({
+      title: 'Confirmación',
+      message: `¿Vaciar TODOS los registros del módulo "${moduloLabel}"? Esta acción requiere token de Admin y no se puede deshacer.`,
+      acceptLabel: 'Aceptar',
+      cancelLabel: 'Cancelar'
+    });
     if(!ok) return;
+
     const btn = document.getElementById('btnVaciarModulo');
     const lbl = btn?.querySelector('.lbl');
     if(btn){ btn.disabled = true; if(lbl) lbl.textContent = 'Vaciando…'; }
+
     const API = (BACKENDS[currentProject] || API_BASE).replace(/\/+$/,'');
     const res = await fetch(`${API}/api/clear`, {
       method:'POST',
@@ -1102,8 +1073,6 @@ async function vaciarModuloActual(){
     setGlobalLog('Error en vaciado', projectLabels[currentProject] ?? currentProject, err?.message ?? String(err));
   }finally{
     const btn = document.getElementById('btnVaciarModulo');
-    const lbl = btn?.querySelector('.lbl');
-    if(lbl) lbl.textContent = 'Vaciar módulo';
     if(btn) btn.disabled = false;
   }
 }
@@ -1157,6 +1126,7 @@ temaChip?.addEventListener('click', () => {
 /* Health-check al cargar y cada 60s */
 updateAllHealth();
 setInterval(updateAllHealth, 60000);
+
 }); // DOMContentLoaded
 </script>
 </body>
