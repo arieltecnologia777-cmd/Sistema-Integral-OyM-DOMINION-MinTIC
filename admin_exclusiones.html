@@ -1,449 +1,749 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Admin – Exclusiones</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="color-scheme" content="light dark" />
-<!-- Fluent UI MDL2 (íconos oficiales Microsoft) -->
-<link rel="stylesheet" href="https://res.cdn.office.net/files/fabric-cdn-prod_20240201.001/assets/icons/fabric-icons.css" />
-<style>
-:root{
-  /* ====== CONTROLES RÁPIDOS ====== */
-  --sidebar-w: 290px;
-  --page-gap: 4px;
-  --logo-size: 54px;
-  --glass-blur: 18px;
-  --content-max: 1220px;
-  /* ====== Tokens visuales ====== */
-  --radius-xxl: 22px;
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --ink:#0e2040;
-  --muted:#6b7893;
-  /* Sombra y glass */
-  --halo: 0 30px 60px rgba(14, 42, 94, .18), 0 10px 20px rgba(14, 42, 94, .08);
-  --glass: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.58));
-  --glass-border: 1px solid rgba(180, 200, 235, .55);
-  --glass-inner: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.72));
-  --glass-inner-border: 1px solid rgba(200, 215, 245, .75);
-  /* ====== Tokens para 3D en elementos (sin paneles blancos) ====== */
-  --elev-1: 0 4px 10px rgba(14,42,94,.10), 0 2px 6px rgba(14,42,94,.08);
-  --elev-2: 0 12px 24px rgba(14,42,94,.14), 0 6px 12px rgba(14,42,94,.10);
-  --elev-3: 0 22px 40px rgba(14,42,94,.16), 0 10px 18px rgba(14,42,94,.12);
-  --tilt: perspective(900px) rotateX(0.6deg);
-}
-*{ box-sizing: border-box }
-html,body{ height:100% }
-body{
-  margin:0;
-  font-family:"Segoe UI", system-ui, Roboto, Arial, sans-serif;
-  color:#1a2333;
-  background:
-    radial-gradient(1200px 600px at 80% -10%, #eaf1ff 0%, rgba(234,241,255,0) 60%),
-    linear-gradient(180deg, #eef4ff, #ffffff);
-  display:flex;
-  min-height:100vh;
-  overflow-x:hidden;
-}
-/* ===== Sidebar ===== */
-.sidebar-wrap{ width: var(--sidebar-w); padding: var(--page-gap) 14px; flex: 0 0 var(--sidebar-w); }
-.sidebar{
-  position: sticky; top: var(--page-gap);
-  display:flex; flex-direction:column; gap:14px; padding:16px 14px;
-  border-radius: var(--radius-xxl);
-  background: var(--glass); border: var(--glass-border); box-shadow: var(--halo);
-  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
-  min-height: calc(100vh - (2 * var(--page-gap)));
-  max-height: calc(100vh - (2 * var(--page-gap)));
-  overflow: hidden; align-items: stretch;
-}
-.sidebar__scroll{ display:flex; flex-direction:column; gap:14px; min-height: 0; overflow: auto; padding-bottom: 6px; }
-/* Brand */
-.brand{
-  display:flex; align-items:center; gap:12px;
-  padding:12px; border-radius: var(--radius-lg);
-  background: var(--glass-inner); border: var(--glass-inner-border);
-  box-shadow: 0 8px 18px rgba(30, 60, 120, .10);
-}
-.brand-logo{ width:var(--logo-size); height:var(--logo-size); display:grid; place-items:center; }
-.brand-logo img{ width:100%; height:100%; display:block; object-fit:contain; image-rendering:auto; }
-.brand-logo.has-img .fallback-letter{ display:none; }
-.fallback-letter{ font-weight:800; font-size: calc(var(--logo-size)*0.5); }
-.brand-txt{ line-height:1.15 }
-.brand-title{ font-weight:800; color:var(--ink) }
-.brand-sub{ font-size:12px; color:#6b7893 }
-.nav-title{
-  font-size:12px;
-  letter-spacing:.4px;
-  color:#3b455a;
-  text-transform:uppercase;
-  margin:2px 0 2px 6px;
-  font-weight:700;
-}
+  <meta charset="UTF-8" />
+  <title>Admin – Exclusiones</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- Fluent UI MDL2 (íconos oficiales Microsoft) -->
+  <link rel="stylesheet" href="https://res.cdn.office.net/files/fabric-cdn-prod_20240201.001/assets/icons/fabric-icons.css" />
+
+  <style>
+  :root{
+    /* ====== CONTROLES RÁPIDOS ====== */
+    --sidebar-w: 290px;
+    --page-gap: 4px;
+    --logo-size: 54px;
+    --glass-blur: 18px;
+    --content-max: 1220px;
+
+    /* ====== Tokens visuales ====== */
+    --radius-xxl: 22px;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --ink:#0e2040;
+    --muted:#6b7893;
+
+    /* Sombra y glass */
+    --halo: 0 30px 60px rgba(14, 42, 94, .18), 0 10px 20px rgba(14, 42, 94, .08);
+    --glass: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.58));
+    --glass-border: 1px solid rgba(180, 200, 235, .55);
+    --glass-inner: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.72));
+    --glass-inner-border: 1px solid rgba(200, 215, 245, .75);
+
+    /* ====== Tokens para 3D en elementos (sin paneles blancos) ====== */
+    --elev-1: 0 4px 10px rgba(14,42,94,.10), 0 2px 6px rgba(14,42,94,.08);
+    --elev-2: 0 12px 24px rgba(14,42,94,.14), 0 6px 12px rgba(14,42,94,.10);
+    --elev-3: 0 22px 40px rgba(14,42,94,.16), 0 10px 18px rgba(14,42,94,.12);
+    --tilt: perspective(900px) rotateX(0.6deg);
+  }
+  *{ box-sizing: border-box }
+  html,body{ height:100% }
+  body{
+    margin:0;
+    font-family:"Segoe UI", system-ui, Roboto, Arial, sans-serif;
+    color:#1a2333;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #eaf1ff 0%, rgba(234,241,255,0) 60%),
+      linear-gradient(180deg, #eef4ff, #ffffff);
+    display:flex;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar-wrap{ width: var(--sidebar-w); padding: var(--page-gap) 14px; flex: 0 0 var(--sidebar-w); }
+  .sidebar{
+    position: sticky; top: var(--page-gap);
+    display:flex; flex-direction:column; gap:14px; padding:16px 14px;
+    border-radius: var(--radius-xxl);
+    background: var(--glass); border: var(--glass-border); box-shadow: var(--halo);
+    backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+    min-height: calc(100vh - (2 * var(--page-gap)));
+    max-height: calc(100vh - (2 * var(--page-gap)));
+    overflow: hidden; align-items: stretch;
+  }
+  .sidebar__scroll{ display:flex; flex-direction:column; gap:14px; min-height: 0; overflow: auto; padding-bottom: 6px; }
+
+  /* Brand */
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    padding:12px; border-radius: var(--radius-lg);
+    background: var(--glass-inner); border: var(--glass-inner-border);
+    box-shadow: 0 8px 18px rgba(30, 60, 120, .10);
+  }
+  .brand-logo{ width:var(--logo-size); height:var(--logo-size); display:grid; place-items:center; }
+  .brand-logo img{ width:100%; height:100%; display:block; object-fit:contain; image-rendering:auto; }
+  .brand-logo.has-img .fallback-letter{ display:none; }
+  .fallback-letter{ font-weight:800; font-size: calc(var(--logo-size)*0.5); }
+  .brand-txt{ line-height:1.15 }
+  .brand-title{ font-weight:800; color:#0e2040 }
+  .brand-sub{ font-size:12px; color:#6b7893 }
+  .nav-title{
+    font-size:12px;
+    letter-spacing:.4px;
+    color:#3b455a;
+    text-transform:uppercase;
+    margin:2px 0 2px 6px;
+    font-weight:700;
+  }
 /* Botonera de tareas en sidebar */
-.side-actions{ display:flex; flex-direction:column; gap:10px; padding:4px; }
-.side-actions .btn{
-  width:100%;
-  justify-content:flex-start;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid rgba(210,225,250,.9);
-  box-shadow:0 6px 16px rgba(20, 40, 90, .08);
-  background:#fff;
-  color:#213159;
-  transition:0.15s ease;
-}
-/* >>> RESALTADO AZUL AL PASAR / CLIC (solo sidebar) <<< */
-.side-actions .btn:hover,
-.side-actions .btn:focus,
-.side-actions .btn:active{
-  background:#d8e6ff !important;
-  border-color:#0e4aa8 !important;
-  color:#0e4aa8 !important;
-  box-shadow:0 0 0 3px rgba(14,74,168,0.15);
-}
-/* Tamaño para los SVG de marca (Outlook/Teams) en sidebar */
-.side-actions .brand-ico{
-  width:18px; height:18px; display:inline-block; flex:0 0 auto;
-  vertical-align:middle;
-  fill:currentColor;
-}
-.btn-outlook{ background:#e8eef7; color:#0a5bd3; border-color:#cfe0ff; }
-.btn-teams{ background:#464EB8; color:#fff; border-color:#464EB8; }
-.btn .ms-Icon{ font-size:18px; line-height:1; }
-/* Footer chips */
-.side-foot{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
-.chip{
-  display:flex; align-items:center; gap:8px;
-  padding:10px 12px; border-radius:12px;
-  background:#ffffff; border:1px solid rgba(210,225,250,.9);
-  color:#213159;
-  box-shadow: 0 6px 16px rgba(20, 40, 90, .08);
-}
-.side-foot .chip:hover,
-.side-foot .chip:focus,
-.side-foot .chip:active{
-  background:#d8e6ff !important;
-  border-color:#0e4aa8 !important;
-  color:#0e4aa8 !important;
-  box-shadow:0 0 0 3px rgba(14,74,168,0.15);
-}
-.chip .ico{ width:18px; height:18px; }
-/* ===== Main / Container ===== */
-.main{ flex:1; min-width:0; display:flex; flex-direction:column; }
-.container{ width:100%; max-width: var(--content-max); margin-inline:auto; padding-inline: clamp(16px, 2vw, 24px); }
-/* ===== Hero ===== */
-.hero{ padding:18px 0 10px; border-bottom:1px solid rgba(199,215,243,.55); background:rgba(255,255,255,.68); backdrop-filter: blur(8px); }
-.breadcrumb { font-weight:700; padding-top: 2px; }
-.title{ font-size:28px; font-weight:800; color:#0e2040; margin:6px 0 4px; }
-.subtitle{ color:#4e5d78; }
-/* ===== LOG GLOBAL ===== */
-.global-log-wrap{
-  display: inline-grid;
-  grid-auto-flow: column;
-  align-items: center;
-  gap: 10px;
-}
-.global-log-label{
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 28px;
-  color: #1a2333;
-  letter-spacing: .2px;
-  margin: 0;
-}
-.global-log{
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 10px;
-  font-size:12px; color:#0e3a82;
-  background:#eef3ff; border:1px solid #dbe6ff;
-  max-width: min(100%, 760px);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-/* Banda del log: sin fondo y un poco más abajo */
-.log-band{
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin-top: 14px;
-  margin-bottom: 10px;
-}
-/* ===== Tiles ===== */
-.tiles{
-  padding-block:16px;
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap:14px;
-}
-.tile{
-  position: relative;
-  border-radius:var(--radius-lg);
-  background:#fff; border:1px solid rgba(199,215,243,.7);
-  box-shadow: var(--elev-1), 0 1px 0 rgba(255,255,255,.85) inset;
-  filter: drop-shadow(0 14px 28px rgba(14,42,94,.18));
-  padding:14px; display:flex; gap:12px; align-items:center; cursor:pointer;
-  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-  min-width:0;
-  transform: var(--tilt);
-}
-.tile:hover{
-  transform: translateY(-3px) var(--tilt);
-  box-shadow: var(--elev-2), 0 1px 0 rgba(255,255,255,.9) inset;
-  filter: drop-shadow(0 22px 36px rgba(14,42,94,.22));
-}
-.tile:active{
-  transform: translateY(-1px) var(--tilt);
-  box-shadow: var(--elev-1);
-  filter: drop-shadow(0 16px 28px rgba(14,42,94,.20));
-}
-.tile .ico{ width:44px; height:44px; border-radius:12px; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
-.ico-blue{ background:#0e4aa8; box-shadow:0 6px 16px rgba(14,74,168,.35); }
-.ico-amber{ background:#f59e0b; box-shadow:0 6px 16px rgba(245,158,11,.35); }
-.ico-sky{ background:#0284c7; box-shadow:0 6px 16px rgba(2,132,199,.35); }
-.tile .t-wrap{ flex:1; min-width:0; }
-.tile .t-title{ font-size:16px; font-weight:800; color:#0e2040; }
-.tile .t-sub{ font-size:12px; color:#6b7893; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.tile.soon{ opacity:.95; filter: drop-shadow(0 14px 28px rgba(14,42,94,.14)); }
-/* Chip común */
-.tile .badge{
-  margin-left:auto; font-size:11px; font-weight:700; color:#0e3a82;
-  background:#eef3ff; padding:4px 8px; border-radius:999px; border:1px solid #dbe6ff;
-}
-/* >>> Chip "Activo" en VERDE solo para Operatividad <<< */
-.tiles [data-key="operatividad"] .badge{
-  background:#e8f7ec;
-  border-color:#b7ebc0;
-  color:#107c10;
-}
+  .side-actions{ display:flex; flex-direction:column; gap:10px; padding:4px; }
+  .side-actions .btn{
+    width:100%;
+    justify-content:flex-start;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(210,225,250,.9);
+    box-shadow:0 6px 16px rgba(20, 40, 90, .08);
+    background:#fff;
+    color:#213159;
+    transition:0.15s ease;
+  }
+  /* >>> RESALTADO AZUL AL PASAR / CLIC (solo sidebar) <<< */
+  .side-actions .btn:hover,
+  .side-actions .btn:focus,
+  .side-actions .btn:active{
+    background:#d8e6ff !important;
+    border-color:#0e4aa8 !important;
+    color:#0e4aa8 !important;
+    box-shadow:0 0 0 3px rgba(14,74,168,0.15);
+  }
+
+  /* Tamaño para los SVG de marca (Outlook/Teams) en sidebar */
+  .side-actions .brand-ico{
+    width:18px; height:18px; display:inline-block; flex:0 0 auto;
+    vertical-align:middle;
+    fill:currentColor;
+  }
+  .btn-outlook{ background:#e8eef7; color:#0a5bd3; border-color:#cfe0ff; }
+  .btn-teams{ background:#464EB8; color:#fff; border-color:#464EB8; }
+  .btn .ms-Icon{ font-size:18px; line-height:1; }
+
+  /* Footer chips */
+  .side-foot{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
+  .chip{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 12px; border-radius:12px;
+    background:#ffffff; border:1px solid rgba(210,225,250,.9);
+    color:#213159;
+    box-shadow: 0 6px 16px rgba(20, 40, 90, .08);
+  }
+  .side-foot .chip:hover,
+  .side-foot .chip:focus,
+  .side-foot .chip:active{
+    background:#d8e6ff !important;
+    border-color:#0e4aa8 !important;
+    color:#0e4aa8 !important;
+    box-shadow:0 0 0 3px rgba(14,74,168,0.15);
+  }
+  .chip .ico{ width:18px; height:18px; }
+
+  /* ===== Main / Container ===== */
+  .main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+  .container{ width:100%; max-width: var(--content-max); margin-inline:auto; padding-inline: clamp(16px, 2vw, 24px); }
+
+  /* ===== Hero ===== */
+  .hero{ padding:18px 0 10px; border-bottom:1px solid rgba(199,215,243,.55); background:rgba(255,255,255,.68); backdrop-filter: blur(8px); }
+  .breadcrumb { font-weight:700; padding-top: 2px; }
+  .title{ font-size:28px; font-weight:800; color:#0e2040; margin:6px 0 4px; }
+  .subtitle{ color:#4e5d78; }
+
+  /* ===== LOG GLOBAL ===== */
+  .global-log-wrap{
+    display: inline-grid;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .global-log-label{
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 28px;
+    color: #1a2333;
+    letter-spacing: .2px;
+    margin: 0;
+  }
+  .global-log{
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size:12px; color:#0e3a82;
+    background:#eef3ff; border:1px solid #dbe6ff;
+    max-width: min(100%, 760px);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* Banda del log: sin fondo y un poco más abajo */
+  .log-band{
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-top: 14px;
+    margin-bottom: 10px;
+  }
+
+  /* ===== Tiles ===== */
+  .tiles{
+    padding-block:16px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap:14px;
+  }
+  .tile{
+    position: relative;
+    border-radius:var(--radius-lg);
+    background:#fff; border:1px solid rgba(199,215,243,.7);
+    box-shadow: var(--elev-1), 0 1px 0 rgba(255,255,255,.85) inset;
+    filter: drop-shadow(0 14px 28px rgba(14,42,94,.18));
+    padding:14px; display:flex; gap:12px; align-items:center; cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    min-width:0;
+    transform: var(--tilt);
+  }
+  .tile:hover{
+    transform: translateY(-3px) var(--tilt);
+    box-shadow: var(--elev-2), 0 1px 0 rgba(255,255,255,.9) inset;
+    filter: drop-shadow(0 22px 36px rgba(14,42,94,.22));
+  }
+  .tile:active{
+    transform: translateY(-1px) var(--tilt);
+    box-shadow: var(--elev-1);
+    filter: drop-shadow(0 16px 28px rgba(14,42,94,.20));
+  }
+  .tile .ico{ width:44px; height:44px; border-radius:12px; display:grid; place-items:center; color:#fff; flex:0 0 auto; }
+  .ico-blue{ background:#0e4aa8; box-shadow:0 6px 16px rgba(14,74,168,.35); }
+  .ico-amber{ background:#f59e0b; box-shadow:0 6px 16px rgba(245,158,11,.35); }
+  .ico-sky{ background:#0284c7; box-shadow:0 6px 16px rgba(2,132,199,.35); }
+  .tile .t-wrap{ flex:1; min-width:0; }
+  .tile .t-title{ font-size:16px; font-weight:800; color:#0e2040; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .t-sub{ font-size:12px; color:#6b7893; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile.soon{ opacity:.95; filter: drop-shadow(0 14px 28px rgba(14,42,94,.14)); }
+
+  /* Chip común */
+  .tile .badge{
+    margin-left:auto; font-size:11px; font-weight:700; color:#0e3a82;
+    background:#eef3ff; padding:4px 8px; border-radius:999px; border:1px solid #dbe6ff;
+  }
+  /* >>> Chip "Activo" en VERDE solo para Operatividad <<< */
+  .tiles [data-key="operatividad"] .badge{
+    background:#e8f7ec;
+    border-color:#b7ebc0;
+    color:#107c10;
+  }
 /* ===== Tooltip sutil en tiles ===== */
-.tile[data-tooltip]::after{
-  content: attr(data-tooltip);
-  position: absolute;
-  top: -8px;
-  right: 14px;
-  transform: translateY(-100%);
-  background: rgba(14, 32, 64, 0.92);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
-  padding: 6px 8px;
-  border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.20);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .15s ease;
-  white-space: nowrap;
-  z-index: 2;
-}
-.tile[data-tooltip]::before{
-  content: "";
-  position: absolute;
-  top: -8px;
-  right: 26px;
-  transform: translateY(-100%);
-  border: 6px solid transparent;
-  border-top-color: rgba(14, 32, 64, 0.92);
-  opacity: 0;
-  transition: opacity .15s ease;
-  z-index: 2;
-}
-.tile[data-tooltip]:hover::after,
-.tile[data-tooltip]:hover::before{
-  opacity: 1;
-}
-/* ===== Acciones ===== */
-.actions{
-  padding-block: 4px;
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap:14px;
-  align-items:start;
-}
-.btn{
-  display:inline-flex; align-items:center; gap:10px;
-  padding:9px 7px; border-radius:999px; border:1px solid rgba(210,225,250,.9);
-  cursor:pointer; font-weight:600; background:#fff; color:#0e3a82;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-  filter: drop-shadow(0 12px 22px rgba(14,42,94,.16));
-  transition: transform .08s ease, box-shadow .12s ease, filter .12s ease, background .12s ease, color .12s ease;
-}
-.btn:hover{ transform: translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,.10); filter: drop-shadow(0 20px 30px rgba(14,42,94,.20)); }
-.btn:active{ transform: translateY(-1px); box-shadow:0 6px 12px rgba(0,0,0,.10) inset, 0 2px 4px rgba(0,0,0,.06); filter: drop-shadow(0 16px 24px rgba(14,42,94,.18)); }
-.btn svg{ width:18px; height:18px; flex:0 0 auto; }
-.btn .ms-Icon{ font-size:18px; line-height:1; }
-.btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
-.btn-exp{ background:#e8eef7; color:#0e4aa8; border-color:#cfe0ff; }
-.btn[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; filter:none; }
-.actions .pair{ display:flex; gap:10px; flex-wrap:nowrap; align-items:center; }
-.actions .btn{ padding:6px 10px; font-size:13px; justify-content:center; line-height:1.1; }
-.actions .btn svg{ width:16px; height:16px; }
-.actions .btn .lbl{ line-height:1.1; text-align:center; }
-/* ======= AYUDA / HELP ======= */
-.help{
-  display:none; /* se muestra al click */
-  margin-top: 14px;
-  margin-bottom: 6px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid rgba(199,215,243,.70);
-  box-shadow: var(--elev-2);
-  filter: drop-shadow(0 18px 32px rgba(14,42,94,.18));
-  width: fit-content;
-  max-width: min(100%, 860px);
-  min-width: 340px;
-}
-/* >>> Tamaño de texto reducido SOLO dentro del help <<< */
-.help h3 { font-size:14px !important; }
-.help p { font-size:12px !important; }
-.help ul { font-size:12px !important; }
-.help li { font-size:12px !important; }
-.help .help-close { font-size:11px !important; padding:4px 8px !important; }
-.help-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
-.help h3{ margin: 0; font-weight: 800; color:#0e2040; flex:1; }
-.help p{ margin: 0 0 8px; color:#4e5d78; }
-.help ul{ margin: 6px 0 0 18px; padding:0; color:#22314a; }
-.help li{ margin: 4px 0; }
-.help .help-close{
-  appearance:none; border:1px solid #cfe0ff; background:#eef3ff;
-  color:#0e3a82; border-radius:999px; cursor:pointer; box-shadow:0 6px 14px rgba(14,42,94,.16);
-}
-.help .help-close:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(14,42,94,.22); }
-.help .help-close:active{ transform: translateY(0); box-shadow:0 6px 12px rgba(14,42,94,.16) inset; }
-/* >>> Ajuste específico para Desktop (más compacto) <<< */
-@media (min-width: 1024px){ .help{ max-width: 640px; } }
-@media (max-width: 640px){ .help{ min-width: 0; width: 100%; max-width: 100%; } }
-/* ===== Estado/alertas ===== */
-.state{ margin: 8px 0 14px; padding:10px 12px; border-radius:12px; display:none; border:1px solid #dbe6ff; background:#eef3ff; color:#0e3a82; }
-.state.error{ border-color:#fecaca; background:#fee2e2; color:#991b1b; }
-/* ===== Modal de confirmación (con fondo difuminado) ===== */
-.modal-backdrop{
-  position:fixed; inset:0;
-  background: rgba(15,23,42,.28); /* tenue */
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); /* << difumina el resto */
-  display:none; align-items:center; justify-content:center;
-}
-.modal{
-  background:#fff; padding:16px; border-radius:16px;
-  width: min(92%, 420px);
-  box-shadow: 0 18px 38px rgba(14,42,94,.25);
-}
-.modal h3{ margin:0 0 6px; color:#0e2040; font-weight:800; font-size:16px; }
-.modal p { margin:6px 0 0; color:#4e5d78; font-size:13px; }
-.modal .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; }
-.modal .btn{ padding:7px 12px; font-size:13px; border-radius:999px; }
-.modal .btn-si{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
-.modal .btn-no{ background:#e8eef7; color:#0e3a82; border-color:#cfe0ff; }
-/* ===== Ajustes ===== */
-.tiles.container{ margin-top: 60px; }
-.container:last-of-type{ padding-bottom: 0 !important; }
-@media (min-width: 1440px){
-  :root{ --content-max: 1280px; }
-  .container{ margin-left: clamp(16px, 2vw, 32px); margin-right: auto; padding-inline: clamp(16px, 1.6vw, 24px); }
-  .hero{ padding:14px 0 8px; }
-  .tiles{ padding-block:14px; gap:12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-}
-/* ===== Móvil ===== */
-@media (max-width: 980px){
-  body{ flex-direction:column; }
-  .sidebar-wrap{ width:100%; padding:12px 10px 0; }
-  .sidebar{ position:relative; top:auto; min-height:auto; max-height:none; }
-  .tiles{ padding-block:12px; }
-}
+  .tile[data-tooltip]::after{
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -8px;
+    right: 14px;
+    transform: translateY(-100%);
+    background: rgba(14, 32, 64, 0.92);
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
+    padding: 6px 8px;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.20);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s ease;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .tile[data-tooltip]::before{
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 26px;
+    transform: translateY(-100%);
+    border: 6px solid transparent;
+    border-top-color: rgba(14, 32, 64, 0.92);
+    opacity: 0;
+    transition: opacity .15s ease;
+    z-index: 2;
+  }
+  .tile[data-tooltip]:hover::after,
+  .tile[data-tooltip]:hover::before{
+    opacity: 1;
+  }
+
+  /* ===== Acciones ===== */
+  .actions{
+    padding-block: 4px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap:14px;
+    align-items:start;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:9px 7px; border-radius:999px; border:1px solid rgba(210,225,250,.9);
+    cursor:pointer; font-weight:600; background:#fff; color:#0e3a82;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    filter: drop-shadow(0 12px 22px rgba(14,42,94,.16));
+    transition: transform .08s ease, box-shadow .12s ease, filter .12s ease, background .12s ease, color .12s ease;
+  }
+  .btn:hover{ transform: translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,.10); filter: drop-shadow(0 20px 30px rgba(14,42,94,.20)); }
+  .btn:active{ transform: translateY(-1px); box-shadow:0 6px 12px rgba(0,0,0,.10) inset, 0 2px 4px rgba(0,0,0,.06); filter: drop-shadow(0 16px 24px rgba(14,42,94,.18)); }
+  .btn svg{ width:18px; height:18px; flex:0 0 auto; }
+  .btn .ms-Icon{ font-size:18px; line-height:1; }
+  .btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+  .btn-exp{ background:#e8eef7; color:#0e4aa8; border-color:#cfe0ff; }
+  .btn[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; filter:none; }
+  .actions .pair{ display:flex; gap:10px; flex-wrap:nowrap; align-items:center; }
+  .actions .btn{ padding:6px 10px; font-size:13px; justify-content:center; line-height:1.1; }
+  .actions .btn svg{ width:16px; height:16px; }
+  .actions .btn .lbl{ line-height:1.1; text-align:center; }
+
+  /* ======= AYUDA / HELP ======= */
+  .help{
+    display:none; /* se muestra al click */
+    margin-top: 14px;
+    margin-bottom: 6px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid rgba(199,215,243,.70);
+    box-shadow: var(--elev-2);
+    filter: drop-shadow(0 18px 32px rgba(14,42,94,.18));
+    width: fit-content;
+    max-width: min(100%, 860px);
+    min-width: 340px;
+  }
+  .help h3 { font-size:14px !important; }
+  .help p { font-size:12px !important; }
+  .help ul { font-size:12px !important; }
+  .help li { font-size:12px !important; }
+  .help .help-close { font-size:11px !important; padding:4px 8px !important; }
+  .help-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .help h3{ margin: 0; font-weight: 800; color:#0e2040; flex:1; }
+  .help p{ margin: 0 0 8px; color:#4e5d78; }
+  .help ul{ margin: 6px 0 0 18px; padding:0; color:#22314a; }
+  .help li{ margin: 4px 0; }
+  .help .help-close{
+    appearance:none; border:1px solid #cfe0ff; background:#eef3ff;
+    color:#0e3a82; border-radius:999px; cursor:pointer; box-shadow:0 6px 14px rgba(14,42,94,.16);
+  }
+  .help .help-close:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgba(14,42,94,.22); }
+  .help .help-close:active{ transform: translateY(0); box-shadow:0 6px 12px rgba(14,42,94,.16) inset; }
+
+  /* >>> Ajuste específico para Desktop (más compacto) <<< */
+  @media (min-width: 1024px){ .help{ max-width: 640px; } }
+  @media (max-width: 640px){ .help{ min-width: 0; width: 100%; max-width: 100%; } }
+
+  /* ===== Estado/alertas ===== */
+  .state{ margin: 8px 0 14px; padding:10px 12px; border-radius:12px; display:none; border:1px solid #dbe6ff; background:#eef3ff; color:#0e3a82; }
+  .state.error{ border-color:#fecaca; background:#fee2e2; color:#991b1b; }
+
+  /* ===== Modal de confirmación (con fondo difuminado) ===== */
+  .modal-backdrop{
+    position:fixed; inset:0;
+    background: rgba(15,23,42,.28); /* tenue */
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); /* << difumina el resto */
+    display:none; align-items:center; justify-content:center;
+  }
+  .modal{
+    background:#fff; padding:16px; border-radius:16px;
+    width: min(92%, 420px);
+    box-shadow: 0 18px 38px rgba(14,42,94,.25);
+  }
+  .modal h3{ margin:0 0 6px; color:#0e2040; font-weight:800; font-size:16px; }
+  .modal p { margin:6px 0 0; color:#4e5d78; font-size:13px; }
+  .modal .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:14px; }
+  .modal .btn{ padding:7px 12px; font-size:13px; border-radius:999px; }
+  .modal .btn-si{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+  .modal .btn-no{ background:#e8eef7; color:#0e3a82; border-color:#cfe0ff; }
+
+  /* ===== Ajustes ===== */
+  .tiles.container{ margin-top: 60px; }
+  .container:last-of-type{ padding-bottom: 0 !important; }
+  @media (min-width: 1440px){
+    :root{ --content-max: 1280px; }
+    .container{ margin-left: clamp(16px, 2vw, 32px); margin-right: auto; padding-inline: clamp(16px, 1.6vw, 24px); }
+    .hero{ padding:14px 0 8px; }
+    .tiles{ padding-block:14px; gap:12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  }
+
+  /* ===== Móvil ===== */
+  @media (max-width: 980px){
+    body{ flex-direction:column; }
+    .sidebar-wrap{ width:100%; padding:12px 10px 0; }
+    .sidebar{ position:relative; top:auto; min-height:auto; max-height:none; }
+    .tiles{ padding-block:12px; }
+  }
 /* ====== Modo oscuro ====== */
-.dark body{
-  background:
-    radial-gradient(1200px 600px at 80% -10%, #0f1a2b 0%, rgba(15,26,43,0) 60%),
-    linear-gradient(180deg, #0f172a, #111827);
-  color:#e5e7eb;
+  .dark body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #0f1a2b 0%, rgba(15,26,43,0) 60%),
+      linear-gradient(180deg, #0f172a, #111827);
+    color:#e5e7eb;
+  }
+  .dark .help{
+    background: #0f1a2b; border-color:#22314a;
+    box-shadow: 0 12px 24px rgba(0,0,0,.45);
+    filter: drop-shadow(0 18px 32px rgba(0,0,0,.55));
+  }
+  .dark .help h3{ color:#eaf2ff; }
+  .dark .help p{ color:#c7d2fe; }
+  .dark .help ul{ color:#dbeafe; }
+  .dark .help .help-close{
+    background:#1e2a40; border-color:#2a4266; color:#cfe1ff;
+    box-shadow:0 10px 18px rgba(0,0,0,.45);
+  }
+
+  /* Sidebar y brand */
+  .dark .sidebar{ background: linear-gradient(180deg, rgba(30,41,59,.65), rgba(30,41,59,.55)); border-color: rgba(148,163,184,.35); }
+  .dark .brand{ background:#0f1a2b; border-color:#243248; color:#eaf2ff; }
+  .dark #brandLogo{ background:#ffffff; border-radius:12px; padding:6px; }
+  .dark .brand-title{ color:#eaf2ff; }
+  .dark .brand-sub{ color:#a7b4c9; }
+  .dark .nav-title{ color:#c7d2fe; }
+
+  /* Hero */
+  .dark .hero{ background: rgba(15,23,42,.66); border-bottom-color: rgba(148,163,184,.32); }
+  .dark .breadcrumb{ color:#dbe4ff; }
+  .dark .title{ color:#eaf2ff; }
+  .dark .subtitle{ color:#c7d2fe; }
+
+  /* Log global */
+  .dark .global-log-wrap .global-log-label{ color:#eaf2ff; }
+  .dark .global-log{ background:#102646; border-color:#345e9e; color:#dbeafe; }
+
+  /* Tiles (módulos) */
+  .dark .tile{ background:#0f1a2b; border-color:#22314a; color:#eaf2ff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.45), 0 14px 26px rgba(0,0,0,.40);
+    filter: drop-shadow(0 16px 28px rgba(0,0,0,.45)); }
+  .dark .tile:hover{ filter: drop-shadow(0 24px 36px rgba(0,0,0,.55)); }
+  .dark .tile .t-title{ color:#eaf2ff; }
+  .dark .tile .t-sub{ color:#c7d2fe; }
+  .dark .tile.soon{ opacity:.95; filter: drop-shadow(0 16px 28px rgba(0,0,0,.40)); }
+
+  /* Badges */
+  .dark .tile .badge{ background:#0b1b33; border-color:#274060; color:#a8c3ff; }
+  .dark .tiles [data-key="operatividad"] .badge{ background:#143924; border-color:#2a6d41; color:#95f0a8; }
+
+  /* Botones acciones */
+  .dark .btn{ background:#0f1b30; color:#cfe1ff; border-color:#2a4266; box-shadow: 0 10px 22px rgba(0,0,0,.35); filter: drop-shadow(0 14px 24px rgba(0,0,0,.45)); }
+  .dark .btn:hover{ filter: drop-shadow(0 22px 34px rgba(0,0,0,.58)); }
+  .dark .btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
+  .dark .btn-exp{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
+  .dark .btn[disabled]{ opacity:1; background:#0e1626; color:#7f92b6; border-color:#1f2f48; cursor:not-allowed; box-shadow:none; filter:none; }
+
+  /* Estado/alertas */
+  .dark .state{ background:#0b1b33; border-color:#274060; color:#cfe1ff; }
+  .dark .state.error{ background:#3b0f13; border-color:#7f1d1d; color:#fecaca; }
+
+  /* Modal dark */
+  .dark .modal-backdrop{ background: rgba(0,0,0,.35); backdrop-filter: blur(8px); }
+  .dark .modal{ background:#0f1a2b; box-shadow: 0 18px 38px rgba(0,0,0,.5); }
+  .dark .modal h3{ color:#eaf2ff; }
+  .dark .modal p{ color:#c7d2fe; }
+  .dark .modal .btn-no{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
+
+  /* Movimientos reducidos */
+  @media (prefers-reduced-motion: reduce){
+    .tile, .actions .btn, .help, .modal { transition: none !important; transform: none !important; filter: none !important; }
+    .tile:hover, .tile:active, .actions .btn:hover, .actions .btn:active { transform: none !important; }
+  }
+
+  /* ======= Realce de tarjeta activa al importar/exportar ======= */
+  .tile[aria-pressed="true"] {
+    outline: 2px solid rgba(14,74,168,.25);
+    outline-offset: 2px;
+  }
+  .tile.active-glow {
+    box-shadow:
+      0 0 0 3px rgba(14,74,168,.18),
+      0 10px 24px rgba(14,42,94,.25),
+      0 1px 0 rgba(255,255,255,.90) inset;
+    transform: translateY(-4px) var(--tilt);
+    transition: box-shadow .18s ease, transform .18s ease;
+  }
+  @keyframes tile-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(14,74,168,.28); }
+    70% { box-shadow: 0 0 0 10px rgba(14,74,168,0); }
+    100% { box-shadow: 0 0 0 0 rgba(14,74,168,0); }
+  }
+  .tile.pulse-ring { animation: tile-pulse 1.1s ease-out 2; }
+
+  /* ======== MODO SOLO IA (lienzo con header visible) ======== */
+  .only-ai .log-band,
+  .only-ai #tiles,
+  .only-ai .actions,
+  .only-ai #helpPanel,
+  .only-ai #estado { display: none !important; }
+
+  /* Lienzo principal en modo IA */
+  .only-ai #ai-canvas{
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: clamp(10px, 2vw, 16px);
+    margin: 0 !important;
+  }
+  .only-ai #ai-inner{ width: min(820px, 100%); margin: 0 !important; }
+  .only-ai #asistente-exclusiones-container{ margin: 0 !important; }
+  .only-ai .container:last-of-type{ padding-bottom: 0 !important; }
+  .only-ai #ai-canvas{ padding-top: clamp(8px, 1.8vw, 16px); padding-bottom: clamp(8px, 1.8vw, 16px); }
+  .only-ai .hero + .log-band{ margin-top: 8px; }
+/* --- FIX: reactivar botones del modal en modo only-ai --- */
+.only-ai .modal .actions{
+  display: flex !important;         /* vuelve a mostrarlos */
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 14px;
 }
-.dark .help{
-  background: #0f1a2b; border-color:#22314a;
-  box-shadow: 0 12px 24px rgba(0,0,0,.45);
-  filter: drop-shadow(0 18px 32px rgba(0,0,0,.55));
+  </style>
+  <style>
+  /* Botonera en una sola línea (dentro de la card del asistente) */
+  .asist-card .btn-row{
+    display: flex;
+    flex-wrap: nowrap !important;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Compacta botones */
+  .asist-card .cta{
+    padding: 8px 12px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  @media (max-width: 520px){
+    .asist-card .btn-row{ flex-wrap: wrap !important; overflow-x: visible; }
+  }
+  /* —— Botones más pequeños —— */
+  .asist-card .btn-row{ gap: 8px !important; }
+  .asist-card .cta{
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    line-height: 1.0 !important;
+  }
+  .asist-card .pill{
+    padding: 4px 8px !important;
+    font-size: 11.5px !important;
+  }
+  .asist-card .btn-row{ overflow-x: visible !important; background: transparent; border: 0; scrollbar-width: none; }
+  .asist-card .btn-row::-webkit-scrollbar{ display: none; }
+  .asist-card .cta{ border: 0 !important; box-shadow: 0 6px 14px rgba(14,42,94,.10); }
+  .asist-card .cta.cta--neutral{ background:#f3f6fb !important; }
+
+  /* ====== Layout 2 columnas: (IZQ) Asistente + Chat  // (DER) Dock ====== */
+  .asist-layout{ display:flex; gap:16px; align-items:stretch; }
+  /* >>> NUEVO: columna izquierda para apilar tarjeta asistente + chat (separados) <<< */
+  .asist-left{ display:flex; flex-direction:column; gap:12px; width:min(680px,100%); }
+
+  .asist-layout .asist-card{ width:min(680px, 100%); }
+  .asist-log{
+    flex:1 1 auto;
+    min-width: 300px;
+    max-width: 520px;
+    height: 100%;
+    background:#fff;
+    border:1px solid rgba(199,215,243,.70);
+    border-radius:16px;
+    padding:12px;
+    box-shadow: 0 12px 24px rgba(14,42,94,.12);
+    display:flex; flex-direction:column;
+  }
+  .asist-log .log-head{ font-weight:800; color:#0e2040; font-size:14px; margin:0 0 8px; }
+  .asist-log .log-body{ overflow:auto; min-height: 320px; max-height: 540px; display:flex; flex-direction:column; gap:8px; padding-right:4px; }
+  .log-item{ display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border-radius:12px; background:#f7faff; border:1px solid #dbe6ff; color:#22314a; font-size:12.5px; box-shadow: 0 6px 12px rgba(14,42,94,.08); }
+  .log-time{ font-weight:700; color:#0e3a82; flex:0 0 auto; }
+  .log-text{ flex:1; }
+
+  /* ===== Dock de tareas a la derecha ===== */
+  .side-dock{
+    flex:1 1 auto;
+    min-width: 300px;
+    max-width: 520px;
+    background:#fff;
+    border:1px solid rgba(199,215,243,.70);
+    border-radius:16px;
+    padding:12px;
+    box-shadow: 0 12px 24px rgba(14,42,94,.12);
+    display:flex; flex-direction:column; gap:10px;
+height: auto;          /* permite crecer por contenido */
+  align-self: stretch;   /* estira a la misma altura de la fila */
+  }
+  .dock-head{ font-weight:800; color:#0e2040; font-size:14px; margin:0; }
+  .dock-body{ overflow:auto; min-height: 320px; max-height: 540px; }
+
+  /* Dark mode */
+  .dark .asist-log{ background:#0f1a2b; border-color:#22314a; }
+  .dark .log-item{ background:#0f1930; border-color:#22314a; color:#c7d2fe; }
+  .dark .log-head{ color:#eaf2ff; }
+  .dark .side-dock{ background:#0f1a2b; border-color:#22314a; }
+  .dark .dock-head{ color:#eaf2ff; }
+
+  /* Responsive */
+  @media (max-width: 980px){
+    .asist-layout{ flex-direction:column; }
+    .asist-log, .side-dock{ width:100%; max-width:none; }
+  }
+
+  /* ➤ Simetría entre la tarjeta izquierda y el dock derecho */
+  .asist-layout .asist-card,
+  .asist-layout .side-dock{
+    border-radius: 22px !important;
+    padding: 18px 20px !important;
+    box-shadow: 0 18px 38px rgba(14,42,94,.18), 0 6px 14px rgba(14,42,94,.10) !important;
+  }
+/* ===== Chat (tarjeta separada) ===== */
+  .chat-wrap{
+    background:#fff;
+    border:1px solid rgba(199,215,243,.70);
+    border-radius:22px;
+    padding:18px 20px;
+    box-shadow: 0 18px 38px rgba(14,42,94,.18), 0 6px 14px rgba(14,42,94,.10);
+  }
+  .chat-head{
+    font-weight:900;
+    color:#0e2040;
+    margin-bottom:8px;
+    font-size:18px; /* más cercano a la captura */
+    line-height:1.1;
+  }
+
+  /* Bloque FAQ inicial (pregunta + descripción) */
+  .chat-msgs{ /* área de mensajes (con FAQ inicial) */
+    max-height: 260px; overflow:auto;
+    display:flex; flex-direction:column; gap:6px;
+    padding-right:4px; margin-bottom:10px;
+  }
+  .faq-block{ margin-top:2px; }
+  .faq-q{
+    display:flex; align-items:center; gap:8px;
+    font-weight:800; color:#0e2040; font-size:16px; line-height:1.2;
+  }
+  .faq-dot{
+    width:10px; height:10px; border-radius:50%;
+    background:#f2c94c; /* amarillo suave del punto */
+    flex:0 0 auto; box-shadow:0 1px 0 rgba(0,0,0,.08) inset;
+  }
+  .faq-a{
+    color:#4e5d78; font-size:13.5px; line-height:1.35;
+    margin:2px 0 8px;
+  }
+
+  /* Píldoras (NO se encierran en ningún cuadro) */
+  .chat-suggest{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; background:transparent; border:0; }
+  .chat-suggest .sg{
+    appearance:none; border:1px solid #dbe6ff; background:#fff;
+    padding:6px 10px; border-radius:999px; cursor:pointer;
+    font-weight:700; font-size:12.5px; color:#0e2040;
+    box-shadow: 0 4px 10px rgba(14,42,94,.06);
+  }
+  .chat-suggest .sg:hover{ transform: translateY(-1px); }
+
+  /* Input + botón alineados como en la imagen */
+  .chat-input{ display:flex; gap:12px; align-items:center; }
+  .chat-input input{
+    flex:1 1 auto; height:44px;
+    padding:10px 12px 10px 44px; /* espacio para ícono a la izquierda */
+    border-radius:999px; border:1px solid #dbe6ff;
+    outline:none; box-shadow: 0 2px 6px rgba(14,42,94,.10) inset, 0 4px 10px rgba(14,42,94,.06);
+    background-color:#fff;
+    /* Icono azul a la izquierda (SVG embebido) */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10' fill='%232f66d0'/><circle cx='9' cy='10' r='1.6' fill='%23ffffff'/><circle cx='15' cy='10' r='1.6' fill='%23ffffff'/><path d='M8 14c1.4 1.1 2.7 1.6 4 1.6s2.6-.5 4-1.6' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: 12px 50%;
+    background-size: 22px 22px;
+  }
+  .chat-input input::placeholder{
+    color:#6b7893; opacity:1; font-style: italic;
+  }
+.chat-input button{
+  flex:0 0 auto;
+  height:26px;               /* ↓ más pequeño (antes 44px) */
+  padding:0 4px;            /* ↓ compensa ancho (antes 20px) */
+  border-radius:999px;
+  border:0;
+  background: linear-gradient(180deg, #2f66d0, #0e4aa8);
+  color:#fff;
+  font-weight:800;
+  font-size:14px;            /* ↓ tipografía más compacta (antes 16px) */
+  line-height:1;             /* asegura centrado vertical */
+  box-shadow: 0 10px 18px rgba(14,74,168,.22), 0 2px 0 rgba(255,255,255,.35) inset;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, background .12s ease;
 }
-.dark .help h3{ color:#eaf2ff; }
-.dark .help p{ color:#c7d2fe; }
-.dark .help ul{ color:#dbeafe; }
-.dark .help .help-close{
-  background:#1e2a40; border-color:#2a4266; color:#cfe1ff;
-  box-shadow:0 10px 18px rgba(0,0,0,.45);
+.chat-input button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 22px rgba(14,74,168,.26), 0 2px 0 rgba(255,255,255,.35) inset;
+  filter: brightness(1.03);
 }
-/* Sidebar y brand */
-.dark .sidebar{ background: linear-gradient(180deg, rgba(30,41,59,.65), rgba(30,41,59,.55)); border-color: rgba(148,163,184,.35); }
-.dark .brand{ background:#0f1a2b; border-color:#243248; color:#eaf2ff; }
-.dark #brandLogo{ background:#ffffff; border-radius:12px; padding:6px; }
-.dark .brand-title{ color:#eaf2ff; }
-.dark .brand-sub{ color:#a7b4c9; }
-.dark .nav-title{ color:#c7d2fe; }
-/* Hero */
-.dark .hero{ background: rgba(15,23,42,.66); border-bottom-color: rgba(148,163,184,.32); }
-.dark .breadcrumb{ color:#dbe4ff; }
-.dark .title{ color:#eaf2ff; }
-.dark .subtitle{ color:#c7d2fe; }
-/* Log global */
-.dark .global-log-wrap .global-log-label{ color:#eaf2ff; }
-.dark .global-log{ background:#102646; border-color:#345e9e; color:#dbeafe; }
-/* Tiles (módulos) */
-.dark .tile{ background:#0f1a2b; border-color:#22314a; color:#eaf2ff;
-  box-shadow: 0 2px 6px rgba(0,0,0,.45), 0 14px 26px rgba(0,0,0,.40);
-  filter: drop-shadow(0 16px 28px rgba(0,0,0,.45)); }
-.dark .tile:hover{ filter: drop-shadow(0 24px 36px rgba(0,0,0,.55)); }
-.dark .tile .t-title{ color:#eaf2ff; }
-.dark .tile .t-sub{ color:#c7d2fe; }
-.dark .tile.soon{ opacity:.95; filter: drop-shadow(0 16px 28px rgba(0,0,0,.40)); }
-/* Badges */
-.dark .tile .badge{ background:#0b1b33; border-color:#274060; color:#a8c3ff; }
-.dark .tiles [data-key="operatividad"] .badge{ background:#143924; border-color:#2a6d41; color:#95f0a8; }
-/* Botones acciones */
-.dark .btn{ background:#0f1b30; color:#cfe1ff; border-color:#2a4266; box-shadow: 0 10px 22px rgba(0,0,0,.35); filter: drop-shadow(0 14px 24px rgba(0,0,0,.45)); }
-.dark .btn:hover{ filter: drop-shadow(0 22px 34px rgba(0,0,0,.58)); }
-.dark .btn-imp{ background:#0e4aa8; color:#fff; border-color:#0e4aa8; }
-.dark .btn-exp{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
-.dark .btn[disabled]{ opacity:1; background:#0e1626; color:#7f92b6; border-color:#1f2f48; cursor:not-allowed; box-shadow:none; filter:none; }
-/* Estado/alertas */
-.dark .state{ background:#0b1b33; border-color:#274060; color:#cfe1ff; }
-.dark .state.error{ background:#3b0f13; border-color:#7f1d1d; color:#fecaca; }
-/* Modal dark */
-.dark .modal-backdrop{ background: rgba(0,0,0,.35); backdrop-filter: blur(8px); }
-.dark .modal{ background:#0f1a2b; box-shadow: 0 18px 38px rgba(0,0,0,.5); }
-.dark .modal h3{ color:#eaf2ff; }
-.dark .modal p{ color:#c7d2fe; }
-.dark .modal .btn-no{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
-/* Movimientos reducidos */
-@media (prefers-reduced-motion: reduce){
-  .tile, .actions .btn, .help, .modal { transition: none !important; transform: none !important; filter: none !important; }
-  .tile:hover, .tile:active, .actions .btn:hover, .actions .btn:active { transform: none !important; }
+.chat-input button:active{
+  transform: translateY(0);
+  box-shadow: 0 8px 14px rgba(14,74,168,.20) inset;
 }
-/* ======= Realce de tarjeta activa al importar/exportar ======= */
-.tile[aria-pressed="true"] {
-  outline: 2px solid rgba(14,74,168,.25);
-  outline-offset: 2px;
+  }
+  .chat-input button:hover{ transform: translateY(-1px); box-shadow: 0 16px 26px rgba(14,74,168,.30), 0 2px 0 rgba(255,255,255,.35) inset; filter: brightness(1.03); }
+  .chat-input button:active{ transform: translateY(0); box-shadow: 0 8px 14px rgba(14,74,168,.22) inset; }
+
+  /* Burbujas (se mantienen por si el usuario conversa) */
+  .msg{ display:flex; gap:8px; align-items:flex-start; }
+  .msg .b{ padding:8px 10px; border-radius:12px; box-shadow: 0 4px 10px rgba(14,42,94,.08); border:1px solid #dde7ff; font-size: 13px;   /* ↓ solo tamaño de letra */
+  line-height: 1.15; /* mejor altura de línea */}
+  .msg.user .b{ background:#eaf2ff; border-color:#cfe0ff; color:#0e2040; }
+  .msg.bot  .b{ background:#ffffff; border-color:#dde7ff; color:#22314a; }
+
+  /* Dark chat */
+  .dark .chat-wrap{ background:#0f1930; border-color:#22314a; }
+  .dark .chat-head{ color:#eaf2ff; }
+  .dark .faq-q{ color:#eaf2ff; }
+  .dark .faq-a{ color:#c7d2fe; }
+  .dark .msg.user .b{ background:#0e254a; border-color:#2a64a6; color:#cfe1ff; }
+  .dark .msg.bot .b{ background:#0f1a2b; border-color:#22314a; color:#c7d2fe; }
+  .dark .chat-suggest .sg{ background:#0f1a2b; border-color:#22314a; color:#c7d2fe; }
+
+  /* Dark extras */
+  .dark .asist-card{ background:#0f1a2b; border-color:#22314a; }
+  .dark .asist-title{ color:#eaf2ff; }
+  .dark .asist-sub, .dark .note{ color:#c7d2fe; }
+  .dark .ask .q{ background: linear-gradient(90deg, #0e1c33, #13284a); border-color:#2a4266; color:#eaf2ff; }
+  .dark .ai-panel{ background:#0f1930; border-color:#22314a; }
+  .dark .cta--neutral{ background:#1e2a40; color:#cfe1ff; border-color:#2a4266; }
+  .dark .asist-log{ background:#0f1a2b; border-color:#22314a; }
+  .dark .log-item{ background:#0f1930; border-color:#22314a; color:#c7d2fe; }
+  .dark .log-head{ color:#eaf2ff; }
+/* Cursor parpadeante para el efecto de escritura */
+.typing-caret::after{
+  content:'';
+  display:inline-block;
+  width: 8px;
+  height: 1em;
+  margin-left: 3px;
+  border-radius: 2px;
+  background:#173b82; /* azul oscuro */
+  opacity:.9;
+  animation: caretBlink .9s steps(1, end) infinite;
+  vertical-align: -2px;
 }
-.tile.active-glow {
-  box-shadow:
-  0 0 0 3px rgba(14,74,168,.18),
-  0 10px 24px rgba(14,42,94,.25),
-  0 1px 0 rgba(255,255,255,.90) inset;
-  transform: translateY(-4px) var(--tilt);
-  transition: box-shadow .18s ease, transform .18s ease;
+@keyframes caretBlink{
+  0%, 50% { opacity: .9; }
+  51%, 100% { opacity: 0; }
 }
-@keyframes tile-pulse {
- 0% { box-shadow: 0 0 0 0 rgba(14,74,168,.28); }
- 70% { box-shadow: 0 0 0 10px rgba(14,74,168,0); }
- 100% { box-shadow: 0 0 0 0 rgba(14,74,168,0); }
+/* Botón del Dock (Tareas) más pequeño */
+.side-dock .cta{
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  height: 30px !important;
+  border-radius: 12px !important;
 }
-.tile.pulse-ring {
-  animation: tile-pulse 1.1s ease-out 2;
+/* Ocultar las 3 pildoras (Crear tarea, Exportar, Vaciar) */
+.asist-card .btn-row{
+  display:none !important;
 }
-</style>
+  </style>
 </head>
-<body>
+<body class="only-ai">
   <!-- SIDEBAR -->
   <aside class="sidebar-wrap" role="navigation" aria-label="Navegación principal">
     <div class="sidebar">
@@ -460,30 +760,34 @@ body{
             <div class="brand-sub">Centros Digitales</div>
           </div>
         </div>
-        <!-- Mi lista de tareas -->
+<!-- Mi lista de tareas -->
         <div class="nav-title">Mi lista de tareas</div>
         <div class="side-actions">
-          <!-- Notificar 1 - Outlook SVG -->
+          <!-- Notificar 1 -->
           <button type="button" class="btn btn-outlook" id="btnNotifyR1" title="Enviar correo (Outlook)">
             <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M13 6h8a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2h-7V6z" opacity=".12"></path>
-              <path d="M2 7a2 2 0 0 1 2-2h9v14H4a2 2 0 0 1-2-2V7zm2 .5l6.5 4.333a2 2 0 0 0 2.2 0L19 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M2 7a2 2 0 0 1 2-2h9v14H4a2 2 0 0 1-2-2V7zm2 .5l6.5 4.333a2 2 0 0 0 2.2 0L19 7.5"
+                    fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
               <rect x="13" y="6" width="9" height="12" rx="1.2" ry="1.2" fill="currentColor"></rect>
               <path d="M18 10.4c1.1 0 2 .9 2 2.1s-.9 2.1-2 2.1-2-.9-2-2.1.9-2.1 2-2.1zm0 3.2c.6 0 1.1-.5 1.1-1.1s-.5-1.1-1.1-1.1-1.1.5-1.1 1.1.5 1.1 1.1 1.1z" fill="#fff"></path>
             </svg>
             Notificar a líder R1
           </button>
-          <!-- Notificar 2 - Outlook SVG -->
+
+          <!-- Notificar 2 -->
           <button type="button" class="btn btn-outlook" id="btnNotifyR2" title="Enviar correo (Outlook)">
             <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M13 6h8a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2h-7V6z" opacity=".12"></path>
-              <path d="M2 7a2 2 0 0 1 2-2h9v14H4a2 2 0 0 1-2-2V7zm2 .5l6.5 4.333a2 2 0 0 0 2.2 0L19 7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M2 7a2 2 0 0 1 2-2h9v14H4a2 2 0 0 1-2-2V7zm2 .5l6.5 4.333a2 2 0 0 0 2.2 0L19 7.5"
+                    fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
               <rect x="13" y="6" width="9" height="12" rx="1.2" ry="1.2" fill="currentColor"></rect>
               <path d="M18 10.4c1.1 0 2 .9 2 2.1s-.9 2.1-2 2.1-2-.9-2-2.1.9-2.1 2-2.1zm0 3.2c.6 0 1.1-.5 1.1-1.1s-.5-1.1-1.1-1.1-1.1.5-1.1 1.1.5 1.1 1.1 1.1z" fill="#fff"></path>
             </svg>
             Notificar a líder R2
           </button>
-          <!-- Teams real SVG -->
+
+          <!-- Teams -->
           <button type="button" class="btn btn-teams" id="btnTeamsMeeting" title="Crear evento de Teams (Outlook Web)">
             <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
               <rect x="3" y="7" width="10" height="12" rx="2" ry="2" fill="currentColor" opacity=".95"></rect>
@@ -494,9 +798,9 @@ body{
             </svg>
             Crear evento Teams
           </button>
-          <!-- NUEVO: Vaciar módulos (en sidebar) -->
+
+          <!-- Vaciar módulos (desde sidebar) -->
           <button type="button" class="btn" id="btnVaciarModulo" title="Vaciar datos de uno o varios módulos">
-            <!-- Icono papelera (SVG limpio) -->
             <svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3 6h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
               <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.6" fill="none"></path>
@@ -507,6 +811,7 @@ body{
           </button>
         </div>
       </div>
+
       <!-- Pie pegado al fondo (fuera del scroll) -->
       <div class="side-foot">
         <button class="chip" type="button" id="btnHome" title="Ir al inicio">
@@ -520,16 +825,15 @@ body{
 
   <!-- MAIN -->
   <main class="main">
-    <!-- HERO -->
+    <!-- HERO (visible) -->
     <section class="hero">
       <div class="container">
         <div class="breadcrumb">¡Bienvenido(a) al modulo de excluciones!</div>
         <h1 class="title">Panel admin</h1>
-        <div class="subtitle">Importa datos, valida, revisa resultados y contacta a tu equipo.</div>
       </div>
     </section>
 
-    <!-- LOG GLOBAL -->
+    <!-- LOG GLOBAL (oculto en modo only-ai por CSS) -->
     <section class="container log-band" aria-live="polite">
       <div id="globalLogWrap" class="global-log-wrap">
         <span class="global-log-label" aria-hidden="true">Última acción:</span>
@@ -537,7 +841,7 @@ body{
       </div>
     </section>
 
-    <!-- Tiles -->
+    <!-- Tiles (ocultos en modo only-ai) -->
     <section class="tiles container" id="tiles">
       <div class="tile" data-key="operatividad" data-tooltip="Presioname para asistencia" tabindex="0" role="button" aria-pressed="true">
         <div class="ico ico-blue">
@@ -573,72 +877,20 @@ body{
       </div>
     </section>
 
-    <!-- Acciones -->
-    <section class="actions container">
-      <div class="pair">
-        <button id="btnImportar" class="btn btn-imp" type="button" title="Importar datos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M4 3h16" stroke-linecap="round"></path>
-          </svg>
-          <span class="lbl">Importar datos</span>
-        </button>
-        <button id="btnExportar" class="btn btn-exp" type="button" title="Exportar datos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M4 21h16" stroke-linecap="round"></path>
-          </svg>
-          <span class="lbl">Exportar datos</span>
-        </button>
-      </div>
-
-      <!-- ACTIVADOS: Backlog -->
-      <div class="pair">
-        <button id="btnImportar_backlog" class="btn btn-imp" type="button" title="Importar datos (Backlog)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M4 3h16" stroke-linecap="round"></path>
-          </svg>
-          <span class="lbl">Importar datos</span>
-        </button>
-        <button id="btnExportar_backlog" class="btn btn-exp" type="button" title="Exportar datos (Backlog)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M4 21h16" stroke-linecap="round"></path>
-          </svg>
-          <span class="lbl">Exportar datos</span>
-        </button>
-      </div>
-
-      <!-- ACTIVADOS: SLA -->
-      <div class="pair">
-        <button id="btnImportar_sla" class="btn btn-imp" type="button" title="Importar datos (SLA)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 21V9m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M4 3h16" stroke-linecap="round"></path>
-          </svg>
-          <span class="lbl">Importar datos</span>
-        </button>
-        <button id="btnExportar_sla" class="btn btn-exp" type="button" title="Exportar datos (SLA)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M4 21h16" stroke-linecap="round"></path>
-          </svg>
-          <span class="lbl">Exportar datos</span>
-        </button>
+    <!-- === ASISTENTE IA – DOMINION (SOLO IA / LIENZO COMPLETO) === -->
+    <section id="ai-canvas">
+      <div id="ai-inner" class="container">
+        <section id="asistente-exclusiones-container"></section>
       </div>
     </section>
-
-    <!-- === ASISTENTE IA – DOMINION (insertado bajo las acciones) === -->
-    <section class="container" id="asistente-exclusiones-container" style="margin-top:100px;"></section>
     <!-- === FIN ASISTENTE === -->
 
-    <!-- AYUDA -->
+    <!-- AYUDA (oculta en modo only-ai) -->
     <section class="container">
       <div id="helpPanel" class="help" role="region" aria-live="polite"></div>
     </section>
 
-    <!-- Estado -->
+    <!-- Estado (oculto en modo only-ai) -->
     <section class="container">
       <div id="estado" class="state" role="status" aria-live="polite"></div>
     </section>
@@ -658,154 +910,203 @@ body{
 
   <!-- Input oculto para archivo -->
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+
   <!-- Toast -->
   <div id="toast" class="toast" role="alert"></div>
 
   <!-- SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <!-- ============== TU JS EXISTENTE (SIN CAMBIOS) ============== -->
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    /* ... (TODO tu script actual sin cambios) ... */
-  });
-  </script>
-
-  <!-- ============== ASISTENTE IA – DOMINION (EMBEBIDO) ============== -->
+<!-- ============== ASISTENTE IA – DOMINION (EMBEBIDO) ============== -->
 <script>
 (function mountDominionAssistant(){
   const mount = document.getElementById('asistente-exclusiones-container');
   if(!mount) return;
 
+  // 1) Plantilla visual: columna izquierda (asistente + chat separado) + dock (derecha)
   mount.innerHTML = `
-    <style>
-      .asist-card{
-        background:#fff; border:1px solid rgba(199,215,243,.70);
-        border-radius:16px; padding:14px 16px; box-shadow: var(--elev-2);
-        filter: drop-shadow(0 18px 32px rgba(14,42,94,.18));
-        width:min(400px, 100%); margin-inline:0;
-      }
-      .asist-head{ display:flex; align-items:center; gap:12px; }
-      /* Icono IA */
-      .bot{
-        width:54px; height:54px; border-radius:14px; position:relative; cursor:default;
-        background: radial-gradient(70% 70% at 30% 30%, #e8f2ff 0%, #b6d2ff 40%, #90b8ff 100%);
-        box-shadow: inset 0 0 0 2px #ffffffaa, 0 10px 22px rgba(22,45,90,.18);
-        animation: a-float 3.2s ease-in-out infinite;
-      }
-      .bot::after{
-        content:""; position:absolute; inset:-6px; border-radius:16px; filter:blur(10px);
-        background: radial-gradient(60% 50% at 70% 30%, #7bd8ff66, transparent 70%);
-        pointer-events:none;
-      }
-      .eyes{ position:absolute; inset:0; display:grid; place-items:center; }
-      .eyes svg{ width:45px; height:50px; }
-      .eye{ animation: a-blink 5s infinite; }
-      .mouth{ transform-origin:center; transition:.25s ease; opacity:.85; }
-      .bot:hover .mouth{ transform: scaleX(1.25); opacity:1; }
+  <!-- ===== INICIO: UI ASISTENTE ===== -->
+  <style>
+    /* ---------- Tarjeta ---------- */
+    .asist-card{
+      background:#fff;
+      border:1px solid rgba(199,215,243,.70);
+      border-radius:22px;
+      padding:18px 20px;
+      box-shadow: 0 18px 38px rgba(14,42,94,.18), 0 6px 14px rgba(14,42,94,.10);
+      filter: drop-shadow(0 14px 26px rgba(14,42,94,.16));
+      width:min(680px,100%);
+      margin:0;
+    }
+    .asist-head{ display:flex; align-items:center; gap:10px; }
 
-      @keyframes a-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-      @keyframes a-blink { 0%,92%,100%{transform:scaleY(1)} 95%{transform:scaleY(.1)} }
+    /* Mascota */
+    .mascot{ width:70px; height:100px; flex:0 0 90px; position:relative; overflow:visible;
+      animation: m-float 3s ease-in-out infinite; transform-origin:60% 40%; }
+    .mascot img{ width:100%; height:100%; display:block; object-fit:contain; animation:m-tilt 5.5s ease-in-out infinite; }
+    @keyframes m-float { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-7px) } }
+    @keyframes m-tilt { 0%,100%{ transform:rotate(0deg) } 50%{ transform:rotate(-2.2deg) } }
 
-      .asist-title{ font-weight:800; color:#0e2040; }
-      .asist-sub{ color:#6b7893; font-size:12.8px; }
+    .asist-title{ font-weight:900; color:#0e2040; font-size:20px; line-height:1.05; }
+    .asist-sub{ margin-top:4px; color:#6b7893; font-size:14.5px; }
 
-      /* Botones compactos */
-      .cta{
-        appearance:none; border:0; border-radius:999px; cursor:pointer;
-        padding:6px 12px; font-weight:700; color:#fff; font-size:11.5px;
-        background:#0e4aa8; box-shadow:0 6px 18px rgba(14,74,168,.25);
-      }
-      .cta.secondary{
-        background:#1e2a40; color:#cfe1ff; border:1px solid #2a4266;
-        box-shadow:0 6px 18px rgba(0,0,0,.15);
-      }
-      .cta.success{ background:#10b981; }
+    .ask{ margin:14px 0 10px; }
+    .ask .q{
+      display:inline-block; font-weight:900; font-size:22px; line-height:1.1; color:#0b2a6b;
+      background: linear-gradient(90deg, #e8f1ff, #d8e6ff);
+      padding:8px 12px; border-radius:14px; border:1px solid #cfe0ff;
+      box-shadow: 0 6px 14px rgba(14,42,94,.10);
+    }
 
-      .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; }
-      .note{ color:#4e5d78; font-size:13px; }
+    /* Botonera/píldoras */
+    .btn-row{ display:flex; flex-wrap:wrap; gap:10px; }
+    .cta{
+      appearance:none; border:0; cursor:pointer;
+      border-radius:999px; padding:10px 16px;
+      font-size:14px; font-weight:800;
+      display:inline-flex; align-items:center; justify-content:center;
+      line-height:1.05; letter-spacing:.2px; white-space:nowrap;
+      box-shadow: 0 6px 14px rgba(14,42,94,.10);
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+    }
+    .cta:focus{ outline:2px solid rgba(14,74,168,.28); outline-offset:2px; }
+    .cta:hover{ transform: translateY(-2px); box-shadow: 0 10px 18px rgba(14,42,94,.16); }
+    .cta:active{ transform: translateY(-1px); box-shadow: 0 6px 12px rgba(14,42,94,.14) inset; }
+    .cta--neutral{ background:#f3f6fb; color:#0e2040; border:1px solid #dbe6ff; }
+    .cta--primary{ background:#0e4aa8; color:#fff; border:1px solid #0e4aa8; }
+    .cta--success{ background:#10b981; color:#fff; border:1px solid #10b981; }
+    .cta[disabled]{ opacity:.6; cursor:not-allowed; transform:none; box-shadow:none; }
 
-      /* Progreso */
-      .progress{ margin-top:10px; height:10px; border-radius:999px; background:#eef3ff; overflow:hidden; display:none; }
-      .bar{ height:100%; width:0%; background:linear-gradient(90deg, #0e4aa8, #00d4ff); transition: width .25s ease; }
-      .stage{ font-size:12px; color:#22314a; display:none; justify-content:space-between; margin-top:6px; }
+    /* Panel dinámico (izquierda, oculto si usamos Dock) */
+    .ai-panel{
+      background:#f7faff; border:1px solid #dbe6ff; border-radius:16px;
+      padding:12px; margin-top:12px; display:none;
+    }
+    .ai-panel h4{ margin:0 0 8px; font-size:14px; font-weight:800; color:#0e2040; }
 
-      /* Selector de módulos (píldoras) */
-      .modsel{
-        border:0; padding:6px 0; margin:8px 0;
-        display:flex; gap:12px; flex-wrap:wrap;
-      }
-      .modsel label{
-        display:inline-flex; align-items:center; gap:6px;
-        padding:6px 10px; border:1px solid #dbe6ff; border-radius:999px;
-        background:#f7faff; cursor:pointer; font-size:12.5px; color:#0e2040;
-      }
-      .modsel input{ accent-color:#0e4aa8; }
+    .pill-group{ display:flex; gap:10px; flex-wrap:wrap; margin:6px 0; }
+    .pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
+      border:1px solid #dbe6ff; border-radius:999px; background:#fff; font-size:12.5px; color:#0e2040; }
+    .pill input{ accent-color:#0e4aa8; }
 
-      /* Dark mode coherente */
-      :root.dark .asist-card{ background:#0f1a2b; border-color:#22314a; color:#eaf2ff; }
-      :root.dark .asist-title{ color:#eaf2ff; }
-      :root.dark .asist-sub, :root.dark .note{ color:#c7d2fe; }
-      :root.dark .progress{ background:#0b1b33; }
-    </style>
+    /* Progreso */
+    .progress{ margin-top:12px; height:10px; border-radius:999px; background:#eef3ff; overflow:hidden; display:none; }
+    .bar{ height:100%; width:0%; background:linear-gradient(90deg, #0e4aa8, #00d4ff); transition: width .25s ease; }
+    .stage{ font-size:12px; color:#22314a; display:none; justify-content:space-between; margin-top:6px; }
+    .note{ color:#4e5d78; font-size:13px; margin-top:8px; }
+  </style>
 
-    <div class="asist-card" role="region" aria-label="Asistente IA DOMINION">
-      <div class="asist-head">
-        <div class="bot" aria-hidden="true">
-          <div class="eyes">
-            <!-- Carita alegre -->
-            <svg viewBox="0 0 120 60" aria-hidden="true">
-              <circle cx="40" cy="26" r="7" fill="#002b70"/>
-              <circle cx="80" cy="26" r="7" fill="#002b70"/>
-              <path d="M40 40 Q60 57 80 40" stroke="#005cff" stroke-width="7" stroke-linecap="round" fill="none"/>
-              <ellipse cx="60" cy="12" rx="32" ry="10" fill="#ffffff55"/>
-            </svg>
+  <div class="asist-layout">
+    <!-- Columna izquierda: tarjeta asistente + chat (SEPARADOS) -->
+    <div class="asist-left">
+      <!-- Card del asistente (arriba) -->
+      <div class="asist-card" role="region" aria-label="Asistente IA DOMINION">
+        <div class="asist-head">
+          <div class="mascot" aria-hidden="true" title="Asistente Dominion">
+            <img src="assistant_casco.png" alt="Mascota asistente">
+          </div>
+          <div>
+            <div class="asist-title">¡Hola, soy tu asistente!</div>
+            <div class="asist-sub">Automatizo tareas, subo data a tus módulos y más 😊✌️.</div>
           </div>
         </div>
-        <div>
-          <div class="asist-title">¡HOLA, SOY TU ASISTENTE!</div>
-          <div class="asist-sub">Conmigo, puedes cargar tus datos sin abrirlos 😊, tengo integrado Python</code>.</div>
+
+        <div class="ask"><span class="q">¿Qué deseas hacer hoy?</span></div>
+
+        <!-- Botonera principal -->
+        <div class="btn-row">
+          <button id="btnShowCSV" class="cta cta--neutral" type="button">Crear tarea de exclusiones</button>
+          <button id="btnShowExport" class="cta cta--primary" type="button">Exportar últimos datos</button>
+          <button id="btnQuickClear" class="cta cta--success" type="button" title="Vaciar Operatividad, Backlog y SLA">Vaciar módulos ¡API!</button>
         </div>
+
+
+        <!-- Panel dinámico (izquierda, sin uso cuando hay Dock) -->
+        <div id="aiPanel" class="ai-panel" aria-live="polite"></div>
+
+        <!-- Progreso + estado (referencias cuando se usa Dock) -->
+        <div class="progress" id="asistProg" aria-hidden="true"><div class="bar" id="asistBar"></div></div>
+        <div class="stage" id="asistStage"><span id="asistStageTxt">—</span><span id="asistPct">0%</span></div>
+        <div class="note" id="asistStatus">Listo para ayudarte.</div>
       </div>
 
-      <div class="row">
-        <button id="asistStart" class="cta">Comenzar</button>
-        <label id="asistPick" class="cta secondary" style="display:none;" for="asistFile">Adjuntar CSV</label>
-        <input id="asistFile" type="file" accept=".csv" style="display:none;">
-        <button id="asistRun" class="cta" style="display:none;">Procesar</button>
-      </div>
+      <!-- ===== Chat del módulo (tarjeta SEPARADA, abajo) ===== -->
+      <section id="ai-chat" class="chat-wrap" aria-label="Chat del módulo Exclusiones">
+        <div class="chat-head">Escribeme y ejecuto al instante cualquier órden 🫡​</div>
 
-      <div class="progress" id="asistProg" aria-hidden="true"><div class="bar" id="asistBar"></div></div>
-      <div class="stage" id="asistStage"><span id="asistStageTxt">—</span><span id="asistPct">0%</span></div>
-      <div class="note" id="asistStatus" style="margin-top:8px;">Listo para ayudarte.</div>
-
-      <!-- Acciones post-proceso: seleccionar módulo(s), subir o descargar -->
-      <div id="asistActions2" class="row" style="justify-content:space-between; display:none;">
-        <fieldset class="modsel" id="asistModSel" role="radiogroup" aria-label="Selecciona módulo">
-          <label><input type="radio" name="ai_mod" value="operatividad" checked> Operatividad</label>
-          <label><input type="radio" name="ai_mod" value="backlog"> Backlog</label>
-          <label><input type="radio" name="ai_mod" value="sla"> SLA</label>
-          <label><input type="radio" name="ai_mod" value="todos"> Todos</label>
-        </fieldset>
-        <div class="row" style="gap:8px;">
-          <button id="asistUpload" class="cta success" type="button">Subir a módulo(s)</button>
-          <button id="asistDownload" class="cta" type="button">Descargar</button>
+        <!-- Bloque FAQ EXACTO como la imagen -->
+        <div id="chatMsgs" class="chat-msgs" aria-live="polite">
+          <div class="faq-block">
+<div class="faq-a"><strong>Abrir ayuda:</strong> abre tu sección de ayuda.</div>
+<div class="faq-a"><strong>Crear:</strong> carga tus datos.</div>
+<div class="faq-a"><strong>Exportar:</strong> descarga tus datos.</div>
+<div class="faq-a"><strong>Vaciar:</strong> deja tus módulos limpios.</div>
+          </div>
         </div>
-      </div>
+
+        <!-- Sugerencias rápidas (PÍLDORAS – se dejan tal cual, sin marcos) -->
+      
+
+        <div class="chat-input">
+          <input id="chatQ" type="text" placeholder="'Escribe tu pregunta sobre Ex..." />
+          <button id="chatSend" type="button" class="cta cta--primary">Preguntar</button>
+        </div>
+      </section>
     </div>
+
+    <!-- Dock de tareas (derecha) -->
+    <aside class="side-dock" aria-live="polite" aria-label="Tareas">
+      <h4 class="dock-head">Tareas</h4>
+      <div id="taskDock" class="dock-body"></div>
+    </aside>
+  </div>
+  <!-- ===== FIN: UI ASISTENTE ===== -->
   `;
 
   /* ===== Helpers UI ===== */
-  const $       = (sel)=> mount.querySelector(sel);
-  const setBar  = (p)=> { $('#asistBar').style.width = Math.max(0,Math.min(100,p))+'%'; };
-  const showProg= (on)=> { $('#asistProg').style.display = on?'block':'none'; $('#asistStage').style.display = on?'flex':'none'; };
-  const setStage= (t)=> { $('#asistStageTxt').textContent = t; };
-  const setPct  = (n)=> { $('#asistPct').textContent = Math.round(n)+'%'; };
-  const say     = (t)=> { $('#asistStatus').textContent = t; };
+  const $ = (sel)=> mount.querySelector(sel);
 
-  /* ===== CSV utils (sep=';') ===== */
+  // Registrar en panel de logs (AL DOCK)
+  function log(t){
+    const box = mount.querySelector('#taskDock');
+    if(!box) return;
+    const item = document.createElement('div');
+    item.className = 'log-item';
+    const time = document.createElement('span');
+    time.className = 'log-time';
+    time.textContent = new Date().toLocaleTimeString();
+    const txt = document.createElement('div');
+    txt.className = 'log-text';
+    txt.textContent = t;
+    item.appendChild(time);
+    item.appendChild(txt);
+    box.appendChild(item);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  // Estado en tarjeta + log
+  const say = (t)=>{ $('#asistStatus').textContent = t; log(t); };
+  const setBar = (p)=>{ $('#asistBar').style.width = Math.max(0,Math.min(100,p))+'%'; };
+  const showProg = (on)=>{ $('#asistProg').style.display = on?'block':'none'; $('#asistStage').style.display = on?'flex':'none'; };
+  const setStage = (t)=>{ $('#asistStageTxt').textContent = t; log(`Etapa: ${t}`); };
+  const setPct = (n)=>{ $('#asistPct').textContent = Math.round(n)+'%'; };
+
+  // ===== Dock Helpers =====
+  const getDock = () => $('#taskDock');
+  const showPanel = (show=true)=>{
+    const dock = getDock();
+    if(!dock) return;
+    dock.style.display = show ? 'block' : 'none';
+  };
+  // Oculta/limpia panel interno (izquierda) si existiera
+  const hideLeftPanel = ()=>{
+    const p = $('#aiPanel');
+    if(p){ p.style.display = 'none'; p.innerHTML = ''; }
+  };
+
+  /* ===== CSV utils ===== */
   function parseCSV(text, sep=';'){
-    const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l=>l.trim().length>0);
+    const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+      .split('\n').filter(l=>l.trim().length>0);
     const rows = [];
     for(const line of lines){
       const out=[]; let cur='', q=false;
@@ -823,195 +1124,696 @@ body{
     const esc=(v)=>{ v=(v??'').toString(); return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
     return rows.map(r=>r.map(esc).join(sep)).join('\n');
   }
-  function pick(headers, name, pos1){ // por nombre (case-insensitive) o posición (1-based)
+  function pick(headers, name, pos1){
     const i = headers.findIndex(h => (h??'').toString().trim().toLowerCase() === name.toLowerCase());
     return i !== -1 ? i : Math.max(0, Math.min(headers.length-1, pos1-1));
   }
 
-  /* ====== Config del backend (mismos endpoints que usas en Admin) ====== */
-  const API_BASE    = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
-  const ADMIN_TOKEN = 'ADMINARIELITO777';
-  const BACKENDS    = {
+  /* ===== Config Backend ===== */
+  const API_BASE = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
+  const ADMIN_TOKEN= 'ADMINARIELITO777';
+  const BACKENDS = {
     operatividad: `${API_BASE}/p1`,
-    backlog:      `${API_BASE}/p2`,
-    sla:          `${API_BASE}/p3`
+    backlog: `${API_BASE}/p2`,
+    sla: `${API_BASE}/p3`,
   };
 
-  /* ===== Modal confirm helpers (usa tu #modalConfirm global) ===== */
-  function openModal(){ const m=document.getElementById('modalConfirm'); if(m) m.style.display='flex'; }
-  function closeModal(){ const m=document.getElementById('modalConfirm'); if(m) m.style.display='none'; }
-  async function confirmUploadDialog(humanLabel){
-    return new Promise((resolve)=>{
-      const modal  = document.getElementById('modalConfirm');
-      const title  = document.getElementById('mc_title');
-      const msg    = document.getElementById('mc_msg');
-      const btnYes = document.getElementById('mc_si');
-      const btnNo  = document.getElementById('mc_no');
-      if(!modal || !title || !msg || !btnYes || !btnNo){ resolve(true); return; } // fallback: seguir sin confirmar
-
+  /* ===== Modal Helpers (reusa el modal global del documento) ===== */
+  function openModal(){ document.getElementById('modalConfirm').style.display='flex'; }
+  function closeModal(){ document.getElementById('modalConfirm').style.display='none'; }
+  async function confirmUploadDialog(label){
+    return new Promise(resolve=>{
+      const title = document.getElementById('mc_title');
+      const msg = document.getElementById('mc_msg');
+      const yes = document.getElementById('mc_si');
+      const no = document.getElementById('mc_no');
       title.textContent = 'Confirmación';
-      msg.textContent   = `¿Confirmas subir el archivo filtrado a ${humanLabel}? Esta acción sobrescribe la data del módulo seleccionado.`;
-
-      function onYes(){ cleanup(); resolve(true); }
-      function onNo(){ cleanup(); resolve(false); }
-      function cleanup(){
-        btnYes.removeEventListener('click', onYes);
-        btnNo.removeEventListener('click', onNo);
-        closeModal();
-      }
-      btnYes.addEventListener('click', onYes);
-      btnNo.addEventListener('click', onNo);
+      msg.textContent = `¿Confirmas esta acción en ${label}? Esta operación es irreversible.`;
+      function ok(){ cleanup(); resolve(true); }
+      function cancel(){ cleanup(); resolve(false); }
+      function cleanup(){ yes.removeEventListener('click', ok); no.removeEventListener('click', cancel); closeModal(); }
+      yes.addEventListener('click', ok);
+      no.addEventListener('click', cancel);
       openModal();
     });
   }
 
-  /* POST {aoa} a /api/sobrescribir del módulo indicado */
+  /* ===== POST to módulo ===== */
   async function postAoaTo(modKey, aoa){
-    const API = (BACKENDS[modKey] || API_BASE).replace(/\/+$/,'');
-    const res = await fetch(`${API}/api/sobrescribir`, {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/json',
-        'Accept':'application/json',
-        'Authorization': `Bearer ${ADMIN_TOKEN}`
+    const API = BACKENDS[modKey];
+    const res = await fetch(`${API}/api/sobrescribir`,{
+      method:'POST',
+      headers:{
+        'Authorization':`Bearer ${ADMIN_TOKEN}`,
+        'Content-Type':'application/json'
       },
-      body: JSON.stringify({ aoa })
+      body:JSON.stringify({aoa})
     });
     const j = await res.json().catch(()=>null);
-    if(!res.ok || !j?.ok){
-      throw new Error(j?.error || `HTTP ${res.status}`);
-    }
+    if(!res.ok || !j?.ok) throw new Error(j?.error || `HTTP ${res.status}`);
     return true;
+}
+
+// === EXPORT HELPERS (crea botones ocultos y exporta por API si faltan) ===
+const EXPORT_ENDPOINT = '/api/exportar'; // ajusta si tu worker usa otra ruta (p.ej. '/api/ultimos' o '/export')
+
+function ensureHiddenExports(){
+  // Crea contenedor único en body si no existe
+  let host = document.getElementById('__hidden_exports_host');
+  if(!host){
+    host = document.createElement('div');
+    host.id = '__hidden_exports_host';
+    host.style.cssText = 'display:none !important;';
+    document.body.appendChild(host);
+  }
+  // Define botones que el asistente intenta clickear
+  const defs = [
+    { id:'btnExportar',          mod:'operatividad' },
+    { id:'btnExportar_backlog',  mod:'backlog' },
+    { id:'btnExportar_sla',      mod:'sla' },
+  ];
+  for(const d of defs){
+    if(!document.getElementById(d.id)){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.id = d.id;
+      b.addEventListener('click', ()=> exportViaAPI(d.mod));
+      host.appendChild(b);
+    }
+  }
+}
+
+async function exportViaAPI(mod){
+  try{
+    const api = BACKENDS[mod];
+    if(!api) throw new Error('Módulo desconocido');
+    const res = await fetch(`${api}${EXPORT_ENDPOINT}`, { method:'GET' });
+    // Soportar JSON o CSV plano
+    const ct = res.headers.get('content-type') || '';
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    let csvText = null;
+
+    if(ct.includes('application/json')){
+      const j = await res.json();
+      // Casos aceptados: {aoa:[[]...]} o {csv:'...'} o {data:[...]} (array de objetos)
+      if(Array.isArray(j.aoa)){
+        csvText = toCSV(j.aoa, ';');
+      }else if(typeof j.csv === 'string'){
+        csvText = j.csv;
+      }else if(Array.isArray(j.data)){
+        // Volcado simple de objetos a CSV (keys de la primera fila)
+        const keys = Object.keys(j.data[0] || {});
+        const rows = [keys, ...j.data.map(o => keys.map(k => o?.[k] ?? ''))];
+        csvText = toCSV(rows, ';');
+      }else{
+        throw new Error('Respuesta de exportación no reconocida');
+      }
+    }else{
+      // CSV plano
+      csvText = await res.text();
+    }
+
+    // Descargar
+    const blob = new Blob([csvText], {type:'text/csv;charset=utf-8;'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const now  = new Date();
+    const pad  = n => String(n).padStart(2,'0');
+    const fname= `export_${mod}_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.csv`;
+    a.href = url; a.download = fname; a.click();
+    URL.revokeObjectURL(url);
+    say(`Exportado ${mod.toUpperCase()} correctamente.`); log(`Exportación OK: ${fname}`);
+  }catch(err){
+    console.error(err);
+    say('No se pudo exportar: ' + err.message);
+    log('Export error: ' + err.message);
+  }
+}
+// === FIN EXPORT HELPERS ===
+
+  /* ===== Estados CSV ===== */
+  let file = null;
+  let outText = null;
+  let resultAOA = null;
+
+  /* ===============================
+     PANEL: SUBIR CSV
+     =============================== */
+  function renderCSVPanel(){
+    const panel = getDock();
+    if(!panel) return;
+    panel.innerHTML = `
+      <h4>Subir archivo CSV</h4>
+      <div class="note">Adjunta tu CSV y el asistente procesará automáticamente…</div>
+      <div class="btn-row" style="margin-top:8px;">
+        <input id="asistFile" type="file" accept=".csv" style="display:none;">
+        <button id="asistAction" class="cta cta--primary" type="button">Adjuntar CSV</button>
+      </div>
+
+      <!-- Progreso + etapa + estado EN EL DOCK -->
+      <div class="progress" id="asistProg" aria-hidden="true"><div class="bar" id="asistBar"></div></div>
+      <div class="stage" id="asistStage"><span id="asistStageTxt">—</span><span id="asistPct">0%</span></div>
+      <div class="note" id="asistStatus" style="display:none">—</div>
+
+      <!-- Acciones posteriores -->
+      <div id="asistActions2" class="btn-row" style="justify-content:space-between; display:none; margin-top:12px;">
+        <fieldset class="pill-group" id="asistModSel" role="radiogroup" aria-label="Selecciona módulo">
+          <label class="pill"><input type="radio" name="ai_mod" value="operatividad" checked> Operatividad</label>
+          <label class="pill"><input type="radio" name="ai_mod" value="backlog"> Backlog</label>
+          <label class="pill"><input type="radio" name="ai_mod" value="sla"> SLA</label>
+          <label class="pill"><input type="radio" name="ai_mod" value="todos"> Todos</label>
+        </fieldset>
+        <div class="btn-row" style="gap:8px;">
+          <button id="asistUpload" class="cta cta--success" type="button">Subir a módulo(s)</button>
+          <button id="asistDownload" class="cta cta--neutral" type="button">Descargar</button>
+        </div>
+      </div>
+    `;
+    // apaga panel izquierdo, enciende dock
+    hideLeftPanel();
+    showPanel(true);
+
+    const fi  = panel.querySelector('#asistFile');
+    const btn = panel.querySelector('#asistAction');
+    let mode = 'pick';
+    if(!fi || !btn){ say('No se pudo inicializar el panel de CSV.'); return; }
+
+    // Clic en botón
+    btn.addEventListener('click', ()=>{ if(mode === 'pick'){ fi.click(); } else if(mode === 'process'){ processCSV(); } });
+
+    // Auto-proceso tras adjuntar
+    fi.addEventListener('change', async ()=>{
+      if(fi.files.length){
+        file = fi.files[0];
+        say('Archivo: ' + file.name);
+        mode = 'processing';
+        btn.textContent = 'Procesando…';
+        btn.classList.remove('cta--primary','cta--neutral');
+        btn.classList.add('cta','cta--success');
+        btn.style.color = '#fff';
+        btn.disabled = true;
+        btn.animate([{ transform:'scale(1)' }, { transform:'scale(1.04)' }, { transform:'scale(1)' }], { duration: 180, easing: 'ease-out' });
+        try{
+          await processCSV();
+          mode = 'done';
+          btn.textContent = 'Procesado';
+          btn.disabled = true;
+          btn.classList.add('cta--success');
+          btn.style.color = '#fff';
+        }catch(e){
+          console.error(e);
+          say('Error: ' + (e?.message || 'Fallo al procesar.'));
+          mode = 'process';
+          btn.textContent = 'Procesar';
+          btn.disabled = false;
+          btn.classList.remove('cta--success');
+          btn.classList.add('cta--primary');
+          btn.style.color = '';
+        }
+      }
+    });
   }
 
-  /* ===== Estado ===== */
-  let file = null;
-  let outText = null;        // CSV para descarga
-  let resultAOA = null;      // AOA para subir
-
-  /* ===== Eventos ===== */
-  $('#asistStart').addEventListener('click', ()=>{
-    $('#asistStart').style.display='none';
-    $('#asistPick').style.display='inline-block';
-    say('Adjunta tu CSV para continuar.');
-  });
-
-  $('#asistFile').addEventListener('change', ()=>{
-    if($('#asistFile').files.length){
-      file = $('#asistFile').files[0];
-      say('Archivo: ' + file.name);
-      $('#asistRun').style.display='inline-block';
-    }
-  });
-
-  $('#asistRun').addEventListener('click', async ()=>{
-    if(!file) return;
-
-    // Reset post-acciones
+  // ===== NO PEGUES <script> AQUÍ, SOLO LA FUNCIÓN =====
+  async function processCSV(){
+    if(!file){ say('Selecciona un archivo CSV.'); return; }
+    // Reset
+    resultAOA = null; outText = null;
     $('#asistActions2').style.display = 'none';
     $('#asistDownload').disabled = true;
 
-    outText = null; resultAOA = null;
+    // Progreso inicial
+    showProg(true);
+    setBar(8); setPct(8); setStage('Leyendo…');
+    say('Procesando…');
 
-    // Progreso
-    showProg(true); setBar(8); setPct(8); setStage('Leyendo…'); say('Procesando, por favor espera…');
+    // Referencia al botón que muta (en Dock)
+    const btnRun = mount.querySelector('#asistAction');
+    if(btnRun){ btnRun.textContent = 'Procesando…'; btnRun.disabled = true; }
 
+    // 1) Leer y parsear CSV
     const text = await file.text();
-
-    setBar(24); setPct(24); setStage('Parseando CSV (;)…');
+    setStage('Parseando CSV…'); setBar(24); setPct(24);
     const rows = parseCSV(text,';');
     if(!rows.length){ say('El CSV está vacío.'); showProg(false); return; }
+
     const headers = rows[0];
 
-    // D=4 (Aliado Ot), T=20 (Cumple SLA)
-    const colD = pick(headers,'aliado ot',4);
-    const colT = pick(headers,'cumple sla',20);
+    // 2) Ubicar columnas (D y T por defecto si no se encuentran por nombre)
+    const colD = pick(headers,'aliado ot',4);   // Col D por defecto
+    const colT = pick(headers,'cumple sla',20); // Col T por defecto
 
-    setStage('Filtrando DOMINION & 0…'); setBar(40); setPct(40);
-    const out = [headers];
-    const total = rows.length - 1;
-    const chunk = Math.max(50, Math.floor(total/60));
-    for(let i=1;i<rows.length;i++){
-      const r=rows[i]; if(!r) continue;
-      const vD=((r[colD]??'')+'').trim(), vT=((r[colT]??'')+'').trim();
-      if(vD==='DOMINION' && vT==='0') out.push(r);
-
-      if(i % chunk === 0 || i === total){
+    // 3) Filtrar
+    setStage('Filtrando…'); setBar(40); setPct(40);
+    const out=[headers];
+    const total = rows.length-1;
+    const chunk = Math.max(50, Math.floor(total/60)); // refrescos de UI
+    for(let i=1; i<rows.length; i++){
+      const r = rows[i]; if(!r) continue;
+      const aliado = (r[colD] ?? '').trim();
+      const cumple = (r[colT] ?? '').trim();
+      if(aliado === 'DOMINION' && cumple === '0'){
+        out.push(r);
+      }
+      if(i%chunk===0 || i===total){
         const p = 40 + Math.min(58, Math.round(i/total*58));
         setBar(p); setPct(p);
-        await new Promise(r=>setTimeout(r,0)); // ceder al UI
+        await new Promise(rr => setTimeout(rr,0));
       }
     }
 
+    // 4) Generar archivo resultado
     setStage('Generando archivo…'); setBar(99); setPct(99);
+    resultAOA = out;
+    outText = toCSV(out,';');
 
-    // Guarda resultados para subir/descargar
-    resultAOA = out;            // AOA con encabezados
-    outText   = toCSV(out,';'); // CSV para descarga
-
+    // Final
     setBar(100); setPct(100); setStage('Listo');
     say(`Filas filtradas: ${out.length-1}.`);
 
-    // Mostrar acciones (subir/descargar)
+    // Dejar el botón en “Procesado”
+    if(btnRun){
+      btnRun.textContent = 'Procesado';
+      btnRun.disabled = true;
+      btnRun.classList.add('cta--success');
+      btnRun.style.color = '#fff';
+      btnRun.animate([{ transform:'scale(1)' }, { transform:'scale(1.06)' }, { transform:'scale(1)' }], { duration: 220, easing: 'ease-out' });
+    }
+
+    // Mostrar acciones posteriores
     $('#asistActions2').style.display = 'flex';
     $('#asistDownload').disabled = false;
-  });
+    log('Procesamiento finalizado. Acciones habilitadas.');
+  }
 
-  // Descargar CSV filtrado
-  $('#asistDownload').addEventListener('click', ()=>{
-    if(!outText) return;
-    const base = file ? file.name.replace(/\.csv$/i,'') : 'resultado';
-    const blob = new Blob([outText], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${base}_DOMINION_T0.csv`; a.click();
-    URL.revokeObjectURL(url);
-    say(`Descargado: ${base}_DOMINION_T0.csv`);
-  });
+  /* ===============================
+     PANEL: EXPORTAR
+     =============================== */
+  function renderExportPanel(){
+    const panel = getDock();
+    if(!panel) return;
+    panel.innerHTML = `
+      <h4>Exportar últimos datos</h4>
+      <div class="pill-group">
+        <label class="pill"><input type="radio" name="exp_mod" value="operatividad" checked> Operatividad</label>
+        <label class="pill"><input type="radio" name="exp_mod" value="backlog"> Backlog</label>
+        <label class="pill"><input type="radio" name="exp_mod" value="sla"> SLA</label>
+      </div>
+      <button id="aiExport" class="cta cta--primary">Exportar</button>
+    `;
+    hideLeftPanel();
+    showPanel(true);
 
-  // Subir a módulo(s) con confirmación modal
-  $('#asistUpload').addEventListener('click', async ()=>{
-    if(!Array.isArray(resultAOA) || resultAOA.length <= 1){
-      say('No hay filas para subir.'); return;
-    }
-    const selEl = mount.querySelector('input[name="ai_mod"]:checked');
-    const sel = selEl ? selEl.value : null;
-    if(!sel){ say('Selecciona un módulo.'); return; }
+    const hiddenExports={
+      operatividad:'#btnExportar',
+      backlog:'#btnExportar_backlog',
+      sla:'#btnExportar_sla',
+    };
+    panel.querySelector('#aiExport').addEventListener('click', async ()=>{
+  const sel = panel.querySelector('input[name="exp_mod"]:checked')?.value;
+  if(!sel){ say('Selecciona un módulo.'); return; }
 
-    const human = sel === 'todos'
-      ? 'Operatividad, Backlog y SLA'
-      : (sel === 'operatividad' ? 'Operatividad' : sel.toUpperCase());
+  // Mapa de compatibilidad (mismos IDs que usará ensureHiddenExports)
+  const hiddenExports = {
+    operatividad:'#btnExportar',
+    backlog:'#btnExportar_backlog',
+    sla:'#btnExportar_sla',
+  };
 
-    // Confirmación
-    const ok = await confirmUploadDialog(human);
-    if(!ok){ say('Operación cancelada.'); return; }
+  // 1) Garantiza que existan los botones ocultos (si faltan: se crean y quedan amarrados a exportViaAPI)
+  ensureHiddenExports();
 
-    const btn = $('#asistUpload');
+  // 2) Intento por botón oculto (click simula tu flujo anterior)
+  const id  = hiddenExports[sel];
+  const btn = document.querySelector(id);
+  if(btn){
+    say(`Exportando ${sel.toUpperCase()}…`); log(`Exportar (hidden button): ${sel}`);
+    btn.click(); // el listener creado por ensureHiddenExports llamará exportViaAPI(mod)
+    return;
+  }
+
+  // 3) Fallback directo por API
+  say(`Exportando ${sel.toUpperCase()}…`); log(`Exportar (API): ${sel}`);
+  await exportViaAPI(sel);
+});
+  }
+
+  /* ===============================
+     Botones principales (arriba)
+     =============================== */
+  $('#btnShowCSV').addEventListener('click', renderCSVPanel);
+  $('#btnShowExport').addEventListener('click', renderExportPanel);
+
+  // Acción rápida “verde”: vaciar TODOS directamente
+  $('#btnQuickClear').addEventListener('click', async ()=>{
+    const ok = await confirmUploadDialog('Operatividad, Backlog y SLA');
+    if(!ok){ say('Operación cancelada.'); log('Vaciado cancelado por el usuario'); return; }
     try{
-      btn.disabled = true;
-      say('Subiendo…');
-
-      const keys = sel === 'todos' ? ['operatividad','backlog','sla'] : [sel];
-      for(const k of keys){ await postAoaTo(k, resultAOA); }
-
-      say(sel === 'todos'
-        ? 'Subido a Operatividad, Backlog y SLA. ✅'
-        : `Subido en ${human}. ✅`
-      );
-
+      say('Vaciando módulos…'); log('Vaciando Operatividad, Backlog y SLA…');
+      for(const k of ['operatividad','backlog','sla']){ await postAoaTo(k, []); }
+      say('Módulos vaciados: Operatividad, Backlog y SLA. ✅'); log('Vaciado completado.');
     }catch(err){
       console.error(err);
-      say('Error al subir: ' + (err.message || err));
-    }finally{
-      btn.disabled = false;
+      say('Error al vaciar: ' + err.message); log('Error al vaciar: ' + err.message);
+    }
+  });
+
+  /* ===============================
+     Post-proceso CSV (descargar / subir)
+     =============================== */
+  // Nota: estos IDs viven en el Dock cuando se pinta renderCSVPanel()
+  document.addEventListener('click', (e)=>{
+    // Descarga
+    if(e.target && e.target.id === 'asistDownload'){
+      if(!outText){ say('No hay archivo para descargar.'); return; }
+      const base = file ? file.name.replace(/\.csv$/i,'') : 'resultado';
+      const blob = new Blob([outText],{type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download=`${base}_DOMINION_T0.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      say('Archivo descargado.'); log(`Descargado: ${base}_DOMINION_T0.csv`);
+    }
+
+    // Subida
+    if(e.target && e.target.id === 'asistUpload'){
+      (async ()=>{
+        if(!Array.isArray(resultAOA) || resultAOA.length<=1){
+          say('No hay filas para subir.'); log('Subida abortada: no hay filas.'); return;
+        }
+        const selEl = mount.querySelector('#asistModSel input[name="ai_mod"]:checked');
+        const sel = selEl?.value;
+        if(!sel){ say('Selecciona un módulo.'); return; }
+        const human = sel==='todos' ? 'Operatividad, Backlog y SLA' : sel.toUpperCase();
+        const ok = await confirmUploadDialog(human);
+        if(!ok){ say('Operación cancelada.'); log('Subida cancelada por el usuario'); return; }
+        try{
+          say('Subiendo…'); log(`Subiendo a: ${human}`);
+          const keys = sel==='todos' ? ['operatividad','backlog','sla'] : [sel];
+          for(const k of keys){ await postAoaTo(k,resultAOA); }
+          say(`Subido correctamente en ${human}.`); log(`Subida completada en ${human}.`);
+        }catch(err){
+          console.error(err);
+          say('Error al subir: ' + err.message); log('Error al subir: ' + err.message);
+        }
+      })();
     }
   });
 
 })();
 </script>
-<!-- ============== FIN ASISTENTE ============== -->
-  <script>
-  // (El resto de tu JS original está más arriba; aquí mantuve el cierre que ya traía tu archivo)
-  </script>
+<!-- ====== CHAT LOCAL (motor semántico sin API) ====== -->
+<script>
+(function initLocalSemanticChat(){
+  const box = document.getElementById('ai-chat'); if(!box) return;
+  const msgs = document.getElementById('chatMsgs');
+  const inp  = document.getElementById('chatQ');
+  const btn  = document.getElementById('chatSend');
+  const sgBox= box.querySelector('.chat-suggest');
+
+// === INTÉRPRETE DE LENGUAJE NATURAL (comandos en español) ====================
+const normNL = s => (s||'').toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // quita tildes
+  .replace(/[^\w\s]/g,' ')                         // quita signos
+  .replace(/\s+/g,' ').trim();
+
+function detectModulo(s){
+  if(/\bbacklog\b/.test(s)) return 'backlog';
+  if(/\bsla\b/.test(s)) return 'sla';
+  if(/\boperatividad\b|\boperativo\b/.test(s)) return 'operatividad';
+  return null;
+}
+
+function parseNLCommand(q){
+  const s = normNL(q);
+
+  // abrir panel CSV / importar
+  if (/(abre|abrir|mostrar|ir a|ve a|llevar).* (csv|importar|archivo|tarea)/.test(s)) {
+    return { action:'open_csv' };
+  }
+
+  // abrir vista exportar (sin ejecutar)
+  if (/(abre|abrir|mostrar|ir a).* (exportar|export)/.test(s)) {
+    return { action:'open_export' };
+  }
+
+  // exportar (ejecutando), con o sin módulo indicado
+  if (/(exporta|exportar|descarga|descargar)/.test(s)) {
+    return { action:'export', target: detectModulo(s) };
+  }
+
+  // vaciar todos
+  if (/(vaciar|vacia|vac(i|í)a|limpiar|limpia|borrar|resetear).*(todo|todos|global|general)/.test(s)) {
+    return { action:'vaciar_todos' };
+  }
+
+  // abrir módulos (solo navegación)
+  if (/(abre|abrir|mostrar|ir a).* (operatividad|backlog|sla)/.test(s)) {
+    return { action:'open_export', target: detectModulo(s) }; 
+  }
+
+// --- NUEVO: abrir ayuda ---
+if (/(abre|abrir|mostrar|ver).*(ayuda|help|informacion|info)/.test(s)) {
+  return { action: 'open_help' };
+}
+
+// --- NUEVO: vaciar un módulo específico ---
+if (/(vaciar|vacia|limpiar|borrar).*(operatividad|backlog|sla)/.test(s)) {
+  const mod = detectModulo(s); // ya existe en tu código
+  if (mod) return { action: 'vaciar_mod', target: mod };
+}
+
+  return null;
+}
+
+function waitForSelector(sel, timeout=1500){
+  return new Promise(resolve=>{
+    const t0 = performance.now();
+    (function poll(){
+      const el = document.querySelector(sel);
+      if (el) return resolve(el);
+      if (performance.now()-t0 > timeout) return resolve(null);
+      requestAnimationFrame(poll);
+    })();
+  });
+}
+
+async function runNLCommand(cmd){
+  switch(cmd.action){
+    case 'open_csv': {
+      document.getElementById('btnShowCSV')?.click();
+      return 'Abrí el panel para CSV.';
+    }
+    case 'open_export': {
+      document.getElementById('btnShowExport')?.click();
+      if (cmd.target){
+        await waitForSelector('input[name="exp_mod"]');
+        const r = document.querySelector(`input[name="exp_mod"][value="${cmd.target}"]`);
+        if (r){ r.checked = true; r.dispatchEvent(new Event('change',{bubbles:true})); }
+      }
+      return 'Abrí la vista de exportación.';
+    }
+    case 'export': {
+      document.getElementById('btnShowExport')?.click();
+      await waitForSelector('#aiExport');
+      if (cmd.target){
+        const r = document.querySelector(`input[name="exp_mod"][value="${cmd.target}"]`);
+        if (r){ r.checked = true; r.dispatchEvent(new Event('change',{bubbles:true})); }
+      }
+      document.querySelector('#aiExport')?.click();
+      return `¡Entendido!, acabé de abrir en "Tareas" el botón de exportar 📥 ${cmd.target ? cmd.target.toUpperCase() : ', selecciona el módulo ubicado en el cuadro a la derecha'}.`;
+    }
+    case 'vaciar_todos': {
+      document.getElementById('btnQuickClear')?.click();
+      return 'Lancé el vaciado de Operatividad, Backlog y SLA.';
+    }
+case 'vaciar_mod': {
+  // Confirmación con el modal global (consistente con tu UX)
+  const ok = await new Promise(resolve=>{
+    const title = document.getElementById('mc_title');
+    const msg   = document.getElementById('mc_msg');
+    const yes   = document.getElementById('mc_si');
+    const no    = document.getElementById('mc_no');
+    title.textContent = 'Confirmación';
+    msg.textContent   = `¿Vaciar el módulo ${cmd.target.toUpperCase()}? Esta operación es irreversible.`;
+    function done(x){ yes.removeEventListener('click', y); no.removeEventListener('click', n); document.getElementById('modalConfirm').style.display='none'; resolve(x); }
+    function y(){ done(true); } function n(){ done(false); }
+    yes.addEventListener('click', y); no.addEventListener('click', n);
+    document.getElementById('modalConfirm').style.display='flex';
+  });
+  if(!ok) return 'Operación cancelada.';
+
+  try{
+    await postAoaTo(cmd.target, []); // [] => vaciar
+    return `Módulo ${cmd.target.toUpperCase()} vaciado. ✅`;
+  }catch(e){
+    return `Error al vaciar ${cmd.target.toUpperCase()}: ${e.message}`;
+  }
+}
+  }
+  return null;
+}
+// === FIN INTÉRPRETE DE LENGUAJE NATURAL ======================================
+  const KB = [
+    {
+      id: 'exportar',
+      q: ['que hace exportar','exportar ultimos datos','como exporto','descargar datos','exportar operatividad','exportar backlog','exportar sla'],
+      a: '“Exportar últimos datos” usa tus botones ocultos de exportación y descarga el dataset del módulo seleccionado (Operatividad/Backlog/SLA).',
+      cmd: ()=> { const b=document.getElementById('btnShowExport'); if(b) b.click(); }
+    },
+    {
+      id: 'vaciar',
+      q: ['como vaciar','vaciar modulos','borrar datos','limpiar datos'],
+      a: '“Vaciar módulos (API)” sobrescribe los arrays de Operatividad, Backlog y SLA con []. Se llama al endpoint /api/sobrescribir de cada proyecto.',
+      cmd: ()=> { const b=document.getElementById('btnQuickClear'); if(b) b.click(); }
+    },
+    {
+      id: 'importar',
+      q: ['como importar','subir csv','cargar archivo','crear tarea de exclusiones','procesar csv'],
+      a: '¡Vamos allá 🫡!, acabé de abrir en "tareas" el botón adjuntar, carga allí tu CSV, con ayuda de Python dejaré tu data lista para enviar, luego me confirmas a que módulo cargo tu data.',
+      cmd: ()=> { const b=document.getElementById('btnShowCSV'); if(b) b.click(); }
+    },
+    {
+      id: 'csv-esperado',
+      q: ['que csv espera','formato csv','columnas csv','aliado ot','cumple sla'],
+      a: 'El CSV debe contener “Aliado OT” y “Cumple SLA”. Se filtra DOMINION en Aliado OT y 0 en Cumple SLA. El separador usado es “;”.'
+    },
+    {
+      id: 'endpoints',
+      q: ['endpoints','rutas','api','p1 p2 p3','sobrescribir'],
+      a: 'Proyectos: Operatividad → /p1, Backlog → /p2, SLA → /p3. Para sobrescribir datos se usa POST /api/sobrescribir con body { aoa: [...] }.'
+    },
+    {
+      id: 'error-401',
+      q: ['error 401','no autorizado','token','admin token'],
+      a: 'El 401 ocurre si falta o es inválido el token de administración. Asegúrate de enviar “Authorization: Bearer <ADMIN_TOKEN>”.'
+    },
+    {
+      id: 'modulos',
+      q: ['que modulos hay','cuales son los modulos','operatividad backlog sla'],
+      a: 'Los módulos activos son Operatividad (/p1), Backlog (/p2) y SLA (/p3). Puedes cambiar el destino desde “Subir a módulo(s)”.'
+    }
+  ];
+
+  const STOP = new Set('de la los las del y o u para con por en el al un una que como cual cuales qué mas más a se si no es son soy esta este están está estan'.split(' '));
+  const norm = s => s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^\w\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+  const toks = s => norm(s).split(' ').filter(t => t && !STOP.has(t));
+  const toVec = arr => { const m = new Map(); arr.forEach(t=> m.set(t, (m.get(t)||0)+1)); return m; };
+  const dot = (a,b) => { let s=0; for(const [k,v] of a) if(b.has(k)) s += v*b.get(k); return s; };
+  const mag = a => Math.sqrt([...a.values()].reduce((s,v)=>s+v*v,0));
+  const cosine = (A,B)=>{ const d = dot(A,B); const m = mag(A)*mag(B); return m? d/m : 0; };
+  const jacc = (A,B)=>{ const a = new Set(A), b = new Set(B); const inter = [...a].filter(x=>b.has(x)).length; const uni = new Set([...a, ...b]).size; return uni? inter/uni : 0; };
+
+  const KBV = KB.map(item=>{
+    const allQ = item.q.join(' ');
+    const tk = toks(allQ);
+    return { item, tk, v: toVec(tk) };
+  });
+
+  function bestMatch(q){
+    const tq = toks(q);
+    const vq = toVec(tq);
+    let best = {score:0, item:null};
+    KBV.forEach(({item, tk, v})=>{
+      const s = 0.7*cosine(vq, v) + 0.3*jacc(tq, tk);
+      if(s > best.score) best = {score:s, item};
+    });
+    return best;
+  }
+
+ // Muestra mensajes; para 'bot' aplica efecto "escribiendo"
+function pushMsg(role, text){
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role}`;
+  const bubble = document.createElement('div');
+  bubble.className = 'b';
+  wrap.appendChild(bubble);
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  if(role !== 'bot'){
+    // Usuario y otros roles: aparece de una (sin efecto)
+    bubble.textContent = text;
+    return;
+  }
+
+  // --- BOT: efecto tipo máquina de escribir ---
+  const FULL = (text || '').toString();
+  const SPEED = 18;  // ms por carácter (ajusta si lo quieres más rápido/lento)
+  const CHUNK = 1;   // cuántos caracteres suma por ciclo
+  let i = 0;
+
+  // Preparar bubble con caret
+  bubble.textContent = '';
+  bubble.classList.add('typing-caret');
+
+  const timer = setInterval(()=>{
+    const next = FULL.slice(i, i + CHUNK);
+    bubble.textContent += next;
+    i += CHUNK;
+
+    msgs.scrollTop = msgs.scrollHeight;
+
+    if(i >= FULL.length){
+      clearInterval(timer);
+      // Al terminar, quita el cursor
+      bubble.classList.remove('typing-caret');
+      bubble.textContent = FULL; // asegura texto completo exacto
+    }
+  }, SPEED);
+}
+  async function answer(q){
+  if(!q) return;
+  pushMsg('user', q);
+
+  // Mini pausa natural antes de responder (opcional, se ve más humano)
+  await new Promise(r => setTimeout(r, 180));
+
+  // 1) INTÉRPRETE DE LENGUAJE NATURAL (prioridad)
+  //    Usa el bloque que pegaste en el Paso 1: parseNLCommand + runNLCommand
+  const cmd = parseNLCommand(q);
+  if (cmd){
+    const msg = await runNLCommand(cmd);
+    pushMsg('bot', msg || 'Listo.');
+    return;
+  }
+
+  // 2) Motor semántico local (fallback si no es una orden)
+  const {score, item} = bestMatch(q);
+  const TH = 0.22; // sensibilidad
+  if(score >= TH && item){
+    pushMsg('bot', item.a + (item.cmd ? ' (Estoy para ayudarte👍​)' : ''));
+    try{ if(item.cmd) item.cmd(); }catch(e){ /* noop */ }
+  }else{
+    pushMsg('bot', '¡Ups! verifica el texto, o si intentas decirme algo, por ahora solo estoy habilitado y/o entrenado para temas específicos en este entorno, Lo siento🥺.');
+  }
+}
+  function ask(){
+    const q=(inp.value||'').trim();
+    inp.value='';
+    if(q) answer(q);
+  }
+
+  btn.addEventListener('click', ask);
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') ask(); });
+
+  if(sgBox){
+    sgBox.addEventListener('click', e=>{
+      const b = e.target.closest('button.sg');
+      if(!b) return;
+      inp.value = b.dataset.q || '';
+      ask();
+    });
+  }
+
+  // (no se agrega mensaje de bienvenida adicional)
+})();
+</script>
+<!-- ============== FIN ASISTENTE IA – DOMINION (EMBEBIDO) ============== -->
+
 </body>
 </html>
