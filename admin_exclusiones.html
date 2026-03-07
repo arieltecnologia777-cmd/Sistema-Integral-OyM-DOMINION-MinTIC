@@ -1174,6 +1174,55 @@ height: auto;          /* permite crecer por contenido */
     return true;
 }
 
+// === VACÍO SEGURO: inferir encabezados y sobrescribir solo headers ===
+
+// Intenta leer el export del módulo (JSON o CSV) y devolver headers (array de strings)
+async function inferHeaders(mod){
+  try{
+    const api = BACKENDS[mod];
+    if(!api) throw new Error('Módulo desconocido');
+    const res = await fetch(`${api}${EXPORT_ENDPOINT}`, { method:'GET' });
+    const ct  = (res.headers.get('content-type') || '').toLowerCase();
+
+    if(!res.ok){
+      console.warn('inferHeaders: HTTP', res.status);
+      return ['id']; // fallback
+    }
+
+    // Si es JSON, admitir {aoa:[[]...]}, {csv:'...'} o {data:[{...}]}
+    if(ct.includes('application/json')){
+      const j = await res.json();
+      if (Array.isArray(j.aoa) && Array.isArray(j.aoa[0])) {
+        return (j.aoa[0] || []).map(v => (v ?? '').toString() ) || ['id'];
+      }
+      if (typeof j.csv === 'string') {
+        const lines = j.csv.split(/\r?\n/).filter(Boolean);
+        return (lines[0] ? parseCSV(lines[0], ';') : ['id']);
+      }
+      if (Array.isArray(j.data) && j.data.length > 0) {
+        return Object.keys(j.data[0]);
+      }
+      return ['id']; // sin datos
+    }
+
+    // Si es texto/CSV
+    const text = await res.text();
+    const firstLine = (text.split(/\r?\n/).find(l => l.trim().length) || '');
+    const hdr = parseCSV(firstLine, ';');
+    return (hdr && hdr.length) ? hdr : ['id'];
+
+  }catch(err){
+    console.warn('inferHeaders error:', err);
+    return ['id']; // fallback mínimo
+  }
+}
+
+// Vacía un módulo enviando SOLO headers
+async function clearModule(mod){
+  const headers = await inferHeaders(mod);
+  const aoa = [ headers ]; // <<< primera fila headers, sin datos
+  await postAoaTo(mod, aoa);
+}
 // === EXPORT HELPERS (crea botones ocultos y exporta por API si faltan) ===
 const EXPORT_ENDPOINT = '/api/exportar'; // ajusta si tu worker usa otra ruta (p.ej. '/api/ultimos' o '/export')
 
@@ -1470,7 +1519,9 @@ async function exportViaAPI(mod){
     if(!ok){ say('Operación cancelada.'); log('Vaciado cancelado por el usuario'); return; }
     try{
       say('Vaciando módulos…'); log('Vaciando Operatividad, Backlog y SLA…');
-      for(const k of ['operatividad','backlog','sla']){ await postAoaTo(k, []); }
+      for(const k of ['operatividad','backlog','sla']){
+      await clearModule(k);   // usa headers en lugar de []
+    }
       say('Módulos vaciados: Operatividad, Backlog y SLA. ✅'); log('Vaciado completado.');
     }catch(err){
       console.error(err);
@@ -1644,8 +1695,7 @@ case 'vaciar_mod': {
   if(!ok) return 'Operación cancelada.';
 
   try{
-    await postAoaTo(cmd.target, []); // [] => vaciar
-    return `Módulo ${cmd.target.toUpperCase()} vaciado. ✅`;
+    await clearModule(cmd.target);    return `Módulo ${cmd.target.toUpperCase()} vaciado. ✅`;
   }catch(e){
     return `Error al vaciar ${cmd.target.toUpperCase()}: ${e.message}`;
   }
