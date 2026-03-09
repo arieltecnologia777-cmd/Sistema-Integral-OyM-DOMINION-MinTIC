@@ -1967,6 +1967,14 @@ setStage('Parseando CSV…'); setBar(24); setPct(24);
 const { rows, sep } = parseCSVSmart(raw);
 if(!rows.length){ say('El CSV está vacío.'); showProg(false); return; }
 const headers = rows[0];
+      // === NORMALIZACIÓN DE ENCABEZADOS (BACKLOG) ===
+// Si el CSV trae "Preliminar parámetro Fecha", renómbralo a "Fecha"
+const iFecha = headers.findIndex(h => (h ?? '').toString().trim().toLowerCase() === 'preliminar parámetro fecha');
+if (iFecha !== -1) {
+  headers[iFecha] = 'Fecha';
+  try { log('Backlog: renombré "Preliminar parámetro Fecha" → "Fecha".'); } catch(_e){}
+}
+
 // (opcional) log visual del separador detectado
 try { log(`Detector CSV: separador "${sep}"`); } catch(_e){}
 
