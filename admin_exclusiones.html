@@ -1903,6 +1903,23 @@ log(`OP: CSV separado por: "${sep === '\t' ? 'TAB' : sep}"`);
 
 if(!rows.length){ sayOp('El CSV está vacío.'); return; }
 const headers = rows[0] || [];
+
+// >>> BLOQUE NUEVO: Normalizar encabezado "OT Maximo" -> "OT"
+(function(){
+  const idx = (headers || []).findIndex(h => {
+    const k = (h ?? '')
+      .toString()
+      .trim()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')  // sin tildes
+      .toLowerCase();
+    return k === 'ot maximo'; // coincide con "OT Maximo" (con o sin tilde)
+  });
+  if (idx !== -1 && String(headers[idx]).trim() !== 'OT') {
+    headers[idx] = 'OT';
+    try { log('OP: renombré "OT Maximo" → "OT".'); } catch(_e){}
+  }
+})();
+
 // === NUEVO: inicializar el arreglo de salida ===
 let out = [ headers ];
 try { log(`OP: columnas detectadas = ${headers.length}`); } catch(_e){}
