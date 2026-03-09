@@ -721,11 +721,38 @@ async function cargarDesdeServidor(){
     const setReg = new Set();
     for(const it of datos){ if((it.regional??'')!=='') setReg.add(it.regional); }
     regionalesDisponibles = Array.from(setReg).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+// =====================================================
+// FILTRO AUTOMÁTICO POR URL + BLOQUEO SEGURO DEL MENÚ
+// =====================================================
+const regParam = new URLSearchParams(window.location.search).get("regional");
 
-    /* Si el valor actual ya no existe, volver a Todas */
-    if(regionalActual!=='Todas' && !regionalesDisponibles.includes(regionalActual)){
-      regionalActual = 'Todas';
-    }
+if (regParam) {
+
+    // Normalizar a formato exacto como viene en el CSV/backend
+    const target = regParam.trim().toLowerCase();
+
+    // Filtrar datos antes de que se creen filtrados/grupos
+    datos = datos.filter(d => (d.regional ?? "").trim().toLowerCase() === target);
+
+    // Sobrescribir regionalActual
+    regionalActual = regParam;
+
+    // BLOQUEO DEL MENÚ (después de carga de datos, no antes)
+    setTimeout(() => {
+        const btnRegional = document.getElementById("btnRegional");
+        const regionalBox = document.getElementById("regionalBox");
+        const menuRegional = document.getElementById("menuRegional");
+
+        if (btnRegional) {
+            btnRegional.style.pointerEvents = "none";
+            btnRegional.style.opacity = "0.5";
+            btnRegional.title = "Filtro bloqueado para este usuario";
+        }
+
+        if (regionalBox) regionalBox.style.pointerEvents = "none";
+        if (menuRegional) menuRegional.style.display = "none";
+    }, 200);
+}
 
     filtrados=[...datos];
     paginaActual=1;
