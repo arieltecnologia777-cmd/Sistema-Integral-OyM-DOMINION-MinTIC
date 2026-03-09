@@ -1332,6 +1332,19 @@ if(paletteFab){
   colorPill?.addEventListener('input', e => { setCSSVar('--pill', e.target.value); savePalette(); });
 }
 
+// =========================
+// Filtro automático por URL
+// =========================
+(function() {
+    const urlReg = new URLSearchParams(window.location.search).get("regional");
+    if (!urlReg) return;
+
+    regionalActual = urlReg;
+    setTimeout(() => {
+        aplicarBusquedaYFiltro();
+    }, 600);
+})();
+
 /* ======= Arranque ======= */
 loadPalette();
 cargarDesdeServidor();
