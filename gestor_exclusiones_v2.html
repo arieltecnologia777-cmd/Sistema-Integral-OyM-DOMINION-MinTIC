@@ -479,6 +479,100 @@ body {
   color: #4a5260;
   font-weight: 500;
 }
+/* === IA Modal (selector de regional) === */
+.ia-backdrop {
+  position: fixed; inset: 0; z-index: 12000;
+  display: none;
+}
+.ia-backdrop.show { display: block; }
+
+.ia-blur {
+  position:absolute; inset:0;
+  backdrop-filter: blur(8px);
+  background: rgba(10,16,30,.35);
+}
+
+.ia-card {
+  position: relative;
+  width: min(720px, 94vw);
+  margin: 10vh auto 0;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #e8eef6;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  padding: 18px;
+}
+
+.ia-head {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 10px;
+}
+.ia-head img {
+  width: 58px; height: 58px; border-radius: 14px; object-fit: contain;
+  background: #f1f6ff; border: 1px solid #e3ecff;
+  box-shadow: 0 4px 12px rgba(14,42,94,.12);
+}
+.ia-title { font-size: 20px; font-weight: 900; color:#0e2040; }
+.ia-sub { font-size: 14px; color:#41506b; }
+
+.ia-body {
+  margin-top: 8px;
+  background: linear-gradient(180deg,#f8fbff,#fff);
+  border: 1px solid #e7eefb;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.ia-prompt {
+  font-weight: 800; font-size: 18px; color:#0e2040;
+  background: #e8f0ff;
+  border: 1px solid #d6e4ff;
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.ia-actions {
+  display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+}
+.ia-btn {
+  display:flex; flex-direction:column; gap:8px; align-items:flex-start;
+  background:#fff; border:1px solid #d7e0f5; border-radius:14px; padding:14px;
+  cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.ia-btn:hover {
+  background:#f3f8ff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(14,74,168,.16);
+}
+.ia-btn-title { font-size:16px; font-weight:900; color:#0e2040; }
+.ia-btn-sub { font-size:13px; color:#465877; }
+
+.ia-cta {
+  background:#0e4aa8; color:#fff;
+  border-radius:999px; padding:8px 12px;
+  font-weight:700; font-size:14px;
+}
+.ia-cta:hover { background:#0c3f8f; }
+/* === IA Modal (selector de regional) === */
+.ia-backdrop { ... }
+.ia-blur { ... }
+.ia-card { ... }
+.ia-head { ... }
+.ia-head img { ... }
+.ia-title { ... }
+.ia-sub { ... }
+.ia-body { ... }
+.ia-prompt { ... }
+.ia-actions { ... }
+.ia-btn { ... }
+.ia-btn:hover { ... }
+.ia-btn-title { ... }
+.ia-btn-sub { ... }
+.ia-cta { ... }
+.ia-cta:hover { ... }
 </style>
 </head>
 <body>
@@ -591,6 +685,48 @@ body {
 
 <!-- ===== Toast host ===== -->
 <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+<!-- === IA MODAL: Selector de regional (obligatorio) === -->
+<div id="iaModal" class="ia-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="iaTitle">
+  <!-- Fondo difuminado -->
+  <div class="ia-blur"></div>
+
+  <!-- Tarjeta del asistente -->
+  <div class="ia-card">
+    <!-- Cabecera con avatar -->
+    <div class="ia-head">
+      <img src="assistant_casco.png" alt="Asistente con casco - Dominion" width="58" height="58" loading="eager" />
+      <div>
+        <div id="iaTitle" class="ia-title">¡Hola, soy tu asistente!</div>
+        <div class="ia-sub">Debes elegir tu regional para continuar.</div>
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="ia-body">
+      <div class="ia-prompt">¿Con qué regional vas a trabajar hoy?</div>
+
+      <div class="ia-actions" role="list">
+        <!-- Opción R1 -->
+        <button id="iaChooseR1" class="ia-btn" type="button" role="listitem" aria-label="Entrar como R1">
+          <div class="ia-btn-title">Entrar como R1</div>
+          <div class="ia-btn-sub">Verás solo los registros de la Regional <strong>R1</strong>.</div>
+          <span class="ia-cta" aria-hidden="true">Usar R1</span>
+        </button>
+
+        <!-- Opción R2 -->
+        <button id="iaChooseR2" class="ia-btn" type="button" role="listitem" aria-label="Entrar como R2">
+          <div class="ia-btn-title">Entrar como R2</div>
+          <div class="ia-btn-sub">Verás solo los registros de la Regional <strong>R2</strong>.</div>
+          <span class="ia-cta" aria-hidden="true">Usar R2</span>
+        </button>
+      </div>
+
+      <div class="ia-foot">
+        * Selección obligatoria. La pantalla permanecerá bloqueada hasta elegir R1 o R2.
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
 /* [MOD] Detección de módulo + API_BASE dinámica (sin tocar UI) */
@@ -645,6 +781,31 @@ function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.
   const yyyy=d.getFullYear(), hh=String(d.getHours()).padStart(2,'0'), mi=String(d.getMinutes()).padStart(2,'0'), ss=String(d.getSeconds()).padStart(2,'0');
   return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss}`; }
 function setLastUpdate(dateObj){ const el=$('#lastUpdate'); if(el) el.innerHTML = `<span class="badge-dot"></span>Última actualización: ${formatTs(dateObj)}`; }
+// === Helpers IA Modal ===
+function iaOpen(){
+  const m = document.getElementById('iaModal');
+  if(!m) return;
+  m.classList.add('show');
+  m.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+}
+
+function iaClose(){
+  const m = document.getElementById('iaModal');
+  if(!m) return;
+  m.classList.remove('show');
+  m.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+function iaChoose(reg){
+  sessionStorage.setItem("gestor_regional", reg);
+  regionalActual = reg;
+  aplicarBusquedaYFiltro();
+  actualizarBadgeRegional?.();
+  iaClose();
+  showToast(`Mostrando datos de ${reg}.`, 'success');
+}
 
 /* Toast */
 function showToast(msg, kind='info', timeout=3200){
@@ -1507,60 +1668,34 @@ actualizarBadgeRegional();
 
 // También actualizar después de cargar datos
 document.addEventListener("DOMContentLoaded", actualizarBadgeRegional);
-
 // ======================================================
-// ======================================================
-// IA FORZADA: Elegir regional (R1 o R2) obligatoriamente
+// IA MODAL – Selección obligatoria R1/R2
 // ======================================================
 setTimeout(() => {
+  const regParam = new URLSearchParams(location.search).get("regional");
+  if (regParam === "R1" || regParam === "R2") {
+      sessionStorage.setItem("gestor_regional", regParam);
+      regionalActual = regParam;
+      aplicarBusquedaYFiltro();
+      actualizarBadgeRegional?.();
+      return;
+  }
 
-    // Si ya viene por URL, usarlo y no preguntar
-    const regParam = new URLSearchParams(location.search).get("regional");
-    if (regParam === "R1" || regParam === "R2") {
-        sessionStorage.setItem("gestor_regional", regParam);
-        return;
-    }
+  const stored = sessionStorage.getItem("gestor_regional");
+  if (stored === "R1" || stored === "R2") {
+      regionalActual = stored;
+      aplicarBusquedaYFiltro();
+      actualizarBadgeRegional?.();
+      return;
+  }
 
-    // Si ya está guardada, usarla
-    let stored = sessionStorage.getItem("gestor_regional");
-    if (stored === "R1" || stored === "R2") {
-        regionalActual = stored;
-        aplicarBusquedaYFiltro();
-        return;
-    }
+  iaOpen();
+  document.getElementById('iaChooseR1').onclick = () => iaChoose("R1");
+  document.getElementById('iaChooseR2').onclick = () => iaChoose("R2");
 
-    // === MODO SEGURO: BUCLE OBLIGATORIO ===
-    let reg = null;
+}, 600);
 
-    while (reg !== "R1" && reg !== "R2") {
-
-        reg = prompt(
-            "Hola 👋 Soy tu asistente IA.\n\n" +
-            "Debes seleccionar la regional con la que estás trabajando:\n\n" +
-            " - Escribe R1\n" +
-            " - Escribe R2\n\n" +
-            "Esta selección es obligatoria."
-        );
-
-        // Si Cancelar o vacío → volver a pedir
-        if (!reg) continue;
-
-        reg = reg.trim().toUpperCase();
-
-        if (reg !== "R1" && reg !== "R2") {
-            alert("⚠️ Opción no válida.\n\nDebes escribir exactamente R1 o R2 para continuar.");
-        }
-    }
-
-    // Cuando es válido, se guarda
-    sessionStorage.setItem("gestor_regional", reg);
-
-    regionalActual = reg;
-    aplicarBusquedaYFiltro();
-
-    alert("Perfecto 👌\nMostrando datos de " + reg);
-
-}, 800);/* ======================
+/* ======================
    SIDEBAR NAV + HAMBURGER
 ====================== */
 
