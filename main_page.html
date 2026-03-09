@@ -822,15 +822,20 @@ html[data-theme="dark"] .exclusiones-card .icon{
   (function(){
     // Contraseñas (actualizadas)
     const ACCESS_PASSWORDS = {
-      admin: 'adm1nroot#',
-      gestor: 'g3st0rroot#'
-    };
+  admin: "adm1n#2026",
 
-    // Destinos (actualizados solo gestor)
+  // NUEVAS CONTRASEÑAS POR REGIONAL
+  gestor_r1: "r1#2026",
+  gestor_r2: "r2#2026"
+};
+
     const TARGET_URLS = {
-      admin: 'admin_exclusiones.html',
-      gestor: 'https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/gestor_exclusiones_v2.html'
-    };
+  admin: "admin_exclusiones.html",
+
+  // Apertura del módulo gestor con filtro preaplicado
+  gestor_r1: "gestor_exclusiones_v2.html?regional=R1",
+  gestor_r2: "gestor_exclusiones_v2.html?regional=R2"
+};
 
     const modal = makeModal('pwdBackdrop', 'pwdTitle');
     const $pwdInput    = document.getElementById('pwdInput');
@@ -860,7 +865,21 @@ html[data-theme="dark"] .exclusiones-card .icon{
     function confirmPwd(){
       const val = ($pwdInput?.value ?? '').trim();
       if (!currentRole) return;
-      if (val === ACCESS_PASSWORDS[currentRole]){
+      // --- NUEVO BLOQUE ESPECIAL DE GESTORES POR REGIONAL ---
+let destino = null;
+
+if (val === ACCESS_PASSWORDS.gestor_r1) destino = "gestor_r1";
+if (val === ACCESS_PASSWORDS.gestor_r2) destino = "gestor_r2";
+
+if (currentRole === "gestor" && destino) {
+    closePwd();
+    window.__closeSelectorIfOpen?.();
+    window.open(TARGET_URLS[destino], "_blank", "noopener,noreferrer");
+    return;
+}
+
+// Validación normal del admin
+if (val === ACCESS_PASSWORDS[currentRole]) {
         // Recordar último módulo para futura sugerencia (no salto directo)
         sessionStorage.setItem('last_module', currentRole);
 
@@ -1061,4 +1080,3 @@ html[data-theme="dark"] .exclusiones-card .icon{
 </script>
 </body>
 </html>
-
