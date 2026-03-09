@@ -721,76 +721,36 @@ async function cargarDesdeServidor(){
     const setReg = new Set();
     for(const it of datos){ if((it.regional??'')!=='') setReg.add(it.regional); }
     regionalesDisponibles = Array.from(setReg).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
-// =====================================================
-// FILTRO AUTOMÁTICO POR URL + BLOQUEO SEGURO DEL MENÚ
-// =====================================================
-const regParam = new URLSearchParams(window.location.search).get("regional");
 
-if (regParam) {
-
-    // Normalizar a formato exacto como viene en el CSV/backend
-    const target = regParam.trim().toLowerCase();
-
-    // Filtrar datos antes de que se creen filtrados/grupos
-    datos = datos.filter(d => (d.regional ?? "").trim().toLowerCase() === target);
-
-    // Sobrescribir regionalActual
-    regionalActual = regParam;
-
-    // BLOQUEO DEL MENÚ (después de carga de datos, no antes)
-    setTimeout(() => {
-        const btnRegional = document.getElementById("btnRegional");
-        const regionalBox = document.getElementById("regionalBox");
-        const menuRegional = document.getElementById("menuRegional");
-
-        if (btnRegional) {
-            btnRegional.style.pointerEvents = "none";
-            btnRegional.style.opacity = "0.5";
-            btnRegional.title = "Filtro bloqueado para este usuario";
-        }
-
-        if (regionalBox) regionalBox.style.pointerEvents = "none";
-        if (menuRegional) menuRegional.style.display = "none";
-    }, 200);
-}
+    /* Si el valor actual ya no existe, volver a Todas */
+    if(regionalActual!=='Todas' && !regionalesDisponibles.includes(regionalActual)){
+      regionalActual = 'Todas';
+    }
 
     filtrados=[...datos];
     paginaActual=1;
     construirGruposPorOT();
     buildRegionalMenu();    // poblar menú
     updateRegionalLabel();  // actualizar etiqueta del botón
-// =====================================================
-// FILTRO AUTOMÁTICO POR URL + BLOQUEO DEL MENÚ REGIONAL
-// =====================================================
-const regParam = new URLSearchParams(window.location.search).get("regional");
-if (regParam) {
 
-    // 1. Forzar regional fija
-    regionalActual = regParam;
-
-    // 2. Filtrar datos por regional ANTES del render
-    filtrados = datos.filter(d => (d.regional ?? "") === regParam);
-    construirGruposPorOT();
+    render();
+    setLastUpdate(new Date());
+    // Reseteo tracking de edición (la regla verde depende de pendientes=0)
+    otsEnEdicion.clear();
+    showToast('Datos cargados desde el servidor.', 'info');
+  }catch(err){
+    console.error(err);
+    mostrarAlerta('No se pudo cargar el dataset del servidor.');
+    showToast('Error al cargar datos del servidor.', 'error');
+    // Filtro vacío si falla
+    regionalesDisponibles = [];
+    regionalActual = 'Todas';
+    buildRegionalMenu();
     updateRegionalLabel();
-
-    // 3. BLOQUEAR MENÚ REGIONAL (IMPORTANTE)
-    const btnRegional = document.getElementById("btnRegional");
-    const menuRegional = document.getElementById("menuRegional");
-    const regionalBox = document.getElementById("regionalBox");
-
-    if (btnRegional) {
-        btnRegional.style.pointerEvents = "none";   // No clic
-        btnRegional.style.opacity = "0.55";         // Visual deshabilitado
-        btnRegional.title = "Filtro bloqueado";     // Tooltip
-    }
-
-    if (menuRegional) {
-        menuRegional.style.display = "none";        // Oculta menú si intentan abrirlo vía DOM
-    }
-
-    if (regionalBox) {
-        regionalBox.style.pointerEvents = "none";   // Bloqueo envolvente
-    }
+  }finally{
+    btn.disabled=false; btn.textContent='Actualizar';
+    updateHeaderStats();
+  }
 }
 
 /* ======= Cómputos ======= */
@@ -1371,19 +1331,6 @@ if(paletteFab){
   colorLine?.addEventListener('input', e => { setCSSVar('--line', e.target.value); savePalette(); });
   colorPill?.addEventListener('input', e => { setCSSVar('--pill', e.target.value); savePalette(); });
 }
-
-// =========================
-// Filtro automático por URL
-// =========================
-(function() {
-    const urlReg = new URLSearchParams(window.location.search).get("regional");
-    if (!urlReg) return;
-
-    regionalActual = urlReg;
-    setTimeout(() => {
-        aplicarBusquedaYFiltro();
-    }, 600);
-})();
 
 /* ======= Arranque ======= */
 loadPalette();
