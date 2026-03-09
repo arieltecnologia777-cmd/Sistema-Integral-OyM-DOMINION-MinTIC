@@ -775,10 +775,38 @@ aplicarBusquedaYFiltro();  // vuelve a renderizar con el filtro aplicado
 
 /* ======= Cómputos ======= */
 function contarCompletados(ot){
-  const items = datos.filter(r => (r.ot??"").trim() === (ot??"").trim());
-  const total = items.length;
-  const completos = items.filter(r => (r.causa??"").trim() !== "" && (r.fecha??"").trim() !== "").length;
-  return { completos, total, pendientes: Math.max(0, total - completos) };
+    // Regional activa del gestor (R1 / R2)
+    const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
+
+    // Registros de la OT completa (todas las regionales)
+    const itemsOT = datos.filter(r =>
+        (r.ot ?? "").toString().trim() === (ot ?? "").toString().trim()
+    );
+
+    let items;
+
+    // === SI EL GESTOR ES R1 O R2 → FILTRAR SOLO ESA REGIONAL ===
+    if (regActiva !== "Todas") {
+        items = itemsOT.filter(r =>
+            (r.regional ?? "").toString().trim() === regActiva
+        );
+    } else {
+        // === ADMIN VE TODO NORMAL ===
+        items = itemsOT;
+    }
+
+    const total = items.length;
+
+    const completos = items.filter(r =>
+        (r.causa ?? "").toString().trim() !== "" &&
+        (r.fecha ?? "").toString().trim() !== ""
+    ).length;
+
+    return {
+        completos,
+        total,
+        pendientes: Math.max(0, total - completos)
+    };
 }
 function calcularPendientesGlobal(){
   const map = new Map();
