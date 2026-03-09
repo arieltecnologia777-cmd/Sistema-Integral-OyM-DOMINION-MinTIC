@@ -1967,7 +1967,57 @@ setStage('Parseando CSV…'); setBar(24); setPct(24);
 const { rows, sep } = parseCSVSmart(raw);
 if(!rows.length){ say('El CSV está vacío.'); showProg(false); return; }
 const headers = rows[0];
-      // === NORMALIZACIÓN DE ENCABEZADOS (BACKLOG) ===
+// === Normalización de encabezados para "OT" (BACKLOG) ===
+// Construimos un mapa nombre_normalizado -> índice
+const normMap = new Map();
+headers.forEach((h, i) => {
+  const k = (h ?? '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // sin acentos
+    .replace(/\s+/g, ' ')                            // espacios simples
+    .replace(/[^\w# ]/g, '')                         // fuera símbolos raros
+    .replace(/\s+/g, ' ')                            // compacta
+    .trim();
+  normMap.set(k, i);
+});
+
+// Lista de alias aceptados para la columna OT
+const OT_ALIASES = [
+  'ot',
+  'ot maximo',
+  '# ot',
+  'orden de trabajo',
+  'orden_de_trabajo',
+  'ot_maximo'
+];
+
+// Buscamos si alguno existe en el archivo
+let otIdx = -1;
+let otAliasKey = null;
+for (const alias of OT_ALIASES) {
+  if (normMap.has(alias)) {
+    otIdx = normMap.get(alias);
+    otAliasKey = alias;
+    break;
+  }
+}
+
+// Si existe pero no se llama exactamente "OT", renombramos el encabezado
+if (otIdx !== -1 && (headers[otIdx] ?? '').toString().trim() !== 'OT') {
+  headers[otIdx] = 'OT';
+  try { log(`Backlog: Renombré columna "${otAliasKey}" → "OT"`); } catch(_e){}
+}
+
+// Si NO existe ninguna, avisamos por log (no detenemos el flujo)
+if (otIdx === -1) {
+  try { log('Backlog: No encontré columna "OT" ni alias conocidos. Continúo sin renombrar.'); } catch(_e){}
+}
+
+// ← IMPORTANTE: no creamos aquí el "out"; en Backlog lo defines más abajo.
+// Este bloque solo ajusta el encabezado antes del filtrado.
+// === NORMALIZACIÓN DE ENCABEZADOS (BACKLOG) ===
 // Si el CSV trae "Preliminar parámetro Fecha", renómbralo a "Fecha"
 const iFecha = headers.findIndex(h => (h ?? '').toString().trim().toLowerCase() === 'preliminar parámetro fecha');
 if (iFecha !== -1) {
