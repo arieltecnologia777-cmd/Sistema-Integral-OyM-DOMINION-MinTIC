@@ -1509,50 +1509,58 @@ actualizarBadgeRegional();
 document.addEventListener("DOMContentLoaded", actualizarBadgeRegional);
 
 // ======================================================
-// IA: Preguntar al gestor qué regional desea ver (R1/R2)
+// ======================================================
+// IA FORZADA: Elegir regional (R1 o R2) obligatoriamente
 // ======================================================
 setTimeout(() => {
 
-    // Si ya viene con ?regional=R1/R2 no preguntar
-    let stored = sessionStorage.getItem("gestor_regional");
+    // Si ya viene por URL, usarlo y no preguntar
     const regParam = new URLSearchParams(location.search).get("regional");
-
-    // Si viene por URL -> guardar y no preguntar
-    if (regParam) {
-        sessionStorage.setItem("gestor_regional", regParam.toUpperCase());
+    if (regParam === "R1" || regParam === "R2") {
+        sessionStorage.setItem("gestor_regional", regParam);
         return;
     }
 
-    // Si ya está guardada -> no preguntar
-    if (stored) {
+    // Si ya está guardada, usarla
+    let stored = sessionStorage.getItem("gestor_regional");
+    if (stored === "R1" || stored === "R2") {
         regionalActual = stored;
         aplicarBusquedaYFiltro();
         return;
     }
 
-    const choice = prompt(
-        "Hola 👋 Soy tu asistente IA.\n\n¿Qué REGIONAL deseas ver?\n\n - Escribe R1\n - Escribe R2\n"
-    );
+    // === MODO SEGURO: BUCLE OBLIGATORIO ===
+    let reg = null;
 
-    if (!choice) return;
+    while (reg !== "R1" && reg !== "R2") {
 
-    const reg = choice.trim().toUpperCase();
+        reg = prompt(
+            "Hola 👋 Soy tu asistente IA.\n\n" +
+            "Debes seleccionar la regional con la que estás trabajando:\n\n" +
+            " - Escribe R1\n" +
+            " - Escribe R2\n\n" +
+            "Esta selección es obligatoria."
+        );
 
-    if (reg === "R1" || reg === "R2") {
+        // Si Cancelar o vacío → volver a pedir
+        if (!reg) continue;
 
-        // Guardar elección del gestor
-        sessionStorage.setItem("gestor_regional", reg);
+        reg = reg.trim().toUpperCase();
 
-        regionalActual = reg;
-        aplicarBusquedaYFiltro();
-        alert("Perfecto 👌 Mostrando datos de " + reg);
-
-    } else {
-        alert("No entendí la opción. Puedes elegir la regional manualmente.");
+        if (reg !== "R1" && reg !== "R2") {
+            alert("⚠️ Opción no válida.\n\nDebes escribir exactamente R1 o R2 para continuar.");
+        }
     }
 
-}, 1200);
-/* ======================
+    // Cuando es válido, se guarda
+    sessionStorage.setItem("gestor_regional", reg);
+
+    regionalActual = reg;
+    aplicarBusquedaYFiltro();
+
+    alert("Perfecto 👌\nMostrando datos de " + reg);
+
+}, 800);/* ======================
    SIDEBAR NAV + HAMBURGER
 ====================== */
 
