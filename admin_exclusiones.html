@@ -1903,6 +1903,59 @@ log(`OP: CSV separado por: "${sep === '\t' ? 'TAB' : sep}"`);
 
 if(!rows.length){ sayOp('El CSV está vacío.'); return; }
 const headers = rows[0] || [];
+// === NORMALIZACIÓN DE ENCABEZADOS (OPERATIVIDAD) ===
+// Objetivo: garantizar que la columna se llame "OT Maximo" sin importar cómo venga.
+
+// 1) Construimos un mapa de nombre_normalizado -> índice
+const opNormMap = new Map();
+headers.forEach((h, i) => {
+  const k = (h ?? '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // sin acentos
+    .replace(/\s+/g, ' ')                            // espacios simples
+    .replace(/[^\w# ]/g, '')                         // fuera símbolos raros
+    .replace(/\s+/g, ' ')                            // compacta
+    .trim();
+  opNormMap.set(k, i);
+});
+
+// 2) Alias aceptados para "OT Maximo"
+const OP_OT_MAX_ALIASES = [
+  'ot maximo',         // forma canónica que dejaremos
+  'ot máximo',         // con tilde
+  'ot',                // genérico
+  '# ot',              // con numeral
+  'orden de trabajo',  // texto largo
+  'orden_de_trabajo',
+  'ot_maximo'
+];
+
+// 3) Buscar si alguno existe
+let opOtMaxIdx = -1;
+let opOtMaxAliasKey = null;
+for (const alias of OP_OT_MAX_ALIASES) {
+  if (opNormMap.has(alias)) {
+    opOtMaxIdx = opNormMap.get(alias);
+    opOtMaxAliasKey = alias;
+    break;
+  }
+}
+
+// 4) Si existe pero no se llama exactamente "OT Maximo", renombrar
+if (opOtMaxIdx !== -1 && (headers[opOtMaxIdx] ?? '').toString().trim() !== 'OT Maximo') {
+  headers[opOtMaxIdx] = 'OT Maximo';
+  try { log(`OP: Renombré columna "${opOtMaxAliasKey}" → "OT Maximo"`); } catch(_e){}
+}
+
+// 5) Si no existe ninguna coincidencia, solo lo informamos (no detenemos flujo)
+if (opOtMaxIdx === -1) {
+  try { log('OP: No encontré columna "OT Maximo" ni alias conocidos. Continúo sin renombrar.'); } catch(_e){}
+}
+
+// 💡 IMPORTANTE: el contenedor de salida "out" se crea más abajo.
+// Aquí solo ajustamos encabezados antes del filtrado.
 // === NUEVO: inicializar el arreglo de salida ===
 let out = [ headers ];
 try { log(`OP: columnas detectadas = ${headers.length}`); } catch(_e){}
@@ -1985,10 +2038,10 @@ headers.forEach((h, i) => {
 
 // Lista de alias aceptados para la columna OT
 const OT_ALIASES = [
-  'OT',
-  'Ot Maximo',
+  'ot',
+  'Ot maximo',
   '# ot',
-  'Orden De Trabajo',
+  'orden de trabajo',
   'orden_de_trabajo',
   'ot_maximo'
 ];
