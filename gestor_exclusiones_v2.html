@@ -1139,35 +1139,6 @@ function updateEstadosOT(ot){
   updateHeaderStats();
 }
 
-    // ==== GESTOR REGIONAL (R1 o R2) ====
-
-    // Eliminar o desactivar comportamiento global de eliminar
-    if (btnDel) btnDel.disabled = true;
-
-    // Si completó TODOS sus registros regionales
-    if (pendientes === 0) {
-        btnPrim.innerHTML = `${svgCheck()}${regActiva} gestionada`;
-        btnPrim.classList.add('success');
-        btnPrim.disabled = true;
-        btnPrim.setAttribute('data-mode','done');
-        otsEnEdicion.delete(ot);
-    } else {
-        btnPrim.classList.remove('success');
-        btnPrim.disabled = false;
-
-        if (otsEnEdicion.has(ot)) {
-            btnPrim.innerHTML = `${svgPencil()}Continuar ${regActiva}`;
-            btnPrim.setAttribute('data-mode','continuar');
-        } else {
-            btnPrim.innerHTML = `${svgGear()}Gestionar ${regActiva}`;
-            btnPrim.setAttribute('data-mode','gestionar');
-        }
-    }
-
-    updateHeaderStats();
-}
-
-
 /* ======= SVG helpers ======= */
 function svgGear(){
   return `
