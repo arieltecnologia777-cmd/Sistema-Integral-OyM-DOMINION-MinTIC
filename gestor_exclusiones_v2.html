@@ -1059,44 +1059,85 @@ function construirGruposPorOT(){
 
 /* ======= Actualización ligera (estados por OT) ======= */
 function updateEstadosOT(ot){
-    // Regional activa del gestor
-    const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
+  // Regional activa del gestor
+  const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
-    // Obtener métricas por regional (la función ya filtra por regional)
-    const { pendientes, total } = contarCompletados(ot);
+  // Recalcular métricas (por regional si aplica)
+  const { pendientes, total } = contarCompletados(ot);
 
-    // Obtener elementos del DOM
-    const btnPrim = document.getElementById(`btn_primary_${cssId(ot)}`);
-    const tr = btnPrim ? btnPrim.closest('tr') : null;
-    const pendEl = tr ? tr.querySelector('.count-pend') : null;
-    const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
+  // -------------------------------
+  // (A) MODAL: habilitar / deshabilitar botón Enviar
+  // -------------------------------
+  const modalAbierto = document.getElementById('modalRegistros')?.classList.contains('show');
+  if (modalAbierto && otModalActual === ot && !modalSoloVista) {
+    const modalEnviarBtn = document.getElementById('modalEnviar');
+    if (modalEnviarBtn) {
+      modalEnviarBtn.textContent = 'Enviar registros';
+      // Se habilita solo si NO hay pendientes en la regional activa
+      modalEnviarBtn.disabled = pendientes !== 0 || total === 0;
+    }
+  }
 
-    // Actualizar contador local
+  // -------------------------------
+  // (B) TABLA: contador y estado principal del botón por OT
+  // -------------------------------
+  const btnPrim = document.getElementById(`btn_primary_${cssId(ot)}`);
+  const btnDel  = document.getElementById(`btn_eliminar_${cssId(ot)}`);
+
+  if (btnPrim) {
+    const tr = btnPrim.closest('tr');
+    const pendEl = tr?.querySelector('.count-pend');
     if (pendEl) pendEl.textContent = String(pendientes);
 
-    // ADMIN mantiene comportamiento global
+    // ADMIN (Todas): comportamiento global de eliminar
     if (regActiva === "Todas") {
-        if (pendientes === 0) {
-            btnPrim.innerHTML = `${svgCheck()}OT gestionada`;
-            btnPrim.classList.add('success');
-            btnPrim.disabled = true;
-            btnPrim.setAttribute('data-mode','done');
-            if(btnDel) btnDel.disabled = false;
+      if (btnDel) btnDel.disabled = pendientes !== 0;
+
+      if (pendientes === 0) {
+        btnPrim.innerHTML = `${svgCheck()}OT gestionada`;
+        btnPrim.classList.add('success');
+        btnPrim.disabled = true;
+        btnPrim.setAttribute('data-mode','done');
+        otsEnEdicion.delete(ot);
+      } else {
+        btnPrim.classList.remove('success');
+        btnPrim.disabled = false;
+        if (otsEnEdicion.has(ot)) {
+          btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
+          btnPrim.setAttribute('data-mode','continuar');
         } else {
-            btnPrim.classList.remove('success');
-            btnPrim.disabled = false;
-            if (otsEnEdicion.has(ot)) {
-                btnPrim.innerHTML = `${svgPencil()}Continuar editando`;
-                btnPrim.setAttribute('data-mode','continuar');
-            } else {
-                btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
-                btnPrim.setAttribute('data-mode','gestionar');
-            }
-            if(btnDel) btnDel.disabled = true;
+          btnPrim.innerHTML = `${svgGear()}Gestionar registros`;
+          btnPrim.setAttribute('data-mode','gestionar');
         }
-        updateHeaderStats();
-        return;
+      }
+      updateHeaderStats();
+      return;
     }
+
+    // GESTOR REGIONAL (R1 / R2): eliminar siempre inhabilitado en tabla
+    if (btnDel) btnDel.disabled = true;
+
+    if (pendientes === 0 && total > 0) {
+      btnPrim.innerHTML = `${svgCheck()}${regActiva} gestionada`;
+      btnPrim.classList.add('success');
+      btnPrim.disabled = true;
+      btnPrim.setAttribute('data-mode','done');
+      otsEnEdicion.delete(ot);
+    } else {
+      btnPrim.classList.remove('success');
+      btnPrim.disabled = false;
+      if (otsEnEdicion.has(ot)) {
+        btnPrim.innerHTML = `${svgPencil()}Continuar ${regActiva}`;
+        btnPrim.setAttribute('data-mode','continuar');
+      } else {
+        btnPrim.innerHTML = `${svgGear()}Gestionar ${regActiva}`;
+        btnPrim.setAttribute('data-mode','gestionar');
+      }
+    }
+  }
+
+  updateHeaderStats();
+}
 
     // ==== GESTOR REGIONAL (R1 o R2) ====
 
