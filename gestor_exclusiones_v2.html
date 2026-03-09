@@ -817,18 +817,59 @@ function calcularPendientesGlobal(){
 }
 
 /* ======= Header stats ======= */
+/* ======= Header stats ======= */
 function updateHeaderStats(){
-  const totalItems = datos.length;
-  const map = new Map(); for(const r of datos){ const k=(r.ot??'').toString().trim(); if(!map.has(k)) map.set(k,1); }
+
+  // Regional activa (R1 / R2 / Todas)
+  const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
+
+  let items;
+
+  // === Si es gestor R1/R2 → Filtrar por esa regional ===
+  if (regActiva !== "Todas") {
+      items = datos.filter(r =>
+          (r.regional ?? "").toString().trim() === regActiva
+      );
+  } 
+  else {
+      // Admin ve TODO
+      items = datos;
+  }
+
+  // Contar grupos (OT) SOLO de la regional activa
+  const map = new Map();
+  for(const r of items){
+      const k = (r.ot ?? '').toString().trim();
+      if(!map.has(k)) map.set(k,1);
+  }
+  const totalItems = items.length;
   const totalGrupos = map.size;
-  const pendientesGlobales = calcularPendientesGlobal();
+
+  // Pendientes SOLO de la regional activa
+  let pendientesRegional = 0;
+  for(const [k] of map){
+      const { pendientes } = contarCompletados(k);
+      pendientesRegional += pendientes;
+  }
+
+  // Actualizar UI
   const statsEl = document.getElementById('headerStats');
   if(statsEl){
-    statsEl.textContent = `${totalItems} registros • ${totalGrupos} grupos (por OT) • ${pendientesGlobales} pendientes`;
-    if(totalItems > 0 && pendientesGlobales === 0){ statsEl.classList.add('ok'); } else { statsEl.classList.remove('ok'); }
+      statsEl.textContent = `${totalItems} registros • ${totalGrupos} grupos (por OT) • ${pendientesRegional} pendientes`;
+
+      if(totalItems > 0 && pendientesRegional === 0){
+          statsEl.classList.add('ok');   // verde
+      }
+      else{
+          statsEl.classList.remove('ok');
+      }
   }
+
+  // Botón eliminar global se mantiene local
   const btnGlobal = document.getElementById('btnEliminarGlobal');
-  if(btnGlobal){ btnGlobal.disabled = !(totalItems>0 && pendientesGlobales===0); }
+  if(btnGlobal){
+      btnGlobal.disabled = !(totalItems > 0 && pendientesRegional === 0);
+  }
 }
 
 /* ======= Búsqueda + Filtro Regional ======= */
