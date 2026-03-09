@@ -516,6 +516,18 @@ body {
 <div class="header">
   <div class="header-title">Exclusiones de Operatividad</div>
   <div class="header-sub"><strong>¡Bienvenido al modulo de exclusiones!</strong></div>
+<div id="regionalActivoBadge"
+     style="margin-top:8px; 
+            display:inline-block; 
+            background:#e8eef7; 
+            color:#0e4aa8; 
+            border:1px solid #cfdaf0;
+            padding:6px 12px; 
+            border-radius:10px; 
+            font-size:13px; 
+            font-weight:600;">
+    Regional activa: —
+</div>
   <div class="controls">
     <button id="btnCargar" class="btn btn-blue" type="button">Cargar / Actualizar</button>
 
@@ -765,6 +777,7 @@ aplicarBusquedaYFiltro();  // vuelve a renderizar con el filtro aplicado
   }finally{
     btn.disabled=false; btn.textContent='Actualizar';
     updateHeaderStats();
+    actualizarBadgeRegional();
   }
 }
 
@@ -1392,6 +1405,22 @@ if(paletteFab){
 /* ======= Arranque ======= */
 loadPalette();
 cargarDesdeServidor();
+// ======================================================
+// PASO 5: Mostrar badge de regional activa
+// ======================================================
+function actualizarBadgeRegional() {
+    const badge = document.getElementById("regionalActivoBadge");
+    if (!badge) return;
+
+    const reg = sessionStorage.getItem("gestor_regional") || regionalActual || "Todas";
+    badge.textContent = "Regional activa: " + reg;
+}
+
+// Ejecutar inmediatamente y después de carga
+actualizarBadgeRegional();
+
+// También actualizar después de cargar datos
+document.addEventListener("DOMContentLoaded", actualizarBadgeRegional);
 
 // ======================================================
 // IA: Preguntar al gestor qué regional desea ver (R1/R2)
