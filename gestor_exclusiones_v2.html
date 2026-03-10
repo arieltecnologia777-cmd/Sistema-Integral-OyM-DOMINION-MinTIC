@@ -883,6 +883,9 @@ async function cargarDesdeServidor(){
     /* Normalizamos a estructura local usada por la UI (tolerante a casing en 'regional') */
     datos = arr.map((r,i)=>({
       id:i+1,
+idReal: (
+  r.ID ?? r.Id ?? r.id ?? r.Sitio ?? r.sitio ?? ''
+).toString().trim(),
       fecha: r.fecha ?? '',
       ot : (r.ot ?? '').toString(),
       causa: r.causa ?? '',
@@ -1230,14 +1233,16 @@ function render(){
     const regsSet = new Set((g.items ?? []).map(x => (x.regional ?? '').toString().trim()).filter(Boolean));
     const regionalTexto = regsSet.size ? Array.from(regsSet).join(', ') : '—';
 
-// >>> NUEVO: etiqueta de ID para la fila (tomamos el primer ID del grupo)
+// >>> BACKLOG: ID real por OT (primer registro del grupo)
+// No usamos 'first.id' (índice local); usamos 'first.idReal' que viene del backend.
 let idLabel = '—';
-try{
-  if ((g.items ?? []).length) {
-    const first = g.items[0];
-    idLabel = String(first.id ?? '—');
-  }
-}catch(_){}
+if (__MOD === 'backlog') {
+  try {
+    const first = (g.items ?? [])[0];
+    const v = (first?.idReal ?? '').toString().trim();
+    if (v) idLabel = v;
+  } catch(_) {}
+}
 
     const tr=document.createElement('tr');
     const idPrimario = `btn_primary_${cssId(otClave)}`;
@@ -1618,8 +1623,9 @@ btnRegional?.addEventListener('click', (e)=>{
   if(menuRegional.classList.contains('show')) closeRegionalMenu(); else openRegionalMenu();
 });
 document.addEventListener('click', (e)=>{
-  if(!regionalBox.contains(e.target)) closeRegionalMenu();
+  if (regionalBox && !regionalBox.contains(e.target)) closeRegionalMenu();
 });
+``
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Escape') closeRegionalMenu();
 });
