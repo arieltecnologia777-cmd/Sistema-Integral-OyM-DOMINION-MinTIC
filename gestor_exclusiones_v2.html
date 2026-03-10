@@ -882,8 +882,10 @@ async function cargarDesdeServidor(){
     const arr = Array.isArray(j?.data) ? j.data : [];
     /* Normalizamos a estructura local usada por la UI (tolerante a casing en 'regional') */
    datos = arr.map((r,i)=>({
-      id:i+1,
-      idReal: (
+    id: i+1,
+
+    // ID REAL (Operatividad + Backlog + variantes)
+    idReal: (
         r.ID ??
         r.Id ??
         r.id ??
@@ -895,13 +897,24 @@ async function cargarDesdeServidor(){
         r.Sitio ??
         r.sitio ??
         ''
-      ).toString().trim(),
-      fecha: r.fecha ?? '',
-      ot : (r.ot ?? '').toString(),
-      fotos: [], // adjuntos solo locales para UI
-      /* [MOD] inyectar 'tipo' según módulo activo */
-      tipo: __MOD
-    })).filter(x=>x.ot);
+    ).toString().trim(),
+
+    fecha: r.fecha ?? '',
+    ot: (r.ot ?? '').toString(),
+
+    // ⚠️ ESTE FALTABA → ¡por eso se rompió todo!
+    regional: (
+        r.regional ??
+        r.Regional ??
+        r.REGIONAL ??
+        r.region ??
+        r.Region ??
+        ''
+    ).toString().trim(),
+
+    fotos: [],
+    tipo: __MOD
+})).filter(x => x.ot);
 
     /* Armar lista de regionales detectadas */
     const setReg = new Set();
