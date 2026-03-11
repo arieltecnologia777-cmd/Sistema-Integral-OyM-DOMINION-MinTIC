@@ -631,8 +631,36 @@ zoom: 0.99;
       justify-content: flex-end;
       margin-top: 14px;
     }
-  </style>
 
+  /* Panel de notificaciones */
+#notifPanel .modal {
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 18px 38px rgba(14,42,94,.25);
+}
+.dark #notifPanel .modal {
+  background:#0f1a2b;
+  box-shadow:0 18px 38px rgba(0,0,0,.5);
+}
+
+#notifList .n-item {
+  padding:10px 12px;
+  border-radius:12px;
+  background:#f7faff;
+  border:1px solid #dbe6ff;
+  box-shadow:0 4px 10px rgba(14,42,94,.08);
+  font-size:13px;
+  color:#22314a;
+}
+.dark #notifList .n-item {
+  background:#0f1930;
+  border-color:#22314a;
+  color:#eaf2ff;
+}
+
+#notifPanel {
+  z-index: 9999 !important;
+}
   <style>
     /* Botonera en una sola línea (dentro de la card del asistente) */
     .asist-card .btn-row{
@@ -2756,9 +2784,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!btn) return;
 
     btn.addEventListener('click', () => {
-      btn.classList.remove('has-new');
-      markAllSeen();
-    });
+  btn.classList.remove('has-new');
+  markAllSeen();
+  openNotifPanel();   // ← ABRE EL PANEL
+});
 
     checkAll();
     setInterval(checkAll, INTERVAL);
@@ -2814,6 +2843,105 @@ triggerBellDing();
 // === Prueba rápida manual desde consola ===
 // triggerBellDingTwice();
 
+/* ==== PANEL DE NOTIFICACIONES (abrir + cargar lista) ==== */
+
+function openNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  const list  = document.getElementById('notifList');
+  if(!panel || !list) return;
+
+  panel.style.display = 'flex';
+
+  // Cargar los ítems del backend
+  loadNotifications();
+}
+
+// ==== Helpers panel ====
+function closeNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  if(panel) panel.style.display = 'none';
+}
+
+// Delegación de eventos: funciona aunque el botón aún no exista
+document.addEventListener('click', (e) => {
+  const tgt = e.target;
+
+  // 1) Botón "Cerrar"
+  if (tgt && (tgt.id === 'notifClose' || tgt.closest?.('#notifClose'))) {
+    e.preventDefault();
+    closeNotifPanel();
+    return;
+  }
+
+  // 2) Clic en el fondo difuminado (backdrop), fuera del cuadro .modal
+  const backdrop = document.getElementById('notifPanel');
+  if (backdrop && tgt === backdrop) {
+    closeNotifPanel();
+    return;
+  }
+});
+
+// 3) ESC para cerrar
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeNotifPanel();
+});
+
+// ==== Cargar lista de notificaciones del Worker ====
+
+async function loadNotifications(){
+  const list  = document.getElementById('notifList');
+  if(!list) return;
+
+  list.innerHTML = `<div class="n-item">Cargando notificaciones…</div>`;
+
+  try{
+    const res = await fetch('https://exclusiones-worker.modulo-de-exclusiones.workers.dev/admin/notificaciones/list');
+    const j = await res.json().catch(()=>null);
+
+    if(!j || !j.ok){
+      list.innerHTML = `<div class="n-item">Error al cargar notificaciones.</div>`;
+      return;
+    }
+
+    const arr = j.items || [];
+
+    if(arr.length === 0){
+      list.innerHTML = `<div class="n-item">No hay notificaciones recientes.</div>`;
+      return;
+    }
+
+    list.innerHTML = arr.map(n => `
+      <div class="n-item">
+        <strong>${n.region || '—'}</strong><br>
+        ${n.mensaje || ''}<br>
+        <small>${new Date(n.ts).toLocaleString()}</small>
+      </div>
+    `).join('');
+
+  }catch(err){
+    list.innerHTML = `<div class="n-item">Error: ${err.message}</div>`;
+  }
+}
+
 </script>
+<!-- Modal de NOTIFICACIONES -->
+<div id="notifPanel" class="modal-backdrop" style="display:none; align-items:flex-start; padding-top:80px;">
+  <div class="modal" style="width:min(92%,480px); max-height:70vh; overflow:auto;">
+    <h3 style="margin:0 0 10px; font-weight:800; color:#0e2040;">Notificaciones recientes</h3>
+
+    <div id="notifList" style="
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height:55vh;
+      overflow:auto;
+      padding-right:4px;
+    "></div>
+
+    <div class="actions">
+      <button type="button" id="notifClose" class="btn btn-no">Cerrar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
