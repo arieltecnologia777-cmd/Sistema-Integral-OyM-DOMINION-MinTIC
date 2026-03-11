@@ -102,27 +102,40 @@ zoom: 0.99;
       color:#213159;
       transition:0.15s ease;
     }
-/* ——— Indicador tipo WhatsApp (punto rojo) en la campana ——— */
+/* ——— Indicador tipo WhatsApp (punto rojo) ——— */
+/* Fallback: anclado al botón (funciona aunque no haya .ms-Icon) */
 .btn-notif{
-  position: relative;       /* no expande el ancho */
+  position: relative;
 }
-.btn-notif .ms-Icon{
-  position: relative;       /* ancla del punto */
-}
-
-/* Se activa solo si el botón tiene .has-new */
-.btn-notif.has-new .ms-Icon::after{
-  content: '';
-  position: absolute;
-  top: -2px;                /* pegado al borde del ícono */
-  right: -2px;
-  width: 8px;               /* punto MUY pequeño */
+.btn-notif.has-new::after{
+  content:'';
+  position:absolute;
+  /* Ajusta si quieres moverlo un poquito */
+  top: 8px;
+  right: 10px;
+  width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #e11d48;      /* rojo vivo */
-  box-shadow: 0 0 0 2px #fff; /* aro blanco para contraste sobre el botón */
+  background:#e11d48;
+  box-shadow:0 0 0 2px #fff;
 }
 
+/* Preferencia: anclado al ícono si existe (más preciso) */
+.btn-notif .ms-Icon{
+  position: relative;
+  display: inline-block;     /* asegura caja de referencia */
+}
+.btn-notif.has-new .ms-Icon::after{
+  content:'';
+  position:absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background:#e11d48;
+  box-shadow:0 0 0 2px #fff;
+}
 .side-actions .btn:focus-visible{
   outline: 2px solid rgba(14,74,168,.35);
   outline-offset: 2px;
@@ -1288,67 +1301,6 @@ function pick(headers, name, pos1){
       backlog: `${API_BASE}/p2`,
       sla: `${API_BASE}/p3`,
     };
-/* ===== Notificaciones mínimas (punto rojo on/off) =====
-   Contrato del Worker:
-   GET  ${API_BASE}/admin/notificaciones/has-new?since=<ms opcional>
-   Headers: Authorization: Bearer <ADMIN_TOKEN>
-   Respuesta JSON: { ok:true, hasNew:true|false, since: <ultimo_timestamp_ms> }
-*/
-(() => {
-  const BTN_ID   = 'btnNotificaciones';
-  const ENDPOINT = `${API_BASE}/admin/notificaciones/has-new`;
-
-  // Guardamos un "timestamp de visto" local para no parpadear el punto
-  let __since = Number(localStorage.getItem('__notif_since') || 0);
-  let __timer = null;
-
-  async function checkNew(){
-    try{
-      const url = __since ? `${ENDPOINT}?since=${__since}` : ENDPOINT;
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer '+ADMIN_TOKEN }
-      });
-      const j = await res.json().catch(()=>null);
-      const hasNew = !!j?.hasNew;
-      const since  = Number(j?.since || __since);
-
-      const btn = document.getElementById(BTN_ID);
-      if(btn){
-        if(hasNew){ btn.classList.add('has-new'); }
-        else      { btn.classList.remove('has-new'); }
-      }
-
-      // Avanza el "since" si el backend nos da uno mayor
-      if(since > __since){
-        __since = since;
-        localStorage.setItem('__notif_since', String(__since));
-      }
-    }catch(_e){
-      // Silencioso: no interrumpir UI si falla el Worker por un momento
-    }
-  }
-
-  function initNotifMinimal(){
-    const btn = document.getElementById(BTN_ID);
-    if(!btn) return; // aún no está en el DOM
-
-    // Al hacer clic, lo damos por visto (apagamos el punto rojo)
-    btn.addEventListener('click', () => {
-      btn.classList.remove('has-new');
-      __since = Date.now();
-      localStorage.setItem('__notif_since', String(__since));
-      // Aquí luego abriremos tu prompt aparte con el detalle (fase 2).
-    });
-
-    // Primer chequeo inmediato y luego cada 20s
-    checkNew();
-    __timer = setInterval(checkNew, 20000);
-  }
-
-  // Inicializa cuando el DOM esté listo
-  document.addEventListener('DOMContentLoaded', initNotifMinimal);
-})();
 
     /* ===== Modal Helpers ===== */
     function openModal(){ document.getElementById('modalConfirm').style.display='flex'; }
@@ -2645,6 +2597,83 @@ document.addEventListener('DOMContentLoaded', () => {
     else alert('No encontré #btnQuickClear para reusar el flujo.');
   });
 });
+/* ===== Notificaciones Admin: campana con punto rojo ===== */
+(() => {
+  const API_ROOT  = 'https://exclusiones-worker.modulo-de-exclusiones.workers.dev';
+  const PROJS     = ['p1','p2','p3'];
+  const BTN_ID    = 'btnNotificaciones';
+  const SINCE_KEY = (p) => `__notif_since_${p}`;
+  const INTERVAL  = 20000; // 20s
+
+  function getSince(p){
+    return Number(localStorage.getItem(SINCE_KEY(p)) || 0);
+  }
+  function setSince(p, ms){
+    localStorage.setItem(SINCE_KEY(p), String(ms));
+  }
+
+  async function checkProject(p){
+    const since = getSince(p);
+    const url   = `${API_ROOT}/${p}/admin/notificaciones/has-new` + (since ? `?since=${since}` : '');
+    try{
+      const res = await fetch(url, { method:'GET' });
+      const j   = await res.json().catch(()=>null);
+      const ok  = !!j?.ok;
+      const ts  = Number(j?.since || 0);
+      const hasNew = !!j?.hasNew;
+
+      if(ok){
+        return { p, hasNew, ts, ok:true };
+      }
+      return { p, hasNew:false, ts:0, ok:false };
+    }catch(e){
+      return { p, hasNew:false, ts:0, ok:false };
+    }
+  }
+
+  async function checkAll(){
+    const results = await Promise.all(PROJS.map(checkProject));
+    const anyNew = results.some(r => r.ok && r.hasNew);
+    const btn = document.getElementById(BTN_ID);
+    if(btn){
+      if(anyNew) btn.classList.add('has-new');
+      else       btn.classList.remove('has-new');
+    }
+  }
+
+  function markAllSeen(){
+    const now = Date.now();
+    for(const p of PROJS) setSince(p, now);
+  }
+
+  function initNotif(){
+    const btn = document.getElementById(BTN_ID);
+    if(!btn) return;
+
+    btn.addEventListener('click', () => {
+      btn.classList.remove('has-new');
+      markAllSeen();
+    });
+
+    checkAll();
+    setInterval(checkAll, INTERVAL);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initNotif);
+  }else{
+    initNotif();
+  }
+})();
+
+// ===== PRUEBA RÁPIDA: forzar el punto rojo 5s para validar CSS/HTML =====
+(function(){
+  const b = document.getElementById('btnNotificaciones');
+  if(!b) return;
+  b.classList.add('has-new');     // << debería verse el puntico rojo inmediato
+  setTimeout(() => b.classList.remove('has-new'), 5000); // se apaga a los 5s
+})();
+
 </script>
 </body>
 </html>
