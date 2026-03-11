@@ -2885,6 +2885,17 @@ document.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeNotifPanel();
 });
+// ——— BORRADO GLOBAL (1 sola llamada) ———
+async function clearAllNotificationsGlobal(){
+  const r = await fetch(`${API_ROOT}/admin/notificaciones/clear`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer ' + ADMIN_TOKEN
+    }
+  });
+  const j = await r.json().catch(()=>null);
+  if (!r.ok || !j?.ok) throw new Error(j?.error || `HTTP ${r.status}`);
+}
 
 // ==== BORRAR NOTIFICACIONES SIMPLE (SIN MODAL) ====
 // Insertar justo después del ESC closeNotifPanel() y antes de loadNotifications()
@@ -2915,20 +2926,33 @@ document.addEventListener('click', async (e)=>{
   if(e.target && e.target.id === 'notifClear'){
     e.preventDefault();
 
-    e.target.disabled = true;
-    e.target.textContent = 'Borrando…';
+    const btn = e.target;
+    btn.disabled = true;
+    btn.textContent = 'Borrando…';
 
-    await clearAllNotificationsSimple();
+    try{
+      await clearAllNotificationsGlobal(); // hoy borra p1/p2/p3
 
-    const b = document.getElementById('btnNotificaciones');
-    if(b) b.classList.remove('has-new');
+      // Apagar campana
+      const bell = document.getElementById('btnNotificaciones');
+      if (bell) bell.classList.remove('has-new');
 
-    await loadNotifications();
+      // UX optimista: vaciar de inmediato
+      const list = document.getElementById('notifList');
+      if (list) list.innerHTML = `<div class="n-item">No hay notificaciones recientes.</div>`;
 
-    e.target.disabled = false;
-    e.target.textContent = 'Borrar notificaciones';
+      // Estado real desde el Worker (evita parpadeo por replicación)
+      await loadNotifications();
+    }catch(err){
+      alert('No se pudo borrar: ' + (err?.message || 'Error'));
+      console.error(err);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Borrar notificaciones';
+    }
   }
 });
+
 
 // ==== Cargar lista de notificaciones del Worker (agregador con fallback) ====
 async function loadNotifications(){
