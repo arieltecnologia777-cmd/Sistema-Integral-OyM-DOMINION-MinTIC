@@ -2319,13 +2319,29 @@ try {
 
   } else if (lowerName.endsWith('.xls') || lowerName.endsWith('.xlsx')) {
     // 1) Leer Excel
-console.log('[IA-mini] Leyendo XLSX con SheetJS…', !!window.XLSX, f.name);
-    const buf = await f.arrayBuffer();
-    const wb = XLSX.read(buf, { type: 'array' });
-    const sheetName = wb.SheetNames[0];
-    const ws = wb.Sheets[sheetName];
-    // 2) AOA desde Excel (header=1 => primera fila = encabezados)
-    aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+
+console.log('[IA-mini] Leyendo XLSX con SheetJS…', !!window.XLSX, f.name); // Log 1
+
+const buf = await f.arrayBuffer();
+const wb = XLSX.read(buf, { type: 'array' });
+
+// Elegir la primera hoja que tenga rango (!ref)
+let sheetName = wb.SheetNames[0];
+for (const n of wb.SheetNames) {
+  const ws0 = wb.Sheets[n];
+  if (ws0 && ws0['!ref']) { sheetName = n; break; }
+}
+const ws = wb.Sheets[sheetName];
+
+// AOA desde Excel (header:1 => primera fila son encabezados)
+aoa = XLSX.utils.sheet_to_json(ws, {
+  header: 1,
+  raw: false,    // formatea fechas como texto legible
+  defval: '',    // celdas vacías => ''
+  blankrows: false
+});
+console.log('[IA-mini] Hoja usada:', sheetName, 'Filas leídas (incluye encabezado):', aoa.length);
+
   }
 
   if (Array.isArray(aoa) && aoa.length) {
