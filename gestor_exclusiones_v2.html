@@ -2231,14 +2231,28 @@ iaMiniSave?.addEventListener('click', async ()=>{
     const resp = await postFormWithFallback(
       baseFor(iaMiniTargetMod),
       [
-        '/api/admin/subir',
-        '/api/subir',
-        '/api/uploadCSV',
-        '/upload'
-      ],
-      form,
-      {}
-    );
+  // Rutas estilo “gestor”
+  '/api/gestor/subir',
+  '/api/gestor/upload',
+  '/gestor/subir',
+  '/gestor/upload',
+
+  // Rutas estilo “admin”
+  '/api/admin/subir',
+  '/admin/subir',
+
+  // Rutas genéricas habituales
+  '/api/subir',
+  '/api/uploadCSV',
+  '/uploadCSV',
+  '/upload',
+
+  // Alternativas frecuentes
+  '/api/ingest',
+  '/ingest',
+  '/api/guardarArchivo',
+  '/guardarArchivo'
+]
 
     if(resp.ok){
       iaMiniSay('bot', `Archivo recibido para ${labelFor(iaMiniTargetMod)} ✅`);
@@ -2268,7 +2282,33 @@ iaMiniSave?.addEventListener('click', async ()=>{
   }
 });
 
-
+/* === Helper POST con fallbacks (multipart/form-data) — con logging === */
+async function postFormWithFallback(base, paths, formData, headers){
+  let lastErr = null;
+  for (const p of paths){
+    const url = `${base}${p}`;
+    try{
+      console.log('[IA-mini] Intentando POST →', url);
+      const res = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { ...(headers||{}) }, // sin Content-Type, lo pone el navegador
+        body: formData
+      });
+      console.log('[IA-mini] Respuesta', res.status, res.statusText, 'en', url);
+      const json = await res.json().catch(()=>null);
+      if (res.ok && json && (json.ok === true || json.result === 'ok')){
+        console.log('[IA-mini] OK en', url, json);
+        return { ok:true, used:p, json };
+      }
+      lastErr = new Error(json?.error || `HTTP ${res.status} (${p})`);
+    }catch(e){
+      console.warn('[IA-mini] Error de red en', url, e);
+      lastErr = e;
+    }
+  }
+  return { ok:false, error: lastErr?.message || 'Fallo desconocido' };
+}
 </script>
 </body>
 </html>
