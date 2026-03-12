@@ -909,7 +909,7 @@ html{
         Subir archivo <strong>CSV/XLSX</strong> para <strong id="iaMiniModLabel">—</strong>
       </label>
       <input id="iaMiniFile" class="ia-mini-file" type="file"
-             accept=".csv,text/csv" />
+       accept=".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
       <div class="ia-mini-upload-actions">
         <button id="iaMiniSave" class="ia-mini-btn ia-mini-btn-primary" type="button" disabled>Guardar registro</button>
       </div>
@@ -925,6 +925,9 @@ html{
 </div>
 <!-- ================== /Drawer IA mini ================== -->
 
+<!-- Librería XLSX (debe cargarse antes de tu script) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.19.3/xlsx.full.min.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 /* ======================= CONFIG BACKEND (Cloudflare Workers) ======================= */
 /* [MOD] Detección de módulo + API_BASE dinámica (sin tocar UI) */
@@ -2459,6 +2462,52 @@ const aoaCanon = toCanonicalAOA(aoa);
 }
     
 });
+
+// --- Helper para leer Excel .xlsx/.xls y enviar al backend ---
+async function procesarXLSX(file) {
+  if (typeof XLSX === 'undefined') {
+    iaMiniSay('bot', 'No se pudo cargar la librería XLSX.');
+    return;
+  }
+
+  iaMiniSay('bot', 'Procesando Excel…');
+
+  const data = await file.arrayBuffer();
+  const wb = XLSX.read(data, { type: 'array' });
+
+  const sheet = wb.Sheets[wb.SheetNames[0]];
+  if (!sheet) {
+    iaMiniSay('bot', 'El Excel no contiene hojas.');
+    return;
+  }
+
+  const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  const aoaCanon = toCanonicalAOA(aoa);
+
+  const base = baseFor(iaMiniTargetMod);
+
+  const tokenMap = {
+    operatividad: "ADMINARIELITO777",
+    backlog:      "ARIEL-P2_c1N0mD-9tX4zQ-2026_Exclu#2",
+    sla:          "ARIEL-P3_k7V2sL-4pT9yM-2026_Exclu#3"
+  };
+  const adminToken = tokenMap[iaMiniTargetMod];
+
+  const respSob = await postJSONWithFallback(
+    base,
+    ['/api/sobrescribir'],
+    { aoa: aoaCanon },
+    { 'Authorization': `Bearer ${adminToken}` }
+  );
+
+  if (respSob.ok) {
+    iaMiniSay('bot', 'Dataset actualizado desde XLSX ✔');
+    try { await cargarDesdeServidor(); } catch(_) {}
+  } else {
+    iaMiniSay('bot', 'Error al procesar XLSX: ' + respSob.error);
+  }
+}
+
 </script>
 </body>
 </html>
