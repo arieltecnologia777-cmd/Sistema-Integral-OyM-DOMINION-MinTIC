@@ -2349,8 +2349,23 @@ iaMiniSave?.addEventListener('click', async ()=>{
       rd.readAsText(f, 'utf-8');
     });
 
-    // B) Detectar separador
-    const sep = (text.split(';').length > text.split(',').length) ? ';' : ',';
+    // B) Detectar separador REAL: coma, punto y coma, TAB o PIPE
+function detectSeparator(text){
+  const sample = text.split(/\r?\n/).slice(0, 5).join("\n");
+  const candidates = [',', ';', '\t', '|'];
+  let best = ',', max = 0;
+
+  for(const sep of candidates){
+    const count = (sample.match(new RegExp('\\' + sep, 'g')) || []).length;
+    if(count > max){
+      max = count;
+      best = sep;
+    }
+  }
+  return best;
+}
+
+const sep = detectSeparator(text);
 
     // C) Convertir a AOA
     const aoa = parseCSV(text, sep);
