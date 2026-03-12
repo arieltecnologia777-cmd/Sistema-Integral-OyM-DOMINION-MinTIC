@@ -2238,74 +2238,32 @@ iaMiniSave?.addEventListener('click', async ()=>{
   iaMiniSave.textContent = 'Enviando…';
 
   try{
-    // Regional del gestor + token (manteniendo tu patrón)
-    const regActiva = sessionStorage.getItem('gestor_regional') || (typeof regionalActual !== 'undefined' ? regionalActual : 'Todas') || 'Todas';
-    // Token AUTOMÁTICO según el módulo elegido en el asistente
-const tokenMap = {
-  operatividad: "ADMINARIELITO777",
-  backlog:      "ARIEL-P2_c1N0mD-9tX4zQ-2026_Exclu#2",
-  sla:          "ARIEL-P3_k7V2sL-4pT9yM-2026_Exclu#3"
-};
-const token = tokenMap[iaMiniTargetMod];
+  // =====================================================================
+  // 1) DATOS CONTEXTO (regional + token admin)
+  // =====================================================================
+  const regActiva = sessionStorage.getItem('gestor_regional')
+      || (typeof regionalActual !== 'undefined' ? regionalActual : 'Todas')
+      || 'Todas';
 
-    // FormData para multipart
-    const form = new FormData();
-    form.append('file', f);
-    form.append('mod', iaMiniTargetMod);  // operatividad | backlog | sla
-    form.append('regional', regActiva);
-    form.append('ts', String(Date.now()));
-    form.append('token', token);
+  const tokenMap = {
+    operatividad: "ADMINARIELITO777",
+    backlog:      "ARIEL-P2_c1N0mD-9tX4zQ-2026_Exclu#2",
+    sla:          "ARIEL-P3_k7V2sL-4pT9yM-2026_Exclu#3"
+  };
+  const adminToken = tokenMap[iaMiniTargetMod];
 
-    // Posibles rutas en tu Worker (orden de preferencia)
-    const resp = await postFormWithFallback(
-  baseFor(iaMiniTargetMod),
-  [
-    // Rutas estilo “gestor”
-    '/api/gestor/subir',
-    '/api/gestor/upload',
-    '/gestor/subir',
-    '/gestor/upload',
-
-    // Rutas estilo “admin”
-    '/api/admin/subir',
-    '/admin/subir',
-
-    // Rutas genéricas habituales
-    '/api/subir',
-    '/api/uploadCSV',
-    '/uploadCSV',
-    '/upload',
-
-    // Alternativas frecuentes
-    '/api/ingest',
-    '/ingest',
-    '/api/guardarArchivo',
-    '/guardarArchivo'
-  ],
-  form,
-  {} // sin headers personalizados para evitar preflight en local
-);
-
-
-    if(resp.ok){
-      iaMiniSay('bot', `Archivo recibido para ${labelFor(iaMiniTargetMod)} ✅`);
-      // Toast si tienes showToast disponible
-      try{ showToast(`Asistente: carga enviada a ${labelFor(iaMiniTargetMod)} (${resp.used}).`, 'success'); }catch(_){}
-
-      // Si el prompt está en el mismo módulo de la vista actual → refrescar
-      try{
-        if(typeof __MOD !== 'undefined' && __MOD === iaMiniTargetMod && typeof cargarDesdeServidor === 'function'){
-          await cargarDesdeServidor();
-        }
-      }catch(_){}
-// === Sobrescribir dataset automáticamente (CSV-only) ===
-try {
   const lowerName = (f.name || '').toLowerCase();
+  let sobrescritoOK = false;
 
+
+  // =====================================================================
+  // 2) PRIMERO — LEER CSV Y EJECUTAR /api/sobrescribir (PRIORIDAD)
+  // =====================================================================
   if (!lowerName.endsWith('.csv')) {
     iaMiniSay('bot', 'Por favor sube un archivo CSV.');
   } else {
-    // 1) Leer CSV en el navegador
+
+    // A) Leer CSV
     const text = await new Promise((resolve, reject) => {
       const rd = new FileReader();
       rd.onload = () => resolve(rd.result);
@@ -2313,86 +2271,102 @@ try {
       rd.readAsText(f, 'utf-8');
     });
 
-    // 2) Separador heurístico: ',' o ';'
+    // B) Detectar separador
     const sep = (text.split(';').length > text.split(',').length) ? ';' : ',';
 
-    // 3) AOA desde CSV (tu worker normaliza por módulo)
+    // C) Convertir a AOA
     const aoa = parseCSV(text, sep);
 
     if (!Array.isArray(aoa) || !aoa.length) {
-      iaMiniSay('bot', 'El CSV no tiene filas legibles. Verifica que la primera fila sea el encabezado.');
+      iaMiniSay('bot', 'El CSV no tiene filas válidas.');
     } else {
-      // 4) Enviar a /api/sobrescribir con Bearer JSON
-      const base = baseFor(iaMiniTargetMod); // p1/p2/p3
-      const tokenMap = {
-        operatividad: "ADMINARIELITO777",
-        backlog:      "ARIEL-P2_c1N0mD-9tX4zQ-2026_Exclu#2",
-        sla:          "ARIEL-P3_k7V2sL-4pT9yM-2026_Exclu#3"
-      };
-      const adminToken = tokenMap[iaMiniTargetMod];
 
-      const resp2 = await postJSONWithFallback(
+      // D) POST al backend → /api/sobrescribir
+      const base = baseFor(iaMiniTargetMod);
+
+      const respSob = await postJSONWithFallback(
         base,
         ['/api/sobrescribir'],
         { aoa },
         { 'Authorization': `Bearer ${adminToken}` }
       );
 
-      if (resp2.ok) {
+      if (respSob.ok) {
+        sobrescritoOK = true;
         iaMiniSay('bot', 'Dataset actualizado en el servidor ✅');
-        try { await cargarDesdeServidor(); } catch(_) {}
-      } else {
-        iaMiniSay('bot', `Guardé el archivo, pero sobrescribir falló: ${resp2.error}. Pulsa "Actualizar" o revisa Network.`);
-      }
-    }
-  }
-} catch (e) {
-  iaMiniSay('bot', `Guardé el archivo, pero falló la actualización de la tabla: ${e.message}`);
-}
-// === /CSV-only ===
-      // Limpiar selección y restablecer botón
-      if(iaMiniFile) iaMiniFile.value = '';
-      iaMiniSave.disabled = true;
-      iaMiniSave.textContent = oldText || 'Guardar registro';
-    }else{
-      throw new Error(resp.error || 'No se pudo guardar en el servidor');
-    }
-  }catch(err){
-    console.error(err);
-    iaMiniSay('bot', `Error al guardar: ${err.message}`);
-    try{ showToast?.(`Asistente: error al guardar (${err.message}).`, 'error'); }catch(_){}
-    iaMiniSave.textContent = oldText || 'Guardar registro';
-    iaMiniSave.disabled = false;
-  }
-});
 
-/* === Helper POST con fallbacks (multipart/form-data) — con logging === */
-async function postFormWithFallback(base, paths, formData, headers){
-  let lastErr = null;
-  for (const p of paths){
-    const url = `${base}${p}`;
-    try{
-      console.log('[IA-mini] Intentando POST →', url);
-      const res = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { ...(headers||{}) }, // sin Content-Type, lo pone el navegador
-        body: formData
-      });
-      console.log('[IA-mini] Respuesta', res.status, res.statusText, 'en', url);
-      const json = await res.json().catch(()=>null);
-      if (res.ok && json && (json.ok === true || json.result === 'ok')){
-        console.log('[IA-mini] OK en', url, json);
-        return { ok:true, used:p, json };
+        try { await cargarDesdeServidor(); } catch(_){}
+      } else {
+        iaMiniSay('bot', `Sobrescribir falló: ${respSob.error}`);
       }
-      lastErr = new Error(json?.error || `HTTP ${res.status} (${p})`);
-    }catch(e){
-      console.warn('[IA-mini] Error de red en', url, e);
-      lastErr = e;
     }
   }
-  return { ok:false, error: lastErr?.message || 'Fallo desconocido' };
+
+
+
+  // =====================================================================
+  // 3) SEGUNDO — HACER EL UPLOAD BINARIO (DECORATIVO / OPCIONAL)
+  // =====================================================================
+  try{
+    const form = new FormData();
+    form.append('file', f);
+    form.append('mod', iaMiniTargetMod);
+    form.append('regional', regActiva);
+    form.append('ts', String(Date.now()));
+    form.append('token', adminToken);
+
+    const respUp = await postFormWithFallback(
+      baseFor(iaMiniTargetMod),
+      [
+        '/api/gestor/subir','/api/gestor/upload','/gestor/subir','/gestor/upload',
+        '/api/admin/subir','/admin/subir',
+        '/api/subir','/api/uploadCSV','/uploadCSV','/upload',
+        '/api/ingest','/ingest','/api/guardarArchivo','/guardarArchivo'
+      ],
+      form,
+      {}
+    );
+
+    if(respUp.ok){
+      iaMiniSay('bot', `Archivo recibido para ${labelFor(iaMiniTargetMod)} (${respUp.used})`);
+      try { showToast(`Asistente: carga enviada (${respUp.used}).`, 'success'); } catch(_){}
+
+      // Si estás en el módulo actual
+      try{
+        if(typeof __MOD !== 'undefined'
+          && __MOD === iaMiniTargetMod
+          && typeof cargarDesdeServidor === 'function'){
+            await cargarDesdeServidor();
+        }
+      }catch(_){}
+    } else {
+      if(sobrescritoOK){
+        iaMiniSay('bot', `Upload falló, pero la actualización SI fue correcta.`);
+      } else {
+        throw new Error(respUp.error || 'Fallo en upload');
+      }
+    }
+  }catch(e){
+    if(!sobrescritoOK) throw e;
+    iaMiniSay('bot', `Upload con advertencia: ${e.message}`);
+  }
+
+
+  // =====================================================================
+  // 4) LIMPIAR UI
+  // =====================================================================
+  if(iaMiniFile) iaMiniFile.value = '';
+  iaMiniSave.disabled = true;
+  iaMiniSave.textContent = oldText || 'Guardar registro';
+
+} catch(err){
+  console.error(err);
+  iaMiniSay('bot', `Error al guardar: ${err.message}`);
+  iaMiniSave.textContent = oldText || 'Guardar registro';
+  iaMiniSave.disabled = false;
 }
+    
+});
 </script>
 </body>
 </html>
