@@ -2319,6 +2319,7 @@ try {
 
   } else if (lowerName.endsWith('.xls') || lowerName.endsWith('.xlsx')) {
     // 1) Leer Excel
+console.log('[IA-mini] Leyendo XLSX con SheetJS…', !!window.XLSX, f.name);
     const buf = await f.arrayBuffer();
     const wb = XLSX.read(buf, { type: 'array' });
     const sheetName = wb.SheetNames[0];
@@ -2336,6 +2337,8 @@ try {
       sla:          "ARIEL-P3_k7V2sL-4pT9yM-2026_Exclu#3"
     };
     const adminToken = tokenMap[iaMiniTargetMod];
+
+console.log('[IA-mini] Enviando /api/sobrescribir con filas:', aoa.length, 'base:', baseFor(iaMiniTargetMod));
 
     const resp2 = await postJSONWithFallback(
       base,
