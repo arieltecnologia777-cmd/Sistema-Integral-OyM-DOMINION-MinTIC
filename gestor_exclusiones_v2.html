@@ -2229,33 +2229,32 @@ iaMiniSave?.addEventListener('click', async ()=>{
 
     // Posibles rutas en tu Worker (orden de preferencia)
     const resp = await postFormWithFallback(
-      baseFor(iaMiniTargetMod),
-      [
-  // Rutas estilo “gestor”
-  '/api/gestor/subir',
-  '/api/gestor/upload',
-  '/gestor/subir',
-  '/gestor/upload',
+  baseFor(iaMiniTargetMod),
+  [
+    // Rutas estilo “gestor”
+    '/api/gestor/subir',
+    '/api/gestor/upload',
+    '/gestor/subir',
+    '/gestor/upload',
 
-  // Rutas estilo “admin”
-  '/api/admin/subir',
-  '/admin/subir',
+    // Rutas estilo “admin”
+    '/api/admin/subir',
+    '/admin/subir',
 
-  // Rutas genéricas habituales
-  '/api/subir',
-  '/api/uploadCSV',
-  '/uploadCSV',
-  '/upload',
+    // Rutas genéricas habituales
+    '/api/subir',
+    '/api/uploadCSV',
+    '/uploadCSV',
+    '/upload',
 
-  // Alternativas frecuentes
-  '/api/ingest',
-  '/ingest',
-  '/api/guardarArchivo',
-  '/guardarArchivo'
-
-],
+    // Alternativas frecuentes
+    '/api/ingest',
+    '/ingest',
+    '/api/guardarArchivo',
+    '/guardarArchivo'
+  ],
   form,
-  {} // sin headers → evitamos preflight en local
+  {} // sin headers personalizados para evitar preflight en local
 );
 
 
