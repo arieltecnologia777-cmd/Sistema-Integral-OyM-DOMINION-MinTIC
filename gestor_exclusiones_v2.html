@@ -34,7 +34,7 @@
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
-  zoom: 0.95;
+ 
   font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;
   background:linear-gradient(180deg,#eef4ff,#fff);
   margin:0; color:#1a2333;
@@ -580,6 +580,22 @@ body {
 .ia-btn-sub { ... }
 .ia-cta { ... }
 .ia-cta:hover { ... }
+/* === FIX ZOOM GLOBAL === */
+html{
+  /* Forzamos el zoom en el elemento raíz para que aplique a todos los módulos */
+  zoom: .93 !important;
+}
+
+/* Fallback para navegadores que NO soportan `zoom` (ej. Firefox) */
+@supports not (zoom: 1){
+  /* Escalamos todo el documento y compensamos el ancho */
+  body{
+    transform: scale(.98);
+    transform-origin: top left;
+    width: calc(100% / .98);
+  }
+}
+/* === /FIX ZOOM GLOBAL === */
 </style>
 </head>
 <body>
