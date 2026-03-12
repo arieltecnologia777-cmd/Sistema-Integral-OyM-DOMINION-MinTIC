@@ -2252,7 +2252,12 @@ iaMiniSave?.addEventListener('click', async ()=>{
   '/ingest',
   '/api/guardarArchivo',
   '/guardarArchivo'
-]
+
+],
+  form,
+  {} // sin headers → evitamos preflight en local
+);
+
 
     if(resp.ok){
       iaMiniSay('bot', `Archivo recibido para ${labelFor(iaMiniTargetMod)} ✅`);
