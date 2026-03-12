@@ -2217,7 +2217,13 @@ iaMiniSave?.addEventListener('click', async ()=>{
   try{
     // Regional del gestor + token (manteniendo tu patrón)
     const regActiva = sessionStorage.getItem('gestor_regional') || (typeof regionalActual !== 'undefined' ? regionalActual : 'Todas') || 'Todas';
-    const token = (sessionStorage.getItem('admin_token') || sessionStorage.getItem('gestor_token') || 'GESTOR_DOMINION').trim();
+    // Token AUTOMÁTICO según el módulo elegido en el asistente
+const tokenMap = {
+  operatividad: "ADMINARIELITO777",
+  backlog:      "ARIEL-P2_c1N0mD-9tX4zQ-2026_Exclu#2",
+  sla:          "ARIEL-P3_k7V2sL-4pT9yM-2026_Exclu#3"
+};
+const token = tokenMap[iaMiniTargetMod];
 
     // FormData para multipart
     const form = new FormData();
