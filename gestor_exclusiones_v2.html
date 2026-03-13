@@ -1697,7 +1697,7 @@ function abrirModal(ot, {soloVista=false} = {}){
   if(!regs.length){ showToast(`No hay registros para la OT ${ot}`, 'error'); return; }
   otModalActual = ot;
   modalSoloVista = soloVista;
-  modalTitle.textContent = `${soloVista ? 'Vista previa' : 'Gestionar registros'} — OT ${ot}`;
+  modalTitle.textContent = `${soloVista ? 'Vista previa' : 'Gestionar registros'} — ${ot}`;
   modalBody.innerHTML = "";
 
   for(const item of regs){
