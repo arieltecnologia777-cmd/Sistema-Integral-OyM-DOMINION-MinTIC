@@ -1569,15 +1569,15 @@ function pick(headers, name, pos1){
         }else{
           csvText = await res.text();
         }
-        const blob = new Blob([csvText], {type:'text/csv;charset=utf-8;'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const now = new Date(); const pad = n => String(n).padStart(2,'0');
-        const fname= `export_${mod}_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.csv`;
-        a.href = url; a.download = fname; a.click();
-        URL.revokeObjectURL(url);
-        say(`Exportado ${mod.toUpperCase()} correctamente (via ${used}).`);
-        log(`Exportación OK (${used}): ${fname}`);
+        const blob = new Blob(["\uFEFF" + csvText], { type: 'text/csv;charset=utf-8' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+const now = new Date(); const pad = n => String(n).padStart(2,'0');
+const fname= `export_${mod}_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.csv`;
+a.href = url; a.download = fname; a.click();
+URL.revokeObjectURL(url);
+say(`Exportado ${mod.toUpperCase()} correctamente (via ${used}).`);
+log(`Exportación OK (${used}): ${fname}`);
       }catch(err){
         console.error(err);
         say('No se pudo exportar: ' + err.message);
@@ -3055,5 +3055,66 @@ function renderNotifList(listEl, items){
 </div>
   </div>
 </div>
+<script>
+// ======================= Export helpers (CSV/XLSX) =======================
+
+// CSV con BOM y separador ';' (recomendado ES/CO para no chocar con coma decimal)
+function exportToCSV(filename, rows, columnsOrder, headerLabels = null) {
+  // rows: array de objetos (data visible/filtrada en la tabla)
+  // columnsOrder: llaves en orden (ej. ['OT','Regional','Fecha','Causa'])
+  // headerLabels: etiquetas visibles (si no se pasan, usa columnsOrder tal cual)
+  const sep = ';';
+  const EOL = '\r\n';
+
+  const esc = (v) => {
+    if (v === null || v === undefined) return '';
+    let s = String(v);
+    s = s.replace(/\r?\n/g, ' ');
+    if (s.includes(sep) || s.includes('"') || /\s/.test(s)) {
+      s = '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  };
+
+  const headers = headerLabels && headerLabels.length === columnsOrder.length
+    ? headerLabels
+    : columnsOrder;
+
+  const headerLine = headers.map(esc).join(sep);
+  const lines = rows.map(r => columnsOrder.map(h => esc(r[h])).join(sep));
+  const csvString = [headerLine, ...lines].join(EOL);
+
+  // **BOM** para que Excel lea UTF-8 correcto (tildes/Ñ)
+  const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename.endsWith('.csv') ? filename : (filename + '.csv');
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// (Opcional) XLSX nativo con SheetJS si lo tienes cargado (XLSX.*)
+function exportToXLSX(filename, rows, columnsOrder, headerLabels = null) {
+  if (typeof XLSX === 'undefined') {
+    console.warn('SheetJS no está cargado. Usa exportToCSV o incluye la librería.');
+    // fallback: CSV
+    return exportToCSV(filename, rows, columnsOrder, headerLabels);
+  }
+  const aoa = [];
+  const headers = headerLabels && headerLabels.length === columnsOrder.length
+    ? headerLabels
+    : columnsOrder;
+  aoa.push(headers);
+  for (const r of rows) aoa.push(columnsOrder.map(h => r[h]));
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Datos');
+  XLSX.writeFile(wb, filename.endsWith('.xlsx') ? filename : (filename + '.xlsx'));
+}
+</script>
 </body>
 </html>
