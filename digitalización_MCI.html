@@ -3259,6 +3259,27 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
   }
 }
 
+    /* ===== REG FOTOG PRUEBAS → Solo la tarjeta de Coordenadas (p-geo) ===== */
+#sec-pruebas .p-item.p-geo {
+  margin-top: 0 !important;     /* evita offset hacia abajo en el ítem completo */
+  padding-top: 0 !important;
+}
+
+/* La cabecera vacía estaba creando “aire” arriba: elimínala SOLO aquí */
+#sec-pruebas .p-item.p-geo .geo-head {
+  display: none !important;      /* la forma más limpia de “subir” la tarjeta */
+}
+
+/* Por si el primer hijo llevaba margen por un reset/estilo global */
+#sec-pruebas .p-item.p-geo > *:first-child {
+  margin-top: 0 !important;
+}
+
+/* Asegura que la grilla de la tarjeta no agregue margen arriba */
+#sec-pruebas .p-item.p-geo .photo-grid {
+  margin-top: 0 !important;
+}
+
     
   </style>
 </head>
