@@ -259,8 +259,7 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
     /* Igualar altura columna izquierda de Declaración con la derecha */
     #sec-acta .grid > .col-6:first-child > .card { min-height: 400px !important; }
 
-    /* Reducir altura SOLO de la firma del técnico */
-    .photo-cell[data-title="Firma técnico"] { min-height: 130px !important; }
+   
 
 /* ===== Coordinadas geográficas (PRUEBAS): replica Excel + caja foto real ===== */
 
@@ -290,7 +289,7 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
 /* Tarjetas: mismas proporciones que “bonitas” de otras hojas */
 #sec-pruebas .pruebas-2col > .p-item{
   width: 100%;
-  max-width: 280px;
+
   min-height: 214px;
   display: flex;
   flex-direction: column;
@@ -429,7 +428,7 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
 /* Tarjetas: ancho/alto consistentes con “bonitas” */
 #sec-pruebas .pruebas-2col > .p-item{
   width:100%;
-  max-width:280px;
+  
   min-height:214px;               /* altura pareja de tarjeta */
   display:flex;
   flex-direction:column;
@@ -583,135 +582,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
 
 
 
-/* === PRUEBAS · Móvil: TODAS las tarjetas en 2 columnas, sin huecos (REEMPLAZA el bloque móvil anterior) === */
-@media (max-width: 860px){
-
-  /* 0) Asegurar box-sizing correcto en columnas */
-  #sec-pruebas .card .grid > .col-4,
-  #sec-pruebas .pruebas-2col > .p-item{
-    box-sizing: border-box !important;
-  }
-
-  /* 1) Primer bloque (las 6 primeras) — 2 columnas */
-  #sec-pruebas .pruebas-2col{
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row dense !important;
-    gap: 12px !important;
-    justify-items: stretch !important;
-    align-items: start !important;
-  }
-  #sec-pruebas .pruebas-2col > .p-item{
-    grid-column: auto / span 1 !important; /* evitar que alguna se quede a 100% */
-    max-width: none !important;
-    width: 100% !important;
-    margin: 0 !important;
-  }
-  /* Inputs de la cabecera .p-geo adaptativos */
-  #sec-pruebas .pruebas-2col > .p-item.p-geo .geo-inputs input{
-    width: clamp(88px, 42%, 120px) !important;
-  }
-
-  /* 2) TODOS los grids inferiores dentro de #sec-pruebas — 2 columnas */
-  /* Fuerza a que cualquier .card > .grid arme 2 columnas */
-  #sec-pruebas .card > .grid{
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row dense !important;
-    gap: 12px !important;
-    justify-items: stretch !important;
-    align-items: start !important;
-  }
-
-  /* Aseguramos que cada col-4 ocupe 1 columna (y no span 12) */
-  #sec-pruebas .card > .grid > .col-4{
-    grid-column: auto / span 1 !important;
-    max-width: none !important;
-    width: 100% !important;
-    margin: 0 !important;
-  }
-
-  /* 3) Alturas parejas de celdas de foto en TODAS las tarjetas de PRUEBAS */
-  #sec-pruebas .pruebas-2col > .p-item > .photo-grid .photo-cell,
-  #sec-pruebas .pruebas-2col > .p-item.p-geo .photo-grid .photo-cell,
-  #sec-pruebas .card .grid > .col-4 .photo-grid .photo-cell{
-    min-height: 136px !important;  /* dime si prefieres 130 */
-    border-radius: 14px !important;
-  }
-
-  /* 4) Placeholder más compacto */
-  #sec-pruebas .card .grid .photo-cell .placeholder div{
-    font-size: 13px !important;
-    line-height: 1.25 !important;
-  }
-}
-
-/* === PRUEBAS · Móvil: 2×2 continuo sin huecos (unifica del 9 al 18) === */
-@media (max-width: 860px){
-
-  /* 1) El primer .card de PRUEBAS se convierte en el grid padre 2×2 */
-  #sec-pruebas > .card:first-of-type{
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row dense !important;
-    gap: 12px !important;
-    align-items: start !important;
-  }
-
-  /* 2) El H3 y el bloque de las 6 primeras ocupan todo el ancho */
-  #sec-pruebas > .card:first-of-type > h3,
-  #sec-pruebas > .card:first-of-type > .pruebas-2col{
-    grid-column: 1 / -1 !important;
-  }
-
-  /* 3) Dentro de .pruebas-2col: 2×2 para las 6 primeras */
-  #sec-pruebas .pruebas-2col{
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row dense !important;
-    gap: 12px !important;
-    justify-items: stretch !important;
-  }
-  #sec-pruebas .pruebas-2col > .p-item{
-    grid-column: auto / span 1 !important;
-    width: 100% !important;
-    margin: 0 !important;
-  }
-
-  /* Inputs cabecera .p-geo adaptables (no se salen) */
-  #sec-pruebas .pruebas-2col > .p-item.p-geo .geo-inputs input{
-    width: clamp(88px, 42%, 120px) !important;
-  }
-
-  /* 4) “Disolver” los grids inferiores para que todas las .col-4 compartan el grid padre */
-  #sec-pruebas > .card:first-of-type > .grid{
-    display: contents !important; /* los hijos (.col-4) pasan al grid padre */
-  }
-
-  /* 5) Cada tarjeta inferior (col-4) ocupa 1 columna del grid 2×2 */
-  #sec-pruebas > .card:first-of-type > .col-4,
-  #sec-pruebas > .card:first-of-type > .grid > .col-4{
-    grid-column: auto / span 1 !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 6) Altura pareja de las celdas de foto en TODAS las tarjetas de PRUEBAS */
-  #sec-pruebas .pruebas-2col > .p-item > .photo-grid .photo-cell,
-  #sec-pruebas .pruebas-2col > .p-item.p-geo .photo-grid .photo-cell,
-  #sec-pruebas > .card:first-of-type .photo-grid .photo-cell{
-    min-height: 136px !important;  /* dime si la prefieres 130 */
-    border-radius: 14px !important;
-  }
-
-  /* 7) Placeholder compacto */
-  #sec-pruebas > .card:first-of-type .photo-cell .placeholder div{
-    font-size: 13px !important;
-    line-height: 1.25 !important;
-  }
-}
 
 /* === PRUEBAS · Ajuste de tamaño de encabezados === */
 
@@ -731,33 +601,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
 }
 
 
-
-
-
-
-
-/* === Observaciones: altura más pequeña en móvil === */
-@media (max-width: 860px){
-  #sec-pruebas .card .field > textarea,
-  #sec-antes  .card .field > textarea,
-  #sec-despues .card .field > textarea{
-    min-height: 60px !important;   /* antes 160px */
-    height: auto !important;       /* evita forzar tamaño extraño */
-  }
-}
-
-
-/* === Observaciones: altura más pequeña en móvil === */
-@media (max-width: 860px){
-  #sec-pruebas .card .field > textarea,
-  #sec-antes  .card .field > textarea,
-  #sec-despues .card .field > textarea{
-    min-height: 1px !important;   /* antes 160px */
-    height: auto !important;       /* evita forzar tamaño extraño */
-  }
-}
-
-
 /* === OBSERVACIONES · Bloque único, estable y claro === */
 
 /* 1) Regla base: textarea ocupa 100% del card, estilo uniforme */
@@ -774,32 +617,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
   display: block;        /* por si el padre es flex */
 }
 
-/* 2) Altura en MÓVIL */
-@media (max-width: 860px){
-  #sec-pruebas  .card .field > textarea,
-  #sec-antes    .card .field > textarea,
-  #sec-despues  .card .field > textarea{
-    min-height: 80px;    /* compacto en móvil (ajusta 60–90 a gusto) */
-    height: auto;
-  }
-
-  /* Prevención por si algún card/field es flex: evita encogimiento por min-content */
-  #sec-pruebas  .card, #sec-antes  .card, #sec-despues .card,
-  #sec-pruebas  .card .field, #sec-antes  .card .field, #sec-despues .card .field{
-    min-width: 0;
-    width: 100%;
-  }
-}
-
-/* 3) Altura en PC/Escritorio */
-@media (min-width: 861px){
-  #sec-pruebas  #inp-pruebas-obs,
-  #sec-antes    #inp-antes-obs,
-  #sec-despues  #inp-despues-obs{
-    min-height: 110px;   /* medio; prueba 90/110/130 según preferencia */
-    height: 110px;
-  }
-}
 /* === ANTES/DESPUÉS · Tarjetas tipo Excel con encabezado gris y grid ordenado === */
 
 /* 0) Grillas de fotos en ANTES y DESPUÉS */
@@ -1057,8 +874,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
   background:transparent !important;
 }
 
-
-
 /* === Avatar: movimiento MÁS notorio (bob + tilt) === */
 @keyframes avatarBobTiltStrong {
   0%   { transform: translateY(0) rotateZ(0deg); }
@@ -1075,8 +890,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
   transform-origin: 50% 65%;  /* mantiene el “pivot” 3D */
   will-change: transform;
 }
-
-
 
 /* (Opcional) Si deseas que el guiño sea un poco más frecuente:
    - baja la duración 4.6s → 3.8s en ambas animaciones (winkFace y winkLid) */
@@ -1290,73 +1103,7 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
   }
 }
 
-/* === HAMBURGUESA MÓVIL: más notoria, sin afectar el título === */
-@media (max-width: 860px){
 
-  /* 0) Asegurar layout: que el botón no “estire” ni empuje el título */
-  .topbar{
-    gap: 10px !important;                  /* mantén la separación actual */
-  }
-  .topbar > .hamburger{
-    flex: 0 0 auto !important;             /* tamaño fijo del botón */
-  }
-  .topbar > div{
-    min-width: 0 !important;               /* permite que el título gestione el espacio */
-  }
-
-  /* 1) Botón más grande, contraste alto y relieve (glass ligero) */
-  .hamburger{
-    display: flex !important;
-    width: 52px !important;                /* antes 44px */
-    height: 52px !important;
-    border-radius: 14px !important;
-    border: 1px solid rgba(15,23,42,0.18) !important;        /* borde más definido */
-    background: rgba(255,255,255,0.90) !important;           /* blanco casi sólido */
-    backdrop-filter: blur(6px) saturate(120%) !important;     /* efecto vidrio leve */
-    -webkit-backdrop-filter: blur(6px) saturate(120%) !important;
-    box-shadow:
-      0 8px 20px rgba(15,23,42,0.16),      /* sombra profunda suave */
-      0 2px 6px  rgba(15,23,42,0.12),
-      0 0 0 1px rgba(255,255,255,0.7) inset !important;      /* realce interior */
-    z-index: 15 !important;                /* por encima de fondos/vidrios */
-  }
-
-  /* 2) Ícono más grueso y visible (usa currentColor) */
-  .hamburger svg{
-    width: 26px !important;                /* antes 22px */
-    height: 26px !important;
-    color: #0b2e59 !important;             /* azul marino (alto contraste) */
-  }
-  .hamburger svg path{
-    stroke-width: 2.8 !important;          /* líneas más gruesas (antes 2) */
-    stroke-linecap: round !important;
-  }
-
-  /* 3) Estados de interacción: hover/focus/active claros y accesibles */
-  .hamburger:hover{
-    filter: brightness(1.03) !important;
-    box-shadow:
-      0 10px 26px rgba(15,23,42,0.18),
-      0 3px 8px  rgba(15,23,42,0.14),
-      0 0 0 1px rgba(255,255,255,0.8) inset !important;
-  }
-  .hamburger:focus-visible{
-    outline: none !important;
-    box-shadow:
-      0 10px 26px rgba(15,23,42,0.18),
-      0 3px 8px  rgba(15,23,42,0.14),
-      0 0 0 2px rgba(59,130,246,0.65) !important;            /* anillo de foco */
-  }
-  .hamburger:active{
-    transform: translateY(1px) !important; /* feedback táctil */
-    filter: brightness(0.98) !important;
-  }
-
-  /* 4) Margen sutil para no pegarse al borde izquierdo */
-  .hamburger{
-    margin-left: 2px !important;
-  }
-}
 
 /* === HAMBURGUESA MÓVIL: más notoria, sin afectar el título === */
 @media (max-width: 860px){
@@ -1423,29 +1170,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
   /* 4) Margen sutil para no pegarse al borde izquierdo */
   .hamburger{
     margin-left: 2px !important;
-  }
-}
-
-/* === HAMBURGUESA MÓVIL — más despegada, sin afectar el título === */
-@media (max-width: 860px){
-
-  /* Asegurar que el botón no estire el layout */
-  .topbar{
-    gap: 14px !important;                 /* separa MÁS la hamburguesa del bloque del título */
-    align-items: center !important;
-  }
-  .topbar > .hamburger{
-    flex: 0 0 auto !important;            /* tamaño fijo del botón */
-  }
-  .topbar > div{
-    min-width: 0 !important;              /* el título gestiona su propio ancho sin ser empujado */
-    flex: 1 1 auto !important;
-  }
-
-  /* Botón: más margen contra los bordes y el título */
-  .hamburger{
-    margin-left: 10px !important;         /* despega del borde izquierdo del viewport */
-    margin-right: 6px !important;         /* añade aire entre botón y título */
   }
 }
 
@@ -2369,10 +2093,7 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
    Ajusta el offset desde --geo-offset si cambiaste la altura de los inputs.
    =========================================================== */
 
-/* 0) Variable de offset (altura “extra” por los inputs fuera del card) */
-:root{
-  --geo-offset: 48px; /* si moviste inputs, cambia aquí (44/50/54px) */
-}
+
 
 /* === ESCRITORIO: ≥1100px → grilla 3 columnas (1 | 2 | 3) === */
 /* Baja las tarjetas 2 y 3 para que queden alineadas con la #1 (que tiene inputs arriba) */
@@ -2439,165 +2160,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
 @media (max-width: 860px){
   .theme-pro #sec-pruebas .pruebas-2col > .p-item:nth-child(2){
     margin-top: var(--geo-offset) !important;
-  }
-}
-
-/* ===========================================================
-   THEME-PRO · PRUEBAS — Alinear 1ª fila
-   - La #1 (coordenadas) está más abajo por los inputs arriba.
-   - Bajamos #2 y #3 para que queden a la misma línea.
-   - En 2×2 (tablet/móvil), solo bajamos la #2.
-   =========================================================== */
-
-/* Ajusta esta variable si necesitas “un pelín” más o menos */
-:root{
-  --geo-align-offset: 60px;  /* prueba 56px / 60px / 64px según tu ojo */
-}
-
-/* ===== Escritorio (≥1100px) → 3 columnas: (1 | 2 | 3) ===== */
-@media (min-width: 1100px){
-  /* Baja SOLO las tarjetas 2 y 3 de la primera fila */
-  .theme-pro #sec-pruebas .pruebas-2col > .p-item:nth-child(2),
-  .theme-pro #sec-pruebas .pruebas-2col > .p-item:nth-child(3){
-    margin-top: var(--geo-align-offset) !important;
-  }
-  /* Asegura baseline del grid */
-  .theme-pro #sec-pruebas .pruebas-2col{
-    align-items: start !important;
-  }
-}
-
-/* ===== Tablet (861–1099px) → 2 columnas: (1 | 2) (3 | 4) (5 | 6) ===== */
-@media (min-width: 861px) and (max-width: 1099px){
-  /* Baja SOLO la tarjeta 2 (vecina de coordenadas) */
-  .theme-pro #sec-pruebas .pruebas-2col > .p-item:nth-child(2){
-    margin-top: var(--geo-align-offset) !important;
-  }
-  .theme-pro #sec-pruebas .pruebas-2col{
-    align-items: start !important;
-  }
-}
-
-/* ===== Móvil (≤860px) → 2×2: (1 | 2) (3 | 4) (5 | 6) ===== */
-@media (max-width: 860px){
-  /* Baja SOLO la tarjeta 2 para que la primera fila quede pareja */
-  .theme-pro #sec-pruebas .pruebas-2col > .p-item:nth-child(2){
-    margin-top: var(--geo-align-offset) !important;
-  }
-  .theme-pro #sec-pruebas .pruebas-2col{
-    align-items: start !important;
-  }
-}
-
-
-/* ===========================================================
-   THEME-PRO · PHOTO-CELL — Tarjeta exterior + Marco interior
-   - Exterior: fondo azulado muy claro, borde suave y sombra
-   - Interior: rectángulo blanco redondeado (inset) bajo los íconos
-   - Sin tocar HTML: título sigue en ::before; marco interior en ::after
-   =========================================================== */
-
-/* 1) Tarjeta exterior (todas las celdas multimedia) */
-.theme-pro .photo-grid .photo-cell{
-  position: relative !important;
-  /* Fondo azulado muy claro como el mockup */
-  background: #eef5ff !important; /* ajusta a #edf3ff/#f0f6ff si quieres más claro */
-  border: 1px solid rgba(15, 23, 42, 0.06) !important;
-  border-radius: 18px !important;
-
-  /* Sombra suave envolvente */
-  box-shadow:
-    0 12px 28px rgba(15, 23, 42, 0.08),
-    0  2px  8px rgba(15, 23, 42, 0.06) !important;
-
-  /* Reserva para el título (texto centrado en ::before) */
-  padding-top: 48px !important; /* si el título te queda muy cerca/lejos, sube/baja 2px */
-  overflow: hidden !important;   /* redondeo limpio del exterior */
-  min-height: 210px !important;
-  z-index: 0 !important;
-}
-
-/* 2) Marco interior blanco (inset) — solo visual, bajo íconos e imagen */
-.theme-pro .photo-grid .photo-cell::after{
-  content: "" !important;
-  position: absolute !important;
-  /* Inset: deja “aire” alrededor para que se vea el exterior azulado */
-  top: 56px;               /* debajo del título (48px + aire) */
-  left: 14px; right: 14px; bottom: 14px;
-  background: #ffffff !important;
-  border-radius: 14px !important;
-
-  /* línea interior sutil (opcional) para dar sensación de tarjeta dentro */
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 23, 42, 0.04) !important;
-
-  z-index: 1 !important;  /* por debajo de placeholder/img/toolbar */
-  pointer-events: none !important;
-}
-
-/* 3) Título centrado arriba — (ya lo usabas con ::before) */
-.theme-pro .photo-grid .photo-cell::before{
-  /* respetamos tu contenido con attr(data-title) o el fijo que pusimos en específicas */
-  position: absolute !important;
-  top: 10px; left: 12px; right: 12px;
-  height: 22px;
-  display: flex; align-items: center; justify-content: center;
-  color: #0f1f3a !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  letter-spacing: .2px;
-  background: transparent !important;
-  border: none !important;
-  z-index: 3 !important;  /* por encima del marco interior */
-}
-
-/* 4) Placeholder (íconos + texto) debe ir SOBRE el marco interior */
-.theme-pro .photo-grid .photo-cell .placeholder{
-  position: relative !important;
-  z-index: 4 !important;   /* sobre el ::after (marco) y sobre la imagen recortada */
-  padding: 10px 12px 12px !important;
-}
-
-/* 5) Imagen: recortada dentro del marco interior (inset + radio) */
-.theme-pro .photo-grid .photo-cell img{
-  position: absolute !important;
-  /* inset visual que coincida con el marco interior */
-  top: 56px; left: 14px; right: 14px; bottom: 14px;
-  width: auto !important; height: auto !important;
-  max-width: calc(100% - 28px) !important;
-  max-height: calc(100% - 70px) !important; /* 56 + 14 */
-  object-fit: cover !important;
-  border-radius: 12px !important;  /* un pelín menor que el marco para ver el borde */
-  z-index: 2 !important;           /* debajo del placeholder, encima del marco */
-}
-
-/* 6) Toolbar (Cambiar/Quitar) siempre visible sobre todo */
-.theme-pro .photo-grid .photo-cell .photo-toolbar{
-  position: absolute !important;
-  left: 18px; right: 18px; bottom: 18px;
-  display: flex; gap: 8px; justify-content: flex-end;
-  z-index: 5 !important;
-}
-
-/* 7) MÓVIL: compactar un poco alturas e insets */
-@media (max-width: 860px){
-  .theme-pro .photo-grid .photo-cell{
-    border-radius: 16px !important;
-    padding-top: 46px !important;
-    min-height: 200px !important;
-  }
-  .theme-pro .photo-grid .photo-cell::after{
-    top: 54px; left: 12px; right: 12px; bottom: 12px;
-    border-radius: 12px !important;
-  }
-  .theme-pro .photo-grid .photo-cell img{
-    top: 54px; left: 12px; right: 12px; bottom: 12px;
-    border-radius: 10px !important;
-    max-width: calc(100% - 24px) !important;
-    max-height: calc(100% - 66px) !important; /* 54 + 12 */
-  }
-  .theme-pro .photo-grid .photo-cell .photo-toolbar{
-    left: 14px; right: 14px; bottom: 14px;
   }
 }
 
@@ -2890,109 +2452,6 @@ background: color-mix(in srgb, var(--sb-bg) 42%, transparent);
 
 /* ——— G) Seguridad: baseline uniforme del grid en PRUEBAS ——— */
 .theme-pro #sec-pruebas .pruebas-2col{ align-items: start !important; }
-
-/* ===========================================================
-   THEME-PRO · MARCO BLANCO GRANDE (PRUEBAS / ANTES / DESPUÉS)
-   - Aumenta ancho y alto del área blanca interna (preview/íconos)
-   - Respeta el título textual centrado
-   - La imagen se ajusta sin deformarse dentro del marco
-   =========================================================== */
-
-/* ——— Variables rápidas de tamaño ——— */
-:root{
-  /* Escritorio */
-  --inner-top: 44px;   /* distancia desde el borde superior del card al marco blanco (↓ = más alto) */
-  --inner-x:   8px;    /* margen lateral del marco (↓ = más ANCHO) */
-  --inner-b:  10px;    /* margen inferior del marco (↓ = más ALTO) */
-
-  /* Altura mínima del card exterior (por si necesitas más cuerpo) */
-  --cell-min-h: 240px; /* ↑ si quieres más alto el conjunto (ej. 250/260) */
-}
-
-/* Móvil: ligeramente más compacto pero igualmente grande */
-@media (max-width: 860px){
-  :root{
-    --inner-top: 42px;
-    --inner-x:    8px;
-    --inner-b:   10px;
-    --cell-min-h: 220px;
-  }
-}
-
-/* ——— Card exterior: reserva para el título y mayor altura ——— */
-.theme-pro #sec-pruebas  .photo-grid .photo-cell,
-.theme-pro #sec-antes    .photo-grid .photo-cell,
-.theme-pro #sec-despues  .photo-grid .photo-cell{
-  position: relative !important;
-  overflow: hidden !important;
-  padding-top: 46px !important;                /* altura para el título textual centrado */
-  min-height: var(--cell-min-h) !important;    /* ↑ da más “cuerpo” al card */
-  border-radius: 18px !important;
-}
-
-/* ——— Marco blanco INTERIOR (más ANCHO y más ALTO) ——— */
-.theme-pro #sec-pruebas  .photo-grid .photo-cell::after,
-.theme-pro #sec-antes    .photo-grid .photo-cell::after,
-.theme-pro #sec-despues  .photo-grid .photo-cell::after{
-  content: "" !important;
-  position: absolute !important;
-  top:    var(--inner-top) !important;
-  left:   var(--inner-x)   !important;
-  right:  var(--inner-x)   !important;
-  bottom: var(--inner-b)   !important;
-  background: #ffffff !important;
-  border-radius: 16px !important;              /* bordes suaves */
-  box-shadow: inset 0 0 0 1px rgba(15,23,42,0.05) !important;
-  z-index: 2 !important;
-  pointer-events: none !important;
-}
-
-/* ——— IMAGEN dentro del mismo marco (sin deformarse) ——— */
-.theme-pro #sec-pruebas  .photo-grid .photo-cell img,
-.theme-pro #sec-antes    .photo-grid .photo-cell img,
-.theme-pro #sec-despues  .photo-grid .photo-cell img{
-  position: absolute !important;
-
-  /* MISMAS distancias que el ::after para que “viva” dentro del cuadro blanco */
-  top:    var(--inner-top) !important;
-  left:   var(--inner-x)   !important;
-  right:  var(--inner-x)   !important;
-  bottom: var(--inner-b)   !important;
-
-  width:  calc(100% - (2 * var(--inner-x))) !important;
-  height: calc(100% - (var(--inner-top) + var(--inner-b))) !important;
-
-  object-fit: contain !important;              /* no se estira; mantiene proporción */
-  object-position: center center !important;
-  border-radius: 14px !important;              /* un pelín menor que el marco */
-  background: #fff !important;
-  z-index: 4 !important;                       /* debajo de placeholder/toolbar; encima del marco */
-}
-
-/* ——— Placeholder y toolbar por encima del marco ——— */
-.theme-pro #sec-pruebas  .photo-grid .photo-cell .placeholder,
-.theme-pro #sec-antes    .photo-grid .photo-cell .placeholder,
-.theme-pro #sec-despues  .photo-grid .photo-cell .placeholder{
-  position: relative !important;
-  z-index: 5 !important;
-  padding: 10px 12px 12px !important;
-}
-.theme-pro #sec-pruebas  .photo-grid .photo-cell .photo-toolbar,
-.theme-pro #sec-antes    .photo-grid .photo-cell .photo-toolbar,
-.theme-pro #sec-despues  .photo-grid .photo-cell .photo-toolbar{
-  position: absolute !important;
-  left:  calc(var(--inner-x) + 4px) !important;
-  right: calc(var(--inner-x) + 4px) !important;
-  bottom: calc(var(--inner-b) + 4px) !important;
-  z-index: 7 !important;
-}
-
-/* ——— Título textual (tu ::before) siempre por encima de la imagen ——— */
-.theme-pro #sec-pruebas  .photo-grid .photo-cell::before,
-.theme-pro #sec-antes    .photo-grid .photo-cell::before,
-.theme-pro #sec-despues  .photo-grid .photo-cell::before{
-  z-index: 6 !important;
-}
 
 /* ===========================================================
    THEME-PRO · PRUEBAS — SUBIDA NOTORIA del marco blanco + preview
@@ -3317,8 +2776,360 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
   }
 }
 
+/* ===========================================================
+   THEME-PRO · MÓVIL (≤860px) — PRUEBAS: estirar altura (todas las tarjetas)
+   - No modifica el grid ni el orden
+   - Aumenta altura mínima del card y del cuadro blanco interior
+   - La preview ocupa el cuadro blanco sin deformarse
+   =========================================================== */
+@media (max-width: 860px){
+
+  /* Valores de altura (ajusta solo números si quieres más/menos) */
+  :root{
+    --pr-m-card-minh: 280px;  /* ALTURA del card (prueba 300 si quieres aún más) */
+    --pr-m-top:       30px;   /* distancia del cuadro blanco al título (↓ = más alto) */
+    --pr-m-x:          8px;   /* margen lateral del cuadro blanco (deja 8 para mantener ancho actual) */
+    --pr-m-bot:       16px;   /* margen inferior del cuadro blanco (↑ da más “aire” abajo) */
+  }
+
+  /* 1) Card exterior: MISMA altura para TODAS las photo-cell */
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell{
+    position: relative !important;
+    overflow: hidden !important;
+    padding-top: 40px !important;                 /* reserva del título textual */
+    min-height: var(--pr-m-card-minh) !important; /* ← estiramos hacia abajo */
+    border-radius: 16px !important;
+  }
+
+  /* 2) Título textual centrado (sobre imagen/marco) */
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell::before{
+    content: attr(data-title) !important;
+    position: absolute !important;
+    top: 8px; left: 10px; right: 10px;
+    height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: #0f1f3a !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    z-index: 8 !important;
+  }
+
+  /* 3) Cuadro blanco interior: más alto (sin invadir el título) */
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell::after{
+    content: "" !important;
+    position: absolute !important;
+    top:    var(--pr-m-top) !important;          /* 30px → alto notorio sin tapar título */
+    left:   var(--pr-m-x)   !important;
+    right:  var(--pr-m-x)   !important;
+    bottom: var(--pr-m-bot) !important;          /* 16px → más aire inferior */
+    background: #ffffff !important;
+    border-radius: 14px !important;
+    box-shadow: inset 0 0 0 1px rgba(15,23,42,0.06) !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+  }
+
+  /* 4) Preview: ocupa el cuadro blanco, SIN deformarse */
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell img{
+    position: absolute !important;
+
+    /* EXACTAMENTE misma caja que el ::after */
+    top:    var(--pr-m-top) !important;
+    left:   var(--pr-m-x)   !important;
+    right:  var(--pr-m-x)   !important;
+    bottom: var(--pr-m-bot) !important;
+
+    width:  calc(100% - (2 * var(--pr-m-x))) !important;
+    height: calc(100% - (var(--pr-m-top) + var(--pr-m-bot))) !important;
+
+    object-fit: contain !important;              /* no estira */
+    object-position: center center !important;
+    border-radius: 12px !important;              /* apenas menor que el cuadro */
+    background: #fff !important;
+    z-index: 4 !important;
+  }
+
+  /* 5) Placeholder/Toolbar por encima del cuadro */
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell .placeholder{
+    position: relative !important;
+    z-index: 7 !important;
+    padding: 10px 10px 12px !important;
+  }
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell.has-image .placeholder{
+    display: none !important;
+  }
+  body.theme-pro #sec-pruebas .photo-grid .photo-cell .photo-toolbar{
+    position: absolute !important;
+    left:  calc(var(--pr-m-x) + 4px) !important;
+    right: calc(var(--pr-m-x) + 4px) !important;
+    bottom: calc(var(--pr-m-bot) + 4px) !important;
+    display: flex; gap: 8px; justify-content: flex-end;
+    z-index: 9 !important;
+  }
+}
 
 
+/* === PRUEBAS · OBSERVACIONES A FILA COMPLETA (evita quedar como 1/2 de fila) === */
+/* 1) El último .card dentro de #sec-pruebas es "6. Observaciones": que ocupe toda la fila */
+#sec-pruebas > .card:last-of-type{
+  /* Si por cascada está dentro de un grid, que abarque todas las columnas */
+  grid-column: 1 / -1 !important;
+  /* Evita límites heredados de ancho */
+  width: 100% !important;
+  max-width: none !important;
+  display: block !important;
+}
+
+/* 2) Asegurar que el textarea dentro de ese card use el ancho total */
+#sec-pruebas > .card:last-of-type .field > #inp-pruebas-obs{
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  align-self: stretch !important;
+}
+
+/* === PRUEBAS · MÓVIL: 2×2 en tarjetas 7→última; Observaciones sigue full-width === */
+@media (max-width: 860px){
+  /* 0) Observaciones (último .card) se mantiene a fila completa */
+  #sec-pruebas > .card:last-of-type{
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: none !important;
+    display: block !important;
+  }
+
+  /* 1) Cualquier .grid dentro de #sec-pruebas (excepto el último card) → 2 columnas */
+  #sec-pruebas > .card:not(:last-of-type) > .grid{
+    display: grid !important;                                   /* ← anula display:contents */
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* 2×2 móvil */
+    grid-auto-flow: row dense !important;
+    gap: 12px !important;
+    align-items: start !important;
+    justify-items: stretch !important;
+  }
+
+  /* 2) Cada .col-4 ocupa 1 columna del grid, sin anchos fijos heredados */
+  #sec-pruebas > .card:not(:last-of-type) > .grid > .col-4{
+    grid-column: auto / span 1 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3) Refuerzo explícito para el primer card (donde antes había display:contents) */
+  #sec-pruebas > .card:first-of-type > .grid{
+    display: grid !important;                                   /* ← override al 'contents' previo */
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  #sec-pruebas > .card:first-of-type > .grid > .col-4{
+    grid-column: auto / span 1 !important;
+  }
+}
+
+
+
+/* === PRUEBAS · ALTURA UNIFORME — Tarjetas 7→última ======================= */
+/* Aplica SOLO a las grillas inferiores de #sec-pruebas (no toca 6 primeras ni Observaciones) */
+
+/* Escritorio (≥861px): un poco más altas */
+@media (min-width: 861px){
+  #sec-pruebas > .card:not(:first-of-type):not(:last-of-type) .photo-grid .photo-cell{
+    min-height: 240px !important;  /* ajusta 230/250 a tu ojo */
+  }
+}
+
+/* Móvil (≤860px): altura pareja y cómoda */
+@media (max-width: 860px){
+  #sec-pruebas > .card:not(:first-of-type):not(:last-of-type) .photo-grid .photo-cell{
+    min-height: 220px !important;  /* ajusta 210/230/240 según prefieras */
+  }
+}
+
+
+/* === OBSERVACIONES · Política única y estable (móvil + escritorio) ========= */
+/* Escritorio (≥861px): altura cómoda, crecimiento libre */
+@media (min-width: 861px){
+  #sec-pruebas  #inp-pruebas-obs,
+  #sec-antes    #inp-antes-obs,
+  #sec-despues  #inp-despues-obs{
+    min-height: 130px !important;  /* ajusta 120–140 según prefieras */
+    height: auto !important;       /* permite crecer con el contenido */
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Móvil (≤860px): un poco más alto para uso táctil */
+@media (max-width: 860px){
+  #sec-pruebas  #inp-pruebas-obs,
+  #sec-antes    #inp-antes-obs,
+  #sec-despues  #inp-despues-obs{
+    min-height: 140px !important;  /* ajusta 120–160 a tu gusto */
+    height: auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Prevención: si algún contenedor usa flex/min-content, no “estrangules” ancho */
+  #sec-pruebas .card, #sec-antes .card, #sec-despues .card,
+  #sec-pruebas .card .field, #sec-antes .card .field, #sec-despues .card .field{
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* === ANTES · ALTURA UNIFORME PARA TODAS LAS TARJETAS ====================== */
+/* Escritorio y tablet (≥861px): cuerpo con más presencia */
+@media (min-width: 861px){
+  #sec-antes .photo-grid .photo-cell{
+    min-height: 240px !important; /* ajusta 230/250 según tu ojo */
+  }
+}
+/* Móvil (≤860px): altura pareja y cómoda */
+@media (max-width: 860px){
+  #sec-antes .photo-grid .photo-cell{
+    min-height: 220px !important; /* ajusta 210/230/240 si lo prefieres */
+  }
+}
+
+/* === DESPUÉS · ALTURA UNIFORME PARA TODAS LAS TARJETAS ==================== */
+/* Escritorio y tablet (≥861px): cuerpo con más presencia */
+@media (min-width: 861px){
+  #sec-despues .photo-grid .photo-cell{
+    min-height: 240px !important; /* ajusta 230/250 según prefieras */
+  }
+}
+/* Móvil (≤860px): altura pareja y cómoda */
+@media (max-width: 860px){
+  #sec-despues .photo-grid .photo-cell{
+    min-height: 220px !important; /* ajusta 210/230/240 a tu gusto */
+  }
+}
+
+/* === OVERRIDE FINAL · OBSERVACIONES (móvil + escritorio) =================== */
+/* Consolida prioridad: evita que cualquier regla previa “achique” o estreche. */
+
+/* Escritorio (≥861px): altura cómoda y crecimiento libre */
+@media (min-width: 861px){
+  #sec-pruebas  #inp-pruebas-obs,
+  #sec-antes    #inp-antes-obs,
+  #sec-despues  #inp-despues-obs{
+    min-height: 130px !important;  /* ajusta 120–140 si lo prefieres */
+    height: auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Móvil (≤860px): un poco más alto para edición táctil */
+@media (max-width: 860px){
+  #sec-pruebas  #inp-pruebas-obs,
+  #sec-antes    #inp-antes-obs,
+  #sec-despues  #inp-despues-obs{
+    min-height: 140px !important;  /* ajusta 120–160 a tu gusto */
+    height: auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Prevención: contenedores flex no “estrangulan” el ancho */
+  #sec-pruebas .card, #sec-antes .card, #sec-despues .card,
+  #sec-pruebas .card .field, #sec-antes .card .field, #sec-despues .card .field{
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* === PRUEBAS · MÓVIL (≤860px) — Primeras 6 tarjetas a 2×2 ANCHAS =============== */
+/* ADICIÓN (override final). Corrige el estrechamiento por max-width y centering. */
+@media (max-width: 860px){
+  /* 1) El contenedor de las primeras 6 tarjetas estira columnas a todo el ancho */
+  #sec-pruebas .pruebas-2col{
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* 2×2 real */
+    gap: 12px !important;
+    justify-items: stretch !important;  /* <-- deja de centrar, ahora estira */
+    align-items: start !important;
+  }
+
+  /* 2) Cada .p-item ocupa su celda al 100% (sin tope) */
+  #sec-pruebas .pruebas-2col > .p-item{
+    max-width: none !important;  /* por si alguna copia quedó por arriba */
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* 3) Garantiza 1 columna interna para la caja de foto */
+  #sec-pruebas .pruebas-2col > .p-item > .photo-grid{
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* === FIX DEFINITIVO · PRUEBAS — Anular offsets de primera fila ================ */
+/* Neutraliza alineaciones antiguas (#2 y #3) que bajan todas las tarjetas */
+#sec-pruebas .pruebas-2col > .p-item:nth-child(2),
+#sec-pruebas .pruebas-2col > .p-item:nth-child(3){
+    margin-top: 0 !important;
+}
+
+/* También anular para móvil y tablet */
+@media (max-width: 1100px){
+  #sec-pruebas .pruebas-2col > .p-item:nth-child(2),
+  #sec-pruebas .pruebas-2col > .p-item:nth-child(3){
+      margin-top: 0 !important;
+  }
+}
+
+/* === FIX DEFINITIVO · PRUEBAS · MÓVIL — Chip Geo sin invadir ================ */
+/* Anula todas las reglas absolutas y devuelve Long/Lat a su flujo normal */
+@media (max-width: 860px){
+
+  /* 1. Neutralizar TODAS las versiones del posicionamiento absoluto */
+  #sec-pruebas .pruebas-2col > .p-item.p-geo .geo-sub{
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 0 10px 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: transparent !important;
+  }
+
+  /* 2. Asegurar que el contenedor de inputs no rompa el ancho */
+  #sec-pruebas .pruebas-2col > .p-item.p-geo .geo-inputs{
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  #sec-pruebas .pruebas-2col > .p-item.p-geo .geo-inputs input{
+    width: clamp(110px, 40vw, 140px) !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+  }
+
+  /* 3. La photo-cell mantiene solo la reserva del título (tu ::before) */
+  #sec-pruebas .pruebas-2col > .p-item.p-geo .photo-cell{
+    padding-top: 56px !important;
+  }
+}
 
   </style>
 </head>
@@ -3498,282 +3309,238 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
            REG FOTOG PRUEBAS
       ========================== -->
       <section id="sec-pruebas" class="section">
-        <div class="card">
-          <h3>5. Registro fotográfico · Pruebas necesarias</h3>
+  <div class="card">
+    <h3>5. Registro fotográfico · Pruebas necesarias</h3>
 
-          <!-- Contenedor 2 columnas (SOLO para los 6 primeros ítems) -->
-          <div class="pruebas-2col">
-            <!-- Col 1: Coordenadas manuales -->
-            <div class="p-item p-geo">
-  <!-- Cabecera Excel (dibujada por CSS) -->
-  <div class="geo-head">
-    <div class="geo-sub">
-      <div class="geo-inputs">
+    <!-- ========== BARRA DE COORDENADAS (FUERA DE LAS TARJETAS) ========== -->
+    <div class="geo-bar">
+      <div class="geo-bar__inputs">
         <input id="inp-lon" type="number" step="0.000001" inputmode="decimal" placeholder="Longitud">
         <input id="inp-lat" type="number" step="0.000001" inputmode="decimal" placeholder="Latitud">
       </div>
     </div>
-  </div>
+    <!-- ========== FIN BARRA DE COORDENADAS ========== -->
 
-  <!-- Caja de foto REAL (clickable) -->
-  <div class="photo-grid">
-    <div class="photo-cell" data-title="Coordenadas GPS (Excel)">
-      <input id="img-gps-geo" type="file" accept="image/*">
-      <div class="placeholder">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M12 2v3m0 14v3m9-9h-3M6 12H3m11 0a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <div>Captura de las coordenadas</div>
+<!-- Contenedor 2 columnas (SOLO para los 6 primeros ítems) -->
+<div class="pruebas-2col">
+
+  <!-- TARJETA 1 · Coordenadas geográficas -->
+  <div class="p-item p-geo">
+    <!-- Cabecera vacía para conservar la estructura (no contiene inputs) -->
+    <div class="geo-head"></div>
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Coordenadas GPS (Excel)">
+        <input id="img-gps-geo" type="file" accept="image/*">
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2v3m0 14v3m9-9h-3M6 12H3m11 0a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div>Captura de las coordenadas</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-
-            <!-- Col 2: Dispositivo móvil conectado al AP exterior -->
-<div class="p-item">
-  <label>Dispositivo móvil conectado al AP exterior</label>
-  <div class="photo-grid">
-    <div class="photo-cell" data-title="Móvil conectado - Exterior">
-      <input id="img-movil-ext" type="file" accept="image/*">
-      <div class="placeholder">
-        <svg viewBox="0 0 24 24" fill="none">
-          <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
-          <path d="M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <div>Subir captura</div>
+  <!-- TARJETA 2 · Dispositivo móvil conectado al AP exterior -->
+  <div class="p-item" data-title="Dispositivo móvil conectado al AP exterior">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Dispositivo móvil conectado al AP exterior">
+        <input id="img-movil-ext" type="file" accept="image/*">
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="7" y="2" width="10" height="20" rx="2"
+                  stroke="currentColor" stroke-width="2"/>
+            <path d="M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div>Subir captura</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-            <!-- Col 1: AP Interior -->
-            <div class="p-item">
-              <label>Equipos WIFI Interior</label>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="AP Interior">
-                  <input id="img-ap-int" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 16 0M7 12a5 5 0 0 1 10 0M10 12a2 2 0 1 1 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto AP Interior</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Col 2: AP Exterior 1 -->
-            <div class="p-item">
-              <label>Equipos WIFI Exterior 1 (AP1)</label>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="AP Exterior 1">
-                  <input id="img-ap-ext1" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 16 0M7 12a5 5 0 0 1 10 0M10 12a2 2 0 1 1 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto AP Exterior 1</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Col 1: AP Exterior 2 -->
-            <div class="p-item">
-              <label>Equipos WIFI Exterior 2 (AP2 – si aplica)</label>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="AP Exterior 2">
-                  <input id="img-ap-ext2" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 16 0M7 12a5 5 0 0 1 10 0M10 12a2 2 0 1 1 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto AP Exterior 2</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Col 2: Equipos de cómputo conectados a Internet (IE) -->
-<div class="p-item">
-  <label>Equipos de cómputo conectados a Internet (IE)</label>
-  <div class="photo-grid">
-    <div class="photo-cell" data-title="PC conectados - Interior">
-      <input id="img-pc-int" type="file" accept="image/*">
-      <div class="placeholder">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M4 6h16v10H4zM8 20h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <div>Subir evidencia navegación</div>
+  <!-- TARJETA 3 · AP Interior -->
+  <div class="p-item" data-title="AP Interior">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="AP Interior">
+        <input id="img-ap-int" type="file" accept="image/*">
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <div>Subir foto AP Interior</div>
+        </div>
       </div>
     </div>
   </div>
-</div>          </div><!-- /.pruebas-2col -->
 
+  <!-- TARJETA 4 · AP Exterior 1 -->
+  <div class="p-item" data-title="AP Exterior 1">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="AP Exterior 1">
+        <input id="img-ap-ext1" type="file" accept="image/*">
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <div>Subir foto AP Exterior 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <!-- Resto de PRUEBAS -->
-          <div class="grid" style="margin-top:10px">
-            <div class="col-4">
-              <div class="field"><label>Señalética exterior</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Señalética exterior">
-                  <input id="img-senal-ext" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 7h14l-3-3H8l-3 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 5 · AP Exterior 2 -->
+  <div class="p-item" data-title="AP Exterior 2">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="AP Exterior 2">
+        <input id="img-ap-ext2" type="file" accept="image/*">
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <div>Subir foto AP Exterior 2</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Señalética interior</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Señalética interior">
-                  <input id="img-senal-int" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 7h14l-3-3H8l-3 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 6 · PC conectados - Interior -->
+  <div class="p-item" data-title="PC conectados - Interior">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="PC conectados - Interior">
+        <input id="img-pc-int" type="file" accept="image/*">
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="14" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <div>Subir evidencia navegación</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Solución de respaldo (4 horas) · si aplica</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Solución respaldo">
-                  <input id="img-respaldo" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- TARJETA 7 · Señalética exterior -->
+  <div class="p-item" data-title="Señalética exterior">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Señalética exterior">
+        <input id="img-senal-ext" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir foto</div></div>
+      </div>
+    </div>
+  </div>
 
-          <div class="grid" style="margin-top:10px">
-            <div class="col-4">
-              <div class="field"><label>Print de servidor (evento UPS)</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Print servidor TRIARA UPS">
-                  <input id="img-print-ups" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M6 9V5h12v4M6 14h12v5H6z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir print</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 8 · Señalética interior -->
+  <div class="p-item" data-title="Señalética interior">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Señalética interior">
+        <input id="img-senal-int" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir foto</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Medición eléctrica 1</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Medición eléctrica 1">
-                  <input id="img-med1" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="m13 2-2 7h4l-3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 9 · Solución respaldo -->
+  <div class="p-item" data-title="Solución respaldo">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Solución respaldo">
+        <input id="img-respaldo" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir foto</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Medición eléctrica 2</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Medición eléctrica 2">
-                  <input id="img-med2" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="m13 2-2 7h4l-3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir foto</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- TARJETA 10 · Print servidor TRIARA UPS -->
+  <div class="p-item" data-title="Print servidor TRIARA UPS">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Print servidor TRIARA UPS">
+        <input id="img-print-ups" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir print</div></div>
+      </div>
+    </div>
+  </div>
 
-          <div class="grid" style="margin-top:10px">
-            <div class="col-4">
-              <div class="field"><label>Navegación AP Indoor</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Navegación Indoor">
-                  <input id="img-nav-indoor" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16v10H4zM8 20h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir evidencia</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 11 · Medición eléctrica 1 -->
+  <div class="p-item" data-title="Medición eléctrica 1">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Medición eléctrica 1">
+        <input id="img-med1" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir foto</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Navegación AP Outdoor</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Navegación Outdoor">
-                  <input id="img-nav-outdoor" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16v10H4zM8 20h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir evidencia</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 12 · Medición eléctrica 2 -->
+  <div class="p-item" data-title="Medición eléctrica 2">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Medición eléctrica 2">
+        <input id="img-med2" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir foto</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Prueba de velocidad</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Speedtest">
-                  <input id="img-speedtest" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 1 0 9 9M12 3v5m0 0l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir speedtest</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- TARJETA 13 · Navegación Indoor -->
+  <div class="p-item" data-title="Navegación Indoor">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Navegación Indoor">
+        <input id="img-nav-indoor" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir evidencia</div></div>
+      </div>
+    </div>
+  </div>
 
-          <!-- Portal cautivo / Bloqueo -->
-          <div class="grid" style="margin-top:10px">
-            <div class="col-4">
-              <div class="field"><label>Portal cautivo</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Portal cautivo">
-                  <input id="img-portal" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 11V7a7 7 0 0 1 14 0v4M5 11h14v8H5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir evidencia</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 14 · Navegación Outdoor -->
+  <div class="p-item" data-title="Navegación Outdoor">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Navegación Outdoor">
+        <input id="img-nav-outdoor" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir evidencia</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Bloqueo de páginas · 1</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Bloqueo páginas #1">
-                  <input id="img-block1" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 11V7a7 7 0 0 1 14 0v4M5 11h14v8H5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir evidencia</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- TARJETA 15 · Speedtest -->
+  <div class="p-item" data-title="Speedtest">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Speedtest">
+        <input id="img-speedtest" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir speedtest</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-4">
-              <div class="field"><label>Bloqueo de páginas · 2</label></div>
-              <div class="photo-grid">
-                <div class="photo-cell" data-title="Bloqueo páginas #2">
-                  <input id="img-block2" type="file" accept="image/*">
-                  <div class="placeholder">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 11V7a7 7 0 0 1 14 0v4M5 11h14v8H5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    <div>Subir evidencia</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- TARJETA 16 · Portal cautivo -->
+  <div class="p-item" data-title="Portal cautivo">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Portal cautivo">
+        <input id="img-portal" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir evidencia</div></div>
+      </div>
+    </div>
+  </div>
 
-  <div class="card" style="margin-top:12px">
+  <!-- TARJETA 17 · Bloqueo páginas #1 -->
+  <div class="p-item" data-title="Bloqueo páginas #1">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Bloqueo páginas #1">
+        <input id="img-block1" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir evidencia</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETA 18 · Bloqueo páginas #2 -->
+  <div class="p-item" data-title="Bloqueo páginas #2">
+    <div class="photo-grid">
+      <div class="photo-cell" data-title="Bloqueo páginas #2">
+        <input id="img-block2" type="file" accept="image/*">
+        <div class="placeholder"><div>Subir evidencia</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.pruebas-2col -->
+    
   <h3>6. Observaciones</h3>
   <div class="field">
     <textarea id="inp-pruebas-obs" placeholder="Observaciones adicionales (texto y números)"></textarea>
