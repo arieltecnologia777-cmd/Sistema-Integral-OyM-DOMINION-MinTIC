@@ -3131,6 +3131,20 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
   }
 }
 
+    /* === OCULTAR “Control de cambios” (menú + sección) ========================= */
+.nav a[data-target="sec-cambios"]{ 
+  display: none !important;           /* oculta la opción del menú */
+}
+#sec-cambios{
+  display: none !important;           /* oculta la sección completa */
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+    
   </style>
 </head>
 <body class="theme-pro">
