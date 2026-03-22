@@ -3145,26 +3145,18 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
   margin: 0 !important;
 }
 
-    /* ===== Ajuste de ancho de sidebar SOLO en móvil ===== */
+ /* ===== Sidebar MÁS ANCHA solo en móvil ===== */
 @media (max-width: 768px) {
   .sidebar {
-    /* Aumenta aquí: antes 260px → ahora 300px (ajústalo a tu gusto) */
-    width: 300px;
+    width: 320px;   /* ← AQUI la haces más ancha */
   }
 
-  /* Si tu sidebar se oculta/abre con translateX */
   .sidebar.is-closed {
-    transform: translateX(-300px);
+    transform: translateX(-320px);
   }
+
   .sidebar.is-open {
     transform: translateX(0);
-  }
-
-  /* Contenido: si en móvil usas overlay, deja 0 */
-  .content,
-  .main,
-  .page-content {
-    margin-left: 0;
   }
 }
     
