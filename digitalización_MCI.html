@@ -3216,6 +3216,49 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
 .nav-avatar img {
   max-width: none;  /* importante para no heredar restricciones globales */
 }
+/* ====== AVATAR MÁS GRANDE Y SIN APLASTE EN MÓVIL ====== */
+@media (max-width: 768px) {
+
+  /* Avatar contenedor */
+  .avatar,
+  .user-avatar,
+  .nav-avatar,
+  .sidebar .avatar {
+    width: 60px;          /* <-- Tamaño que sí se nota */
+    height: 60px;
+    min-width: 60px;      /* <-- Impide que se achique */
+    min-height: 60px;
+    flex-shrink: 0;       /* <-- LA CLAVE: NO permitir que flex lo aplaste */
+    border-radius: 50%;
+    overflow: visible;    /* <-- Evita recortes indeseados */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Imagen interna */
+  .avatar img,
+  .user-avatar img,
+  .nav-avatar img,
+  .sidebar .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;    /* círculo perfecto */
+    border-radius: 50%;
+  }
+
+  /* El contenedor padre NO debe aplastar nada */
+  .sidebar-header,
+  .sidebar-user,
+  .user-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;            /* Espacio respirable */
+    flex-shrink: 0;       /* <-- Muy importante */
+    overflow: visible;    /* Nada de cortar dentro */
+  }
+}
+
     
   </style>
 </head>
