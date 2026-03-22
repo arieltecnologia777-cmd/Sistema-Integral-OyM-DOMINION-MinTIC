@@ -3145,19 +3145,76 @@ body.theme-pro #sec-acta .photo-grid .photo-cell[data-title="Firma técnico"]{
   margin: 0 !important;
 }
 
- /* ===== Sidebar MÁS ANCHA solo en móvil ===== */
+    /* ====== FIX AVATAR EN MÓVIL: PREVENIR ENCOGIMIENTO/APLASTE ====== */
 @media (max-width: 768px) {
-  .sidebar {
-    width: 500px;   /* ← AQUI la haces más ancha */
+  /* Contenedor del avatar (ajusta el selector si tu clase difiere) */
+  .avatar, 
+  .user-avatar, 
+  .nav-avatar, 
+  .sidebar .avatar {
+    /* Tamaño explícito del contenedor (ajústalo a tu diseño) */
+    width: 40px;
+    height: 40px;
+    aspect-ratio: 1 / 1;
+
+    /* Evitar que flexbox lo encoja */
+    flex: 0 0 auto;
+    min-width: 40px;
+    min-height: 40px;
+
+    /* Asegurar forma circular y que no colapse */
+    border-radius: 50%;
+    overflow: hidden;
+
+    /* Si el contenedor usa grid/flex, mantenlo consistente */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .sidebar.is-closed {
-    transform: translateX(-320px);
+  /* Imagen interna del avatar (ajusta si usas <img> o background) */
+  .avatar img,
+  .user-avatar img,
+  .nav-avatar img,
+  .sidebar .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* recorta sin deformar */
+    display: block;      /* elimina espacios fantasma en inline */
+    border-radius: 50%;
+    flex: 0 0 auto;      /* no permitir shrink */
   }
 
-  .sidebar.is-open {
-    transform: translateX(0);
+  /* Si tu layout global aplica reglas agresivas a IMG en móvil,
+     neutralízalas para el avatar específicamente. */
+  img.avatar,
+  img.user-avatar,
+  img.nav-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: cover;
+    border-radius: 50%;
+    flex: 0 0 auto;
   }
+
+  /* Si el padre es un contenedor flex que aplasta (muy común en header/sidebar) */
+  .avatar-container,
+  .user-menu,
+  .sidebar .user-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Evita encogimiento del bloque completo si hace falta */
+    /* flex-shrink: 0;  <-- descomenta si notas que todo el bloque se encoge */
+  }
+}
+
+/* Extra: si tienes una regla global como: img { max-width: 100%; height: auto; }
+   puede distorsionar dentro de un contenedor fijo. Este override lo aísla. */
+.avatar img,
+.user-avatar img,
+.nav-avatar img {
+  max-width: none;  /* importante para no heredar restricciones globales */
 }
     
   </style>
