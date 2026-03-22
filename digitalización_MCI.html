@@ -3151,6 +3151,30 @@ html {
   transform-origin: top left;
   width: 105.26%; /* compensación para evitar barras blancas */
 }
+
+
+    /* ===== Ajuste de ancho de sidebar SOLO en móvil ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    /* Aumenta aquí: antes 260px → ahora 300px (ajústalo a tu gusto) */
+    width: 300px;
+  }
+
+  /* Si tu sidebar se oculta/abre con translateX */
+  .sidebar.is-closed {
+    transform: translateX(-300px);
+  }
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* Contenido: si en móvil usas overlay, deja 0 */
+  .content,
+  .main,
+  .page-content {
+    margin-left: 0;
+  }
+}
     
   </style>
 </head>
