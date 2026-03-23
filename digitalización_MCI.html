@@ -3445,6 +3445,99 @@ body.theme-pro #sec-despues .photo-grid .photo-cell::before{
    superior, puedes subir 2 px más (top: 4px). Déjamelo saber y lo
    dejo fijo o por tarjeta específica. */
 
+/* === Ocultar botón "Cerrar menú" en escritorio === */
+#collapseBtn {
+  display: none !important;
+}
+
+/* === Mostrarlo SOLO en pantallas móviles (≤860px) === */
+@media (max-width: 860px) {
+  #collapseBtn {
+    display: block !important;
+  }
+}
+
+/* === FIX RESPONSIVE + TÍTULOS — EQUIPOS INSTALADOS/RETIRADOS === */
+@media (max-width: 860px) {
+
+  /* Ocultar cabecera real */
+  table thead {
+    display: none !important;
+  }
+
+  /* Fila como tarjeta */
+  #tbody-equipos tr {
+    display: block !important;
+    width: 100% !important;
+    padding: 14px !important;
+    margin-bottom: 14px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  }
+
+  /* Cada celda vertical */
+  #tbody-equipos td {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* ===== TÍTULOS GENERADOS POR CSS ===== */
+
+  /* SAP · Descripción */
+  #tbody-equipos td:nth-child(1)::before {
+    content: "SAP · Descripción";
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  /* Instalado / Retirado */
+  #tbody-equipos td:nth-child(2)::before {
+    content: "Instalado / Retirado";
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  /* Serial (obligatorio) */
+  #tbody-equipos td:nth-child(3)::before {
+    content: "Serial (obligatorio)";
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  /* Ajustes de inputs */
+  #tbody-equipos .inp-sap,
+  #tbody-equipos .inp-serial {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Radios alineados */
+  #tbody-equipos td:nth-child(2) > div {
+    margin-left: 0 !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Botón eliminar */
+  #tbody-equipos .btn-del {
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 10px !important;
+    border-radius: 8px !important;
+  }
+}
+
   </style>
 </head>
 <body class="theme-pro">
