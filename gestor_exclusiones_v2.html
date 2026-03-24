@@ -1830,6 +1830,57 @@ async function postJSONWithFallback(base, paths, body, headers){
   return { ok:false, error: lastErr ? (lastErr.message||String(lastErr)) : 'Fallo desconocido', used: used || paths.at(-1), res: lastRes };
 }
 
+// === ARIEL-COPILOT ===
+// Normaliza fecha EXACTAMENTE como el Worker.js
+function normalizeFechaFront(v) {
+  if (!v) return "";
+  const s = v.toString().trim();
+
+  // Caso: ya está DD/MM/YYYY
+  const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m1) {
+    const dd = m1[1].padStart(2, "0");
+    const mm = m1[2].padStart(2, "0");
+    const yyyy = m1[3];
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
+  // Caso: YYYY-MM-DD
+  const m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (m2) {
+    const dd = m2[3].padStart(2, "0");
+    const mm = m2[2].padStart(2, "0");
+    const yyyy = m2[1];
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
+  // Caso: número Excel (ej. 44927)
+  if (/^\d{4,6}$/.test(s)) {
+    const num = Number(s);
+    const ms = Math.round((num - 25569) * 86400 * 1000);
+    const d = new Date(ms);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
+  // Último recurso: new Date()
+  const d = new Date(s);
+  if (!isNaN(d)) {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
+  return s;
+}
+
+// <-- PEGADO AQUÍ MISMO
+
+async function enviarRegistrosOT(ot){
+
 /* ======= Enviar registros (POST backend) – robusto ======= */
 async function enviarRegistrosOT(ot){
   const { pendientes, total } = contarCompletados(ot);
@@ -1849,7 +1900,7 @@ async function enviarRegistrosOT(ot){
       .map(r => ({
         id: r.idReal || r.id || '',        // ← clave real si la hay
         ot: r.ot,
-        fecha: r.fecha || '',
+        fecha: normalizeFechaFront(r.fecha || ''),
         causa: r.causa || '',
         regional: (r.regional||'').toString().trim()
       }));
@@ -1860,7 +1911,11 @@ async function enviarRegistrosOT(ot){
       regional: regActiva,   // quién envía (R1/R2)
       mod: __MOD,            // operatividad|backlog|sla
       ts: Date.now(),        // sello de tiempo
-      registros: items.map(({fecha, ot, causa}) => ({fecha, ot, causa})),
+      registros: items.map(({fecha, ot, causa}) => ({
+    fecha: normalizeFechaFront(fecha),
+    ot,
+    causa
+})),
       items                    // payload más rico para el Worker (si lo soporta)
     };
 
