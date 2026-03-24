@@ -1154,6 +1154,18 @@ function esc(s){
     .replace(/>/g,"&gt;");
 }
 function cssId(texto){ return btoa(unescape(encodeURIComponent(texto))).replace(/=/g,''); }
+function normalizeFechaFront(f){
+    if(!f) return "";
+    const limpio = f.replaceAll("-", "/").trim();
+    const partes = limpio.split("/");
+    if(partes.length !== 3) return limpio;
+
+    let [d,m,y] = partes;
+    if(d.length === 1) d = "0" + d;
+    if(m.length === 1) m = "0" + m;
+
+    return `${d}/${m}/${y}`;
+}
 function formatTs(d){ const dd=String(d.getDate()).padStart(2,'0'), mm=String(d.getMonth()+1).padStart(2,'0');
   const yyyy=d.getFullYear(), hh=String(d.getHours()).padStart(2,'0'), mi=String(d.getMinutes()).padStart(2,'0'), ss=String(d.getSeconds()).padStart(2,'0');
   return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss}`; }
