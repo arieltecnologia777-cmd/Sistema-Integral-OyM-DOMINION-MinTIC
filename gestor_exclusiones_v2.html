@@ -1879,6 +1879,7 @@ function normalizeFechaFront(v) {
 
 // <-- PEGADO AQUÍ MISMO
 
+
 /* ======= Enviar registros (POST backend) – robusto ======= */
 async function enviarRegistrosOT(ot){
   const { pendientes, total } = contarCompletados(ot);
@@ -1892,16 +1893,29 @@ async function enviarRegistrosOT(ot){
     // Regional activa del gestor (si no existe, usamos "Todas")
     const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
-    // Tomar los registros de la OT (mantenemos campos útiles para el backend)
-    const items = datos
-      .filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim())
-      .map(r => ({
-        id: r.idReal || r.id || '',        // ← clave real si la hay
-        ot: r.ot,
-        fecha: normalizeFechaFront(r.fecha || ''),
-        causa: r.causa || '',
-        regional: (r.regional||'').toString().trim()
-      }));
+    // === ARIEL‑COPILOT — TOMAR REGISTROS DIRECTO DEL MODAL ===
+const registrosModal = Array.from(document.querySelectorAll('.registro'));
+
+const items = registrosModal.map(reg => {
+    const fecha = normalizeFechaFront(
+        reg.querySelector('input').value.trim()
+    );
+    const causa = reg.querySelector('textarea').value.trim();
+
+    // El textarea tiene id como m_causa_123 → tomamos el número final
+    const idVisual = reg.querySelector('textarea').id.split('_').pop();
+
+    // Buscar el registro original para tomar ID real y regional
+    const ref = datos.find(r => String(r.id) === idVisual);
+
+    return {
+        id: ref?.idReal || ref?.id || '',
+        ot,
+        fecha,
+        causa,
+        regional: ref?.regional ?? ''
+    };
+});
 
     // Estructura de payload: mantenemos "registros" y añadimos "items" por compatibilidad
     const payload = {
