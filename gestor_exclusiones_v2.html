@@ -1914,7 +1914,9 @@ const items = registrosModal.map(reg => {
     );
 
     // Causa tomada del textarea exacto del usuario
-    const causa = reg.querySelector('textarea').value.trim();
+    const causa = reg.querySelector(`textarea`).value.trim()
+    || document.querySelector(`#m_causa_${ref?.id}`)?.value.trim()
+    || '';
 
     // ✅ ARIEL‑COPILOT FIX — buscar el registro original por FECHA (OT + fecha = único)
     const ref = datos.find(r =>
