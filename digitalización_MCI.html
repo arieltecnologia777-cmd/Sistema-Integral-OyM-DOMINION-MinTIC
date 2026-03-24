@@ -3538,6 +3538,95 @@ body.theme-pro #sec-despues .photo-grid .photo-cell::before{
   }
 }
 
+/* === Sidebar: botones uno debajo del otro === */
+.sidebar-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+.sidebar-actions .btn {
+  width: 100% !important;
+  text-align: center !important;
+  display: block !important;
+}
+
+/* === Botones del sidebar más angostos y centrados === */
+.sidebar-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;     /* centra los botones */
+  gap: 10px !important;
+}
+
+.sidebar-actions .btn {
+  width: 55% !important;              /* ANCHO más angosto */
+  max-width: 180px !important;        /* límite elegante */
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+}
+
+/* === MOBILE FIX: Botones del sidebar alineados con "Cerrar menú" === */
+@media (max-width: 860px) {
+
+  /* Contenedor vertical, pero alineado a la izquierda */
+  .sidebar-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;   /* <-- alineación a la izquierda */
+    gap: 10px !important;
+    padding-left: 8px !important;         /* <-- igual que el botón Cerrar menú */
+  }
+
+  /* Botones del sidebar: más angostos, simétricos, paralelos */
+  .sidebar-actions .btn,
+  .sidebar-actions .btn.secondary {
+    width: 85% !important;                /* <-- mismo ancho visual que "Cerrar menú" */
+    max-width: 220px !important;          /* <-- evita que se alarguen */
+    padding: 6px 10px !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+  }
+}
+
+
+/* === DESKTOP FIX: Alinear botones del sidebar más a la izquierda === */
+@media (min-width: 861px) {
+
+  /* El contenedor deja de centrar: se alinea con el menú */
+  .sidebar-actions {
+    align-items: flex-start !important;   /* ← ALINEA A LA IZQUIERDA */
+    padding-left: 4px !important;         /* ← Coherente con items del menú */
+    width: 100% !important;
+  }
+
+  /* Botones más angostos y alineados */
+  .sidebar-actions .btn,
+  .sidebar-actions .btn.secondary {
+    width: 70% !important;                /* ← Ancho reducido, más elegante */
+    max-width: 180px !important;          /* ← Muy parecido al ancho de los items del menú */
+    text-align: center !important;
+    padding: 6px 10px !important;
+    border-radius: 8px !important;
+  }
+}
+
+
+/* === Empujar los botones del sidebar al fondo === */
+.sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.sidebar-actions {
+  margin-top: auto !important;   /* <-- Esto los manda al final */
+  padding-bottom: 20px !important;
+  width: 100% !important;
+}
+
   </style>
 </head>
 <body class="theme-pro">
@@ -3557,10 +3646,15 @@ body.theme-pro #sec-despues .photo-grid .photo-cell::before{
       <a href="#" data-target="sec-despues">REGISTRO FOTOGRÁFICO DESPUÉS</a>
       <a href="#" data-target="sec-etiqueta">ETIQUETA RE FOTOGRÁFICO</a>
       <a href="#" data-target="sec-cambios">Control de cambios</a>
-      <div style="margin-top:10px;padding:10px 8px;">
-        <button class="btn ghost" id="collapseBtn">Cerrar menú</button>
-      </div>
+      
     </nav>
+<div class="sidebar-actions">
+
+  <button class="btn secondary" id="collapseBtn">Cerrar menú</button>
+  <button class="btn" id="exportBtn">Exportar</button>
+<button class="btn secondary" id="saveDraftBtn" disabled>Guardar borrador</button>
+<button class="btn secondary" id="resetWorkBtn">Reiniciar trabajo</button>
+</div>
   </aside>
 
   <!-- MAIN -->
@@ -4224,11 +4318,7 @@ body.theme-pro #sec-despues .photo-grid .photo-cell::before{
         </div>
       </section>
 
-      <!-- Acciones -->
-      <div class="actions" style="margin-bottom:18px">
-        <button class="btn secondary" id="saveDraftBtn" title="(Próxima iteración) Guardar borrador en localStorage" disabled>Guardar borrador</button>
-        <button class="btn" id="exportBtn">Exportar</button>
-      </div>
+      
     </div>
   </main>
 
@@ -4420,6 +4510,150 @@ function makeRow() {
     // ===================
     const statusEl = document.getElementById('status');
     const exportBtn = document.getElementById('exportBtn');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const resetWorkBtn = document.getElementById("resetWorkBtn");
+
+if (resetWorkBtn) {
+  resetWorkBtn.addEventListener("click", () => {
+
+    if (!confirm("¿Seguro que deseas reiniciar todo el trabajo? Esto borrará el borrador y limpiará todos los campos y fotos.")) {
+      return;
+    }
+
+    // 1. Borrar borrador
+    clearDraft();
+
+    // 2. Limpiar inputs (menos archivos)
+    document.querySelectorAll("input:not([type='file']), textarea, select").forEach(el => {
+      if (el.id) el.value = "";
+    });
+
+    // 3. Limpiar tabla de equipos
+    const tbodyEquipos = document.getElementById("tbody-equipos");
+    if (tbodyEquipos) {
+      tbodyEquipos.innerHTML = "";
+      tbodyEquipos.appendChild(makeRow()); // dejar 1 fila nueva
+    }
+
+    // 4. BORRAR TODAS LAS FOTOS DEL FORMULARIO
+    document.querySelectorAll('.photo-cell').forEach(cell => {
+      const input = cell.querySelector('input[type="file"]');
+      const img = cell.querySelector('img');
+      const placeholder = cell.querySelector('.placeholder');
+
+      // Remover imagen si existe
+      if (img) img.remove();
+
+      // Limpiar input file
+      if (input) input.value = "";
+
+      // Quitar clases visuales
+      cell.classList.remove('has-image');
+
+      // Restaurar placeholder
+      if (placeholder) placeholder.style.display = '';
+    });
+
+    // Borrar también cualquier toolbar que haya quedado
+    document.querySelectorAll('.photo-toolbar').forEach(tb => tb.remove());
+
+    // 5. Mensaje visual
+    setStatus("Trabajo reiniciado ✔", "ok");
+
+    alert("Trabajo reiniciado. Todo quedó limpio y listo para iniciar un nuevo MCI.");
+  });
+}
+
+
+// ===============================
+//  MÓDULO GUARDAR BORRADOR MCI
+// ===============================
+
+const DRAFT_KEY = "MCI_DRAFT_v1";
+
+// --- GUARDAR BORRADOR ---
+function saveDraft() {
+
+  const data = {};
+
+  // Guardar TODOS los inputs que no son file
+  const campos = document.querySelectorAll("input:not([type='file']), textarea, select");
+  campos.forEach(el => {
+    if (el.id) data[el.id] = el.value ?? "";
+  });
+
+  // Guardar tabla equipos
+  const eqRows = Array.from(document.querySelectorAll("#tbody-equipos tr"));
+  const equipos = [];
+
+  eqRows.forEach(row => {
+    const sap = row.querySelector(".inp-sap")?.value ?? "";
+    const tipo = row.querySelector(".inp-tipo:checked")?.value ?? "";
+    const serial = row.querySelector(".inp-serial")?.value ?? "";
+
+    if (sap.trim() !== "" || serial.trim() !== "") {
+      equipos.push({ sap, tipo, serial });
+    }
+  });
+
+  data.filasEquipos = equipos;
+
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  alert("✓ Borrador guardado");
+}
+
+// --- RESTAURAR BORRADOR ---
+function restoreDraft() {
+  const raw = localStorage.getItem(DRAFT_KEY);
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw);
+
+    Object.keys(data).forEach(key => {
+      if (key === "filasEquipos") return;
+      const el = document.getElementById(key);
+      if (el) el.value = data[key];
+    });
+
+    if (Array.isArray(data.filasEquipos)) {
+      const tbody = document.getElementById("tbody-equipos");
+      tbody.innerHTML = "";
+
+      data.filasEquipos.forEach(item => {
+        const tr = makeRow();
+        tr.querySelector(".inp-sap").value = item.sap ?? "";
+        tr.querySelector(".inp-serial").value = item.serial ?? "";
+
+        const tipoInst = tr.querySelector("input[value='INSTALADO']");
+        const tipoRet = tr.querySelector("input[value='RETIRADO']");
+
+        if (item.tipo === "INSTALADO" && tipoInst) tipoInst.checked = true;
+        if (item.tipo === "RETIRADO" && tipoRet) tipoRet.checked = true;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+  } catch (e) {
+    console.error("Error restaurando borrador:", e);
+  }
+}
+
+// --- BORRAR BORRADOR ---
+function clearDraft() {
+  localStorage.removeItem(DRAFT_KEY);
+}
+
+// --- ACTIVAR BOTÓN ---
+if (saveDraftBtn) {
+  saveDraftBtn.disabled = false;
+  saveDraftBtn.addEventListener("click", saveDraft);
+}
+
+// --- RESTAURAR AUTOMÁTICO AL INICIAR ---
+restoreDraft();
+
 
     // ⚙️ URL del Trigger HTTP del Flow (pega la tuya)
     const FLOW_URL = 'https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/709b7109b20a44c48bb80bff82745e24/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=4qM-eT3MTQdFggOerx1uQdQ8cePK31afdn2lNk7ID4s';
@@ -4789,6 +5023,7 @@ if (typeof imgsJson === 'object' && imgsJson) {
         alert('No se pudo generar el Excel: ' + err.message);
       }finally{
         setWorking(false);
+clearDraft();
       }
     }
 
