@@ -1903,34 +1903,7 @@ async function enviarRegistrosOT(ot){
     // Regional activa del gestor (si no existe, usamos "Todas")
     const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
-    // === ARIEL‑COPILOT — TOMAR REGISTROS DIRECTO DEL MODAL Y MAPEAR POR FECHA ===
-const registrosModal = Array.from(document.querySelectorAll('.registro'));
-
-const items = registrosModal.map(reg => {
-
-    // Fecha real del registro (clave única)
-    const fecha = normalizeFechaFront(
-        reg.querySelector('input').value.trim()
-    );
-
-    // Buscar en datos[] el registro original usando OT + fecha
-    const ref = datos.find(r =>
-        normalizeFechaFront(r.fecha) === fecha &&
-        (r.ot ?? '').toString().trim() === (ot ?? '').toString().trim()
-    );
-
-    // Causa verdadera (del textarea exacto del usuario)
-    const causa = document.querySelector(`#m_causa_${ref?.id}`)?.value.trim() ?? '';
-
-    return {
-        id: ref?.idReal || ref?.id || '',
-        ot,
-        fecha,
-        causa,
-        regional: ref?.regional ?? ''
-    };
-});
-
+   
 
     // Estructura de payload: mantenemos "registros" y añadimos "items" por compatibilidad
     const payload = {
