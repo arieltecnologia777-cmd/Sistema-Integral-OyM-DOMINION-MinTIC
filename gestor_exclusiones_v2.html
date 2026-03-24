@@ -1908,21 +1908,19 @@ const registrosModal = Array.from(document.querySelectorAll('.registro'));
 
 const items = registrosModal.map(reg => {
 
-    // Fecha tomada del input del modal
+    // Fecha real del registro (clave única)
     const fecha = normalizeFechaFront(
         reg.querySelector('input').value.trim()
     );
 
-    // Causa tomada del textarea exacto del usuario
-    const causa = reg.querySelector(`textarea`).value.trim()
-    || document.querySelector(`#m_causa_${ref?.id}`)?.value.trim()
-    || '';
-
-    // ✅ ARIEL‑COPILOT FIX — buscar el registro original por FECHA (OT + fecha = único)
+    // Buscar en datos[] el registro original usando OT + fecha
     const ref = datos.find(r =>
         normalizeFechaFront(r.fecha) === fecha &&
         (r.ot ?? '').toString().trim() === (ot ?? '').toString().trim()
     );
+
+    // Causa verdadera (del textarea exacto del usuario)
+    const causa = document.querySelector(`#m_causa_${ref?.id}`)?.value.trim() ?? '';
 
     return {
         id: ref?.idReal || ref?.id || '',
