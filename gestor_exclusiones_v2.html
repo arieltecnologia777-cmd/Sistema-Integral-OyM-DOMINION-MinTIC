@@ -1692,15 +1692,26 @@ const modalBody = document.getElementById('modalBody');
 const modalTitle = document.getElementById('modalTitle');
 const modalEnviarBtn = document.getElementById('modalEnviar');
 
-function abrirModal(ot, {soloVista=false} = {}){
-  const regs = datos.filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim());
-  if(!regs.length){ showToast(`No hay registros para la OT ${ot}`, 'error'); return; }
+function abrirModal(ot, {soloVista=false} = {}) {
+  // ✅ Filtrar registros REALES de esa OT
+  const regsOriginales = datos.filter(d =>
+    (d.ot ?? "").toString().trim() === (ot ?? "").toString().trim()
+  );
+
+  if (!regsOriginales.length) {
+    showToast(`No hay registros para la OT ${ot}`, 'error');
+    return;
+  }
+
+  // ✅ Copiamos cada registro para evitar referencias compartidas
+  const regs = regsOriginales.map(r => ({ ...r }));
+
   otModalActual = ot;
   modalSoloVista = soloVista;
   modalTitle.textContent = `${soloVista ? 'Vista previa' : 'Gestionar registros'} — OT ${ot}`;
   modalBody.innerHTML = "";
 
-  for(const item of regs){
+  for (const item of regs) {
     const wrap = document.createElement('div');
     wrap.className = 'registro';
     wrap.innerHTML = `
@@ -1720,48 +1731,79 @@ function abrirModal(ot, {soloVista=false} = {}){
         </div>
       </div>
     `;
+
     modalBody.appendChild(wrap);
 
     const txt = wrap.querySelector(`#m_causa_${item.id}`);
     const inp = wrap.querySelector(`#m_foto_${item.id}`);
 
-    if(soloVista){
-      txt.setAttribute('readonly','readonly');
-      txt.setAttribute('disabled','disabled');
-      inp.setAttribute('disabled','disabled');
-    }else{
-      const debouncedUpdate = debounce(()=>updateEstadosOT(item.ot), 150);
-      txt.addEventListener('input', e => {
-    const nueva = e.target.value;
-    const ref = datos.find(x =>
-        normalizeFechaFront(x.fecha) === normalizeFechaFront(item.fecha) &&
-        (x.ot ?? "").toString().trim() === (item.ot ?? "").toString().trim()
-    );
-    if (ref) ref.causa = nueva;
-    item.causa = nueva;
-    debouncedUpdate();
-});
+    // ✅ MODO SOLO VISTA
+    if (soloVista) {
+      txt.setAttribute('readonly', 'readonly');
+      txt.setAttribute('disabled', 'disabled');
+      inp.setAttribute('disabled', 'disabled');
+      continue;
     }
+
+    // ✅ NORMALIZADOR LOCAL
+    const normal = v => normalizeFechaFront((v ?? "").toString().trim());
+
+    // ✅ LISTENER: actualizar causa correctamente
+    txt.addEventListener("input", (e) => {
+      const nueva = e.target.value;
+
+      // ✅ Buscar el registro REAL en datos[] por (OT + FECHA)
+      const ref = datos.find(x =>
+        normal(x.fecha) === normal(item.fecha) &&
+        (x.ot ?? "").toString().trim() === (item.ot ?? "").toString().trim()
+      );
+
+      if (ref) ref.causa = nueva;   // Actualiza el registro real
+      item.causa = nueva;           // Actualiza el del modal
+
+      updateEstadosOT(otModalActual); // ✅ Activa el botón ENVIAR
+    });
+
+    // ✅ LISTENER imágenes
+    inp.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files ?? []);
+      item.fotos = files;
+
+      const ref = datos.find(x =>
+        normal(x.fecha) === normal(item.fecha) &&
+        (x.ot ?? "").toString().trim() === (item.ot ?? "").toString().trim()
+      );
+      if (ref) ref.fotos = files;
+
+      updateEstadosOT(otModalActual);
+    });
   }
 
+  // ✅ Estado inicial del botón de envío
   const { pendientes } = contarCompletados(ot);
   modalEnviarBtn.textContent = 'Enviar registros';
   modalEnviarBtn.disabled = pendientes !== 0;
-  modalEnviarBtn.onclick = async ()=>{
+
+  modalEnviarBtn.onclick = async () => {
     const ok = await confirmModal(`¿Confirmas el envío de los registros para la OT ${ot}?`);
-    if(!ok) return;
+    if (!ok) return;
+
     modalEnviarBtn.textContent = 'Enviando…';
     modalEnviarBtn.disabled = true;
+
     cerrarModal();
     await enviarRegistrosOT(ot);
   };
 
   modalEnviarBtn.style.display = soloVista ? 'none' : '';
-  if(!soloVista) otsEnEdicion.delete(ot);
+
+  if (!soloVista) otsEnEdicion.delete(ot);
 
   modal.classList.add('show');
   modal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
+
+  updateEstadosOT(ot);
   updateHeaderStats();
 }
 
