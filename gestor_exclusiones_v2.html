@@ -1329,46 +1329,33 @@ aplicarBusquedaYFiltro();  // vuelve a renderizar con el filtro aplicado
   }
 }
 
-
+/* ======= Cómputos ======= */
 function contarCompletados(ot){
-    // Si el modal está abierto, CONTAR valores REALES del modal
-    const modal = document.getElementById('modalRegistros');
-    if (modal?.classList.contains('show')) {
-
-        const registrosModal = Array.from(document.querySelectorAll('.registro'));
-        const total = registrosModal.length;
-
-        const completos = registrosModal.filter(reg => {
-            const fecha = reg.querySelector('input')?.value.trim();
-            const causa = reg.querySelector('textarea')?.value.trim();
-            return fecha !== "" && causa !== "";
-        }).length;
-
-        return {
-            completos,
-            total,
-            pendientes: Math.max(0, total - completos)
-        };
-    }
-
-    // Si el modal NO está abierto, usar datos[]
+    // Regional activa del gestor (R1 / R2)
     const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
+    // Registros de la OT completa (todas las regionales)
     const itemsOT = datos.filter(r =>
         (r.ot ?? "").toString().trim() === (ot ?? "").toString().trim()
     );
 
-    let items = (regActiva === "Todas")
-        ? itemsOT
-        : itemsOT.filter(r =>
+    let items;
+
+    // === SI EL GESTOR ES R1 O R2 → FILTRAR SOLO ESA REGIONAL ===
+    if (regActiva !== "Todas") {
+        items = itemsOT.filter(r =>
             (r.regional ?? "").toString().trim() === regActiva
         );
+    } else {
+        // === ADMIN VE TODO NORMAL ===
+        items = itemsOT;
+    }
 
     const total = items.length;
 
     const completos = items.filter(r =>
-        (r.fecha ?? "").trim() !== "" &&
-        (r.causa ?? "").trim() !== ""
+        (r.causa ?? "").toString().trim() !== "" &&
+        (r.fecha ?? "").toString().trim() !== ""
     ).length;
 
     return {
@@ -1736,24 +1723,27 @@ function abrirModal(ot, {soloVista=false} = {}){
     modalBody.appendChild(wrap);
 
     const txt = wrap.querySelector(`#m_causa_${item.id}`);
-const inp = wrap.querySelector(`#m_foto_${item.id}`);
+    const inp = wrap.querySelector(`#m_foto_${item.id}`);
 
-// === ARIEL‑COPILOT FIX — actualizar estados al escribir o cargar fotos ===
-if (!soloVista) {
-    txt.addEventListener("input", () => {
-        updateEstadosOT(otModalActual);
-    });
+    if(soloVista){
+      txt.setAttribute('readonly','readonly');
+      txt.setAttribute('disabled','disabled');
+      inp.setAttribute('disabled','disabled');
+    }else{
+      const debouncedUpdate = debounce(()=>updateEstadosOT(item.ot), 150);
+      txt.addEventListener('input', e=>{
+  const nueva = e.target.value;
 
-    inp.addEventListener("change", () => {
-        updateEstadosOT(otModalActual);
-    });
-}
+  // NO pisar si no cambió realmente
+  if (item.causa !== nueva) {
+    item.causa = nueva;
+    const ref = datos.find(x=>x.id===item.id);
+    if(ref) ref.causa = nueva;
+  }
 
-if(soloVista){
-  txt.setAttribute('readonly','readonly');
-  txt.setAttribute('disabled','disabled');
-  inp.setAttribute('disabled','disabled');
-}
+  debouncedUpdate();
+});
+    }
   }
 
   const { pendientes } = contarCompletados(ot);
@@ -1840,120 +1830,44 @@ async function postJSONWithFallback(base, paths, body, headers){
   return { ok:false, error: lastErr ? (lastErr.message||String(lastErr)) : 'Fallo desconocido', used: used || paths.at(-1), res: lastRes };
 }
 
-// === ARIEL-COPILOT ===
-// Normaliza fecha EXACTAMENTE como el Worker.js
-function normalizeFechaFront(v) {
-  if (!v) return "";
-  const s = v.toString().trim();
-
-  // Caso: ya está DD/MM/YYYY
-  const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m1) {
-    const dd = m1[1].padStart(2, "0");
-    const mm = m1[2].padStart(2, "0");
-    const yyyy = m1[3];
-    return `${dd}/${mm}/${yyyy}`;
-  }
-
-  // Caso: YYYY-MM-DD
-  const m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-  if (m2) {
-    const dd = m2[3].padStart(2, "0");
-    const mm = m2[2].padStart(2, "0");
-    const yyyy = m2[1];
-    return `${dd}/${mm}/${yyyy}`;
-  }
-
-  // Caso: número Excel (ej. 44927)
-  if (/^\d{4,6}$/.test(s)) {
-    const num = Number(s);
-    const ms = Math.round((num - 25569) * 86400 * 1000);
-    const d = new Date(ms);
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }
-
-  // Último recurso: new Date()
-  const d = new Date(s);
-  if (!isNaN(d)) {
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }
-
-  return s;
-}
-
 /* ======= Enviar registros (POST backend) – robusto ======= */
 async function enviarRegistrosOT(ot){
   const { pendientes, total } = contarCompletados(ot);
-  if(total === 0){
-    showToast(`No hay registros para la OT ${ot}.`, 'error');
-    return;
-  }
-  if(pendientes > 0){
-    showToast('Aún hay registros pendientes por completar.', 'error');
-    return;
-  }
+  if(total === 0){ showToast(`No hay registros para la OT ${ot}.`, 'error'); return; }
+  if(pendientes > 0){ showToast('Aún hay registros pendientes por completar.', 'error'); return; }
 
   const btn = document.getElementById(`btn_primary_${cssId(ot)}`);
-  if(btn){
-    btn.disabled = true;
-    btn.textContent = 'Enviando…';
-    btn.classList.remove('success');
-    btn.setAttribute('data-mode','');
-  }
+  if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; btn.classList.remove('success'); btn.setAttribute('data-mode',''); }
 
   try{
+    // Regional activa del gestor (si no existe, usamos "Todas")
     const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
-    // ✅ Tomar registros reales del modal y mapear con precisión
-    const registrosModal = Array.from(document.querySelectorAll('.registro'));
+    // Tomar los registros de la OT (mantenemos campos útiles para el backend)
+    const items = datos
+      .filter(d => (d.ot??"").toString().trim() === (ot??"").toString().trim())
+      .map(r => ({
+        id: r.idReal || r.id || '',        // ← clave real si la hay
+        ot: r.ot,
+        fecha: r.fecha || '',
+        causa: r.causa || '',
+        regional: (r.regional||'').toString().trim()
+      }));
 
-    const items = registrosModal.map(reg => {
-
-        // Fecha (clave única)
-        const fecha = normalizeFechaFront(
-            reg.querySelector('input').value.trim()
-        );
-
-        // Buscar registro original por OT + fecha
-        const ref = datos.find(r =>
-            normalizeFechaFront(r.fecha) === fecha &&
-            (r.ot ?? '').toString().trim() === (ot ?? '').toString().trim()
-        );
-
-        // Causa real escrita por el usuario
-        const causa = document.querySelector(`#m_causa_${ref?.id}`)?.value.trim() ?? '';
-
-        return {
-            id: ref?.idReal || ref?.id || '',
-            ot,
-            fecha,
-            causa,
-            regional: ref?.regional ?? ''
-        };
-    });
-
-    // ✅ Payload correcto
+    // Estructura de payload: mantenemos "registros" y añadimos "items" por compatibilidad
     const payload = {
       ot,
-      regional: regActiva,
-      mod: __MOD,
-      ts: Date.now(),
-      registros: items.map(r => ({
-        fecha: normalizeFechaFront(r.fecha),
-        ot: r.ot,
-        causa: r.causa
-      })),
-      items
+      regional: regActiva,   // quién envía (R1/R2)
+      mod: __MOD,            // operatividad|backlog|sla
+      ts: Date.now(),        // sello de tiempo
+      registros: items.map(({fecha, ot, causa}) => ({fecha, ot, causa})),
+      items                    // payload más rico para el Worker (si lo soporta)
     };
 
+    // Header de autorización (si tu Worker lo requiere para gestor)
     const gestorToken = (sessionStorage.getItem('gestor_token') || 'GESTOR_DOMINION').trim();
 
+    // Rutas probables en tu Worker (orden de preferencia)
     const paths = [
       '/api/gestor/guardarOT',
       '/api/guardarOT',
@@ -1966,15 +1880,14 @@ async function enviarRegistrosOT(ot){
     });
 
     if(resp.ok){
+      // Éxito: fijamos UI “gestionada” y habilitamos eliminar local
       otsEnviadas.add(ot);
-
       if(btn){
         btn.innerHTML = `${svgCheck()}OT gestionada`;
         btn.classList.add('success');
         btn.disabled = true;
         btn.setAttribute('data-mode','done');
       }
-
       const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
       if(btnDel) btnDel.disabled = false;
 
@@ -1982,18 +1895,16 @@ async function enviarRegistrosOT(ot){
     }else{
       throw new Error(resp.error || 'No se pudo guardar en el servidor');
     }
-
   }catch(err){
     console.error(err);
-
+    // Restaurar botón según estado de la OT
     if(btn){
       const { pendientes } = contarCompletados(ot);
-
       if(pendientes === 0){
         btn.innerHTML = `${svgCheck()}OT gestionada`;
+        btn.setAttribute('data-mode','done');
         btn.classList.add('success');
         btn.disabled = true;
-        btn.setAttribute('data-mode','done');
       }else if(otsEnEdicion.has(ot)){
         btn.innerHTML = `${svgPencil()}Continuar editando`;
         btn.setAttribute('data-mode','continuar');
@@ -2004,14 +1915,11 @@ async function enviarRegistrosOT(ot){
         btn.disabled = false;
       }
     }
-
     showToast(`Error al enviar OT: ${err.message}`, 'error');
-
   }finally{
     updateHeaderStats();
   }
 }
-
 /* ======= Eliminar GLOBAL (solo local) ======= */
 async function eliminarRegistrosGlobal(){
   const pend = calcularPendientesGlobal();
