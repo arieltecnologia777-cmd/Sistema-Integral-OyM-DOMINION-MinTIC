@@ -1889,40 +1889,73 @@ function normalizeFechaFront(v) {
 
 // <-- PEGADO AQUÍ MISMO
 
-
 /* ======= Enviar registros (POST backend) – robusto ======= */
 async function enviarRegistrosOT(ot){
   const { pendientes, total } = contarCompletados(ot);
-  if(total === 0){ showToast(`No hay registros para la OT ${ot}.`, 'error'); return; }
-  if(pendientes > 0){ showToast('Aún hay registros pendientes por completar.', 'error'); return; }
+  if(total === 0){
+    showToast(`No hay registros para la OT ${ot}.`, 'error');
+    return;
+  }
+  if(pendientes > 0){
+    showToast('Aún hay registros pendientes por completar.', 'error');
+    return;
+  }
 
   const btn = document.getElementById(`btn_primary_${cssId(ot)}`);
-  if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; btn.classList.remove('success'); btn.setAttribute('data-mode',''); }
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    btn.classList.remove('success');
+    btn.setAttribute('data-mode','');
+  }
 
   try{
-    // Regional activa del gestor (si no existe, usamos "Todas")
     const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
-   
+    // ✅ Tomar registros reales del modal y mapear con precisión
+    const registrosModal = Array.from(document.querySelectorAll('.registro'));
 
-    // Estructura de payload: mantenemos "registros" y añadimos "items" por compatibilidad
+    const items = registrosModal.map(reg => {
+
+        // Fecha (clave única)
+        const fecha = normalizeFechaFront(
+            reg.querySelector('input').value.trim()
+        );
+
+        // Buscar registro original por OT + fecha
+        const ref = datos.find(r =>
+            normalizeFechaFront(r.fecha) === fecha &&
+            (r.ot ?? '').toString().trim() === (ot ?? '').toString().trim()
+        );
+
+        // Causa real escrita por el usuario
+        const causa = document.querySelector(`#m_causa_${ref?.id}`)?.value.trim() ?? '';
+
+        return {
+            id: ref?.idReal || ref?.id || '',
+            ot,
+            fecha,
+            causa,
+            regional: ref?.regional ?? ''
+        };
+    });
+
+    // ✅ Payload correcto
     const payload = {
       ot,
-      regional: regActiva,   // quién envía (R1/R2)
-      mod: __MOD,            // operatividad|backlog|sla
-      ts: Date.now(),        // sello de tiempo
-      registros: items.map(({fecha, ot, causa}) => ({
-    fecha: normalizeFechaFront(fecha),
-    ot,
-    causa
-})),
-      items                    // payload más rico para el Worker (si lo soporta)
+      regional: regActiva,
+      mod: __MOD,
+      ts: Date.now(),
+      registros: items.map(r => ({
+        fecha: normalizeFechaFront(r.fecha),
+        ot: r.ot,
+        causa: r.causa
+      })),
+      items
     };
 
-    // Header de autorización (si tu Worker lo requiere para gestor)
     const gestorToken = (sessionStorage.getItem('gestor_token') || 'GESTOR_DOMINION').trim();
 
-    // Rutas probables en tu Worker (orden de preferencia)
     const paths = [
       '/api/gestor/guardarOT',
       '/api/guardarOT',
@@ -1935,14 +1968,15 @@ async function enviarRegistrosOT(ot){
     });
 
     if(resp.ok){
-      // Éxito: fijamos UI “gestionada” y habilitamos eliminar local
       otsEnviadas.add(ot);
+
       if(btn){
         btn.innerHTML = `${svgCheck()}OT gestionada`;
         btn.classList.add('success');
         btn.disabled = true;
         btn.setAttribute('data-mode','done');
       }
+
       const btnDel = document.getElementById(`btn_eliminar_${cssId(ot)}`);
       if(btnDel) btnDel.disabled = false;
 
@@ -1950,16 +1984,18 @@ async function enviarRegistrosOT(ot){
     }else{
       throw new Error(resp.error || 'No se pudo guardar en el servidor');
     }
+
   }catch(err){
     console.error(err);
-    // Restaurar botón según estado de la OT
+
     if(btn){
       const { pendientes } = contarCompletados(ot);
+
       if(pendientes === 0){
         btn.innerHTML = `${svgCheck()}OT gestionada`;
-        btn.setAttribute('data-mode','done');
         btn.classList.add('success');
         btn.disabled = true;
+        btn.setAttribute('data-mode','done');
       }else if(otsEnEdicion.has(ot)){
         btn.innerHTML = `${svgPencil()}Continuar editando`;
         btn.setAttribute('data-mode','continuar');
@@ -1970,11 +2006,14 @@ async function enviarRegistrosOT(ot){
         btn.disabled = false;
       }
     }
+
     showToast(`Error al enviar OT: ${err.message}`, 'error');
+
   }finally{
     updateHeaderStats();
   }
 }
+
 /* ======= Eliminar GLOBAL (solo local) ======= */
 async function eliminarRegistrosGlobal(){
   const pend = calcularPendientesGlobal();
