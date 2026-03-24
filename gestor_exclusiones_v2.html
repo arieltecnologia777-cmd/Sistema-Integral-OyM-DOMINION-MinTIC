@@ -1331,31 +1331,44 @@ aplicarBusquedaYFiltro();  // vuelve a renderizar con el filtro aplicado
 
 /* ======= Cómputos ======= */
 function contarCompletados(ot){
-    // Regional activa del gestor (R1 / R2)
+    // Si el modal está abierto, CONTAR valores REALES del modal
+    const modal = document.getElementById('modalRegistros');
+    if (modal?.classList.contains('show')) {
+
+        const registrosModal = Array.from(document.querySelectorAll('.registro'));
+        const total = registrosModal.length;
+
+        const completos = registrosModal.filter(reg => {
+            const fecha = reg.querySelector('input')?.value.trim();
+            const causa = reg.querySelector('textarea')?.value.trim();
+            return fecha !== "" && causa !== "";
+        }).length;
+
+        return {
+            completos,
+            total,
+            pendientes: Math.max(0, total - completos)
+        };
+    }
+
+    // Si el modal NO está abierto, usar datos[]
     const regActiva = sessionStorage.getItem("gestor_regional") || "Todas";
 
-    // Registros de la OT completa (todas las regionales)
     const itemsOT = datos.filter(r =>
         (r.ot ?? "").toString().trim() === (ot ?? "").toString().trim()
     );
 
-    let items;
-
-    // === SI EL GESTOR ES R1 O R2 → FILTRAR SOLO ESA REGIONAL ===
-    if (regActiva !== "Todas") {
-        items = itemsOT.filter(r =>
+    let items = (regActiva === "Todas")
+        ? itemsOT
+        : itemsOT.filter(r =>
             (r.regional ?? "").toString().trim() === regActiva
         );
-    } else {
-        // === ADMIN VE TODO NORMAL ===
-        items = itemsOT;
-    }
 
     const total = items.length;
 
     const completos = items.filter(r =>
-        (r.causa ?? "").toString().trim() !== "" &&
-        (r.fecha ?? "").toString().trim() !== ""
+        (r.fecha ?? "").trim() !== "" &&
+        (r.causa ?? "").trim() !== ""
     ).length;
 
     return {
