@@ -3627,6 +3627,508 @@ body.theme-pro #sec-despues .photo-grid .photo-cell::before{
   width: 100% !important;
 }
 
+.multi-gallery img {
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.multi-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas exactas */
+  gap: 12px;
+  width: 100%;
+  padding: 6px 10px;
+  justify-items: center; 
+  align-items: center;
+}
+
+.multi-gallery div {
+  width: 95px;
+  height: 95px;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border-radius: 10px;
+}
+
+.multi-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+
+.guide-layout {
+  border: none;       /* ✅ Sin borde azul */
+  padding: 0;         /* ✅ Sin marco alrededor */
+  border-radius: 0;
+}
+
+.guide-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.guide-row.bottom {
+    margin-top: 10px;
+}
+
+.guide-slot {
+  flex: 1;
+  border: none;          /* ✅ SIN bordes azules */
+  margin: 8px 6px;       /* ✅ Un poco de separación */
+  padding: 20px;
+  text-align: center;
+  background: #ffffff00; /* ✅ Fondo transparente */
+  position: relative;
+}
+.guide-slot.wide {
+    flex-basis: 100%;
+}
+
+.guide-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.guide-slot input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+
+.guide-wrapper {
+  position: absolute;
+  top: 56px;       /* Posición donde comienza el marco blanco interno */
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;      /* Esto hace que quede ENCIMA del marco blanco */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+/* ===========================================================
+   NAV INDOOR — OPCIÓN B (SUPER SELECTOR)
+   Reducción extrema REAL de las tres cajas
+   =========================================================== */
+
+/* 1) Cajas superiores (Hora legal / ¿Cuál es mi IP?) */
+body.theme-pro #sec-pruebas 
+    .p-item[data-title="Navegación Indoor"] 
+    .photo-grid 
+    .photo-cell[data-title="Navegación Indoor"] 
+    .guide-wrapper 
+    .guide-row 
+    .guide-slot {
+    
+    width: 70px !important;        /* reducción extrema REAL */
+    height: 36px !important;       /* ahora sí minúsculas */
+    border-radius: 6px !important;
+    border: 1px solid #c8ccd1 !important;
+    background: white !important;
+
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 2px !important;
+}
+
+/* 2) Caja inferior (Pruebas de ping) */
+body.theme-pro #sec-pruebas 
+    .p-item[data-title="Navegación Indoor"] 
+    .photo-grid 
+    .photo-cell[data-title="Navegación Indoor"] 
+    .guide-wrapper 
+    .guide-row.bottom 
+    .guide-slot.wide {
+
+    width: 75% !important;        /* más estrecha */
+    height: 48px !important;       /* reducida fuerte */
+    border-radius: 6px !important;
+    border: 1px solid #c8ccd1 !important;
+    
+    font-size: 12px !important;
+    padding: 4px !important;
+}
+
+/* ===========================================================
+   NAV INDOOR — AGRANDAR LAS TRES CAJAS (Opción B)
+   =========================================================== */
+
+/* 1. Cajas superiores (Hora legal / ¿Cuál es mi IP?) */
+body.theme-pro #sec-pruebas 
+    .p-item[data-title="Navegación Indoor"] 
+    .photo-grid 
+    .photo-cell[data-title="Navegación Indoor"] 
+    .guide-wrapper 
+    .guide-row 
+    .guide-slot {
+
+    width: 150px !important;       /* ↑ tamaño igual a maqueta */
+    height: 70px !important;       /* ↑ más altas y elegantes */
+    border-radius: 10px !important;
+    border: 1px solid #c8ccd1 !important;
+    background: white !important;
+
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    font-size: 14px !important;     /* ↑ más legible */
+    font-weight: 600 !important;
+    padding: 6px !important;
+}
+
+/* 2. Caja Ping (más grande y ancha) */
+body.theme-pro #sec-pruebas 
+    .p-item[data-title="Navegación Indoor"] 
+    .photo-grid 
+    .photo-cell[data-title="Navegación Indoor"] 
+    .guide-wrapper 
+    .guide-row.bottom 
+    .guide-slot.wide {
+
+    width: 92% !important;          /* ancho estilo maqueta */
+    height: 90px !important;        /* ↑ más alta, equilibrada */
+    border-radius: 10px !important;
+    border: 1px solid #c8ccd1 !important;
+
+    font-size: 15px !important;     /* ↑ mejor presencia */
+    padding: 8px !important;
+}
+
+/* ===========================================================
+   NAV INDOOR — SUBIR CAJA PING (Opción B)
+   =========================================================== */
+
+body.theme-pro #sec-pruebas 
+    .p-item[data-title="Navegación Indoor"] 
+    .photo-grid 
+    .photo-cell[data-title="Navegación Indoor"] 
+    .guide-wrapper 
+    .guide-row.bottom 
+    .guide-slot.wide {
+
+    margin-top: -18px !important;   /* ← SUBE ping 18px */
+}
+
+/* ============================================
+   INDOOR — Estructura nueva (neutral y funcional)
+   ============================================ */
+
+.indoor-container {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.indoor-row {
+  display: flex;
+  gap: 14px;
+}
+
+.indoor-box {
+  flex: 1;
+  background: #ffffff00;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.indoor-box.wide {
+  flex: 1;
+}
+
+/* Etiqueta */
+.indoor-label {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0a2a57;
+}
+
+/* Contenedor real de foto – NO photo-cell (para esquivar theme-pro) */
+.indoor-photo {
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  min-height: 110px;
+  position: relative;
+  background: white;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Imagen */
+.indoor-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder */
+.indoor-photo .placeholder {
+  position: relative;
+  z-index: 2;
+  color: #1e3a8a;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Ocultar input pero funcional */
+.indoor-photo input[type="file"] {
+  display: none;
+}
+
+
+/* CONTENEDOR INDOOR GENERAL */
+.indoor-cells {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 10px;
+}
+
+/* FILA SUPERIOR */
+.indoor-cells .indoor-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* FILA INFERIOR (PING OCUPA TODO EL ANCHO) */
+.indoor-cells .indoor-cell.wide {
+  width: 100%;
+}
+
+/* Etiquetas */
+.indoor-label {
+  font-weight: 700;
+  color: #0a2a57;
+  font-size: 14px;
+}
+
+/* photo-cell interno — tamaño compacto */
+.indoor-cell .photo-cell {
+  min-height: 110px !important;
+}
+
+/* CONTENEDOR GENERAL */
+.indoor-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 6px 8px 14px;
+}
+
+/* FILAS */
+.indoor-row {
+  display: flex;
+  gap: 12px;
+}
+
+.indoor-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.indoor-box.wide {
+  flex: 1;
+}
+
+/* Etiquetas */
+.indoor-label {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0a2a57;
+}
+
+/* PHOTO-CELL MINIMIZADO (FUNCIONAL) */
+.photo-cell.indoor-mini {
+  min-height: 90px !important;
+  max-height: 90px !important;
+  border-radius: 12px !important;
+  border: 1px dashed #cbd5e1 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  position: relative !important;
+  padding: 6px !important;
+}
+
+/* Quitar template del theme-pro */
+.photo-cell.indoor-mini::before,
+.photo-cell.indoor-mini::after {
+  display: none !important;
+}
+
+/* Imagen interna */
+.photo-cell.indoor-mini img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Placeholder */
+.photo-cell.indoor-mini .placeholder {
+  color: #1e3a8a;
+  z-index: 2;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Input oculto */
+.photo-cell.indoor-mini input[type="file"] {
+  display: none;
+}
+
+
+/* Títulos dentro de cada tarjetica indoor */
+.p-item[data-title="Navegación Indoor"] .placeholder div {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0a2a57;
+}
+
+/* Ocultar los títulos externos en Navegación Indoor */
+.p-item[data-title="Navegación Indoor"] .indoor-label {
+    display: none !important;
+}
+
+/* ===============================================
+   TARJETA 13 · Navegación Indoor (estética final)
+   =============================================== */
+
+/* ✅ MARCO SUAVE AZUL — igual que Outdoor */
+.p-item[data-title="Navegación Indoor"] {
+    background: #f1f6ff;        /* el mismo azul muy suave del contenedor Outdoor */
+    border-radius: 14px;        /* igual que la tarjeta Outdoor */
+    padding: 0;                 /* el header irá arriba, wrapper abajo */
+    margin-bottom: 18px;        /* separación con la siguiente tarjeta */
+    box-shadow: 0 6px 18px rgba(2,6,23,.06);   /* igual que Outdoor */
+    overflow: hidden;           /* evita que el header se salga redondeado */
+}
+
+/* ✅ Encabezado EXACTAMENTE como las otras tarjetas */
+.p-item[data-title="Navegación Indoor"] .indoor-header {
+    background: #e5f0ff;             /* azul del encabezado Outdoor */
+    border-bottom: 1px solid #cbd5e1;
+    border-radius: 14px 14px 0 0;  
+    padding: 10px 12px;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+    color: #0f1f3a;
+}
+
+
+/* Ocultar texto e íconos cuando haya imagen en indoor-mini */
+.photo-cell.indoor-mini.has-image .placeholder {
+    display: none !important;
+}
+
+/* Asegura que la imagen quede encima */
+.photo-cell.indoor-mini img {
+    z-index: 3 !important;
+    position: absolute !important;
+    inset: 0 !important;
+}
+
+/* Ocultar texto e iconos cuando haya imagen */
+.photo-cell.indoor-mini.has-image .placeholder {
+    display: none !important;
+}
+
+/* Imagen encima */
+.photo-cell.indoor-mini img {
+    z-index: 3 !important;
+    position: absolute !important;
+    inset: 0 !important;
+}
+
+/* ====== INDOOR — Botones pequeños ====== */
+.indoor-mini {
+    position: relative !important;
+}
+
+/* Toolbar pequeña abajo a la derecha */
+.indoor-toolbar {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity .2s ease;
+}
+
+/* Botoncitos */
+.mini-btn {
+    font-size: 10px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    background: rgba(15,23,42,0.70);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    cursor: pointer;
+}
+
+/* Mostrar toolbar solo cuando haya foto */
+.photo-cell.indoor-mini.has-image .indoor-toolbar {
+    opacity: 1 !important;
+}
+
+/* === CLON EXACTO DEL MARCO INDOOR PARA OUTDOOR === */
+
+/* Marco azul suave */
+.p-item[data-title="Navegación Outdoor"] {
+    background: #f1f6ff;                 /* igual Indoor */
+    border-radius: 14px;                 /* igual Indoor */
+    padding: 0;                           /* igual Indoor */
+    margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(2,6,23,.06);
+    overflow: hidden;                     /* importante */
+}
+
+/* Encabezado azul Indoor aplicado a Outdoor */
+.p-item[data-title="Navegación Outdoor"] .indoor-header {
+    background: #e5f0ff;                 /* azul encabezado */
+    border-bottom: 1px solid #cbd5e1;
+    border-radius: 14px 14px 0 0;        /* mismas esquinas */
+    padding: 10px 12px;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+    color: #0f1f3a;
+}
+
+/* Wrapper igual al Indoor */
+.p-item[data-title="Navegación Outdoor"] .indoor-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 6px 8px 14px;
+}
+
   </style>
 </head>
 <body class="theme-pro">
@@ -3987,26 +4489,147 @@ body.theme-pro #sec-despues .photo-grid .photo-cell::before{
     </div>
   </div>
 
-  <!-- TARJETA 13 · Navegación Indoor -->
-  <div class="p-item" data-title="Navegación Indoor">
-    <div class="photo-grid">
-      <div class="photo-cell" data-title="Navegación Indoor">
-        <input id="img-nav-indoor" type="file" accept="image/*">
-        <div class="placeholder"><div>Subir evidencia</div></div>
+ <!-- TARJETA 13 · Navegación Indoor -->
+<div class="p-item" data-title="Navegación Indoor">
+
+  <div class="indoor-header">Navegación Indoor</div>
+
+  <div class="indoor-wrapper">
+
+    <div class="indoor-row">
+
+      <!-- Hora legal -->
+      <div class="indoor-box">
+        <div class="photo-cell indoor-mini" data-title="">
+          <input id="img-nav-indoor-0"
+                 type="file"
+                 accept="image/*"
+                 capture="camera"
+                 data-key="navIndoor[0]">
+
+          <div class="placeholder"><div>Hora legal</div></div>
+
+          <div class="indoor-toolbar">
+            <button class="mini-btn change-btn">Cambiar</button>
+            <button class="mini-btn remove-btn">Quitar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ¿Cuál es mi IP? -->
+      <div class="indoor-box">
+        <div class="photo-cell indoor-mini" data-title="">
+          <input id="img-nav-indoor-1"
+                 type="file"
+                 accept="image/*"
+                 capture="camera"
+                 data-key="navIndoor[1]">
+
+          <div class="placeholder"><div>¿Cuál es mi IP?</div></div>
+
+          <div class="indoor-toolbar">
+            <button class="mini-btn change-btn">Cambiar</button>
+            <button class="mini-btn remove-btn">Quitar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ping -->
+    <div class="indoor-row">
+      <div class="indoor-box wide">
+        <div class="photo-cell indoor-mini" data-title="">
+          <input id="img-nav-indoor-2"
+                 type="file"
+                 accept="image/*"
+                 capture="camera"
+                 data-key="navIndoor[2]">
+
+          <div class="placeholder"><div>Pruebas de ping</div></div>
+
+          <div class="indoor-toolbar">
+            <button class="mini-btn change-btn">Cambiar</button>
+            <button class="mini-btn remove-btn">Quitar</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- TARJETA 14 · Navegación Outdoor -->
-  <div class="p-item" data-title="Navegación Outdoor">
-    <div class="photo-grid">
-      <div class="photo-cell" data-title="Navegación Outdoor">
-        <input id="img-nav-outdoor" type="file" accept="image/*">
-        <div class="placeholder"><div>Subir evidencia</div></div>
+  </div>
+</div>
+
+
+<!-- TARJETA 14 · Navegación Outdoor -->
+<div class="p-item" data-title="Navegación Outdoor">
+
+  <div class="indoor-header">Navegación Outdoor</div>
+
+  <div class="indoor-wrapper">
+
+    <div class="indoor-row">
+
+      <!-- Hora legal -->
+      <div class="indoor-box">
+        <div class="photo-cell indoor-mini" data-title="">
+          <input id="img-nav-outdoor-0"
+                 type="file"
+                 accept="image/*"
+                 capture="camera"
+                 data-key="navOutdoor[0]">
+
+          <div class="placeholder"><div>Hora legal</div></div>
+
+          <div class="indoor-toolbar">
+            <button class="mini-btn change-btn">Cambiar</button>
+            <button class="mini-btn remove-btn">Quitar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ¿Cuál es mi IP? -->
+      <div class="indoor-box">
+        <div class="photo-cell indoor-mini" data-title="">
+          <input id="img-nav-outdoor-1"
+                 type="file"
+                 accept="image/*"
+                 capture="camera"
+                 data-key="navOutdoor[1]">
+
+          <div class="placeholder"><div>¿Cuál es mi IP?</div></div>
+
+          <div class="indoor-toolbar">
+            <button class="mini-btn change-btn">Cambiar</button>
+            <button class="mini-btn remove-btn">Quitar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ping -->
+    <div class="indoor-row">
+      <div class="indoor-box wide">
+        <div class="photo-cell indoor-mini" data-title="">
+          <input id="img-nav-outdoor-2"
+                 type="file"
+                 accept="image/*"
+                 capture="camera"
+                 data-key="navOutdoor[2]">
+
+          <div class="placeholder"><div>Pruebas de ping</div></div>
+
+          <div class="indoor-toolbar">
+            <button class="mini-btn change-btn">Cambiar</button>
+            <button class="mini-btn remove-btn">Quitar</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
+  </div>
+</div>
+  
   <!-- TARJETA 15 · Speedtest -->
   <div class="p-item" data-title="Speedtest">
     <div class="photo-grid">
@@ -4490,17 +5113,107 @@ function makeRow() {
           input.click();
         });
 
-        input.addEventListener('change', ()=>{
-          if (!input.files || !input.files[0]) return;
-          const file = input.files[0];
-          const url = URL.createObjectURL(file);
-          let img = cell.querySelector('img');
-          if (!img){ img = document.createElement('img'); cell.appendChild(img); }
-          img.src = url;
-          cell.classList.add('has-image');
-          placeholder.style.display='none';
-          ensureToolbar();
-        });
+        input.addEventListener('change', () => {
+
+  // Crear array interno donde se guardarán las fotos reales
+  if (!cell._files) cell._files = [];
+
+  // Si no hay archivos seleccionados, no hacer nada
+  if (!input.files || input.files.length === 0) return;
+
+  // Si el input permite múltiples imágenes
+  if (input.hasAttribute("multiple")) {
+
+    // Ocultar placeholder
+    placeholder.style.display = 'none';
+    cell.classList.add('has-image');
+
+    // Buscar o crear galería de miniaturas
+    let gallery = cell.querySelector('.multi-gallery');
+    if (!gallery) {
+      gallery = document.createElement('div');
+      gallery.className = 'multi-gallery';
+      gallery.style.display = 'flex';
+      gallery.style.gap = '6px';
+      gallery.style.flexWrap = 'wrap';
+      gallery.style.justifyContent = 'center';
+      cell.appendChild(gallery);
+    }
+
+    // Recorrer todas las fotos seleccionadas
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      const url = URL.createObjectURL(file);
+
+      // ✅ AGREGAR el archivo real al array interno
+      cell._files.push(file);
+
+      // Crear miniatura visual
+      const wrap = document.createElement('div');
+      wrap.style.position = 'relative';
+      wrap.style.width = '100px';
+      wrap.style.height = '100px';
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '6px';
+
+      // Botón de borrar
+      const del = document.createElement('div');
+      del.textContent = '×';
+      del.style.position = 'absolute';
+      del.style.top = '-6px';
+      del.style.right = '-6px';
+      del.style.width = '18px';
+      del.style.height = '18px';
+      del.style.borderRadius = '50%';
+      del.style.background = 'rgba(0,0,0,0.7)';
+      del.style.color = 'white';
+      del.style.display = 'flex';
+      del.style.alignItems = 'center';
+      del.style.justifyContent = 'center';
+      del.style.cursor = 'pointer';
+      del.style.fontSize = '12px';
+
+      // ✅ borrar del array interno también
+      del.addEventListener('click', (e) => {
+        e.stopPropagation();
+        wrap.remove();
+
+        const index = cell._files.indexOf(file);
+        if (index !== -1) cell._files.splice(index, 1);
+
+        if (gallery.children.length === 0) {
+          cell.classList.remove('has-image');
+          placeholder.style.display = '';
+        }
+      });
+
+      wrap.appendChild(img);
+      wrap.appendChild(del);
+      gallery.appendChild(wrap);
+    }
+
+    ensureToolbar();
+    return;
+  }
+
+  // Caso de una sola foto
+  const file = input.files[0];
+  const url = URL.createObjectURL(file);
+  cell._files = [file];
+
+  let img = cell.querySelector('img');
+  if (!img) { img = document.createElement('img'); cell.appendChild(img); }
+  img.src = url;
+  cell.classList.add('has-image');
+  placeholder.style.display = 'none';
+  ensureToolbar();
+});
+
       });
     }
     mountPhotoCells();
@@ -4510,7 +5223,7 @@ function makeRow() {
     // ===================
     const statusEl = document.getElementById('status');
     const exportBtn = document.getElementById('exportBtn');
-    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const saveDraftBtn = document.getElementById('saveDraftBtn'); 
     const resetWorkBtn = document.getElementById("resetWorkBtn");
 
 if (resetWorkBtn) {
@@ -4923,27 +5636,58 @@ document.querySelectorAll('#tbody-equipos tr').forEach(tr => {
   });
 });
 
-      // PRUEBAS: imágenes
-      const imgsJson = {
-        gps        : await pickDataUrl('img-gps-geo'),
-        apInt      : await pickDataUrl('img-ap-int'),
-        apExt1     : await pickDataUrl('img-ap-ext1'),
-        apExt2     : await pickDataUrl('img-ap-ext2'),
-        pcInt      : await pickDataUrl('img-pc-int'),
-        movilExt   : await pickDataUrl('img-movil-ext'),
-        senalExt   : await pickDataUrl('img-senal-ext'),
-        senalInt   : await pickDataUrl('img-senal-int'),
-        respaldo   : await pickDataUrl('img-respaldo'),
-        printUps   : await pickDataUrl('img-print-ups'),
-        med1       : await pickDataUrl('img-med1'),
-        med2       : await pickDataUrl('img-med2'),
-        navIndoor  : await pickDataUrl('img-nav-indoor'),
-        navOutdoor : await pickDataUrl('img-nav-outdoor'),
-        speedtest  : await pickDataUrl('img-speedtest'),
-        portal     : await pickDataUrl('img-portal'),
-        block1     : await pickDataUrl('img-block1'),
-        block2     : await pickDataUrl('img-block2')
-      };
+
+
+      /// ====== NUEVO LECTOR DE MÚLTIPLES IMÁGENES ======
+async function pickMulti(id, maxPx=1600, quality=0.85) {
+  const el = document.getElementById(id);
+  const cell = el.closest('.photo-cell');
+
+  if (!cell || !cell._files || cell._files.length === 0) return [];
+
+  const arr = [];
+  for (let i = 0; i < cell._files.length; i++) {
+    const raw = await fileToDataURL(cell._files[i]);
+    const scaled = await downscaleDataUrl(raw, maxPx, quality);
+    arr.push(scaled);
+  }
+  return arr;
+}
+
+
+// ========== PRUEBAS: imágenes (actualizado) ==========
+const imgsJson = {
+  gps        : await pickDataUrl('img-gps-geo'),
+  apInt      : await pickDataUrl('img-ap-int'),
+  apExt1     : await pickDataUrl('img-ap-ext1'),
+  apExt2     : await pickDataUrl('img-ap-ext2'),
+  pcInt      : await pickDataUrl('img-pc-int'),
+  movilExt   : await pickDataUrl('img-movil-ext'),
+  senalExt   : await pickDataUrl('img-senal-ext'),
+  senalInt   : await pickDataUrl('img-senal-int'),
+  respaldo   : await pickDataUrl('img-respaldo'),
+  printUps   : await pickDataUrl('img-print-ups'),
+  med1       : await pickDataUrl('img-med1'),
+  med2       : await pickDataUrl('img-med2'),
+
+  // ✅ LAS DOS TARJETAS DE 3 FOTOS
+  navIndoor : [
+  await pickDataUrl('img-nav-indoor-0'),
+  await pickDataUrl('img-nav-indoor-1'),
+  await pickDataUrl('img-nav-indoor-2')
+].filter(Boolean),
+
+navOutdoor : [
+  await pickDataUrl('img-nav-outdoor-0'),
+  await pickDataUrl('img-nav-outdoor-1'),
+  await pickDataUrl('img-nav-outdoor-2')
+].filter(Boolean),
+
+  speedtest  : await pickDataUrl('img-speedtest'),
+  portal     : await pickDataUrl('img-portal'),
+  block1     : await pickDataUrl('img-block1'),
+  block2     : await pickDataUrl('img-block2')
+};
 
       const pruebasObs = (document.getElementById('inp-pruebas-obs')?.value ?? '');
 
@@ -4964,6 +5708,11 @@ const payloadJson = {
   pruebasObs,
   latitud, longitud
 };
+
+
+console.log("Indoor:", payloadJson.imgs.navIndoor);
+console.log("Outdoor:", payloadJson.imgs.navOutdoor);
+
 
 Object.assign(payloadJson, {
   sapAntes1, sapAntes2, sapAntes3, sapAntes4, sapAntes5, sapAntes6,
@@ -5026,6 +5775,7 @@ if (typeof imgsJson === 'object' && imgsJson) {
 clearDraft();
       }
     }
+
 
 // === PASO 7: Propagar títulos de <label> a data-title en cada tarjeta de PRUEBAS ===
 // Ubicación recomendada: justo ANTES de document.getElementById('exportBtn')...
@@ -5151,6 +5901,30 @@ if (document.readyState === 'loading') {
 
 
     document.getElementById('exportBtn').addEventListener('click', exportarMCI);
+
+document.addEventListener("change", function(e) {
+    if (e.target.matches('.photo-cell.indoor-mini input[type="file"]')) {
+        const cell = e.target.closest('.photo-cell.indoor-mini');
+        const file = e.target.files[0];
+
+        if (file) {
+            cell.classList.add("has-image");
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                // elimina imagen previa
+                let existing = cell.querySelector("img");
+                if (existing) existing.remove();
+
+                let img = document.createElement("img");
+                img.src = ev.target.result;
+                cell.appendChild(img);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+});
   </script>
 </body>
 </html>
