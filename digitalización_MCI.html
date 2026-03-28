@@ -4224,7 +4224,6 @@ body.theme-pro #sec-pruebas
 
   <button class="btn secondary" id="collapseBtn">Cerrar menú</button>
   <button class="btn" id="exportBtn">Exportar</button>
-<button class="btn secondary" id="saveDraftBtn" disabled>Guardar borrador</button>
 <button class="btn secondary" id="resetWorkBtn">Reiniciar trabajo</button>
 </div>
   </aside>
@@ -5010,6 +5009,69 @@ body.theme-pro #sec-pruebas
   </main>
 
   <script>
+const photoInputs = [
+  "inp-firma-tec",
+  "img-gps-geo",
+  "img-ap-int",
+  "img-ap-ext1",
+  "img-ap-ext2",
+  "img-pc-int",
+  "img-movil-ext",
+  "img-senal-ext",
+  "img-senal-int",
+  "img-respaldo",
+  "img-print-ups",
+  "img-med1",
+  "img-med2",
+  "img-nav-indoor-0",
+  "img-nav-indoor-1",
+  "img-nav-indoor-2",
+  "img-nav-outdoor-0",
+  "img-nav-outdoor-1",
+  "img-nav-outdoor-2",
+  "img-speedtest",
+  "img-portal",
+  "img-block1",
+  "img-block2",
+  "img-antes-serial-1",
+  "img-antes-serial-2",
+  "img-antes-serial-3",
+  "img-antes-serial-4",
+  "img-antes-serial-5",
+  "img-antes-serial-6",
+  "img-antes-diag-1",
+  "img-antes-diag-2",
+  "img-antes-diag-3",
+  "img-antes-diag-4",
+  "img-antes-diag-5",
+  "img-antes-diag-6",
+  "img-antes-diag-7",
+  "img-antes-diag-8",
+  "img-antes-diag-9",
+  "img-antes-diag-10",
+  "img-antes-diag-11",
+  "img-antes-diag-12",
+  "img-despues-serial-1",
+  "img-despues-serial-2",
+  "img-despues-serial-3",
+  "img-despues-serial-4",
+  "img-despues-serial-5",
+  "img-despues-serial-6",
+  "img-despues-res-1",
+  "img-despues-res-2",
+  "img-despues-res-3",
+  "img-despues-res-4",
+  "img-despues-res-5",
+  "img-despues-res-6",
+  "img-despues-res-7",
+  "img-despues-res-8",
+  "img-despues-res-9",
+  "img-despues-res-10",
+  "img-despues-res-11",
+  "img-despues-res-12"
+];
+
+
 /* === IndexedDB: Apertura de base local === */
 let mciDB;
 const mciRequest = indexedDB.open("MCI_DB", 1);
@@ -5028,13 +5090,36 @@ mciRequest.onupgradeneeded = (event) => {
     }
 };
 
-mciRequest.onsuccess = (event) => {
-    mciDB = event.target.result;
-    console.log("✅ IndexedDB lista");
-};
 
 mciRequest.onerror = () => {
     console.log("❌ Error IndexedDB");
+};
+
+/* === RESTAURAR TEXTO + FOTOS DESDE INDEXEDDB AL ABRIR === */
+mciRequest.onsuccess = (event) => {
+    mciDB = event.target.result;
+
+    // Restaurar texto
+    dbLoadDraft((draft) => {
+        if (draft) {
+            try {
+                // Copiar datos restaurados a localStorage
+                localStorage.setItem("MCI_DRAFT_v1", JSON.stringify(draft));
+
+                // Restaurar usando tu propia función
+                restoreDraft();
+
+                console.log("🔄 Texto restaurado offline");
+            } catch (e) {
+                console.log("⚠️ Error restaurando texto:", e);
+            }
+        }
+    });
+
+    // Restaurar fotos (tu función ya existe)
+    if (typeof conectarInputsDeFoto === "function") {
+        conectarInputsDeFoto();
+    }
 };
 
 
@@ -5214,7 +5299,7 @@ function makeRow() {
         const input = cell.querySelector('input[type="file"]');
         const placeholder = cell.querySelector('.placeholder');
 
-        const ensureToolbar = ()=>{
+        cell.ensureToolbar = () => {
           if (cell.querySelector('.photo-toolbar')) return;
           const tb = document.createElement('div');
           tb.className = 'photo-toolbar';
@@ -5354,6 +5439,24 @@ function makeRow() {
     const saveDraftBtn = document.getElementById('saveDraftBtn'); 
     const resetWorkBtn = document.getElementById("resetWorkBtn");
 
+// === BORRAR TODAS LAS FOTOS DE INDEXEDDB ===
+function clearAllPhotos() {
+    if (!mciDB) return;
+
+    const tx = mciDB.transaction("photos", "readwrite");
+    const store = tx.objectStore("photos");
+
+    const reqClear = store.clear();
+
+    reqClear.onsuccess = () => {
+        console.log("🗑️ Todas las fotos borradas de IndexedDB");
+    };
+
+    reqClear.onerror = (e) => {
+        console.error("Error borrando fotos en IndexedDB:", e);
+    };
+}
+
 if (resetWorkBtn) {
   resetWorkBtn.addEventListener("click", () => {
 
@@ -5363,6 +5466,7 @@ if (resetWorkBtn) {
 
     // 1. Borrar borrador
     clearDraft();
+clearAllPhotos();
 
     // 2. Limpiar inputs (menos archivos)
     document.querySelectorAll("input:not([type='file']), textarea, select").forEach(el => {
@@ -5415,15 +5519,18 @@ const DRAFT_KEY = "MCI_DRAFT_v1";
 // --- GUARDAR BORRADOR ---
 function saveDraft() {
 
+  // Objeto donde guardaremos todos los campos del formulario
   const data = {};
 
-  // Guardar TODOS los inputs que no son file
+  // 1. Guardar TODOS los inputs que no son file (texto, selects, textarea)
   const campos = document.querySelectorAll("input:not([type='file']), textarea, select");
   campos.forEach(el => {
-    if (el.id) data[el.id] = el.value ?? "";
+    if (el.id) {
+      data[el.id] = el.value ?? "";
+    }
   });
 
-  // Guardar tabla equipos
+  // 2. Guardar tabla de equipos
   const eqRows = Array.from(document.querySelectorAll("#tbody-equipos tr"));
   const equipos = [];
 
@@ -5439,9 +5546,13 @@ function saveDraft() {
 
   data.filasEquipos = equipos;
 
+  // ✅ Guardar en LocalStorage (respaldo)
   localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-  alert("✓ Borrador guardado");
-}
+
+  // ✅ Guardar también en IndexedDB
+  dbSaveDraft(data);
+
+  }
 
 // --- RESTAURAR BORRADOR ---
 function restoreDraft() {
@@ -6087,100 +6198,140 @@ document.addEventListener("change", function(e) {
     }
 });
 
-/* =========================================================
-   GUARDAR FOTOS OFFLINE (todas las photo-cell)
-   Integración con tu sistema actual de previews
-   ========================================================= */
-
-function enableOfflinePhotos() {
-
-    // Todas las entradas de tipo file dentro de .photo-cell
-    const allInputs = document.querySelectorAll('.photo-cell input[type="file"], .indoor-mini input[type="file"]');
-
-    allInputs.forEach(input => {
-
-        input.addEventListener('change', async () => {
-
-            const file = input.files?.[0];
-            if (!file) return;
-
-            // Convertimos la foto a blob (tal cual)
-            const blob = file;
-
-            // Generamos un ID único por input para guardar/leer la imagen
-            const id = input.id || input.getAttribute('data-key');
-
-            if (!id) {
-                console.log("⚠️ Input sin ID ni data-key, no se guarda offline");
-                return;
-            }
-
-            // Guardamos la foto en IndexedDB
-            dbSavePhoto(id, blob);
-
-            console.log("📸 Foto guardada offline:", id);
-        });
-    });
-
-    // Al cargar, restaurar todas las fotos guardadas
-    allInputs.forEach(input => {
-
-        const id = input.id || input.getAttribute('data-key');
-        if (!id) return;
-
-        dbLoadPhoto(id, (blob) => {
-            if (!blob) return;
-
-            const url = URL.createObjectURL(blob);
-
-            // Ubicamos la photo-cell asociada
-            const cell = input.closest('.photo-cell');
-            if (!cell) return;
-
-            // Crear imagen
-            let img = cell.querySelector('img');
-
-            if (!img) {
-                img = document.createElement('img');
-                cell.appendChild(img);
-            }
-
-            img.src = url;
-
-            // Añadir clase para tu estilo (oculta placeholder)
-            cell.classList.add('has-image');
-
-            console.log("🔄 Foto restaurada offline:", id);
-        });
-    });
-}
-
-// Activar el guardado/restauración de fotos
-document.addEventListener('DOMContentLoaded', () => {
-    enableOfflinePhotos();
-});
 
 
 
-/* === ACTIVAR AUTOGUARDADO CADA 3 SEGUNDOS === */
+
+/* === AUTOGUARDADO REAL DEL TEXTO CADA 3s === */
 setInterval(() => {
-    if (typeof getFormData === "function") {
-        const data = getFormData();     // ← tu propia función ya existente
-        dbSaveDraft(data);
+    try {
+        // Tu función original: guarda en localStorage
+        saveDraft();
+
+        // Leemos lo que ella guardó
+        const stored = localStorage.getItem("MCI_DRAFT_v1");
+        if (stored) {
+            const data = JSON.parse(stored);
+
+            // Guardamos en IndexedDB de verdad
+            dbSaveDraft(data);
+        }
+    } catch (e) {
+        console.log("⚠️ Error guardando texto offline:", e);
     }
 }, 3000);
 
-/* === RESTAURAR BORRADOR AUTOMÁTICAMENTE === */
-mciRequest.onsuccess = (event) => {
-    mciDB = event.target.result;
+// === Paso 3: Guardar una foto en IndexedDB (CORREGIDO) ===
+function guardarFotoOffline(id, file) {
+  if (!mciDB) {
+    console.warn("IndexedDB no lista aún");
+    return;
+  }
 
-    dbLoadDraft((draft) => {
-        if (draft && typeof restoreForm === "function") {
-            restoreForm(draft);        // ← tu propia función ya existente
-            console.log("🔄 Borrador restaurado");
-        }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+
+    const tx = mciDB.transaction("photos", "readwrite");
+    const store = tx.objectStore("photos");
+
+    store.put({
+      id: id,
+      blob: base64
     });
-};
+
+    console.log("💾 Foto guardada offline:", id);
+  };
+
+  reader.readAsDataURL(file);
+}
+// === Paso 4: Cargar foto desde IndexedDB y mostrar preview (CORREGIDO) ===
+function cargarFotoOffline(id, callback) {
+  if (!mciDB) return;
+
+  const tx = mciDB.transaction("photos", "readonly");
+  const store = tx.objectStore("photos");
+  const req = store.get(id);
+
+  req.onsuccess = function () {
+    if (req.result && req.result.blob) {
+      callback(req.result.blob);
+    } else {
+      callback(null);
+    }
+  };
+}
+// === Paso 2 + Paso 4: Detectar, guardar y restaurar fotos ===
+
+function conectarInputsDeFoto() {
+  photoInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    // --- 1) Restaurar si existe en IndexedDB ---
+cargarFotoOffline(id, function(base64) {
+  if (base64) {
+    const cell = input.closest(".photo-cell");
+    if (!cell) return;
+
+    // Ocultar placeholder
+    const placeholder = cell.querySelector(".placeholder");
+    if (placeholder) placeholder.style.display = "none";
+
+    // Activar estado visual correcto
+    cell.classList.add("has-image");
+
+    // Crear o usar <img> existente
+    let img = cell.querySelector("img");
+    if (!img) {
+      img = document.createElement("img");
+      cell.appendChild(img);
+    }
+
+    // Asignar imagen restaurada
+    img.src = base64;
+
+    // ✅ Volver a activar la toolbar
+    if (typeof ensureToolbar === "function") {
+      ensureToolbar.call(cell);
+    } else {
+      // fallback: buscar toolbar
+      const tb = cell.querySelector('.photo-toolbar');
+      if (!tb && cell.ensureToolbar) cell.ensureToolbar();
+    }
+
+    console.log("🔄 Foto restaurada:", id);
+  }
+});
+
+    // --- 2) Guardar cuando el técnico sube la foto ---
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      console.log("✅ Foto seleccionada en:", id);
+
+      // Guardar foto offline
+      guardarFotoOffline(id, file);
+
+      // Mostrar preview usando tu propio método actual
+      const cell = input.closest(".photo-cell");
+      if (cell) {
+        const placeholder = cell.querySelector(".placeholder");
+        if (placeholder) placeholder.style.display = "none";
+
+        let img = cell.querySelector("img");
+        if (!img) {
+          img = document.createElement("img");
+          cell.appendChild(img);
+        }
+        img.src = URL.createObjectURL(file);
+      }
+    });
+
+  });
+}
+
   </script>
 </body>
 </html>
