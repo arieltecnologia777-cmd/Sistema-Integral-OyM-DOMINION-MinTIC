@@ -5010,6 +5010,70 @@ body.theme-pro #sec-pruebas
   </main>
 
   <script>
+/* === IndexedDB: Apertura de base local === */
+let mciDB;
+const mciRequest = indexedDB.open("MCI_DB", 1);
+
+mciRequest.onupgradeneeded = (event) => {
+    mciDB = event.target.result;
+
+    // Guarda TODO el MCI (texto + JSON)
+    if (!mciDB.objectStoreNames.contains("draft")) {
+        mciDB.createObjectStore("draft", { keyPath: "id" });
+    }
+
+    // Guarda fotos (blobs)
+    if (!mciDB.objectStoreNames.contains("photos")) {
+        mciDB.createObjectStore("photos", { keyPath: "id" });
+    }
+};
+
+mciRequest.onsuccess = (event) => {
+    mciDB = event.target.result;
+    console.log("✅ IndexedDB lista");
+};
+
+mciRequest.onerror = () => {
+    console.log("❌ Error IndexedDB");
+};
+
+
+/* === Funciones para guardar y cargar datos === */
+
+// Guardar borrador general
+function dbSaveDraft(data) {
+    const tx = mciDB.transaction("draft", "readwrite");
+    tx.objectStore("draft").put({ id: 1, data });
+    console.log("💾 Borrador guardado en IndexedDB");
+}
+
+// Leer borrador
+function dbLoadDraft(callback) {
+    const tx = mciDB.transaction("draft", "readonly");
+    const req = tx.objectStore("draft").get(1);
+
+    req.onsuccess = () => {
+        callback(req.result ? req.result.data : null);
+    };
+}
+
+// Guardar foto por ID
+function dbSavePhoto(key, blob) {
+    const tx = mciDB.transaction("photos", "readwrite");
+    tx.objectStore("photos").put({ id: key, blob });
+}
+
+// Cargar foto por ID
+function dbLoadPhoto(key, callback) {
+    const tx = mciDB.transaction("photos", "readonly");
+    const req = tx.objectStore("photos").get(key);
+
+    req.onsuccess = () => {
+        callback(req.result ? req.result.blob : null);
+    };
+}
+
+
     // ==========
     // Navegación
     // ==========
@@ -6022,6 +6086,101 @@ document.addEventListener("change", function(e) {
         }
     }
 });
+
+/* =========================================================
+   GUARDAR FOTOS OFFLINE (todas las photo-cell)
+   Integración con tu sistema actual de previews
+   ========================================================= */
+
+function enableOfflinePhotos() {
+
+    // Todas las entradas de tipo file dentro de .photo-cell
+    const allInputs = document.querySelectorAll('.photo-cell input[type="file"], .indoor-mini input[type="file"]');
+
+    allInputs.forEach(input => {
+
+        input.addEventListener('change', async () => {
+
+            const file = input.files?.[0];
+            if (!file) return;
+
+            // Convertimos la foto a blob (tal cual)
+            const blob = file;
+
+            // Generamos un ID único por input para guardar/leer la imagen
+            const id = input.id || input.getAttribute('data-key');
+
+            if (!id) {
+                console.log("⚠️ Input sin ID ni data-key, no se guarda offline");
+                return;
+            }
+
+            // Guardamos la foto en IndexedDB
+            dbSavePhoto(id, blob);
+
+            console.log("📸 Foto guardada offline:", id);
+        });
+    });
+
+    // Al cargar, restaurar todas las fotos guardadas
+    allInputs.forEach(input => {
+
+        const id = input.id || input.getAttribute('data-key');
+        if (!id) return;
+
+        dbLoadPhoto(id, (blob) => {
+            if (!blob) return;
+
+            const url = URL.createObjectURL(blob);
+
+            // Ubicamos la photo-cell asociada
+            const cell = input.closest('.photo-cell');
+            if (!cell) return;
+
+            // Crear imagen
+            let img = cell.querySelector('img');
+
+            if (!img) {
+                img = document.createElement('img');
+                cell.appendChild(img);
+            }
+
+            img.src = url;
+
+            // Añadir clase para tu estilo (oculta placeholder)
+            cell.classList.add('has-image');
+
+            console.log("🔄 Foto restaurada offline:", id);
+        });
+    });
+}
+
+// Activar el guardado/restauración de fotos
+document.addEventListener('DOMContentLoaded', () => {
+    enableOfflinePhotos();
+});
+
+
+
+/* === ACTIVAR AUTOGUARDADO CADA 3 SEGUNDOS === */
+setInterval(() => {
+    if (typeof getFormData === "function") {
+        const data = getFormData();     // ← tu propia función ya existente
+        dbSaveDraft(data);
+    }
+}, 3000);
+
+/* === RESTAURAR BORRADOR AUTOMÁTICAMENTE === */
+mciRequest.onsuccess = (event) => {
+    mciDB = event.target.result;
+
+    dbLoadDraft((draft) => {
+        if (draft && typeof restoreForm === "function") {
+            restoreForm(draft);        // ← tu propia función ya existente
+            console.log("🔄 Borrador restaurado");
+        }
+    });
+};
   </script>
 </body>
 </html>
