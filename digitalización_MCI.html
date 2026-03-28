@@ -5612,16 +5612,27 @@ const fotoDespuesRes10 = await pickDataUrl('img-despues-res-10');
 const fotoDespuesRes11 = await pickDataUrl('img-despues-res-11');
 const fotoDespuesRes12 = await pickDataUrl('img-despues-res-12');
 
-// Arreglo final para DESPUÉS (misma arquitectura que ANTES: primero Serial (6), luego Resultado/Diagnóstico (12))
+// ✅ Arreglo FINAL de 18 posiciones — NO FILTRAR NADA
 const fotosDespues = [
-  fotoDespuesSerial1, fotoDespuesSerial2, fotoDespuesSerial3,
-  fotoDespuesSerial4, fotoDespuesSerial5, fotoDespuesSerial6,
-  fotoDespuesRes1,  fotoDespuesRes2,  fotoDespuesRes3,
-  fotoDespuesRes4,  fotoDespuesRes5,  fotoDespuesRes6,
-  fotoDespuesRes7,  fotoDespuesRes8,  fotoDespuesRes9,
-  fotoDespuesRes10, fotoDespuesRes11, fotoDespuesRes12
-].filter(Boolean);
-
+  fotoDespuesSerial1 || "",
+  fotoDespuesSerial2 || "",
+  fotoDespuesSerial3 || "",
+  fotoDespuesSerial4 || "",
+  fotoDespuesSerial5 || "",
+  fotoDespuesSerial6 || "",
+  fotoDespuesRes1  || "",
+  fotoDespuesRes2  || "",
+  fotoDespuesRes3  || "",
+  fotoDespuesRes4  || "",
+  fotoDespuesRes5  || "",
+  fotoDespuesRes6  || "",
+  fotoDespuesRes7  || "",
+  fotoDespuesRes8  || "",
+  fotoDespuesRes9  || "",
+  fotoDespuesRes10 || "",
+  fotoDespuesRes11 || "",
+  fotoDespuesRes12 || ""
+];
 
       // ANTES / DESPUÉS: Observaciones
 const antesObs   = (document.getElementById('inp-antes-obs')  ?.value ?? '').trim();
@@ -5735,23 +5746,26 @@ const imgsJson = {
   med2       : await pickDataUrl('img-med2'),
 
   // ✅ LAS DOS TARJETAS DE 3 FOTOS
-  navIndoor : [
-  await pickDataUrl('img-nav-indoor-0'),
-  await pickDataUrl('img-nav-indoor-1'),
-  await pickDataUrl('img-nav-indoor-2')
-].filter(Boolean),
+  navIndoor: [
+   await pickDataUrl('img-nav-indoor-0') || "",
+   await pickDataUrl('img-nav-indoor-1') || "",
+   await pickDataUrl('img-nav-indoor-2') || ""
+],
 
-navOutdoor : [
-  await pickDataUrl('img-nav-outdoor-0'),
-  await pickDataUrl('img-nav-outdoor-1'),
-  await pickDataUrl('img-nav-outdoor-2')
-].filter(Boolean),
+navOutdoor: [
+   await pickDataUrl('img-nav-outdoor-0') || "",
+   await pickDataUrl('img-nav-outdoor-1') || "",
+   await pickDataUrl('img-nav-outdoor-2') || ""
+],
 
   speedtest  : await pickDataUrl('img-speedtest'),
   portal     : await pickDataUrl('img-portal'),
   block1     : await pickDataUrl('img-block1'),
   block2     : await pickDataUrl('img-block2')
 };
+
+// ✅ Inyectar las 18 fotos de DESPUÉS en imgsJson
+imgsJson.despues = fotosDespues;
 
       const pruebasObs = (document.getElementById('inp-pruebas-obs')?.value ?? '');
 
@@ -5768,7 +5782,29 @@ const payloadJson = {
   // 👇 ÚNICO arreglo válido del PASO 3
   filasEquipos,
 
-  imgs: { ...imgsJson, despues: fotosDespues },
+  imgs: {
+  gps: imgsJson.gps,
+  apInt: imgsJson.apInt,
+  apExt1: imgsJson.apExt1,
+  apExt2: imgsJson.apExt2,
+  pcInt: imgsJson.pcInt,
+  movilExt: imgsJson.movilExt,
+  senalExt: imgsJson.senalExt,
+  senalInt: imgsJson.senalInt,
+  respaldo: imgsJson.respaldo,
+  printUps: imgsJson.printUps,
+  med1: imgsJson.med1,
+  med2: imgsJson.med2,
+  navIndoor: imgsJson.navIndoor,
+  navOutdoor: imgsJson.navOutdoor,
+  speedtest: imgsJson.speedtest,
+  portal: imgsJson.portal,
+  block1: imgsJson.block1,
+  block2: imgsJson.block2,
+
+  // ✅ ESTO ES LO QUE IMPORTA:
+  despues: fotosDespues
+},
   pruebasObs,
   latitud, longitud
 };
@@ -5796,20 +5832,17 @@ if (typeof payloadJson === 'object' && payloadJson) {
   payloadJson.despuesObs = despuesObs;
 }
 
-// (opcional pero recomendado) asegura que las fotos de DESPUÉS
-// viajen en el objeto de imágenes si usas imgsJson separado:
-if (typeof imgsJson === 'object' && imgsJson) {
-  if (!Array.isArray(imgsJson.despues)) {
-    imgsJson.despues = Array.isArray(fotosDespues) ? fotosDespues : [];
-  }
-}
 
         const resp = await fetch(FLOW_URL, {
           method: 'POST',
           headers: { 'Content-Type':'application/json' },
           body: JSON.stringify({
             payloadJson: JSON.stringify(payloadJson),
-            imgsJson: JSON.stringify(imgsJson)
+            imgsJson: JSON.stringify({
+   ...imgsJson,
+   despues: JSON.stringify(fotosDespues)
+})
+
           })
         });
 
