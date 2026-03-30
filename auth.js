@@ -11,8 +11,8 @@
 
 const msalConfig = {
   auth: {
-    clientId: "YOUR_CLIENT_ID",     // ← Ariel, luego me das este valor
-    authority: "https://login.microsoftonline.com/YOUR_TENANT_ID", // ← tu tenant Dominion
+    clientId: "f3976bc3-91bb-4fd7-9195-eba9a96886f5",     // ← Ariel, luego me das este valor
+    authority: "https://login.microsoftonline.com/e4e1bc33-e283-4312-bb37-89010224b7fe", // ← tu tenant Dominion
     redirectUri: window.location.origin // regresa a index.html
   },
   cache: {
