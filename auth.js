@@ -11,9 +11,9 @@
 
 const msalConfig = {
   auth: {
-    clientId: "f3976bc3-91bb-4fd7-9195-eba9a96886f5",     // ← Ariel, luego me das este valor
-    authority: "https://login.microsoftonline.com/e4e1bc33-e283-4312-bb37-89010224b7fe", // ← tu tenant Dominion
-    redirectUri: window.location.origin // regresa a index.html
+    clientId: "f3976bc3-91bb-4fd7-9195-eba9a96886f5",
+    authority: "https://login.microsoftonline.com/e4e1bc33-e283-4312-bb37-89010224b7fe",
+    redirectUri: "https://arieltecnologia777-cmd.github.io/Sistema-IntegraI-OyM-DOMINION-MinTIC/Modulo_Auditor.html"
   },
   cache: {
     cacheLocation: "sessionStorage",
