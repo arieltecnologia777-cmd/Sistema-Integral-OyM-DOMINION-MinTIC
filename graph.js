@@ -2,17 +2,18 @@
    GRAPH.JS — Panel Auditor
    Acceso a OneDrive usando Microsoft Graph API.
    Funciones esenciales:
-    - listar archivos de una carpeta
-    - obtener metadata
-    - descargar archivo
-    - mover archivo (aprobar)
-   ====================================================================== */
+   - listar archivos de una carpeta
+   - obtener metadata
+   - descargar archivo
+   - mover archivo (aprobar)
+   Ariel-friendly — versión estable y limpia.
+====================================================================== */
 
 import { obtenerToken } from "./auth.js";
 
 /* ======================================================================
-   Helper: Peticiones a Graph
-   ====================================================================== */
+   Helper: Peticiones autenticadas a Microsoft Graph
+====================================================================== */
 async function graphFetch(url, method = "GET", body = null) {
   const token = await obtenerToken();
   if (!token) {
@@ -31,6 +32,7 @@ async function graphFetch(url, method = "GET", body = null) {
   if (body) options.body = JSON.stringify(body);
 
   const resp = await fetch(url, options);
+
   if (!resp.ok) {
     console.error("❌ Error en Graph:", resp.status, await resp.text());
     return null;
@@ -40,34 +42,33 @@ async function graphFetch(url, method = "GET", body = null) {
 }
 
 /* ======================================================================
-   1) LISTAR ARCHIVOS EN UNA CARPETA
-   input: ruta → "/drive/root:/Carpeta/Subcarpeta"
-   ====================================================================== */
+   1) LISTAR ARCHIVOS EN UNA CARPETA (OneDrive personal del usuario)
+   Ejemplo ruta: "/drive/root:/Documents/Base MCI - Proyecto automatización/MCI_Salidas"
+====================================================================== */
 export async function listarArchivos(rutaCarpeta) {
-
   if (!rutaCarpeta) {
     console.warn("⚠️ Ruta vacía. Aún no configurada.");
     return [];
   }
 
-  const url = `https://graph.microsoft.com/v1.0/drives/${driveId}/root:${rutaCarpeta}:/children`;
+  // ✅ Usamos OneDrive personal del usuario: /me/drive/...
+  const url = `https://graph.microsoft.com/v1.0/me${rutaCarpeta}:/children`;
 
   const data = await graphFetch(url);
   if (!data || !data.value) return [];
 
-  // Filtramos solo archivos (OneDrive retorna carpetas también)
+  // ✅ Filtrar SOLO archivos
   return data.value.filter(item => item.file);
 }
 
 /* ======================================================================
-   2) OBTENER CONTENIDO/METADATA DE UN ARCHIVO
-   input: rutaArchivo → "/drive/root:/Carpeta/file.json"
-   ====================================================================== */
+   2) OBTENER CONTENIDO BLOb de un archivo (para abrir en vista previa)
+====================================================================== */
 export async function obtenerArchivo(rutaArchivo) {
-
   const token = await obtenerToken();
   if (!token) return null;
 
+  // ✅ Descargar contenido
   const url = `https://graph.microsoft.com/v1.0/me${rutaArchivo}:/content`;
 
   const resp = await fetch(url, {
@@ -79,23 +80,21 @@ export async function obtenerArchivo(rutaArchivo) {
     return null;
   }
 
-  // Retorna Blob (PDF, XLSX, JSON, etc.)
-  const blob = await resp.blob();
-  return blob;
+  return resp.blob(); // Excel, PDF, imágenes…
 }
 
 /* ======================================================================
    3) MOVER ARCHIVO (Aprobar)
-   input:
-    - rutaOrigen  → "/drive/root:/MCI/pendientes/archivo.pdf"
-    - rutaDestino → "/drive/root:/MCI/aprobados/archivo.pdf"
-   ====================================================================== */
+   Origen: /drive/root:/Documents/.../MCI_Salidas/archivo.xlsx
+   Destino: /drive/root:/Documents/.../MCI_Aprobados/archivo.xlsx
+====================================================================== */
 export async function moverArchivo(rutaOrigen, rutaDestino) {
-
+  // Extraer nombre
   const partes = rutaDestino.split("/");
   const nombreArchivo = partes.pop();
   const carpetaDestino = partes.join("/");
 
+  // Cuerpo PATCH
   const body = {
     parentReference: {
       path: `/drive/root:${carpetaDestino}`
@@ -117,47 +116,32 @@ export async function moverArchivo(rutaOrigen, rutaDestino) {
 }
 
 /* ======================================================================
-   4) LEER ARCHIVOS Y RETORNAR OBJETOS NORMALIZADOS PARA LA TABLA
-      - módulo = MODULOS.MCI o MODULOS.MPR
-      - ruta = módulo.pendientes o módulo.aprobados
-   ====================================================================== */
+   4) LEER UNA CARPETA COMPLETA Y NORMALIZARLA PARA LA TABLA
+====================================================================== */
 export async function cargarDesdeCarpeta(modulo, esAprobados = false) {
-
   const ruta = esAprobados ? modulo.aprobados : modulo.pendientes;
 
   const archivos = await listarArchivos(ruta);
-  if (!archivos || archivos.length === 0) {
-    return [];
-  }
+  if (!archivos || archivos.length === 0) return [];
 
-  // Construimos array limpio para la tabla
-  const resultados = archivos.map(file => {
-    return modulo.normalizar({
-      tecnico: file?.lastModifiedBy?.user?.displayName ?? "—",
-      fecha: file?.lastModifiedDateTime ?? "—",
-      cliente: file?.description ?? "—",
-      ubicacion: "—",
-      proyecto: file?.description ?? "—",
-      zona: "—",
-      archivo: {
-        nombre: file.name,
-        id: file.id,
-        tipo: file.file.mimeType,
-        ruta: `${ruta}/${file.name}`   // RUTA COMPLETA
-      }
-    });
-  });
-
-  return resultados;
+  // ✅ Normalizar usando el módulo activo (MCI o MPR)
+  return archivos.map(file =>
+    modulo.normalizar({
+      nombre: file.name,
+      ruta: `${ruta}/${file.name}`,  // ruta completa para abrir/mover
+      modificado: file.lastModifiedDateTime ?? "—",
+      tamano: file.size ?? "—",
+      tipo: file.file?.mimeType ?? "—"
+    })
+  );
 }
 
 /* ======================================================================
-   5) DESCARGAR ARCHIVO COMO URL TEMPORAL (para vista previa PDF/Img)
-   ====================================================================== */
+   5) CREAR URL TEMPORAL PARA PREVIEW (Excel, PDF, etc.)
+====================================================================== */
 export async function obtenerURLTemporal(rutaArchivo) {
-
   const blob = await obtenerArchivo(rutaArchivo);
   if (!blob) return null;
 
-  return URL.createObjectURL(blob);
+  return URL.createObjectURL(blob); // ✅ Vista previa directa
 }
