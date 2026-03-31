@@ -1,13 +1,6 @@
 /* ======================================================================
-   APP.JS — Panel Auditor
+   APP_V2.JS — Panel Auditor
    Controlador principal del sistema
-   - Cambio entre módulos
-   - Carga de datos
-   - Render de tabla
-   - Acciones: ver, aprobar
-   - Uso de modulos.js, auth.js y graph.js
-
-   Ariel-friendly: limpio, comentado y escalable
    ====================================================================== */
 
 import {
@@ -15,38 +8,46 @@ import {
   descargarArchivo,
   formatearFecha,
   formatearTamano,
-  obtenerModulo,      // ✅ ESTA ES LA FUNCIÓN QUE FALTABA
-  MODULOS             // ✅ Tu app también lo usa internamente
-} from './modulos_v2.js';
-import { cargarDesdeCarpeta, obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
-import { iniciarSesion, usuarioActual, cerrarSesion, obtenerToken } from "./auth.js";
+  obtenerModulo,
+  MODULOS
+} from "./modulos_v2.js";
+
+import {
+  cargarDesdeCarpeta
+} from "./graph_v2.js";
+
+import {
+  iniciarSesion,
+  usuarioActual,
+  cerrarSesion,
+  obtenerToken
+} from "./auth.js";
+
 
 /* ======================================================================
    ESTADO GLOBAL
    ====================================================================== */
 let moduloActivo = null;
-let datosActuales = []; // contenido actual de la tabla
+let datosActuales = []; // contenido de la tabla
+window.__archivoActual = null; // archivo que se está viendo en el modal
 
 
 /* ======================================================================
-   1) INICIALIZACIÓN GENERAL
+   1) INICIALIZACIÓN
    ====================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
 
-  // ✅ Verificamos sesión
   if (!usuarioActual()) {
     await iniciarSesion();
   }
 
-  // ✅ Configuramos navegación del sidebar
   prepararSidebar();
-
-  // ✅ Iniciar en módulo Inicio (placeholder)
   seleccionarModulo("inicio");
 });
 
+
 /* ======================================================================
-   2) CONFIGURAR SIDEBAR
+   2) SIDEBAR
    ====================================================================== */
 function prepararSidebar() {
   const botones = document.querySelectorAll(".sb-item");
@@ -54,36 +55,29 @@ function prepararSidebar() {
   botones.forEach(btn => {
     btn.addEventListener("click", async () => {
 
-      // Cerrar sesión
       if (btn.classList.contains("logout")) {
         cerrarSesion();
         return;
       }
 
-      // Apagar estados previos
       botones.forEach(b => b.classList.remove("active"));
-
-      // Activar botón
       btn.classList.add("active");
 
-      // Detectar módulo
       const mod = btn.dataset.mod;
       seleccionarModulo(mod);
     });
   });
 }
 
+
 /* ======================================================================
-   3) CAMBIAR DE MÓDULO (Inicio / MCI / MPR)
+   3) SELECCIONAR MÓDULO
    ====================================================================== */
 async function seleccionarModulo(mod) {
 
   const contenedor = document.getElementById("contenedor-modulo");
-  contenedor.innerHTML = ""; // limpiar pantalla
+  contenedor.innerHTML = "";
 
-  /* -----------------------------------------
-     MODULO INICIO (Pantalla simple)
-     ----------------------------------------- */
   if (mod === "inicio") {
     moduloActivo = null;
 
@@ -96,9 +90,7 @@ async function seleccionarModulo(mod) {
     return;
   }
 
-  /* -----------------------------------------
-     MODULOS MCI / MPR
-     ----------------------------------------- */
+  // MÓDULO MCI O MPR
   moduloActivo = obtenerModulo(mod);
 
   if (!moduloActivo) {
@@ -106,19 +98,16 @@ async function seleccionarModulo(mod) {
     return;
   }
 
-  // Dibujar tabla vacía
   contenedor.innerHTML = generarTablaHTML(moduloActivo);
-
-  // Cargar datos del módulo
   await cargarDatosModulo();
 }
 
+
 /* ======================================================================
-   4) CREAR TABLA (HTML dinámico por módulo)
+   4) GENERAR TABLA
    ====================================================================== */
 function generarTablaHTML(modulo) {
 
-  // Columnas de modulos.js
   const ths = modulo.columnas
     .map(col => `<th>${col.label}</th>`)
     .join("");
@@ -137,30 +126,28 @@ function generarTablaHTML(modulo) {
   `;
 }
 
+
 /* ======================================================================
-   5) CARGAR DATOS DESDE ONE DRIVE
+   5) CARGAR DATOS
    ====================================================================== */
 async function cargarDatosModulo() {
 
   if (!moduloActivo.pendientes) {
-    console.warn("⚠️ Aún no se ha configurado la carpeta de pendientes.");
     document.getElementById("tbodyDatos").innerHTML = `
       <tr><td colspan="99" style="padding:20px; text-align:center;">
         No hay ruta configurada para este módulo.<br>
-        (Ariel deberá especificarla cuando toque)
       </td></tr>
     `;
     return;
   }
 
-  // Llamamos graph.js → carga normalizada
   datosActuales = await cargarDesdeCarpeta(moduloActivo, false);
-
   renderTabla();
 }
 
+
 /* ======================================================================
-   6) RENDER DE TABLA (llenar <tbody>)
+   6) RENDER TABLA
    ====================================================================== */
 function renderTabla() {
 
@@ -180,6 +167,7 @@ function renderTabla() {
   tbody.innerHTML = "";
 
   datosActuales.forEach((item, idx) => {
+
     const tds = moduloActivo.columnas
       .map(col => `<td>${item[col.id]}</td>`)
       .join("");
@@ -200,12 +188,12 @@ function renderTabla() {
   prepararEventosTabla();
 }
 
+
 /* ======================================================================
-   7) EVENTOS DE TABLA
+   7) PREPARAR EVENTOS
    ====================================================================== */
 function prepararEventosTabla() {
 
-  // Botón VER
   document.querySelectorAll(".btn-ver").forEach(btn => {
     btn.addEventListener("click", async () => {
       const item = datosActuales[btn.dataset.idx];
@@ -213,7 +201,6 @@ function prepararEventosTabla() {
     });
   });
 
-  // Botón APROBAR
   document.querySelectorAll(".btn-aprobar").forEach(btn => {
     btn.addEventListener("click", async () => {
       const item = datosActuales[btn.dataset.idx];
@@ -222,8 +209,9 @@ function prepararEventosTabla() {
   });
 }
 
+
 /* ======================================================================
-   8) VER ARCHIVO (Preview mediante URL temporal)
+   8) VER ARCHIVO — EMBEBIDO EN MODAL FULLSCREEN
    ====================================================================== */
 async function verArchivo(item) {
 
@@ -238,13 +226,10 @@ async function verArchivo(item) {
     return;
   }
 
+  // 1️⃣ Obtener metadatos del archivo
   const resp = await fetch(
     `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
-    {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    }
+    { headers: { "Authorization": `Bearer ${token}` } }
   );
 
   const data = await resp.json();
@@ -254,11 +239,13 @@ async function verArchivo(item) {
     return;
   }
 
+  // 2️⃣ Generar URL de Excel Embed
   const encoded = encodeURIComponent(data.webUrl);
 
   const embedUrl =
     `https://excel.officeapps.live.com/x/_layouts/15/WopiFrame2.aspx?embed=1&src=${encoded}`;
 
+  // 3️⃣ Poner iframe en el visor
   document.getElementById("visorIframe").innerHTML = `
     <iframe 
         src="${embedUrl}"
@@ -269,13 +256,13 @@ async function verArchivo(item) {
     ></iframe>
   `;
 }
-  // 4️⃣ Insertar iframe
-  document.getElementById("visorIframe").innerHTML = data.link.webHtml;
-}
+
+
+/* ======================================================================
+   9) BOTÓN VOLVER
+   ====================================================================== */
 document.getElementById("visorVolver").addEventListener("click", () => {
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
-
-  // Limpia el iframe
   document.getElementById("visorIframe").innerHTML = "";
 });
