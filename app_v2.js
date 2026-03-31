@@ -227,37 +227,43 @@ function prepararEventosTabla() {
    ====================================================================== */
 async function verArchivo(item) {
 
-  if (!item?.archivo?.webUrl) {
-    alert("No se pudo obtener la URL del archivo.");
+  // 1️⃣ Ocultar tabla y mostrar modal
+  document.getElementById("contenedor-modulo").style.display = "none";
+  document.getElementById("modalVisor").style.display = "block";
+
+  // Guardar archivo actual globalmente (usaremos esto luego en Aprobar/Rechazar)
+  window.__archivoActual = item;
+
+  // 2️⃣ Obtener token real
+  const token = await obtenerToken();
+  if (!token) {
+    alert("Error obteniendo token.");
     return;
   }
 
-  // ✅ Abrir archivo usando la URL nativa de OneDrive
-  window.open(item.archivo.webUrl, "_blank");
-}
+  // 3️⃣ Pedir enlace embed a Microsoft Graph
+  const resp = await fetch(
+    `https://graph.microsoft.com/v1.0${item.archivo.ruta}/createLink`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        type: "embed",
+        scope: "anonymous"
+      })
+    }
+  );
 
-/* ======================================================================
-   9) APROBAR (mover archivo OneDrive)
-   ====================================================================== */
-async function aprobarArchivo(item) {
+  const data = await resp.json();
 
-  if (!moduloActivo.aprobados) {
-    alert("No hay carpeta de aprobados configurada.");
+  if (!data?.link?.webHtml) {
+    alert("No se pudo obtener el visor embebido.");
     return;
   }
 
-  const r1 = item.archivo.ruta; // ruta actual
-  const r2 = `${moduloActivo.aprobados}/${item.archivo.nombre}`;
-
-  const ok = await moverArchivo(r1, r2);
-
-  if (!ok) {
-    alert("Error moviendo archivo.");
-    return;
-  }
-
-  alert(`✅ Informe aprobado: ${item.archivo.nombre}`);
-
-  // Recargar datos
-  await cargarDatosModulo();
+  // 4️⃣ Insertar iframe
+  document.getElementById("visorIframe").innerHTML = data.link.webHtml;
 }
