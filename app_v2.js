@@ -276,5 +276,3 @@ async function aprobarArchivo(item) {
   // Recargar datos
   await cargarDatosModulo();
 }
-
-``
