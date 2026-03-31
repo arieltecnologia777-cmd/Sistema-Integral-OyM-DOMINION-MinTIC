@@ -249,13 +249,16 @@ async function verArchivo(item) {
 
   const data = await resp.json();
 
-  if (!data?.webUrl) {
-    alert("No se pudo obtener URL del informe");
-    return;
-  }
+  const fileUrl =
+  data["@microsoft.graph.downloadUrl"] ||
+  data["@microsoft.graph.sourceUrl"];
 
-  // 4️⃣ Generar URL para incrustar Excel dentro de la página
-  const encoded = encodeURIComponent(data.webUrl);
+if (!fileUrl) {
+  alert("No se pudo obtener URL de descarga del informe.");
+  return;
+}
+
+const encoded = encodeURIComponent(fileUrl);
 
   const embedUrl =
     `https://excel.officeapps.live.com/x/_layouts/15/WopiFrame2.aspx?embed=1&src=${encoded}`;
