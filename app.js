@@ -201,7 +201,7 @@ function renderTabla() {
 async function cargarDatosDesdeFlow() {
     try {
         const resp = await fetch(
-            "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/57a653a32c5640e98f7c73c5fe33d71a/triggers/manual/paths/invoke?api-version=1",
+            "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/57a653a32c5640e98f7c73c5fe33d71a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=We0HNWDnZOOafqECRgL8_JOFVEC8fZvzGR8xP3dchZ0",
             {
                 method: "POST",
                 headers: {
