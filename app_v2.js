@@ -10,7 +10,7 @@
    Ariel-friendly: limpio, comentado y escalable
    ====================================================================== */
 
-import { MODULOS, obtenerModulo } from "./modulos_v2.js";
+import { listarArchivosMCI, descargarArchivo, formatearFecha, formatearTamano } from './modulos_v2.js';
 import { cargarDesdeCarpeta, obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
 import { iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
 
