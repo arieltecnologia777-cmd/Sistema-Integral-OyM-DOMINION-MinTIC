@@ -223,34 +223,53 @@ function prepararEventosTabla() {
 }
 
 /* ======================================================================
-   8) VER ARCHIVO (PASO 1 — OBTENER webUrl DESDE GRAPH)
+   8) VER ARCHIVO — ABRIR MODAL & CARGAR EMBED EXCEL
    ====================================================================== */
 async function verArchivo(item) {
 
+  // 1️⃣ Ocultar tabla y mostrar modal
+  document.getElementById("contenedor-modulo").style.display = "none";
+  document.getElementById("modalVisor").style.display = "block";
+
+  // Guardar archivo actual globalmente
+  window.__archivoActual = item;
+
+  // 2️⃣ Obtener token
   const token = await obtenerToken();
   if (!token) {
     alert("No se pudo obtener token.");
     return;
   }
 
+  // 3️⃣ Obtener metadata del archivo (para webUrl)
   const resp = await fetch(
     `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
-    {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    }
+    { headers: { "Authorization": `Bearer ${token}` } }
   );
 
   const data = await resp.json();
 
   if (!data?.webUrl) {
-    alert("No se pudo obtener la URL del informe.");
+    alert("No se pudo obtener URL del informe");
     return;
   }
 
-  console.log("✅ URL obtenida desde Graph:", data.webUrl);
-  alert("✅ URL obtenida correctamente. Revisa la consola.");
+  // 4️⃣ Generar URL para incrustar Excel dentro de la página
+  const encoded = encodeURIComponent(data.webUrl);
+
+  const embedUrl =
+    `https://excel.officeapps.live.com/x/_layouts/15/WopiFrame2.aspx?embed=1&src=${encoded}`;
+
+  // 5️⃣ Crear el iframe embebido
+  document.getElementById("visorIframe").innerHTML = `
+    <iframe 
+        src="${embedUrl}"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        allowfullscreen
+    ></iframe>
+  `;
 }
 
 
