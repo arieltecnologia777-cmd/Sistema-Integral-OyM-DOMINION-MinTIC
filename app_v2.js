@@ -267,3 +267,10 @@ async function verArchivo(item) {
   // 4️⃣ Insertar iframe
   document.getElementById("visorIframe").innerHTML = data.link.webHtml;
 }
+document.getElementById("visorVolver").addEventListener("click", () => {
+  document.getElementById("modalVisor").style.display = "none";
+  document.getElementById("contenedor-modulo").style.display = "block";
+
+  // Limpia el iframe
+  document.getElementById("visorIframe").innerHTML = "";
+});
