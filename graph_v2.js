@@ -43,15 +43,16 @@ export async function listarArchivos(folderId) {
   const data = await graphFetch(url);
 
   return data.value.map(x => ({
-    id: x.id,
+  id: x.id,
+  nombre: x.name,
+  fecha: x.lastModifiedDateTime,
+  tamano: x.size,
+  archivo: {
+    ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
     nombre: x.name,
-    fecha: x.lastModifiedDateTime,
-    tamano: x.size,
-    archivo: {
-      ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-      nombre: x.name
-    }
-  }));
+    webUrl: x.webUrl   // ✅ NUEVO: URL nativa de OneDrive
+  }
+}));
 }
 
 // ============================================================
