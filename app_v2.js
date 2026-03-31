@@ -223,54 +223,45 @@ function prepararEventosTabla() {
 }
 
 /* ======================================================================
-   8) VER ARCHIVO — ABRIR MODAL & CARGAR EMBED EXCEL
+   8) VER ARCHIVO — USANDO VISOR DE SHAREPOINT (OPCIÓN C)
    ====================================================================== */
 async function verArchivo(item) {
 
-  // 1️⃣ Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
 
-  // Guardar archivo actual globalmente
   window.__archivoActual = item;
 
-  // 2️⃣ Obtener token
   const token = await obtenerToken();
   if (!token) {
     alert("No se pudo obtener token.");
     return;
   }
 
-  // 3️⃣ Obtener metadata del archivo (para webUrl)
+  // Obtener metadata
   const resp = await fetch(
     `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
     { headers: { "Authorization": `Bearer ${token}` } }
   );
 
   const data = await resp.json();
+  if (!data?.webUrl) {
+    alert("No se pudo obtener la URL del archivo.");
+    return;
+  }
 
-  const fileUrl =
-  data["@microsoft.graph.downloadUrl"] ||
-  data["@microsoft.graph.sourceUrl"];
+  // ✅ Visor nativo de SharePoint (funciona SIEMPRE en OneDrive empresarial)
+  const embedUrl = `${data.webUrl}?web=1&action=embedview`;
 
-if (!fileUrl) {
-  alert("No se pudo obtener URL de descarga del informe.");
-  return;
-}
-
-const encoded = encodeURIComponent(fileUrl);
-
-  const embedUrl =
-    `https://excel.officeapps.live.com/x/_layouts/15/WopiFrame2.aspx?embed=1&src=${encoded}`;
-
-  // 5️⃣ Crear el iframe embebido
+  // Insertar iframe
   document.getElementById("visorIframe").innerHTML = `
-    <iframe 
+    <iframe
         src="${embedUrl}"
         width="100%"
         height="100%"
         frameborder="0"
         allowfullscreen
+        style="border:0; background:white;"
     ></iframe>
   `;
 }
