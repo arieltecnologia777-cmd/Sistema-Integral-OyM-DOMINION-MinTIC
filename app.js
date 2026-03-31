@@ -131,11 +131,10 @@ function generarTablaHTML(modulo) {
 }
 
 /* ======================================================================
-   5) CARGAR DATOS DESDE POWER AUTOMATE
+   5) CARGAR DATOS DESDE ONE DRIVE
    ====================================================================== */
 async function cargarDatosModulo() {
 
-  // ✅ Si el módulo no tiene carpeta configurada, mensaje
   if (!moduloActivo.pendientes) {
     console.warn("⚠️ Aún no se ha configurado la carpeta de pendientes.");
     document.getElementById("tbodyDatos").innerHTML = `
@@ -147,13 +146,9 @@ async function cargarDatosModulo() {
     return;
   }
 
-  // ✅ 1. Cargar datos crudos desde Power Automate
-  const brutos = await cargarDatosDesdeFlow();
+  // Llamamos graph.js → carga normalizada
+  datosActuales = await cargarDesdeCarpeta(moduloActivo, false);
 
-  // ✅ 2. Normalizar cada item según el módulo activo
-  datosActuales = brutos.map(item => moduloActivo.normalizar(item));
-
-  // ✅ 3. Renderizar la tabla con datos normalizados
   renderTabla();
 }
 
@@ -196,33 +191,6 @@ function renderTabla() {
   });
 
   prepararEventosTabla();
-}
-
-// ========================================================
-// CARGAR DATOS DESDE POWER AUTOMATE (BACKEND DEL AUDITOR)
-// ========================================================
-async function cargarDatosDesdeFlow() {
-    try {
-        const resp = await fetch(
-            "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/57a653a32c5640e98f7c73c5fe33d71a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=We0HNWDnZOOafqECRgL8_JOFVEC8fZvzGR8xP3dchZ0",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ modulo: "MCI" })
-            }
-        );
-
-        const brutos = await cargarDatosDesdeFlow();
-datosActuales = brutos.map(item => moduloActivo.normalizar(item));
-        console.log("DATOS DESDE FLOW:", data);
-        return data.reportes;
-
-    } catch (err) {
-        console.error("Error leyendo data desde el Flow:", err);
-        return [];
-    }
 }
 
 /* ======================================================================
