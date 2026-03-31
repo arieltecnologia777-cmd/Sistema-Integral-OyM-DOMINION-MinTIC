@@ -1,6 +1,5 @@
 /* ============================================================
-   MODULOS.JS
-   Configuración de módulos del Panel Auditor
+   MODULOS.JS — Configuración de módulos del Panel Auditor
    ============================================================ */
 
 export const MODULOS = {
@@ -12,6 +11,8 @@ export const MODULOS = {
     id: "mci",
     nombre: "Auditor — MCI",
 
+    // Estas rutas ya no afectan porque usamos Power Automate,
+    // pero se mantienen para referencia
     pendientes: "/drive/root:/Documents/Base MCI - Proyecto automatización/MCI_Salidas",
     aprobados: "/drive/root:/Documents/Base MCI - Proyecto automatización/MCI_Aprobados",
 
@@ -22,24 +23,25 @@ export const MODULOS = {
       { id: "ubicacion", label: "Ubicación" }
     ],
 
+    // Normalización adaptada al JSON real de Power Automate
     normalizar(item) {
-  return {
-    tecnico: item.nombre ?? "—",
-    fecha: item.modificado || "—",
-    cliente: "—",
-    ubicacion: "—",
-    archivo: {
-      nombre: item.nombre,
-      ruta: item.ruta,
-      tamano: item.tamano,
-      tipo: item.tipo
+      return {
+        tecnico: item.nombre ?? "—",
+        fecha: item.modificado || "—",
+        cliente: "—",
+        ubicacion: "—",
+        archivo: {
+          nombre: item.nombre,
+          ruta: item.ruta,
+          tamano: item.tamano,
+          tipo: item.tipo
+        }
+      };
     }
-  };
-}
   },
 
   /* ============================================================
-     ✅ MÓDULO MPR
+     ✅ MÓDULO MPR (placeholder hasta crear flujo)
      ============================================================ */
   MPR: {
     id: "mpr",
@@ -56,19 +58,20 @@ export const MODULOS = {
     ],
 
     normalizar(item) {
-  return {
-    tecnico: item.nombre ?? "—",
-    fecha: item.modificado || "—",
-    cliente: "—",
-    ubicacion: "—",
-    archivo: {
-      nombre: item.nombre,
-      ruta: item.ruta,
-      tamano: item.tamano,
-      tipo: item.tipo
+      return {
+        tecnico: item.nombre ?? "—",
+        fecha: item.modificado || "—",
+        proyecto: "—",
+        zona: "—",
+        archivo: {
+          nombre: item.nombre,
+          ruta: item.ruta,
+          tamano: item.tamano,
+          tipo: item.tipo
+        }
+      };
     }
-  };
-}
+  }
 
 };
 
