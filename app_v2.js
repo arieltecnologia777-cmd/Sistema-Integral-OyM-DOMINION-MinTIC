@@ -227,28 +227,13 @@ function prepararEventosTabla() {
    ====================================================================== */
 async function verArchivo(item) {
 
-  if (!item?.archivo?.ruta) {
-    alert("No se pudo localizar el archivo.");
+  if (!item?.archivo?.webUrl) {
+    alert("No se pudo obtener la URL del archivo.");
     return;
   }
 
-  // ✅ Obtener token válido (MSAL)
-  const token = await obtenerToken();
-  if (!token) {
-    alert("No se pudo obtener token de autenticación.");
-    return;
-  }
-
-  // ✅ Generar la URL temporal correctamente
-  const urlTemp = await obtenerURLTemporal(item.archivo.ruta, token);
-
-  if (!urlTemp) {
-    alert("No se pudo obtener vista previa.");
-    return;
-  }
-
-  // ✅ Abrir archivo en pestaña nueva
-  window.open(urlTemp, "_blank");
+  // ✅ Abrir archivo usando la URL nativa de OneDrive
+  window.open(item.archivo.webUrl, "_blank");
 }
 
 /* ======================================================================
