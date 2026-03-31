@@ -13,7 +13,8 @@ export const MODULOS = {
 
     // ✅ Rutas correctas con driveId real
     pendientes: "/drives/b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua/root:/Documents/Base MCI - Proyecto automatización/MCI_Salidas",
-    aprobados:  "/drives/b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua/root:/Documents/Base MCI - Proyecto automatización/MCI_Aprobados",
+
+aprobados:  "/drives/b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua/root:/Documents/Base MCI - Proyecto automatización/MCI_Aprobados",
 
     columnas: [
       { id: "tecnico",   label: "Técnico" },
