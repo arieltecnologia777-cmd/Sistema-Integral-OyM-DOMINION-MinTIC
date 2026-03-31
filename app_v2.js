@@ -232,10 +232,14 @@ async function verArchivo(item) {
     return;
   }
 
-  // ✅ obtener token válido REAL
+  // ✅ Obtener token válido (MSAL)
   const token = await obtenerToken();
+  if (!token) {
+    alert("No se pudo obtener token de autenticación.");
+    return;
+  }
 
-  // ✅ generar URL temporal correctamente
+  // ✅ Generar la URL temporal correctamente
   const urlTemp = await obtenerURLTemporal(item.archivo.ruta, token);
 
   if (!urlTemp) {
@@ -243,6 +247,7 @@ async function verArchivo(item) {
     return;
   }
 
+  // ✅ Abrir archivo en pestaña nueva
   window.open(urlTemp, "_blank");
 }
 
