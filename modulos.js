@@ -5,18 +5,15 @@
 export const MODULOS = {
 
   /* ============================================================
-     ✅ MÓDULO MCI (OneDrive Personal)
+     ✅ MÓDULO MCI (OneDrive con driveId real)
      ============================================================ */
   MCI: {
     id: "mci",
     nombre: "Auditor — MCI",
 
-    /* ------------------------------------------------------------
-       RUTAS CORRECTAS PARA ONEDRIVE PERSONAL (importantísimo)
-       /drive/special/personal:/Documents/...
-       ------------------------------------------------------------ */
-    pendientes: "/drive/special/personal:/Documents/Base MCI - Proyecto automatización/MCI_Salidas",
-    aprobados:  "/drive/special/personal:/Documents/Base MCI - Proyecto automatización/MCI_Aprobados",
+    // ✅ Estas son las rutas correctas usando driveId real
+    pendientes: "/drives/b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua/root:/Documents/Base MCI - Proyecto automatización/MCI_Salidas",
+    aprobados:  "/drives/b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua/root:/Documents/Base MCI - Proyecto automatización/MCI_Aprobados",
 
     columnas: [
       { id: "tecnico",   label: "Técnico" },
@@ -25,9 +22,6 @@ export const MODULOS = {
       { id: "ubicacion", label: "Ubicación" }
     ],
 
-    /* ------------------------------------------------------------
-       Normalización adaptada al JSON que entrega Graph (graph.js)
-       ------------------------------------------------------------ */
     normalizar(item) {
       return {
         tecnico:   item.nombre ?? "—",
@@ -45,7 +39,7 @@ export const MODULOS = {
   },
 
   /* ============================================================
-     ✅ MÓDULO MPR (placeholder)
+     ✅ MÓDULO MPR (cuando toque)
      ============================================================ */
   MPR: {
     id: "mpr",
@@ -80,7 +74,7 @@ export const MODULOS = {
 };
 
 /* ============================================================
-   🔧 FUNCIÓN AUXILIAR — obtener módulo activo
+   🔧 FUNCIÓN AUXILIAR
    ============================================================ */
 export function obtenerModulo(id) {
   return MODULOS[id.toUpperCase()] ?? null;
