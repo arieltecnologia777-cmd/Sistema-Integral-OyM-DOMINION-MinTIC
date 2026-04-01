@@ -76,25 +76,16 @@ function prepararSidebar() {
 /* ======================================================================
    3) CAMBIAR DE MÓDULO (Inicio / MCI / MPR)
    ====================================================================== */
-async function seleccionarModulo(mod) {
-
-  const contenedor = document.getElementById("contenedor-modulo");
-  contenedor.innerHTML = ""; // limpiar pantalla
-
-  /* -----------------------------------------
-     MODULO INICIO (Pantalla simple)
-     ----------------------------------------- */
-  if (mod === "inicio") {
-    moduloActivo = null;
-
-    contenedor.innerHTML = `
-      <div style="padding:20px; font-size:16px;">
-        Bienvenido al <strong>Panel Auditor</strong>.<br>
-        Selecciona un módulo en la barra lateral para comenzar.
-      </div>
-    `;
-    return;
-  }
+<div id="visorIframe" style="
+    width:100%;
+    height:80vh;
+    border:1px solid #dce3f5;
+    border-radius:12px;
+    overflow:hidden;
+    background:#f8faff;
+">
+    <!-- Aquí se inyectará el IFRAME del Excel -->
+</div>
 
   /* -----------------------------------------
      MODULOS MCI / MPR
