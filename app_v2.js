@@ -15,33 +15,30 @@ import {
   descargarArchivo,
   formatearFecha,
   formatearTamano,
-  obtenerModulo,      // ✅ ESTA ES LA FUNCIÓN QUE FALTABA
-  MODULOS             // ✅ Tu app también lo usa internamente
+  obtenerModulo,
+  MODULOS
 } from './modulos_v2.js';
+
 import { cargarDesdeCarpeta, obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
+
 import { iniciarSesion, usuarioActual, cerrarSesion, obtenerToken } from "./auth.js";
 
 /* ======================================================================
    ESTADO GLOBAL
    ====================================================================== */
 let moduloActivo = null;
-let datosActuales = []; // contenido actual de la tabla
-
+let datosActuales = [];
 
 /* ======================================================================
    1) INICIALIZACIÓN GENERAL
    ====================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
 
-  // ✅ Verificamos sesión
   if (!usuarioActual()) {
     await iniciarSesion();
   }
 
-  // ✅ Configuramos navegación del sidebar
   prepararSidebar();
-
-  // ✅ Iniciar en módulo Inicio (placeholder)
   seleccionarModulo("inicio");
 });
 
@@ -54,19 +51,14 @@ function prepararSidebar() {
   botones.forEach(btn => {
     btn.addEventListener("click", async () => {
 
-      // Cerrar sesión
       if (btn.classList.contains("logout")) {
         cerrarSesion();
         return;
       }
 
-      // Apagar estados previos
       botones.forEach(b => b.classList.remove("active"));
-
-      // Activar botón
       btn.classList.add("active");
 
-      // Detectar módulo
       const mod = btn.dataset.mod;
       seleccionarModulo(mod);
     });
@@ -74,22 +66,25 @@ function prepararSidebar() {
 }
 
 /* ======================================================================
-   3) CAMBIAR DE MÓDULO (Inicio / MCI / MPR)
+   3) CAMBIAR DE MÓDULO
    ====================================================================== */
-<div id="visorIframe" style="
-    width:100%;
-    height:80vh;
-    border:1px solid #dce3f5;
-    border-radius:12px;
-    overflow:hidden;
-    background:#f8faff;
-">
-    <!-- Aquí se inyectará el IFRAME del Excel -->
-</div>
+async function seleccionarModulo(mod) {
 
-  /* -----------------------------------------
-     MODULOS MCI / MPR
-     ----------------------------------------- */
+  const contenedor = document.getElementById("contenedor-modulo");
+  contenedor.innerHTML = "";
+
+  if (mod === "inicio") {
+    moduloActivo = null;
+
+    contenedor.innerHTML = `
+      <div style="padding:20px; font-size:16px;">
+        Bienvenido al <strong>Panel Auditor</strong>.<br>
+        Selecciona un módulo en la barra lateral para comenzar.
+      </div>
+    `;
+    return;
+  }
+
   moduloActivo = obtenerModulo(mod);
 
   if (!moduloActivo) {
@@ -97,19 +92,16 @@ function prepararSidebar() {
     return;
   }
 
-  // Dibujar tabla vacía
   contenedor.innerHTML = generarTablaHTML(moduloActivo);
 
-  // Cargar datos del módulo
   await cargarDatosModulo();
 }
 
 /* ======================================================================
-   4) CREAR TABLA (HTML dinámico por módulo)
+   4) CREAR TABLA
    ====================================================================== */
 function generarTablaHTML(modulo) {
 
-  // Columnas de modulos.js
   const ths = modulo.columnas
     .map(col => `<th>${col.label}</th>`)
     .join("");
@@ -121,7 +113,8 @@ function generarTablaHTML(modulo) {
           <tr>${ths}<th>Acciones</th></tr>
         </thead>
         <tbody id="tbodyDatos">
-          <tr><td colspan="${modulo.columnas.length + 1}" style="text-align:center; padding:20px;">Cargando…</td></tr>
+          <tr><td colspan="${modulo.columnas.length + 1}" 
+              style="text-align:center; padding:20px;">Cargando…</td></tr>
         </tbody>
       </table>
     </div>
@@ -129,12 +122,11 @@ function generarTablaHTML(modulo) {
 }
 
 /* ======================================================================
-   5) CARGAR DATOS DESDE ONE DRIVE
+   5) CARGAR DATOS DESDE ONEDRIVE
    ====================================================================== */
 async function cargarDatosModulo() {
 
   if (!moduloActivo.pendientes) {
-    console.warn("⚠️ Aún no se ha configurado la carpeta de pendientes.");
     document.getElementById("tbodyDatos").innerHTML = `
       <tr><td colspan="99" style="padding:20px; text-align:center;">
         No hay ruta configurada para este módulo.<br>
@@ -144,14 +136,13 @@ async function cargarDatosModulo() {
     return;
   }
 
-  // Llamamos graph.js → carga normalizada
   datosActuales = await cargarDesdeCarpeta(moduloActivo, false);
 
   renderTabla();
 }
 
 /* ======================================================================
-   6) RENDER DE TABLA (llenar <tbody>)
+   6) RENDER DE TABLA
    ====================================================================== */
 function renderTabla() {
 
@@ -171,6 +162,7 @@ function renderTabla() {
   tbody.innerHTML = "";
 
   datosActuales.forEach((item, idx) => {
+
     const tds = moduloActivo.columnas
       .map(col => `<td>${item[col.id]}</td>`)
       .join("");
@@ -196,7 +188,6 @@ function renderTabla() {
    ====================================================================== */
 function prepararEventosTabla() {
 
-  // Botón VER
   document.querySelectorAll(".btn-ver").forEach(btn => {
     btn.addEventListener("click", async () => {
       const item = datosActuales[btn.dataset.idx];
@@ -204,7 +195,6 @@ function prepararEventosTabla() {
     });
   });
 
-  // Botón APROBAR
   document.querySelectorAll(".btn-aprobar").forEach(btn => {
     btn.addEventListener("click", async () => {
       const item = datosActuales[btn.dataset.idx];
@@ -214,7 +204,7 @@ function prepararEventosTabla() {
 }
 
 /* ======================================================================
-   8) VER ARCHIVO — USANDO VISOR DE SHAREPOINT (OPCIÓN C)
+   8) VER ARCHIVO — VISOR MODAL SHAREPOINT
    ====================================================================== */
 async function verArchivo(item) {
 
@@ -229,7 +219,6 @@ async function verArchivo(item) {
     return;
   }
 
-  // Obtener metadata
   const resp = await fetch(
     `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
     { headers: { "Authorization": `Bearer ${token}` } }
@@ -241,26 +230,22 @@ async function verArchivo(item) {
     return;
   }
 
-  // ✅ Visor nativo de SharePoint (compatible con archivos privados)
-const embedUrl = `${data.webUrl}?web=1&action=embedview`;
+  const embedUrl = `${data.webUrl}?web=1&action=embedview`;
 
-// Insertar iframe real (sin caracteres HTML escapados)
-document.getElementById("visorIframe").innerHTML = `
-  <iframe
-      src="${embedUrl}"
-      width="100%"
-      height="100%"
-      frameborder="0"
-      allowfullscreen
-      style="border:0; background:white;"
-  ></iframe>
-`;
-
+  document.getElementById("visorIframe").innerHTML = `
+    <iframe 
+        src="${embedUrl}"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        allowfullscreen
+        style="border:0; background:white;"
+    ></iframe>
+  `;
 }
 
-
 /* ======================================================================
-   9) APROBAR (mover archivo OneDrive)
+   9) APROBAR (MOVER ARCHIVO)
    ====================================================================== */
 async function aprobarArchivo(item) {
 
@@ -269,7 +254,7 @@ async function aprobarArchivo(item) {
     return;
   }
 
-  const r1 = item.archivo.ruta; // ruta actual
+  const r1 = item.archivo.ruta;
   const r2 = `${moduloActivo.aprobados}/${item.archivo.nombre}`;
 
   const ok = await moverArchivo(r1, r2);
@@ -281,7 +266,50 @@ async function aprobarArchivo(item) {
 
   alert(`✅ Informe aprobado: ${item.archivo.nombre}`);
 
-  // Recargar datos
   await cargarDatosModulo();
 }
 
+/* ======================================================================
+   10) EVENTOS DEL MODAL (Cerrar / Descargar / Aprobar / Rechazar)
+   ====================================================================== */
+
+// ✅ Cerrar visor
+document.getElementById("visorVolver").addEventListener("click", () => {
+  document.getElementById("modalVisor").style.display = "none";
+  document.getElementById("contenedor-modulo").style.display = "block";
+  document.getElementById("visorIframe").innerHTML = "";
+});
+
+// ✅ Descargar archivo desde modal
+document.getElementById("visorDescargar").addEventListener("click", async () => {
+
+  const item = window.__archivoActual;
+  if (!item) return;
+
+  const token = await obtenerToken();
+  const url = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
+
+  const resp = await fetch(url, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+
+  const blob = await resp.blob();
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = item.archivo.nombre;
+  link.click();
+});
+
+// ✅ Aprobar desde modal
+document.getElementById("visorAprobar").addEventListener("click", async () => {
+  const item = window.__archivoActual;
+  if (!item) return;
+
+  await aprobarArchivo(item);
+  document.getElementById("visorVolver").click();
+});
+
+// ✅ Rechazar (placeholder)
+document.getElementById("visorRechazar").addEventListener("click", () => {
+  alert("Función de rechazo pendiente.");
+});
