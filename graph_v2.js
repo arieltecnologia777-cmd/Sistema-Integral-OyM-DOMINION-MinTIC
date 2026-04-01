@@ -37,22 +37,32 @@ async function graphFetch(url, method = "GET", body = null) {
 // LISTAR ARCHIVOS
 // ============================================================
 export async function listarArchivos(folderId) {
-  const url =
-    `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${folderId}/children`;
-
+  const url = `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${folderId}/children`;
   const data = await graphFetch(url);
 
-  return data.value.map(x => ({
-  id: x.id,
-  nombre: x.name,
-  fecha: x.lastModifiedDateTime,
-  tamano: x.size,
-  archivo: {
-    ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-    nombre: x.name,
-    webUrl: x.webUrl   // ✅ NUEVO: URL nativa de OneDrive
+  const archivos = [];
+
+  for (const x of data.value) {
+    // ✅ Segundo llamado para obtener downloadUrl real
+    const detalle = await graphFetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${x.id}`
+    );
+
+    archivos.push({
+      id: x.id,
+      nombre: x.name,
+      fecha: x.lastModifiedDateTime,
+      tamano: x.size,
+      archivo: {
+        ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
+        nombre: x.name,
+        webUrl: x.webUrl,
+        downloadUrl: detalle["@microsoft.graph.downloadUrl"] // ✅ AHORA SÍ SIRVE
+      }
+    });
   }
-}));
+
+  return archivos;
 }
 
 // ============================================================
