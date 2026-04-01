@@ -208,21 +208,17 @@ function prepararEventosTabla() {
    ====================================================================== */
 async function verArchivo(item) {
 
-  // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
 
-  // Guardar archivo actual (para descargar / aprobar)
   window.__archivoActual = item;
 
-  // Obtener token para leer metadata del archivo
   const token = await obtenerToken();
   if (!token) {
     alert("No se pudo obtener token.");
     return;
   }
 
-  // Obtener metadata desde Graph (NECESARIO para obtener webUrl)
   const resp = await fetch(
     `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
     { headers: { "Authorization": `Bearer ${token}` } }
@@ -234,29 +230,24 @@ async function verArchivo(item) {
     return;
   }
 
-  // Crear URL para visor de SharePoint (embedview)
-  let embedUrl = data.webUrl;
-
   // Limpiar parámetros previos
+  let embedUrl = data.webUrl;
   if (embedUrl.includes("?")) {
     embedUrl = embedUrl.split("?")[0];
   }
 
-  // Agregar parámetros correctos
+  // Agregar parámetros de visor embebido
   embedUrl = `${embedUrl}?web=1&action=embedview`;
 
-  // Insertar IFRAME correctamente
+  // Guardar para depuración si es necesario
+  window.__lastEmbedUrl = embedUrl;
+
+  // Insertar IFRAME real
   document.getElementById("visorIframe").innerHTML = `
-    <iframe 
-      src="${embedUrl}"
-      width="100%" 
-      height="100%" 
-      frameborder="0" 
-      allowfullscreen
-      style="border:0; background:white;">
-    </iframe>
+    ${embedUrl}
   `;
 }
+
 /* ======================================================================
    9) APROBAR (MOVER ARCHIVO)
    ====================================================================== */
@@ -281,51 +272,6 @@ async function aprobarArchivo(item) {
 
   await cargarDatosModulo();
 }
-
-/* ======================================================================
-   10) EVENTOS DEL MODAL (Cerrar / Descargar / Aprobar / Rechazar)
-   ====================================================================== */
-
-// ✅ Cerrar visor
-document.getElementById("visorVolver").addEventListener("click", () => {
-  document.getElementById("modalVisor").style.display = "none";
-  document.getElementById("contenedor-modulo").style.display = "block";
-  document.getElementById("visorIframe").innerHTML = "";
-});
-
-// ✅ Descargar archivo desde modal
-document.getElementById("visorDescargar").addEventListener("click", async () => {
-
-  const item = window.__archivoActual;
-  if (!item) return;
-
-  const token = await obtenerToken();
-  const url = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
-
-  const resp = await fetch(url, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-
-  const blob = await resp.blob();
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = item.archivo.nombre;
-  link.click();
-});
-
-// ✅ Aprobar desde modal
-document.getElementById("visorAprobar").addEventListener("click", async () => {
-  const item = window.__archivoActual;
-  if (!item) return;
-
-  await aprobarArchivo(item);
-  document.getElementById("visorVolver").click();
-});
-
-// ✅ Rechazar (placeholder)
-document.getElementById("visorRechazar").addEventListener("click", () => {
-  alert("Función de rechazo pendiente.");
-});
 
 /* ======================================================================
    10) EVENTOS DEL MODAL (Cerrar / Descargar / Aprobar / Rechazar)
