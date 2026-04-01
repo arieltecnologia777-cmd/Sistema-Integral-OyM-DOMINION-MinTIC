@@ -244,8 +244,16 @@ async function verArchivo(item) {
 
   // Insertar IFRAME real
   document.getElementById("visorIframe").innerHTML = `
-    ${embedUrl}
-  `;
+    <iframe
+        src="${embedUrl}"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        allowfullscreen
+        style="border:0; background:white;"
+    ></iframe>
+`;
+
 }
 
 /* ======================================================================
