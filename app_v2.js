@@ -204,56 +204,74 @@ function prepararEventosTabla() {
 }
 
 /* ======================================================================
-   8) VER ARCHIVO — VISOR MODAL SHAREPOINT
+   8) VER ARCHIVO — VISOR MODAL ONLYOFFICE (config en memoria)
    ====================================================================== */
 async function verArchivo(item) {
-
+  // 1) Mostrar modal y ocultar lista
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
+  window.__archivoActual = item; // para Descargar / Aprobar
 
-  window.__archivoActual = item;
-
-  const token = await obtenerToken();
-  if (!token) {
-    alert("No se pudo obtener token.");
+  // 2) Validación mínima de campos requeridos
+  const nombre = item?.archivo?.nombre || "informe.xlsx";
+  const urlDescarga = item?.archivo?.downloadUrl; // <- VIENE de graph_v2.js
+  if (!urlDescarga) {
+    alert("No se encontró la URL de descarga del archivo (downloadUrl).");
     return;
   }
 
-  const resp = await fetch(
-    `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
-    { headers: { "Authorization": `Bearer ${token}` } }
-  );
+  // 3) Construir configuración OnlyOffice en MEMORIA (sin backend)
+  //    - fileType: 'xlsx'
+  //    - key: usa el id del item para evitar colisiones de caché
+  //    - title: nombre legible en la UI del visor
+  const config = {
+    document: {
+      fileType: "xlsx",
+      key: (item.id || item.archivo?.ruta || nombre) + "_" + Date.now(), // clave única
+      title: nombre,
+      url: urlDescarga
+    },
+    documentType: "spreadsheet",
+    editorConfig: {
+      // Opcional: modo solo lectura (comenta si no lo quieres)
+      mode: "view",
+      // Opcional: personalización mínima de UI
+      customization: {
+        autosave: false,
+        chat: false,
+        comments: false,
+        plugins: false,
+        feedback: { visible: false }
+      }
+    }
+  };
 
-  const data = await resp.json();
-  if (!data?.webUrl) {
-    alert("No se pudo obtener la URL del archivo.");
-    return;
-  }
+  // 4) Crear un Blob con el JSON, generar un objectURL local (no sale del navegador)
+  const blob = new Blob([JSON.stringify(config)], { type: "application/json" });
+  const configUrl = URL.createObjectURL(blob);
 
-  // Limpiar parámetros previos
-  let embedUrl = data.webUrl;
-  if (embedUrl.includes("?")) {
-    embedUrl = embedUrl.split("?")[0];
-  }
+  // 5) Construir URL del editor OnlyOffice con el parámetro ?config=...
+  //    Sustituye por tu túnel actual si cambia:
+  const onlyOfficeBase =
+    "https://gdp-maintain-served-crowd.trycloudflare.com/web-apps/apps/documenteditor/main/index.html";
+  const visorUrl = `${onlyOfficeBase}?config=${encodeURIComponent(configUrl)}`;
 
-  // Agregar parámetros de visor embebido
-  embedUrl = `${embedUrl}?web=1&action=embedview`;
-
-  // Guardar para depuración si es necesario
-  window.__lastEmbedUrl = embedUrl;
-
-  // Insertar IFRAME real
-  document.getElementById("visorIframe").innerHTML = `
+  // 6) Inyectar el IFRAME real del visor en el modal
+  const visor = document.getElementById("visorIframe");
+  visor.innerHTML = `
     <iframe
-        src="${embedUrl}"
-        width="100%"
-        height="100%"
-        frameborder="0"
-        allowfullscreen
-        style="border:0; background:white;"
+      src="${visorUrl}"
+      width="100%"
+      height="100%"
+      frameborder="0"
+      allowfullscreen
+      style="border:0; background:white;"
     ></iframe>
-`;
+  `;
 
+  // 7) Guardar referencias útiles para diagnóstico
+  window.__ooConfigUrl = configUrl;
+  window.__ooVisorUrl = visorUrl;
 }
 
 /* ======================================================================
