@@ -236,8 +236,28 @@ async function verArchivo(item) {
   const arrayBuffer = await blob.arrayBuffer();
   const wb = XLSX.read(arrayBuffer);
 
-  const sheet = wb.Sheets[wb.SheetNames[0]];
-  const htmlPreview = XLSX.utils.sheet_to_html(sheet);
+  // Obtiene la hoja
+const sheet = wb.Sheets[wb.SheetNames[0]];
+
+// === 1. Rango 1: 1. Datos Generales ===
+const rango1 = XLSX.utils.sheet_to_html({
+    ...sheet,
+    '!ref': "A5:H20"
+});
+
+// === 2. Rango 2: 3. Descripción de la falla / 4. Declaración ===
+const rango2 = XLSX.utils.sheet_to_html({
+    ...sheet,
+    '!ref': "A81:H100"
+});
+
+// === 3. Unir los 2 rangos (omitiendo SAP) ===
+const htmlPreview = `
+    <h3 style="font-weight:800; margin-bottom:8px;">1. Datos generales</h3>
+    ${rango1}
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">3. Descripción de la falla / hallazgos</h3>
+    ${rango2}
+`;
 
   // Obtener webUrl para “Abrir completo”
   const metaResp = await fetch(
