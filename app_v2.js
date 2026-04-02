@@ -261,7 +261,7 @@ eliminarFilas(sheet, 19, 67);
 // =====================================================
 const rango1 = XLSX.utils.sheet_to_html({
   ...sheet,
-  '!ref': "A4:H15"
+  '!ref': "B9:P18"   // ✅ RANGO REAL DE INFORMACIÓN GENERAL
 });
 
 // =====================================================
