@@ -310,11 +310,29 @@ const htmlPreview = `
   const webUrl = meta.webUrl;
 
   // ------------------------------------------------------------
-  // (B) ARMAR CONTENIDO BASE DEL MODAL
-  // ------------------------------------------------------------
-  const visor = document.getElementById("visorIframe");
+// (B) ARMAR CONTENIDO BASE DEL MODAL
+// ------------------------------------------------------------
+const visor = document.getElementById("visorIframe");
 
-  visor.innerHTML = `
+// ✅ CSS para encabezados internos (gris) — NO afecta títulos principales
+const cssEncabezados = `
+  <style>
+    /* ✅ NO pintar títulos principales (1., 3., 4.) */
+    td:matches(^[1-4]\\.) {
+      background-color: #ffffff !important;
+      font-weight: 900 !important;
+    }
+
+    /* ✅ Pintar encabezados internos (solo texto en MAYÚSCULAS) */
+    td:matches(^[A-ZÁÉÍÓÚÑ0-9 \\/()\\-]+$) {
+      background-color: #e6e6e6 !important;
+      font-weight: 700 !important;
+    }
+  </style>
+`;
+
+visor.innerHTML = `
+  ${cssEncabezados}
   <div style="padding:20px; overflow:auto;">
 
     <div style="text-align:center; margin-bottom:20px;">
