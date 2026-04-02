@@ -264,13 +264,11 @@ const rango1 = XLSX.utils.sheet_to_html({
   '!ref': "B9:P18"   // ✅ RANGO REAL DE INFORMACIÓN GENERAL
 });
 
-// =====================================================
 // ✅ 3) SECCIÓN 3 — DESCRIPCIÓN DE LA FALLA / HALLAZGOS
-//    (Filas reales en tu Excel: 74 a 75)
-// =====================================================
+// Rango real según tu Excel: B68:P69
 const rango2 = XLSX.utils.sheet_to_html({
   ...sheet,
-  '!ref': "A74:H75"
+  '!ref': "B68:P69"
 });
 
 // =====================================================
