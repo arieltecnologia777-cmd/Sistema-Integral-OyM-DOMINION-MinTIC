@@ -275,7 +275,29 @@ async function verArchivo(item) {
 
   const visor = document.getElementById("visorIframe");
 
+const cssEncabezados = `
+  <style>
 
+    /* NO aplicar gris a los títulos principales */
+    h3 { background: transparent !important; }
+
+    /* Encabezados internos: texto totalmente en MAYÚSCULAS */
+    td {
+      padding: 4px 6px;
+    }
+
+    td > * {
+      display: inline-block;
+    }
+
+    /* Regla principal: si el texto está en mayúsculas → gris */
+    td span:not(:empty) {
+      background-color: #e6e6e6 !important;
+      font-weight: 600 !important;
+    }
+
+  </style>
+`;
 
   visor.innerHTML = `
     ${cssEncabezados}
