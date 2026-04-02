@@ -274,10 +274,10 @@ const rango1 = XLSX.utils.sheet_to_html({
 });
 
 // ✅ 3) SECCIÓN 3 — DESCRIPCIÓN DE LA FALLA / HALLAZGOS
-// Rango real según tu Excel: B68:P69
+// Rango real según tu Excel: B69:P69
 const rango2 = XLSX.utils.sheet_to_html({
   ...sheet,
-  '!ref': "B69"
+  '!ref': "B69:P69"
 });
 
 // ✅ 4) SECCIÓN 4 — DECLARACIÓN
