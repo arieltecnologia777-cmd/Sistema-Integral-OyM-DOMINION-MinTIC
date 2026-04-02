@@ -277,14 +277,14 @@ const rango1 = XLSX.utils.sheet_to_html({
 // Rango real según tu Excel: B68:P69
 const rango2 = XLSX.utils.sheet_to_html({
   ...sheet,
-  '!ref': "B68:P69"
+  '!ref': "P69"
 });
 
 // ✅ 4) SECCIÓN 4 — DECLARACIÓN
 // Rango real según tu Excel: B70:M77
 const rango3 = XLSX.utils.sheet_to_html({
   ...sheet,
-  '!ref': "B70:M77"
+  '!ref': "B71:M77"
 });
 
 // =====================================================
