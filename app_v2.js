@@ -204,7 +204,7 @@ function prepararEventosTabla() {
 }
 
 /* ============================================================================
-   8) VER ARCHIVO — VISOR MODAL (Preview HTML + Abrir versión completa)
+   8) VER ARCHIVO — Vista previa del Excel + Fotos del informe
    ============================================================================ */
 async function verArchivo(item) {
 
@@ -216,22 +216,21 @@ async function verArchivo(item) {
   // 2) Obtener token
   const token = await obtenerToken();
 
-  // 3) Descargar el archivo como Blob desde Graph
+  // ------------------------------------------------------------
+  // (A) DESCARGAR EXCEL Y RENDERIZAR PREVIEW (HTML)
+  // ------------------------------------------------------------
   const urlDescarga = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
   const resp = await fetch(urlDescarga, {
     headers: { "Authorization": `Bearer ${token}` }
   });
   const blob = await resp.blob();
   const arrayBuffer = await blob.arrayBuffer();
-
-  // 4) Leer el Excel en memoria usando SheetJS
   const wb = XLSX.read(arrayBuffer);
 
-  // ✅ Usar la PRIMERA hoja por ahora (luego te doy opción para todas)
   const sheet = wb.Sheets[wb.SheetNames[0]];
-  const html = XLSX.utils.sheet_to_html(sheet);
+  const htmlPreview = XLSX.utils.sheet_to_html(sheet);
 
-  // 5) Obtener la URL oficial de Excel (webUrl)
+  // Obtener webUrl para “Abrir completo”
   const metaResp = await fetch(
     `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
     { headers: { "Authorization": `Bearer ${token}` } }
@@ -239,14 +238,16 @@ async function verArchivo(item) {
   const meta = await metaResp.json();
   const webUrl = meta.webUrl;
 
-  // 6) Inyectar todo en tu modal HERMOSO
+  // ------------------------------------------------------------
+  // (B) ARMAR CONTENIDO BASE DEL MODAL
+  // ------------------------------------------------------------
   const visor = document.getElementById("visorIframe");
 
   visor.innerHTML = `
-    <div style="padding:10px; height:100%; overflow:auto;">
-      
+    <div style="padding:20px; overflow:auto;">
+
       <div style="text-align:center; margin-bottom:20px;">
-        <button style="
+        <button id="btnExcelOnline" style="
           background:#0d6efd;
           color:white;
           border:none;
@@ -259,22 +260,76 @@ async function verArchivo(item) {
         </button>
       </div>
 
-      <h3 style="margin-bottom:10px; font-weight:800;">Vista previa del archivo</h3>
+      <h3 style="font-weight:800; margin-bottom:10px;">Vista previa del archivo</h3>
 
       <div style="
         border:1px solid #dce3f5;
         background:white;
         border-radius:8px;
-        padding:20px;">
-        ${html}
+        padding:20px;
+        margin-bottom:30px;">
+        ${htmlPreview}
       </div>
+
+      <h3 style="font-weight:800;">Fotos del informe</h3>
+      <div id="galeriaFotos" style="
+        display:flex;
+        gap:14px;
+        flex-wrap:wrap;
+        margin-top:15px;
+      ">
+        <p style="color:#666;">Cargando fotos…</p>
+      </div>
+
     </div>
   `;
 
-  // 7) Programar apertura Excel Online
-  visor.querySelector("button").onclick = () => {
+  document.getElementById("btnExcelOnline").onclick = () => {
     window.open(webUrl, "_blank");
   };
+
+  // ------------------------------------------------------------
+  // (C) CARGAR FOTOS REALES DEL INFORME
+  // ------------------------------------------------------------
+
+  // Si no hay fotos:
+  if (!item.fotos || item.fotos.length === 0) {
+    document.getElementById("galeriaFotos").innerHTML =
+      "<p style='color:#888;'>Este informe no tiene fotos adjuntas.</p>";
+    return;
+  }
+
+  const galeria = document.getElementById("galeriaFotos");
+  galeria.innerHTML = ""; // limpiar “cargando...”
+
+  for (const foto of item.fotos) {
+    try {
+      const respFoto = await fetch(
+        `https://graph.microsoft.com/v1.0${foto.ruta}/content`,
+        { headers: { "Authorization": `Bearer ${token}` } }
+      );
+
+      const blobFoto = await respFoto.blob();
+      const urlFoto = URL.createObjectURL(blobFoto);
+
+      const img = document.createElement("img");
+      img.src = urlFoto;
+      img.style.width = "220px";
+      img.style.height = "180px";
+      img.style.objectFit = "cover";
+      img.style.borderRadius = "10px";
+      img.style.boxShadow = "0 4px 10px rgba(0,0,0,.15)";
+      img.style.cursor = "pointer";
+
+      // Zoom al hacer clic
+      img.onclick = () => window.open(urlFoto, "_blank");
+
+      galeria.appendChild(img);
+
+    } catch (e) {
+      console.error("Error cargando foto:", foto, e);
+    }
+  }
 }
 /* ======================================================================
    9) APROBAR (MOVER ARCHIVO)
