@@ -267,8 +267,9 @@ async function verArchivo(item) {
 `;
 
   // === Marcar encabezados internos del Excel ===
+// Detecta <span ...>TEXTO</span> aunque tenga atributos
 htmlPreview = htmlPreview.replace(
-  /<span>([A-ZÁÉÍÓÚÑ 0-9\/()\-]{3,})<\/span>/g,
+  /<span[^>]*>([A-ZÁÉÍÓÚÑ 0-9\/()\-]{3,})<\/span>/g,
   '<span class="encabezado-interno">$1</span>'
 );
    
@@ -464,4 +465,3 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 document.getElementById("visorRechazar").addEventListener("click", () => {
   alert("Función de rechazo pendiente.");
 });
-
