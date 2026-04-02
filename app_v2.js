@@ -257,11 +257,20 @@ eliminarFilas(sheet, 19, 67);
 
 // =====================================================
 // ✅ 2) SECCIÓN 1 — INFORMACIÓN GENERAL
-//    (Filas reales en tu Excel: 4 a 15)
+//    Rango real: B9:P18
+//    Pero ocultamos la fila del título (fila 10)
 // =====================================================
+
+// ❌ Eliminar solo la fila del título "1. INFORMACIÓN GENERAL" (fila 10)
+for (let c = 66; c <= 80; c++) { // B (66) a P (80)
+  const celda = String.fromCharCode(c) + 10;
+  delete sheet[celda];
+}
+
+// ✅ Generar preview SIN la fila de título duplicada
 const rango1 = XLSX.utils.sheet_to_html({
   ...sheet,
-  '!ref': "B9:P18"   // ✅ RANGO REAL DE INFORMACIÓN GENERAL
+  '!ref': "B9:P18"
 });
 
 // ✅ 3) SECCIÓN 3 — DESCRIPCIÓN DE LA FALLA / HALLAZGOS
