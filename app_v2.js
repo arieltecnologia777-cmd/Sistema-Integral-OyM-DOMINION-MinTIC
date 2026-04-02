@@ -275,18 +275,7 @@ async function verArchivo(item) {
 
   const visor = document.getElementById("visorIframe");
 
-  const cssEncabezados = `
-    <style>
-      td[class^="s"] {
-        background-color: #e6e6e6 !important;
-        font-weight: 600 !important;
-      }
-      td.s0, td.s1 {
-        background-color: transparent !important;
-        font-weight: 900 !important;
-      }
-    </style>
-  `;
+
 
   visor.innerHTML = `
     ${cssEncabezados}
