@@ -296,10 +296,12 @@ const cssEncabezados = `
       display: inline-block;
     }
 
-    /* Regla principal: si el texto está en mayúsculas → gris */
-    td span:not(:empty) {
+    /* Fondo gris SOLO a títulos detectados por la clase */
+    .encabezado-interno {
       background-color: #e6e6e6 !important;
-      font-weight: 600 !important;
+      font-weight: 700 !important;
+      padding: 4px 6px;
+      display: inline-block;
     }
 
   </style>
