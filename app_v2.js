@@ -342,6 +342,28 @@ const cssEncabezados = `
     </div>
   `;
 
+// ✅ Estilizar encabezados internos después de renderizar el HTML
+setTimeout(() => {
+
+  const celdas = visor.querySelectorAll("td");
+
+  celdas.forEach(td => {
+    const texto = td.innerText.trim();
+
+    // Detectamos encabezados internos (texto mayormente MAYÚSCULAS)
+    const esEncabezado =
+      texto.length > 2 &&
+      /^[A-ZÁÉÍÓÚÑ0-9 \/()\-]+$/.test(texto) &&   // mayúsculas
+      !/^([1-4]\.)/.test(texto);                  // NO títulos principales
+
+    if (esEncabezado) {
+      td.style.backgroundColor = "#e6e6e6";
+      td.style.fontWeight = "700";
+    }
+  });
+
+}, 50);
+
   document.getElementById("btnExcelOnline").onclick = () => {
     window.open(webUrl, "_blank");
   };
