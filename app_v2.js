@@ -266,10 +266,10 @@ async function verArchivo(item) {
     ${rango3}
   `;
 
-   // ✅ Detectar textos en MAYÚSCULAS dentro del HTML y marcarlos como encabezados
+   // ✅ Detectar textos en MAYÚSCULAS dentro del HTML y marcarlos como encabezados internos
 htmlPreview = htmlPreview.replace(
   /<span>([A-ZÁÉÍÓÚÑ 0-9\/()\-]{3,})<\/span>/g,
-  '<span data-header="1">$1</span>'
+  '<span class="encabezado-interno">$1</span>'
 );
    
   const metaResp = await fetch(
