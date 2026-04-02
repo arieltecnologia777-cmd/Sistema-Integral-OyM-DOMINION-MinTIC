@@ -118,3 +118,10 @@ export async function cargarDesdeCarpeta(modulo) {
     archivo: a.archivo
   }));
 }
+export async function descargarFoto(ruta) {
+  const token = await obtenerToken();
+  const resp = await fetch(`https://graph.microsoft.com/v1.0${ruta}/content`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  return resp.blob();
+}
