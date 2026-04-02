@@ -203,72 +203,79 @@ function prepararEventosTabla() {
   });
 }
 
-/* ======================================================================
-   8) VER ARCHIVO — VISOR MODAL ONLYOFFICE (config en memoria)
-   ====================================================================== */
+/* ============================================================================
+   8) VER ARCHIVO — VISOR MODAL (Preview HTML + Abrir versión completa)
+   ============================================================================ */
 async function verArchivo(item) {
+
   // 1) Mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
   window.__archivoActual = item;
 
-  // 2) Validación de URL de descarga
-  const nombre = item?.archivo?.nombre || "informe.xlsx";
-  const urlDescarga = item?.archivo?.downloadUrl;
-  if (!urlDescarga) {
-    alert("No se encontró la URL de descarga del archivo (downloadUrl).");
-    return;
-  }
+  // 2) Obtener token
+  const token = await obtenerToken();
 
-  // 3) Config OnlyOffice
-  const config = {
-    document: {
-      fileType: "xlsx",
-      key: (item.id || item.archivo?.ruta || nombre) + "_" + Date.now(),
-      title: nombre,
-      url: urlDescarga
-    },
-    documentType: "spreadsheet",
-    editorConfig: {
-      mode: "view",
-      customization: {
-        autosave: false,
-        chat: false,
-        comments: false,
-        plugins: false,
-        feedback: { visible: false }
-      }
-    }
-  };
+  // 3) Descargar el archivo como Blob desde Graph
+  const urlDescarga = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
+  const resp = await fetch(urlDescarga, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  const blob = await resp.blob();
+  const arrayBuffer = await blob.arrayBuffer();
 
-  // 4) Generar Blob URL
-  const blob = new Blob([JSON.stringify(config)], { type: "application/json" });
-  const configUrl = URL.createObjectURL(blob);
+  // 4) Leer el Excel en memoria usando SheetJS
+  const wb = XLSX.read(arrayBuffer);
 
-  // 5) URL del visor OnlyOffice (ACTUALIZADA)
-  const onlyOfficeBase =
-    "https://genes-arbitrary-jimmy-print.trycloudflare.com/web-apps/apps/documenteditor/main/index.html";
+  // ✅ Usar la PRIMERA hoja por ahora (luego te doy opción para todas)
+  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const html = XLSX.utils.sheet_to_html(sheet);
 
-  const visorUrl = `${onlyOfficeBase}?config=${encodeURIComponent(configUrl)}`;
+  // 5) Obtener la URL oficial de Excel (webUrl)
+  const metaResp = await fetch(
+    `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
+    { headers: { "Authorization": `Bearer ${token}` } }
+  );
+  const meta = await metaResp.json();
+  const webUrl = meta.webUrl;
 
-  // 6) Insertar en iframe
+  // 6) Inyectar todo en tu modal HERMOSO
   const visor = document.getElementById("visorIframe");
+
   visor.innerHTML = `
-    <iframe
-      src="${visorUrl}"
-      width="100%"
-      height="100%"
-      frameborder="0"
-      allowfullscreen
-      style="border:0; background:white;"
-    ></iframe>
+    <div style="padding:10px; height:100%; overflow:auto;">
+      
+      <div style="text-align:center; margin-bottom:20px;">
+        <button style="
+          background:#0d6efd;
+          color:white;
+          border:none;
+          padding:10px 20px;
+          border-radius:8px;
+          font-size:16px;
+          cursor:pointer;
+          font-weight:700;">
+          🔵 Abrir versión completa en Excel Online
+        </button>
+      </div>
+
+      <h3 style="margin-bottom:10px; font-weight:800;">Vista previa del archivo</h3>
+
+      <div style="
+        border:1px solid #dce3f5;
+        background:white;
+        border-radius:8px;
+        padding:20px;">
+        ${html}
+      </div>
+    </div>
   `;
 
-  // Guardado opcional para depurar
-  window.__ooConfigUrl = configUrl;
-  window.__ooVisorUrl = visorUrl;
+  // 7) Programar apertura Excel Online
+  visor.querySelector("button").onclick = () => {
+    window.open(webUrl, "_blank");
+  };
 }
-
 /* ======================================================================
    9) APROBAR (MOVER ARCHIVO)
    ====================================================================== */
