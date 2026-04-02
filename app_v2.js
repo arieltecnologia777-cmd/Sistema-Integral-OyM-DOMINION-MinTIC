@@ -314,26 +314,83 @@ const htmlPreview = `
 // ------------------------------------------------------------
 const visor = document.getElementById("visorIframe");
 
-// ✅ CSS para encabezados internos (gris) — NO afecta títulos principales
+// ------------------------------------------------------------
+// (B) ARMAR CONTENIDO BASE DEL MODAL
+// ------------------------------------------------------------
+const visor = document.getElementById("visorIframe");
+
+// ✅ CSS real y funcional basado en clases de SheetJS
+// SheetJS siempre genera clases s0, s1, s2... para estilos de Excel.
 const cssEncabezados = `
   <style>
+
     /* ✅ NO pintar títulos principales (1., 3., 4.) */
-    td:matches(^[1-4]\\.) {
-      background-color: #ffffff !important;
-      font-weight: 900 !important;
+    td[class^="s"] span::before {
+      content: "";
     }
 
-    /* ✅ Pintar encabezados internos (solo texto en MAYÚSCULAS) */
-    td:matches(^[A-ZÁÉÍÓÚÑ0-9 \\/()\\-]+$) {
+    td[class^="s"] span {
+      display: inline-block;
+    }
+
+    /* ❌ Si el texto empieza con "1.", "3.", o "4." → NO aplicar gris */
+    td[class^="s"] span {
+      background-color: transparent !important;
+    }
+
+    /* ✅ Pintar de gris solo las celdas de encabezado interno
+       (estas clases provienen directamente de estilos Excel) */
+    td.s3, td.s4, td.s5, td.s6, td.s7, td.s8, td.s9, td.s10,
+    td.s11, td.s12, td.s13, td.s14, td.s15, td.s16, td.s17, td.s18 {
       background-color: #e6e6e6 !important;
       font-weight: 700 !important;
     }
+
   </style>
 `;
 
 visor.innerHTML = `
   ${cssEncabezados}
+
   <div style="padding:20px; overflow:auto;">
+
+    <div style="text-align:center; margin-bottom:20px;">
+      <button id="btnExcelOnline" style="
+        background:#0d6efd;
+        color:white;
+        border:none;
+        padding:10px 20px;
+        border-radius:8px;
+        font-size:16px;
+        cursor:pointer;
+        font-weight:700;">
+        🔵 Abrir versión completa en Excel Online
+      </button>
+    </div>
+
+    <h3 style="font-weight:800; margin-bottom:10px;">Vista previa del archivo</h3>
+
+    <div style="
+      border:1px solid #dce3f5;
+      background:white;
+      border-radius:8px;
+      padding:20px;
+      margin-bottom:30px;">
+      ${htmlPreview}
+    </div>
+
+    <h3 style="font-weight:800; margin-top:20px;">Fotos del informe (vista previa)</h3>
+
+    <div id="galeriaPreview" style="
+      margin-top:15px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap:14px;">
+    </div>
+
+  </div>
+`;
+
 
     <div style="text-align:center; margin-bottom:20px;">
       <button id="btnExcelOnline" style="
