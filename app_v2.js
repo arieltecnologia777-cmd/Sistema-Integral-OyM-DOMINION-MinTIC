@@ -142,7 +142,7 @@ async function cargarDatosModulo() {
 }
 
 /* ======================================================================
-   6) RENDER DE TABLA
+   6) RENDER DE TABLA  ✅ (VERSION FILTRADA)
    ====================================================================== */
 function renderTabla() {
 
@@ -161,7 +161,17 @@ function renderTabla() {
 
   tbody.innerHTML = "";
 
-  datosActuales.forEach((item, idx) => {
+  // ✅ FILTRO: solo mostrar los Excel reales (.xlsx)
+  // ✅ FILTRO: ocultar cualquier archivo PreviewFotos.json
+  const filtrados = datosActuales.filter(item =>
+    item.archivo.nombre.endsWith(".xlsx") &&
+    !item.archivo.nombre.includes("PreviewFotos")
+  );
+
+  // ✅ Renderizar únicamente los archivos filtrados
+  filtrados.forEach((item) => {
+
+    const idxReal = datosActuales.indexOf(item);
 
     const tds = moduloActivo.columnas
       .map(col => `<td>${item[col.id]}</td>`)
@@ -172,8 +182,8 @@ function renderTabla() {
     tr.innerHTML = `
       ${tds}
       <td>
-        <button class="btn-ver" data-idx="${idx}" style="margin-right:6px;">Ver</button>
-        <button class="btn-aprobar" data-idx="${idx}">Aprobar</button>
+        <button class="btn-ver" data-idx="${idxReal}" style="margin-right:6px;">Ver</button>
+        <button class="btn-aprobar" data-idx="${idxReal}">Aprobar</button>
       </td>
     `;
 
@@ -182,7 +192,6 @@ function renderTabla() {
 
   prepararEventosTabla();
 }
-
 /* ======================================================================
    7) EVENTOS DE TABLA
    ====================================================================== */
