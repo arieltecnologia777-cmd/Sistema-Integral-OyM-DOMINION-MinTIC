@@ -399,32 +399,6 @@
 <script type="module" src="./modulos_v2.js?v=200"></script>
 <script type="module" src="./graph_v2.js?v=200"></script>
 <script type="module" src="./app_v2.js?v=200"></script>
-
-const cssEncabezados = `
-  <style>
-    /* ✅ Estilo gris para encabezados internos (solo mayúsculas) */
-    td:where(:not([colspan])) {
-      font-weight: 600;
-    }
-
-    /* ✅ Detectar textos totalmente en MAYÚSCULAS */
-    td {
-      text-transform: none;
-    }
-
-    td:has(> *), td {
-      /* Si la celda contiene SOLO MAYÚSCULAS */
-    }
-
-    td {
-      /* Aplica gris si el texto es full mayúsculas y NO es un título principal */
-    }
-
-    td {
-      background-color: #e6e6e6 !important;
-    }
-  </style>
-`;
       
 </body>
 </html>
