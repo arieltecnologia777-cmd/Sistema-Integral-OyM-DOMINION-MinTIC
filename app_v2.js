@@ -71,8 +71,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   prepararSidebar();
+
+  // ✅ Cargar estados guardados del localStorage
+  cargarEstados();      
+
   seleccionarModulo("inicio");
 });
+``
 
 /* ======================================================================
    2) CONFIGURAR SIDEBAR
