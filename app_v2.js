@@ -44,6 +44,23 @@ let datosActuales = [];
 // "rechazado"          → botón Pendiente por técnico (rojo)
 let estadoInformes = {};
 
+// Guardar estados en localStorage
+function guardarEstados() {
+  localStorage.setItem("estadoInformesAuditor", JSON.stringify(estadoInformes));
+}
+
+// Cargar estados al inicio
+function cargarEstados() {
+  const raw = localStorage.getItem("estadoInformesAuditor");
+  if (raw) {
+    try {
+      estadoInformes = JSON.parse(raw);
+    } catch (e) {
+      estadoInformes = {};
+    }
+  }
+}
+
 /* ======================================================================
    1) INICIALIZACIÓN GENERAL
    ====================================================================== */
@@ -332,17 +349,16 @@ document.querySelectorAll(".btn-revisar").forEach(btn => {
     const idx = btn.dataset.idx;
     const item = datosActuales[idx];
 
-    // ✅ Marcar como "en revisión"
+    // ✅ marcar como en revisión
     estadoInformes[item.id] = "en_revision";
+    guardarEstados();
 
-    // Abrir visor
     await verArchivo(item);
 
-    // Actualizar tabla (para que el botón cambie)
     renderTabla();
   });
 });
-
+   
   // === EVENTO APROBAR ===
   document.querySelectorAll(".btn-aprobar").forEach(btn => {
     btn.addEventListener("click", async () => {
