@@ -15,6 +15,19 @@ import {
 import { cargarDesdeCarpeta, obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
 import { iniciarSesion, usuarioActual, cerrarSesion, obtenerToken } from "./auth.js";
 
+
+// ✅ Convierte "2/4/2026, 9:52:10 a. m." → Date real
+function parseFechaCol(fechaStr) {
+  if (!fechaStr) return new Date(0);
+  return new Date(
+    fechaStr
+      .replace(" a. m.", " AM")
+      .replace(" p. m.", " PM")
+      .replace(/\./g, "")
+  );
+}
+
+
 /* ======================================================================
    ESTADO GLOBAL
    ====================================================================== */
@@ -139,9 +152,9 @@ async function cargarDatosModulo() {
 
 // ✅ ORDENAR POR FECHA — MÁS RECIENTE PRIMERO
 datosActuales.sort((a, b) => {
-  const fechaA = new Date(a.archivo.fecha);
-  const fechaB = new Date(b.archivo.fecha);
-  return fechaB - fechaA; // más reciente primero
+  const fechaA = parseFechaCol(a.fecha);
+  const fechaB = parseFechaCol(b.fecha);
+  return fechaB - fechaA;  // más reciente primero
 });
 
 renderTabla();
@@ -224,12 +237,12 @@ function prepararEventosTabla() {
       const direccionActual = th.dataset.order || "desc";
 
       datosActuales.sort((a, b) => {
-        const fA = new Date(a.archivo.fecha);
-        const fB = new Date(b.archivo.fecha);
-        return direccionActual === "desc"
-          ? fA - fB   // ascendente
-          : fB - fA;  // descendente
-      });
+  const fA = parseFechaCol(a.fecha);
+  const fB = parseFechaCol(b.fecha);
+  return direccionActual === "desc"
+    ? fA - fB   // ascendente
+    : fB - fA;  // descendente
+});
 
       // Alternar dirección
       th.dataset.order = direccionActual === "desc" ? "asc" : "desc";
