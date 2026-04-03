@@ -71,10 +71,10 @@ const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
   id: x.id,
   nombre: x.name,
 
-  // ✅ Fecha REAL desde Graph (UTC, la misma que usa OneDrive)
+  // ✅ Fecha REAL desde OneDrive (UTC)
 fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
 
-// ✅ Mostrar exactamente la hora real del servidor, sin conversión
+// ✅ Mostrar EXACTAMENTE la misma hora que OneDrive (RAW UTC)
 fecha: x.fileSystemInfo?.lastModifiedDateTime,
 
   tamano: formatearTamano(x.size),
