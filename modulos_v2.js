@@ -57,17 +57,23 @@ export async function listarArchivosMCI(token) {
     const lista = [];
 
     for (const x of excels) {
-        const item = {
-            id: x.id,
-            nombre: x.name,
-            fecha: formatearFecha(x.lastModifiedDateTime),
-            tamano: formatearTamano(x.size),
-            archivo: {
-                ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-                nombre: x.name
-            },
-            fotosPreview: null
-        };
+       const item = {
+  id: x.id,
+  nombre: x.name,
+
+  // ✅ Fecha visible (formateada)
+  fecha: formatearFecha(x.lastModifiedDateTime),
+
+  // ✅ Fecha REAL (ISO) para ordenar correctamente
+  fechaReal: x.lastModifiedDateTime,
+
+  tamano: formatearTamano(x.size),
+  archivo: {
+    ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
+    nombre: x.name
+  },
+  fotosPreview: null
+};
 
         // Buscar su archivo JSON correspondiente
         const base = x.name.replace(".xlsx", "");
