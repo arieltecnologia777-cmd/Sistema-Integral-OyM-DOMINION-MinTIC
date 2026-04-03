@@ -8,243 +8,247 @@
   <!-- Fuente corporativa -->
   <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    /* =========================================
-       RESET + PALETA
-       ========================================= */
-    :root {
-      --azul-dom: #0e4aa8;
-      --azul-dom-hover: #0c3f8f;
-      --azul-ink: #0e2040;
-      --bg-dashboard: #eef4ff;
-      --line: #d7e0f5;
-      --shadow-card: 0 8px 18px rgba(14,42,94,.12);
-      --shadow-hover: 0 4px 10px rgba(14,74,168,.14);
-      --radius: 14px;
-      --font: "Segoe UI", system-ui, sans-serif;
-      --row-hover-shadow: 0 10px 24px rgba(0,0,0,.10);
-      --row-hover-lift: -1px;
-      --row-radius: 12px;
-    }
+<style>
 
-    body {
-      font-family: var(--font);
-      margin: 0;
-      background: linear-gradient(180deg, #eef4ff, #fff);
-      display: flex;
-      min-height: 100vh;
-    }
+/* =========================================
+   RESET + PALETA
+========================================= */
+:root {
+  --azul-dom: #0e4aa8;
+  --azul-dom-hover: #0c3f8f;
+  --azul-ink: #0e2040;
+  --bg-dashboard: #eef4ff;
+  --line: #d7e0f5;
+  --shadow-card: 0 8px 18px rgba(14,42,94,.12);
+  --shadow-hover: 0 4px 10px rgba(14,74,168,.14);
+  --radius: 14px;
+  --font: "Segoe UI", system-ui, sans-serif;
 
-    * {
-      box-sizing: border-box;
-    }
+  /* ✅ Variables necesarias para hover tipo Exclusiones */
+  --row-hover-shadow: 0 10px 24px rgba(0,0,0,.10);
+  --row-hover-lift: -1px;
+  --row-radius: 12px;
+}
 
-    /* =========================================
-       SIDEBAR (Estilo C – Detallado)
-       ========================================= */
-    .sidebar {
-      width: 260px;
-      background: #fff;
-      border-right: 1px solid var(--line);
-      box-shadow: var(--shadow-card);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-    }
+body {
+  font-family: var(--font);
+  margin: 0;
+  background: linear-gradient(180deg, #eef4ff, #fff);
+  display: flex;
+  min-height: 100vh;
+}
 
-    /* Tarjeta de marca */
-    .sb-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid #e8ecf7;
-      box-shadow: 0 4px 12px rgba(14,42,94,.08);
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .sb-brand-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--azul-ink);
-    }
+/* =========================================
+   SIDEBAR
+========================================= */
+.sidebar {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
 
-    .sb-brand-sub {
-      font-size: 13px;
-      color: #4a5260;
-      font-weight: 500;
-    }
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e8ecf7;
+  box-shadow: 0 4px 12px rgba(14,42,94,.08);
+}
 
-    .sb-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #203054;
-      margin-top: 4px;
-      padding-left: 4px;
-    }
+.sb-brand-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--azul-ink);
+}
 
-    /* Ítems de navegación */
-    .sb-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-      cursor: pointer;
-      transition: background .18s, box-shadow .18s, border-color .18s, transform .14s;
-    }
+.sb-brand-sub {
+  font-size: 13px;
+  color: #4a5260;
+  font-weight: 500;
+}
 
-    .sb-item:hover {
-      background: #eef4ff;
-      border-color: #bfd6ff;
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-1px);
-    }
+.sb-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #203054;
+  margin-top: 4px;
+  padding-left: 4px;
+}
 
-    .sb-item.active {
-      background: #eaf2ff;
-      border-color: var(--azul-dom);
-    }
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s, border-color .18s, transform .14s;
+}
 
-    .sb-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--azul-ink);
-    }
+.sb-item:hover {
+  background: #eef4ff;
+  border-color: #bfd6ff;
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
 
-    .sb-ico {
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-    }
+.sb-item.active {
+  background: #eaf2ff;
+  border-color: var(--azul-dom);
+}
 
-    .sb-ico-blue { background: #0e4aa8; }
-    .sb-ico-sky  { background: #0284c7; }
-    .sb-ico-amber { background: #f59e0b; }
+.sb-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--azul-ink);
+}
 
-    /* Botón logout */
-    .logout {
-      margin-top: auto;
-      border-color: #e4e9f6;
-    }
+.sb-ico {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+}
 
-    /* =========================================
-       MAIN CONTENT
-       ========================================= */
-    .main {
-      margin-left: 260px; /* Espacio para el sidebar */
-      width: calc(100% - 260px);
-      padding: 20px 28px;
-    }
+.sb-ico-blue { background: #0e4aa8; }
+.sb-ico-sky  { background: #0284c7; }
+.sb-ico-amber { background: #f59e0b; }
 
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #e1e6f3;
-    }
+.logout {
+  margin-top: auto;
+  border-color: #e4e9f6;
+}
 
-    .header-title {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--azul-ink);
-      letter-spacing: -0.3px;
-    }
+/* =========================================
+   MAIN CONTENT
+========================================= */
+.main {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  padding: 20px 28px;
+}
 
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 6px 12px;
-      gap: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,.06);
-    }
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e1e6f3;
+}
 
-    .search-box input {
-      border: none;
-      outline: none;
-      font-size: 14px;
-      min-width: 240px;
-    }
+.header-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--azul-ink);
+  letter-spacing: -0.3px;
+}
 
-    /* =========================================
-       TABLA BASE (vacía por ahora)
-       ========================================= */
-    .tabla-box {
-      background: #fff;
-      border: 1px solid rgba(199,215,243,.40);
-      border-radius: 14px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.06);
-      overflow: hidden;
-      margin-top: 16px;
-    }
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px 12px;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
 
-    .tabla {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  min-width: 240px;
+}
 
-    thead th {
-      background: #fff;
-      color: var(--azul-ink);
-      text-align: left;
-      padding: 14px 16px;
-      font-size: 14px;
-      font-weight: 800;
-      border-bottom: 1px solid var(--line);
-    }
+/* =========================================
+   TABLA + HOVER PRO TIPO EXCLUSIONES
+========================================= */
 
-    tbody td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      font-size: 14px;
-      background: #fff;
-    }
+.tabla-box {
+  background: #fff;
+  border: 1px solid rgba(199,215,243,.40);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.06);
+  overflow: hidden;
+  margin-top: 16px;
+}
 
-    /* =========================================
-       MODAL (placeholder)
-       ========================================= */
-    .modal {
-      display: none; /* Se activará con JS */
-    }
-/* Hover fila (relieve) */
+.tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th {
+  background: #fff;
+  color: var(--azul-ink);
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 800;
+  border-bottom: 1px solid var(--line);
+}
+
+tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  background: #fff;
+}
+
+/* ✅ Hover PRO tipo gestor_exclusiones */
 .tabla tbody tr {
   transition: transform .16s ease, filter .16s ease;
 }
+
 .tabla tbody tr:hover {
   transform: translateY(var(--row-hover-lift));
   filter: drop-shadow(var(--row-hover-shadow));
 }
+
 .tabla tbody tr:hover td:first-child {
-  border-top-left-radius:var(--row-radius);
-  border-bottom-left-radius:var(--row-radius);
+  border-top-left-radius: var(--row-radius);
+  border-bottom-left-radius: var(--row-radius);
 }
+
 .tabla tbody tr:hover td:last-child {
-  border-top-right-radius:var(--row-radius);
-  border-bottom-right-radius:var(--row-radius);
+  border-top-right-radius: var(--row-radius);
+  border-bottom-right-radius: var(--row-radius);
 }
-    
-  </style>
+
+/* =========================================
+   MODAL (solo se llena con JS)
+========================================= */
+.modal {
+  display: none;
+}
+</style>
 </head>
 
 <body>
 
   <!-- ===================================================
        SIDEBAR PANEL AUDITOR
-       =================================================== -->
+  =================================================== -->
   <aside class="sidebar">
     <div class="sb-brand">
       <img src="dominion_logo.png" width="40" alt="DOMINION">
@@ -279,7 +283,7 @@
 
   <!-- ===================================================
        MAIN CONTENT
-       =================================================== -->
+  =================================================== -->
   <main class="main">
 
     <div class="header-top">
@@ -291,104 +295,98 @@
       </div>
     </div>
 
-    <!-- Contenedor dinámico por módulo -->
-    <div id="contenedor-modulo">
-
-      <!-- Tabla placeholder (vacía hasta tener datos) -->
-      <div id="contenedor-modulo"></div>
-
-    </div>
+    <!-- Contenedor dinámico del módulo -->
+    <div id="contenedor-modulo"></div>
 
   </main>
+
   <!-- ===================================================
-     MODAL FULLSCREEN — VISOR DE INFORMES
-     =================================================== -->
-<div id="modalVisor" style="
-    display:none;
-    position:fixed;
-    top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.35);
-    backdrop-filter: blur(4px);
-    z-index: 9999;
-    padding: 40px;
-    overflow: auto;
-">
+       MODAL FULLSCREEN — VISOR DE INFORMES
+  =================================================== -->
+  <div id="modalVisor" style="
+      display:none;
+      position:fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      padding: 40px;
+      overflow: auto;
+  ">
     <div style="
-        background:#fff;
-        width:100%;
-        max-width:1200px;
-        margin:0 auto;
-        border-radius:14px;
-        box-shadow:0 8px 24px rgba(0,0,0,.18);
-        padding:20px;
-        display:flex;
-        flex-direction:column;
-        gap:14px;
+      background:#fff;
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      border-radius:14px;
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     ">
-        
-        <!-- Barra superior -->
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            
-            <button id="visorVolver" style="
-                background:#e2e8f8;
-                border:none;
-                padding:8px 16px;
-                border-radius:10px;
-                font-weight:700;
-                cursor:pointer;
-            ">⬅ Volver</button>
 
-            <div style="display:flex; gap:10px;">
-                <button id="visorDescargar" style="
-                    background:#0e4aa8; color:#fff;
-                    border:none; padding:8px 16px;
-                    border-radius:10px; cursor:pointer;
-                    font-weight:700;
-                ">Descargar</button>
+      <!-- Barra superior -->
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button id="visorVolver" style="
+          background:#e2e8f8;
+          border:none;
+          padding:8px 16px;
+          border-radius:10px;
+          font-weight:700;
+          cursor:pointer;
+        ">⬅ Volver</button>
 
-                <button id="visorAprobar" style="
-                    background:#16a34a; color:white;
-                    border:none; padding:8px 16px;
-                    border-radius:10px; cursor:pointer;
-                    font-weight:700;
-                ">Aprobar</button>
+        <div style="display:flex; gap:10px;">
+          <button id="visorDescargar" style="
+            background:#0e4aa8; color:#fff;
+            border:none; padding:8px 16px;
+            border-radius:10px; cursor:pointer;
+            font-weight:700;
+          ">Descargar</button>
 
-                <button id="visorRechazar" style="
-                    background:#dc2626; color:white;
-                    border:none; padding:8px 16px;
-                    border-radius:10px; cursor:pointer;
-                    font-weight:700;
-                ">Rechazar</button>
-            </div>
+          <button id="visorAprobar" style="
+            background:#16a34a; color:white;
+            border:none; padding:8px 16px;
+            border-radius:10px; cursor:pointer;
+            font-weight:700;
+          ">Aprobar</button>
+
+          <button id="visorRechazar" style="
+            background:#dc2626; color:white;
+            border:none; padding:8px 16px;
+            border-radius:10px; cursor:pointer;
+            font-weight:700;
+          ">Rechazar</button>
         </div>
+      </div>
 
-        <!-- Contenedor del iframe -->
-       <!-- ============= CONTENEDOR DEL EXCEL (PREVIEW) ============= -->
-        <div id="visorIframe" style="
-            width:100%;
-            max-height:60vh;
-            overflow-y:auto;
-            border:1px solid #dce3f5;
-            border-radius:12px;
-            background:#f8faff;
-            padding:20px;
-            margin-bottom:20px;
-        ">
-            <!-- Aquí se inyectará la vista previa del Excel -->
-        </div>
+      <!-- Contenedor del Excel (Preview) -->
+      <div id="visorIframe" style="
+        width:100%;
+        max-height:60vh;
+        overflow-y:auto;
+        border:1px solid #dce3f5;
+        border-radius:12px;
+        background:#f8faff;
+        padding:20px;
+        margin-bottom:20px;
+      ">
+      </div>
 
-       
+    </div>
+  </div>
 
-    <!-- Scripts obligatorios -->
-<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+  <!-- Scripts obligatorios -->
+  <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 
-<!-- SheetJS (para vista previa del Excel) -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-<!-- Scripts del Panel Auditor -->
-<<script type="module" src="./modulos_v2.js"></script>
-<script type="module" src="./graph_v2.js"></script>
-<script type="module" src="./app_v2.js"></script>
-      
+  <!-- Scripts principales del Auditor -->
+  <script type="module" src="./modulos_v2.js"></script>
+  <script type="module" src="./graph_v2.js"></script>
+  <script type="module" src="./app_v2.js"></script>
+
 </body>
 </html>
