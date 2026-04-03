@@ -343,6 +343,17 @@ const cssEncabezados = `
     </div>
   `;
 
+// ✅ Remover el título duplicado generado por el Excel
+setTimeout(() => {
+  const h3s = visor.querySelectorAll("h3");
+  if (h3s.length > 1) {
+    const ultimo = h3s[h3s.length - 1];
+    if (ultimo.innerText.trim().toUpperCase().includes("FOTOS DEL INFORME")) {
+      ultimo.remove(); // ✅ Adiós título duplicado
+    }
+  }
+}, 30);
+   
 // ✅ Pintar encabezados internos específicos en gris (versión robusta)
 setTimeout(() => {
 
