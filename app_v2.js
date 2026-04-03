@@ -240,10 +240,18 @@ function activarOrdenamientoFecha() {
   if (!th) return;
 
   th.onclick = () => {
-    const dir = th.dataset.order || "desc";
 
+    // ✅ Esta variable EXISTE y se usará
+    const estado = th.dataset.order || "desc";
 
-    th.dataset.order = dir === "desc" ? "asc" : "desc";
+    datosActuales.sort((a, b) => {
+      const fA = new Date(a.fechaReal);
+      const fB = new Date(b.fechaReal);
+      return estado === "desc" ? fA - fB : fB - fA;
+    });
+
+    // ✅ Alterna el estado para el próximo clic
+    th.dataset.order = estado === "desc" ? "asc" : "desc";
 
     renderTabla();
   };
@@ -277,13 +285,10 @@ function prepararEventosTabla() {
       const direccionActual = th.dataset.order || "desc";
 
       datosActuales.sort((a, b) => {
-  const fA = parseFechaCol(a.fecha);
-  const fB = parseFechaCol(b.fecha);
-  return direccionActual === "desc"
-    ? fA - fB  // ascendente
-    : fB - fA; // descendente
+  const fA = new Date(a.fechaReal);
+  const fB = new Date(b.fechaReal);
+  return estado === "desc" ? fA - fB : fB - fA;
 });
-``
 
       // Alternar dirección
       th.dataset.order = direccionActual === "desc" ? "asc" : "desc";
