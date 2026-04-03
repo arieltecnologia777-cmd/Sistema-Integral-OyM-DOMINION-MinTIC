@@ -155,9 +155,7 @@ async function cargarDatosModulo() {
 
 // ✅ ORDENAR POR FECHA — MÁS RECIENTE PRIMERO
 datosActuales.sort((a, b) => {
-  const fechaA = parseFechaCol(a.fecha);
-  const fechaB = parseFechaCol(b.fecha);
-  return fechaB - fechaA;  // más reciente primero
+  return new Date(b.fechaReal) - new Date(a.fechaReal);
 });
 
 renderTabla();
@@ -230,11 +228,10 @@ function activarOrdenamientoFecha() {
     const dir = th.dataset.order || "desc";
 
     datosActuales.sort((a, b) => {
-      const fA = parseFechaCol(a.fecha);
-      const fB = parseFechaCol(b.fecha);
-
-      return dir === "desc" ? fA - fB : fB - fA;
-    });
+  const fA = new Date(a.fechaReal);
+  const fB = new Date(b.fechaReal);
+  return direccionActual === "desc" ? fA - fB : fB - fA;
+});
 
     th.dataset.order = dir === "desc" ? "asc" : "desc";
 
