@@ -218,6 +218,27 @@ activarOrdenamientoFecha();
 prepararEventosTabla();
 }
 
+// ✅ Activar ordenamiento por fecha al hacer clic en el encabezado
+function activarOrdenamientoFecha() {
+  const th = document.querySelector("th.sortable");
+  if (!th) return;
+
+  th.onclick = () => {
+    const dir = th.dataset.order || "desc";
+
+    datosActuales.sort((a, b) => {
+      const fA = parseFechaCol(a.fecha);
+      const fB = parseFechaCol(b.fecha);
+
+      return dir === "desc" ? fA - fB : fB - fA;
+    });
+
+    th.dataset.order = dir === "desc" ? "asc" : "desc";
+
+    renderTabla();
+  };
+}
+
 /* ======================================================================
    7) EVENTOS DE TABLA
    ====================================================================== */
