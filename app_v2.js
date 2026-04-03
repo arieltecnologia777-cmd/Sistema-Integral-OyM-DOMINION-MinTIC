@@ -139,9 +139,9 @@ async function cargarDatosModulo() {
 
 // ✅ ORDENAR POR FECHA — MÁS RECIENTE PRIMERO
 datosActuales.sort((a, b) => {
-  const fechaA = new Date(a.fecha);
-  const fechaB = new Date(b.fecha);
-  return fechaB - fechaA;
+  const fechaA = new Date(a.archivo.fecha);
+  const fechaB = new Date(b.archivo.fecha);
+  return fechaB - fechaA; // más reciente primero
 });
 
 renderTabla();
