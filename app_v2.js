@@ -277,7 +277,7 @@ function prepararEventosTabla() {
       await aprobarArchivo(item);
     });
   });
-
+}
  
 
 /* ======================================================================
