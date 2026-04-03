@@ -256,13 +256,13 @@ async function verArchivo(item) {
   });
 
   const htmlPreview = `
-  <h3 style="font-weight:800; margin-bottom:8px;">1. Información General</h3>
+  <h3 style="font-weight:800; margin-bottom:8px;">Información General</h3>
   ${rango1}
 
-  <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">3. Descripción de la falla / hallazgos</h3>
+  <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">Descripción de la falla / hallazgos</h3>
   ${rango2}
 
-  <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">4. Declaración</h3>
+  <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">Declaración</h3>
   ${rango3}
 `;
    
