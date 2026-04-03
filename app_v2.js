@@ -364,14 +364,23 @@ document.querySelectorAll(".btn-revisar").forEach(btn => {
   });
 });
    
-  // === EVENTO APROBAR ===
-  document.querySelectorAll(".btn-aprobar").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const item = datosActuales[btn.dataset.idx];
-      await aprobarArchivo(item);
-    });
-  });
-}
+  document.getElementById("visorAprobar").addEventListener("click", async () => {
+  const item = window.__archivoActual;
+  if (!item) return;
+
+  // ✅ mover archivo real en OneDrive
+  await aprobarArchivo(item);
+
+  // ✅ cambiar estado visual
+  estadoInformes[item.id] = "aprobado";
+  guardarEstados();
+
+  // ✅ cerrar visor
+  document.getElementById("visorVolver").click();
+
+  // ✅ refrescar tabla
+  renderTabla();
+});
  
 
 /* ======================================================================
