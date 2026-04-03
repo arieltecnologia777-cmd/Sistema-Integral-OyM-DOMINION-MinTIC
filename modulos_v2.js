@@ -71,11 +71,11 @@ const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
   id: x.id,
   nombre: x.name,
 
-  // ✅ Fecha REAL desde Graph para ORDENAR
-  fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
+  // ✅ Fecha REAL desde Graph (UTC, la misma que usa OneDrive)
+fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
 
-  // ✅ Fecha visible formateada
-  fecha: formatearFecha(x.fileSystemInfo?.lastModifiedDateTime),
+// ✅ Mostrar exactamente la hora real del servidor, sin conversión
+fecha: x.fileSystemInfo?.lastModifiedDateTime,
 
   tamano: formatearTamano(x.size),
 
