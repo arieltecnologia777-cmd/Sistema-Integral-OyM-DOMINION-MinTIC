@@ -321,25 +321,24 @@ const cssEncabezados = `
 
       <h3 style="font-weight:800; margin-bottom:10px;">Vista previa del archivo</h3>
 
-      <div style="
-        border:1px solid #dce3f5;
-        background:white;
-        border-radius:8px;
-        padding:20px;
-        margin-bottom:30px;">
-        ${htmlPreview}
-      </div>
+<div style="
+  border:1px solid #dce3f5;
+  background:white;
+  border-radius:8px;
+  padding:20px;
+  margin-bottom:30px;">
+  ${htmlPreview}
+</div>
 
-      
-      <div id="galeriaPreview" style="
-        margin-top:15px;
-        display:grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap:14px;">
-      </div>
+<h3 style="font-weight:800; margin-top:20px;">Fotos del informe (vista previa)</h3>
 
-    </div>
-  `;
+<div id="galeriaPreview" style="
+  margin-top:15px;
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap:14px;">
+</div>
+`;
 
 // ✅ Pintar encabezados internos específicos en gris (versión robusta)
 setTimeout(() => {
