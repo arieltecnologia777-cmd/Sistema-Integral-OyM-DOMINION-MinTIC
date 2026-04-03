@@ -95,23 +95,29 @@ async function seleccionarModulo(mod) {
 function generarTablaHTML(modulo) {
 
   const ths = modulo.columnas
-    .map(col => `<th>${col.label}</th>`)
-    .join("");
+  .map(col => {
+    if (col.id === "fecha") {
+      return `<th class="sortable" data-sort="fecha" style="cursor:pointer;">
+                ${col.label} 🔽
+              </th>`;
+    }
+    return `<th>${col.label}</th>`;
+  })
+  .join("");
 
-  return `
-    <div class="tabla-box">
-      <table class="tabla">
-        <thead>
-          <tr>${ths}<th>Acciones</th></tr>
-        </thead>
-        <tbody id="tbodyDatos">
-          <tr><td colspan="${modulo.columnas.length + 1}" 
-              style="text-align:center; padding:20px;">Cargando…</td></tr>
-        </tbody>
-      </table>
-    </div>
-  `;
-}
+return `
+  <div class="tabla-box">
+    <table class="tabla">
+      <thead>
+        <tr>${ths}<th>Acciones</th></tr>
+      </thead>
+      <tbody id="tbodyDatos">
+        <tr><td colspan="${modulo.columnas.length + 1}" 
+            style="text-align:center; padding:20px;">Cargando…</td></tr>
+      </tbody>
+    </table>
+  </div>
+`;
 
 /* ======================================================================
    5) CARGAR DATOS DESDE ONEDRIVE
