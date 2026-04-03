@@ -71,14 +71,16 @@ const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
   id: x.id,
   nombre: x.name,
 
-  // ✅ Fecha REAL desde OneDrive (UTC)
+ // ✅ Fecha REAL desde OneDrive (UTC)
 fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
 
-// ✅ Fecha bonita, clara y EXACTA (sin convertir a zona local)
+// ✅ Fecha REAL humana (convertida a tu hora local Colombia)
 fecha: (() => {
   const d = new Date(x.fileSystemInfo?.lastModifiedDateTime);
   const pad = n => String(n).padStart(2, "0");
-  return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
+  
+  // ✅ getHours(), getMinutes(), etc → usan tu zona local (UTC-5)
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 })(),
 
   tamano: formatearTamano(x.size),
