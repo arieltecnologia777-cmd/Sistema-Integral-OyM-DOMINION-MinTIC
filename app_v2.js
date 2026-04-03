@@ -329,8 +329,17 @@ function prepararEventosTabla() {
   // === EVENTO REVISAR ===
 document.querySelectorAll(".btn-revisar").forEach(btn => {
   btn.addEventListener("click", async () => {
-    const item = datosActuales[btn.dataset.idx];
+    const idx = btn.dataset.idx;
+    const item = datosActuales[idx];
+
+    // ✅ Marcar como "en revisión"
+    estadoInformes[item.id] = "en_revision";
+
+    // Abrir visor
     await verArchivo(item);
+
+    // Actualizar tabla (para que el botón cambie)
+    renderTabla();
   });
 });
 
@@ -665,9 +674,19 @@ async function aprobarArchivo(item) {
    ====================================================================== */
 
 document.getElementById("visorVolver").addEventListener("click", () => {
+  const item = window.__archivoActual;
+
+  // ✅ Si estaba revisando y no aprobó/rechazó → queda "en_revision"
+  if (item && estadoInformes[item.id] === "en_revision") {
+    // se mantiene el estado, no se toca
+  }
+
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
   document.getElementById("visorIframe").innerHTML = "";
+
+  // actualizar tabla después de cerrar
+  renderTabla();
 });
 
 document.getElementById("visorDescargar").addEventListener("click", async () => {
@@ -688,14 +707,30 @@ document.getElementById("visorDescargar").addEventListener("click", async () => 
   link.click();
 });
 
-document.getElementById("visorAprobar").addEventListener("click", async () => {
+document.getElementById("visorAprobar").addEventListener("click", () => {
   const item = window.__archivoActual;
   if (!item) return;
 
-  await aprobarArchivo(item);
+  // ✅ cambiar estado
+  estadoInformes[item.id] = "aprobado";
+
+  // cerrar visor
   document.getElementById("visorVolver").click();
+
+  // refrescar tabla
+  renderTabla();
 });
 
 document.getElementById("visorRechazar").addEventListener("click", () => {
-  alert("Función de rechazo pendiente.");
+  const item = window.__archivoActual;
+  if (!item) return;
+
+  // ✅ cambiar estado
+  estadoInformes[item.id] = "rechazado";
+
+  // cerrar visor
+  document.getElementById("visorVolver").click();
+
+  // refrescar tabla
+  renderTabla();
 });
