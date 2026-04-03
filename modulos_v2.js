@@ -61,17 +61,19 @@ export async function listarArchivosMCI(token) {
   id: x.id,
   nombre: x.name,
 
-  // ✅ Fecha REAL desde Graph (para ordenar)
+  // ✅ Fecha REAL desde Graph para ORDENAR
   fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
 
-  // ✅ Fecha visible formateada
+  // ✅ Fecha visible formateada (la que ve el usuario)
   fecha: formatearFecha(x.fileSystemInfo?.lastModifiedDateTime),
 
   tamano: formatearTamano(x.size),
+
   archivo: {
     ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
     nombre: x.name
   },
+
   fotosPreview: null
 };
 
