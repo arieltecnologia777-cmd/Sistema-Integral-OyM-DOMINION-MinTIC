@@ -77,7 +77,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   seleccionarModulo("inicio");
 });
-``
 
 /* ======================================================================
    2) CONFIGURAR SIDEBAR
