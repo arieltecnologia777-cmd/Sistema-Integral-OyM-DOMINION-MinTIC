@@ -218,13 +218,21 @@ filtrados.forEach((item) => {
 
   const tr = document.createElement("tr");
 
-  tr.innerHTML = `
-    ${tds}
-    <td>
-      <button class="btn-ver" data-idx="${idxReal}" style="margin-right:6px;">Ver</button>
-      <button class="btn-aprobar" data-idx="${idxReal}">Aprobar</button>
-    </td>
-  `;
+ tr.innerHTML = `
+  ${tds}
+  <td style="text-align:center;">
+    <button class="btn-pill-auditor btn-revisar" data-idx="${idxReal}">
+      <span class="icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+             stroke="#324a78" stroke-width="2">
+          <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6Z"/>
+          <circle cx="12" cy="12" r="3.2"/>
+        </svg>
+      </span>
+      Revisar
+    </button>
+  </td>
+`;
 
  tbody.appendChild(tr);
 });
