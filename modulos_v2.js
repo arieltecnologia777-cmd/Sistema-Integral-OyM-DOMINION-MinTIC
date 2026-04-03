@@ -61,11 +61,11 @@ export async function listarArchivosMCI(token) {
   id: x.id,
   nombre: x.name,
 
-  // ✅ Fecha REAL desde Graph
-fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
+  // ✅ Fecha REAL desde Graph (para ordenar)
+  fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
 
-// ✅ Fecha visible
-fecha: formatearFecha(x.fileSystemInfo?.lastModifiedDateTime),
+  // ✅ Fecha visible formateada
+  fecha: formatearFecha(x.fileSystemInfo?.lastModifiedDateTime),
 
   tamano: formatearTamano(x.size),
   archivo: {
