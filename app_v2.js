@@ -152,9 +152,10 @@ async function cargarDatosModulo() {
   }
 
   datosActuales = await cargarDesdeCarpeta(moduloActivo, false);
-   console.log("=== FECHAS REALES RECIBIDAS ===");
+  console.log("=== FECHAS REALES RECIBIDAS ===");
 datosActuales.forEach(x => {
   console.log(x.nombre, " → fechaReal:", x.fechaReal, " | fecha:", x.fecha);
+  console.log("Objeto completo x:", x);   // ✅ AÑÁDE ESTO
 });
 console.log("================================");
 
