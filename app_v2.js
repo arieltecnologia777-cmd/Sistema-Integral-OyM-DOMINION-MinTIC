@@ -180,31 +180,35 @@ function renderTabla() {
 
   tbody.innerHTML = "";
 
-  const filtrados = datosActuales.filter(item =>
+// ✅ FILTRADOS PERO MANTENIENDO EL ORDEN YA ORDENADO
+const filtrados = datosActuales
+  .filter(item =>
     item.archivo.nombre.endsWith(".xlsx") &&
     !item.archivo.nombre.includes("PreviewFotos")
   );
 
-  filtrados.forEach((item) => {
+// ✅ IMPORTANTE: ya NO creamos una nueva lista, usamos filtrados EN EL ORDEN ACTUAL
 
-    const idxReal = datosActuales.indexOf(item);
+filtrados.forEach((item) => {
 
-    const tds = moduloActivo.columnas
-      .map(col => `<td>${item[col.id]}</td>`)
-      .join("");
+  const idxReal = datosActuales.indexOf(item);
 
-    const tr = document.createElement("tr");
+  const tds = moduloActivo.columnas
+    .map(col => `<td>${item[col.id]}</td>`)
+    .join("");
 
-    tr.innerHTML = `
-      ${tds}
-      <td>
-        <button class="btn-ver" data-idx="${idxReal}" style="margin-right:6px;">Ver</button>
-        <button class="btn-aprobar" data-idx="${idxReal}">Aprobar</button>
-      </td>
-    `;
+  const tr = document.createElement("tr");
 
-    tbody.appendChild(tr);
-  });
+  tr.innerHTML = `
+    ${tds}
+    <td>
+      <button class="btn-ver" data-idx="${idxReal}" style="margin-right:6px;">Ver</button>
+      <button class="btn-aprobar" data-idx="${idxReal}">Aprobar</button>
+    </td>
+  `;
+
+  tbody.appendChild(tr);
+});
 
   prepararEventosTabla();
 }
