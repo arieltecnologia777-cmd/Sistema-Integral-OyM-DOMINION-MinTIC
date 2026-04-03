@@ -232,11 +232,6 @@ function activarOrdenamientoFecha() {
   th.onclick = () => {
     const dir = th.dataset.order || "desc";
 
-    datosActuales.sort((a, b) => {
-  const fA = new Date(a.fechaReal);
-  const fB = new Date(b.fechaReal);
-  return direccionActual === "desc" ? fA - fB : fB - fA;
-});
 
     th.dataset.order = dir === "desc" ? "asc" : "desc";
 
