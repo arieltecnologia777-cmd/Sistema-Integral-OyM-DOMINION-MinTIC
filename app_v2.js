@@ -152,18 +152,19 @@ async function cargarDatosModulo() {
   }
 
   datosActuales = await cargarDesdeCarpeta(moduloActivo, false);
-   console.log("=== FECHAS REALES RECIBIDAS ===");
-datosActuales.forEach(x => {
-  console.log(x.nombre, " → ", x.fechaReal);
-});
-console.log("===============================");
 
-// ✅ ORDENAR POR FECHA — MÁS RECIENTE PRIMERO
+// ✅ ORDENAR POR FECHA REAL — MÁS RECIENTE PRIMERO
 datosActuales.sort((a, b) => {
-  return new Date(b.fechaReal) - new Date(a.fechaReal);
+  const fechaA = new Date(a.fechaReal);
+  const fechaB = new Date(b.fechaReal);
+  return fechaB - fechaA;
 });
 
+// ✅ Renderizar tabla
 renderTabla();
+
+// ✅ Activar ordenamiento una vez el DOM esté construido
+setTimeout(() => activarOrdenamientoFecha(), 0);
 }
 
 /* ======================================================================
