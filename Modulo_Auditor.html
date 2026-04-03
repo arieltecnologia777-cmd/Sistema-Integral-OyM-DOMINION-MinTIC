@@ -217,7 +217,23 @@
     .modal {
       display: none; /* Se activará con JS */
     }
-
+/* Hover fila (relieve) */
+.tabla tbody tr {
+  transition: transform .16s ease, filter .16s ease;
+}
+.tabla tbody tr:hover {
+  transform: translateY(var(--row-hover-lift));
+  filter: drop-shadow(var(--row-hover-shadow));
+}
+.tabla tbody tr:hover td:first-child {
+  border-top-left-radius:var(--row-radius);
+  border-bottom-left-radius:var(--row-radius);
+}
+.tabla tbody tr:hover td:last-child {
+  border-top-right-radius:var(--row-radius);
+  border-bottom-right-radius:var(--row-radius);
+}
+    
   </style>
 </head>
 
