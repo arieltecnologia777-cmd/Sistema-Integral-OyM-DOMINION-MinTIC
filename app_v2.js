@@ -362,7 +362,7 @@ function prepararEventosTabla() {
     });
   });
 
-}  // ✅✅✅ ESTA ES LA LLAVE QUE CIERRA PREPARAR EVENTOS TABLA
+} // ✅ CIERRE CORRECTO DE prepararEventosTabla()
 
 
 
@@ -371,18 +371,15 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   const item = window.__archivoActual;
   if (!item) return;
 
-  // ✅ mover archivo real en OneDrive
-  await aprobarArchivo(item);
-
-  // ✅ cambiar estado visual
+  // ✅ cambiar estado visual ANTES de mover
   estadoInformes[item.id] = "aprobado";
   guardarEstados();
 
-  // ✅ cerrar visor
-  document.getElementById("visorVolver").click();
+  // ✅ mover archivo real en OneDrive
+  await aprobarArchivo(item);
 
-  // ✅ refrescar tabla
-  renderTabla();
+  // ✅ cerrar visor (cargarDatosModulo ya refresca tabla)
+  document.getElementById("visorVolver").click();
 });
 
 
