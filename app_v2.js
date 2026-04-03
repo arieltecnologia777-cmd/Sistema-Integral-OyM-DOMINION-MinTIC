@@ -99,7 +99,10 @@ async function seleccionarModulo(mod) {
 
   contenedor.innerHTML = generarTablaHTML(moduloActivo);
 
-  await cargarDatosModulo();
+// ✅ Re-activar eventos del encabezado (incluyendo sort)
+prepararEventosTabla();
+
+await cargarDatosModulo();
 }
 
 /* ======================================================================
