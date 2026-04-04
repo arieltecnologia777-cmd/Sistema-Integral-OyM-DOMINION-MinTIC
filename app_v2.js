@@ -668,23 +668,36 @@ document.getElementById("visorDescargar").addEventListener("click", async () => 
   link.click();
 });
 
-// ✅ Aprobar desde el visor (BOTÓN VERDE)
+// ✅ Aprobar desde el visor
 document.getElementById("visorAprobar").addEventListener("click", async () => {
-  const item = window.__archivoActual;
-  if (!item) return;
 
-  // ✅ 1. Marcar estado antes del repintado
-  estadoInformes[item.id] = "aprobado";
-  guardarEstados();
+    const item = window.__archivoActual;
+    if (!item) return;
 
-  // ✅ 2. Mover archivo real en OneDrive
-  await aprobarArchivo(item);
+    // ✅ 1. Cerrar visor ANTES de mover el archivo
+    document.getElementById("modalVisor").style.display = "none";
+    document.getElementById("contenedor-modulo").style.display = "block";
 
-  // ✅ 3. Registrar en Cloudflare KV
-  await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.archivo.fileIdReal, {
-      method: "PUT"
-  });
+    // ✅ 2. Esperar a que Microsoft Graph libere el archivo (muy importante)
+    await new Promise(res => setTimeout(res, 1800));  // 1.8 segundos
 
-  // ✅ 4. Cerrar visor
-  document.getElementById("visorVolver").click();
+    // ✅ 3. Intentar mover archivo (ya NO está bloqueado)
+    const ok = await aprobarArchivo(item);
+
+    if (!ok) {
+        alert("Error moviendo archivo.");
+        return;
+    }
+
+    // ✅ 4. Marcar estado local
+    estadoInformes[item.id] = "aprobado";
+    guardarEstados();
+
+    // ✅ 5. Registrar en Cloudflare KV
+    await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.archivo.fileIdReal, {
+        method: "PUT"
+    });
+
+    // ✅ 6. Refrescar tabla
+    renderTabla();
 });
