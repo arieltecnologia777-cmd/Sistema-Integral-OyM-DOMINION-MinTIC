@@ -688,18 +688,74 @@ document.getElementById("visorDescargar").addEventListener("click", async () => 
   link.click();
 });
 
+document.getElementById("visorRechazar").addEventListener("click", async () => {
+    const item = window.__archivoActual;
+    if (!item) return;
+
+    // ✅ Cloudflare KV
+    await rechazarEnKV(item.id, item.tecnico);
+
+    // ✅ cambiar estado visual en el panel auditor
+    estadoInformes[item.id] = "rechazado";
+    guardarEstados();
+
+    alert("⚠ Informe marcado como rechazado.");
+
+    document.getElementById("visorVolver").click();
+});
+// =============================================================
+// 🔥 CLOUDLFARE BACKEND — APROBAR / RECHAZAR EN KV
+// =============================================================
+
+// ✅ Cambia ESTA URL por la de tu Worker
+const WORKER_URL = "https://cloudflare-index.modulo-de-exclusiones.workers.dev";
+
+// ✅ APROBAR en Cloudflare KV
+async function aprobarEnKV(fileId, tecnico) {
+    try {
+        const res = await fetch(`${WORKER_URL}/aprobar/${fileId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await res.json();
+        console.log("✅ Aprobado en Cloudflare KV:", data);
+    } catch (err) {
+        console.error("❌ Error aprobando en KV:", err);
+    }
+}
+
+// ✅ RECHAZAR en Cloudflare KV
+async function rechazarEnKV(fileId, tecnico) {
+    try {
+        const res = await fetch(`${WORKER_URL}/rechazar/${fileId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await res.json();
+        console.log("✅ Rechazado en Cloudflare KV:", data);
+    } catch (err) {
+        console.error("❌ Error rechazando en KV:", err);
+    }
+}
+
+
 // ✅ Aprobar desde el visor (BOTÓN VERDE)
 document.getElementById("visorAprobar").addEventListener("click", async () => {
-  const item = window.__archivoActual;
-  if (!item) return;
+    const item = window.__archivoActual;
+    if (!item) return;
 
-  // ✅ mover archivo real en OneDrive
-  await aprobarArchivo(item);
+    // ✅ mover archivo real en OneDrive
+    await aprobarArchivo(item);
 
-  // ✅ cambiar estado visual
-  estadoInformes[item.id] = "aprobado";
-  guardarEstados();
+    // ✅ Cloudflare KV (nuevo)
+    await aprobarEnKV(item.id, item.tecnico);
 
-  // ✅ cerrar visor
-  document.getElementById("visorVolver").click();
+    // ✅ cambiar estado local
+    estadoInformes[item.id] = "aprobado";
+    guardarEstados();
+
+    // ✅ cerrar visor
+    document.getElementById("visorVolver").click();
 });
