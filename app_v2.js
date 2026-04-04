@@ -399,7 +399,8 @@ async function verArchivo(item) {
 
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
-  window.__archivoActual = item;
+  // ✅ Guardamos una copia completa que NO se pierde cuando recarga la tabla
+window.__archivoActual = structuredClone(item);
 
   const token = await obtenerToken();
 
