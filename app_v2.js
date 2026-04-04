@@ -681,7 +681,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   await aprobarArchivo(item);
 
   // ✅ 3. Registrar en Cloudflare KV
-  await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.id, {
+  await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.archivo.fileIdReal, {
       method: "PUT"
   });
 
