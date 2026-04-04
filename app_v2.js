@@ -700,6 +700,11 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   estadoInformes[item.id] = "aprobado";
   guardarEstados();
 
+  // ✅ Registrar aprobación en Cloudflare KV (NUEVA LÍNEA)
+  await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.archivo.fileIdReal, {
+      method: "PUT"
+  });
+
   // ✅ cerrar visor
   document.getElementById("visorVolver").click();
 });
