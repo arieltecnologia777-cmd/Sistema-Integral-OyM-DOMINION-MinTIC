@@ -80,29 +80,45 @@ export async function obtenerURLTemporal(ruta) {
 }
 
 // ============================================================
-// MOVER ARCHIVO (aprobar)
+// MOVER ARCHIVO (con reintentos por bloqueo 423)
 // ============================================================
 export async function moverArchivo(rutaOrigen, rutaDestino) {
-  const nombre = rutaDestino.split("/").pop();
-  const carpetaDestino = rutaDestino.replace(`/${nombre}`, "");
 
-  const body = {
-    parentReference: {
-      driveId: DRIVE_ID,
-      id: carpetaDestino
-    },
-    name: nombre
-  };
+    const nombre = rutaDestino.split("/").pop();
+    const carpetaDestino = rutaDestino.replace(`/${nombre}`, "");
 
-  const url = `https://graph.microsoft.com/v1.0${rutaOrigen}`;
+    const body = {
+        parentReference: {
+            driveId: DRIVE_ID,
+            id: carpetaDestino
+        },
+        name: nombre
+    };
 
-  try {
-    await graphFetch(url, "PATCH", body);
-    return true;
-  } catch (err) {
-    console.error("❌ Error moviendo archivo:", err);
-    return false;
-  }
+    const url = `https://graph.microsoft.com/v1.0${rutaOrigen}`;
+
+    // ✅ Reintentar hasta 3 veces si está bloqueado (423)
+    for (let intento = 1; intento <= 3; intento++) {
+
+        try {
+            await graphFetch(url, "PATCH", body);
+            console.log("✅ Archivo movido al intento", intento);
+            return true;
+
+        } catch (err) {
+
+            // ✅ Microsoft Graph devuelve 423 cuando el archivo está "en uso"
+            if (err.message.includes("423") && intento < 3) {
+                console.warn("⚠️ Archivo temporalmente bloqueado. Reintentando en 1.2s… (intento " + intento + ")");
+                await new Promise(res => setTimeout(res, 1200));
+                continue;
+            }
+
+            // ❌ No es bloqueo o ya se agotaron los 3 intentos
+            console.error("❌ Error moviendo archivo:", err);
+            return false;
+        }
+    }
 }
 
 // ============================================================
