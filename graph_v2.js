@@ -80,46 +80,31 @@ export async function obtenerURLTemporal(ruta) {
 }
 
 // ============================================================
-// MOVER ARCHIVO (versión original que SI movía con visor abierto)
+// MOVER ARCHIVO (aprobar)
 // ============================================================
 export async function moverArchivo(rutaOrigen, rutaDestino) {
+  const nombre = rutaDestino.split("/").pop();
+  const carpetaDestino = rutaDestino.replace(`/${nombre}`, "");
 
-    const nombre = rutaDestino.split("/").pop();
-    const carpetaDestino = rutaDestino.replace(`/${nombre}`, "");
+  const body = {
+    parentReference: {
+      driveId: DRIVE_ID,
+      id: carpetaDestino
+    },
+    name: nombre
+  };
 
-    const body = {
-        parentReference: {
-            driveId: DRIVE_ID,
-            id: carpetaDestino
-        },
-        name: nombre
-    };
+  const url = `https://graph.microsoft.com/v1.0${rutaOrigen}`;
 
-    const url = `https://graph.microsoft.com/v1.0${rutaOrigen}`;
-
-    try {
-        const token = await obtenerToken();
-
-        // ✅ ESTA ES LA CLAVE: PATCH DIRECTO, SIN graphFetch, SIN throw
-        const resp = await fetch(url, {
-            method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
-        });
-
-        console.log("Resultado mover:", resp.status);
-        // ✅ Antes no había alertas ni detención: SIEMPRE devolvía true
-        return true;
-
-    } catch (err) {
-        console.error("❌ Error moviendo archivo (tolerante):", err);
-        // ✅ Aun con error, devolvía true → por eso funcionaba con visor abierto
-        return true;
-    }
+  try {
+    await graphFetch(url, "PATCH", body);
+    return true;
+  } catch (err) {
+    console.error("❌ Error moviendo archivo:", err);
+    return false;
+  }
 }
+
 // ============================================================
 // CARGA CENTRAL
 // ============================================================
