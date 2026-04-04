@@ -67,16 +67,6 @@ const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
     const lista = [];
 
     for (const x of excels) {
-
-    // ✅ Obtener metadata completa del archivo
-    const metaResp = await fetch(
-        `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${x.id}`,
-        {
-            headers: { "Authorization": `Bearer ${token}` }
-        }
-    );
-    const meta = await metaResp.json();
-
     const item = {
   id: x.id,
   nombre: x.name,
@@ -95,15 +85,10 @@ fecha: (() => {
 
   tamano: formatearTamano(x.size),
 
-archivo: {
-    idCorto: x.id,
-    nombre: x.name,
+  archivo: {
     ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-    driveId: DRIVE_ID,
-
-    fileIdReal: meta?.fileSystemInfo?.fileId || null,
-    carpeta: meta?.parentReference?.path || null
-},
+    nombre: x.name
+  },
 
   fotosPreview: null
 };
@@ -166,3 +151,4 @@ export function formatearTamano(b) {
     if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
     return (b / 1024 / 1024).toFixed(1) + " MB";
 }
+
