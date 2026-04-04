@@ -673,18 +673,18 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   const item = window.__archivoActual;
   if (!item) return;
 
-  // ✅ mover archivo real en OneDrive
+  // ✅ 1. Marcar estado antes del repintado
+  estadoInformes[item.id] = "aprobado";
+  guardarEstados();
+
+  // ✅ 2. Mover archivo real en OneDrive
   await aprobarArchivo(item);
 
-  // ✅ Registrar en Cloudflare KV
+  // ✅ 3. Registrar en Cloudflare KV
   await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.id, {
       method: "PUT"
   });
 
-  // ✅ cambiar estado visual
-  estadoInformes[item.id] = "aprobado";
-  guardarEstados();
-
-  // ✅ cerrar visor
+  // ✅ 4. Cerrar visor
   document.getElementById("visorVolver").click();
 });
