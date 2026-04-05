@@ -194,24 +194,24 @@ async function cargarDatosModulo() {
   const respKV = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`);
   const listaKV = await respKV.json();
 
-  // 3. Cruce OneDrive + KV por ITEM_ID real
-  const cruzados = [];
+  // 3. Cruce OneDrive + KV por NOMBRE REAL (no por ID)
+const cruzados = [];
+for (const a of listaOD) {
 
-  for (const a of listaOD) {
+  // nombre OneDrive (archivo técnico y auditor siempre coinciden)
+  const nombreOD = a.archivo.nombre.replace(".xlsx", "");
 
-    const oneDriveId = a.id;  // ID real del archivo en OneDrive
+  // Buscar en KV por coincidencia de nombre dentro del fileId
+  const match = listaKV.find(k => {
+    return k.fileId.includes(nombreOD);
+  });
 
-    const match = listaKV.find(k => {
-      const kvItemId = k.fileId.split(".")[1]; 
-      return kvItemId === oneDriveId;
-    });
-
-    if (match) {
-      a.fileIdReal = match.fileId;
-      a.estadoKV = match.estado;
-      cruzados.push(a);
-    }
+  if (match) {
+    a.fileIdReal = match.fileId;  // obtenido desde KV
+    a.estadoKV = match.estado;
+    cruzados.push(a);
   }
+}
 
   // 4. Actualizar datos y mostrar tabla
   datosActuales = cruzados;
