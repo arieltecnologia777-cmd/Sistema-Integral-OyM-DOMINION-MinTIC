@@ -211,6 +211,11 @@ for (const a of listaOD) {
 
 }
 
+// ✅ 4. Actualizar datos y mostrar tabla
+datosActuales = listaOD;
+renderTabla();
+setTimeout(() => activarOrdenamientoFecha(), 0);
+
 /* ======================================================================
    6) RENDER DE TABLA  
    ====================================================================== */
