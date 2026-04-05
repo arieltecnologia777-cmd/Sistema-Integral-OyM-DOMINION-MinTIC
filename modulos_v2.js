@@ -91,14 +91,10 @@ fecha: (() => {
   tamano: formatearTamano(x.size),
 
   archivo: {
-    ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-    nombre: x.name,
-
-    // ✅ fileIdReal usado por KV
-    fileIdReal: `${DRIVE_ID}.${x.id}`,
-
-    // ✅ Carpeta real (opcional)
-    carpeta: meta?.parentReference?.path ?? null
+  ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
+  nombre: x.name,
+  fileIdReal: null,   // ✅ SIEMPRE INICIA EN NULL, NUNCA ONE DRIVE
+  carpeta: meta?.parentReference?.path ?? null
 },
 
   fotosPreview: null
