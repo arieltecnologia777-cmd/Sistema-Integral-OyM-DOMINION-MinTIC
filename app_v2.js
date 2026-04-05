@@ -388,7 +388,7 @@ function prepararEventosTabla() {
     });
   });
 
-} // ✅ CIERRE CORRECTO DE prepararEventosTabla()
+}// ✅ CIERRE CORRECTO DE prepararEventosTabla()
 
 /* ======================================================================
    8) VER ARCHIVO — Vista previa del Excel + Fotos
