@@ -709,14 +709,14 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   estadoInformes[item.id] = "aprobado";
   guardarEstados();
 
-  // ✅ 2. Registrar aprobación en Cloudflare KV usando fileIdReal
-  await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.archivo.fileIdReal, {
+  // ✅ 2. Registrar aprobación en Cloudflare KV usando mciId
+  await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.mciId, {
       method: "PUT"
   });
 
   // ✅ 3. Cerrar visor
   document.getElementById("visorVolver").click();
 
-  // ✅ 4. Refrescar tabla (para mostrar ✅ Aprobado)
+  // ✅ 4. Refrescar tabla
   renderTabla();
 });
