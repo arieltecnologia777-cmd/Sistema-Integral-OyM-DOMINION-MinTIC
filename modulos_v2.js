@@ -5,8 +5,8 @@
 export const DRIVE_ID = "b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua";
 
 export const FOLDERS = {
-    pendientes: "01IWRV3SZ7VKZ6DTAIUNDZ4GDTQ7RDSN34",   // MCI_Salidas
-    aprobados: "01IWRV3S7JHBELGMR54FAYX3Z3HRZFVODA"     // MCI_Aprobados
+ pendientes: "01IWRV3S42TYZGW7YV7VDZSYL6SVNMT5NY",   // ✅ TU CARPETA REAL
+ aprobados: "01IWRV3S7JHBELGMR54FAYX3Z3HRZFVODA"    // este se usa si algún día decides mover
 };
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
