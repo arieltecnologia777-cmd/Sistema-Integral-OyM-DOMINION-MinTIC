@@ -375,9 +375,18 @@ function prepararEventosTabla() {
 
   // === EVENTO REVISAR ===
   document.querySelectorAll(".btn-revisar").forEach(btn => {
+
     btn.addEventListener("click", async () => {
+
       const idx = btn.dataset.idx;
       const item = datosActuales[idx];
+
+      // ✅ FIX DEFINITIVO:
+      // Antes de abrir el visor, sincronizamos el fileIdReal
+      // para que NUNCA sea 'null' en la llamada PUT /aprobar
+      if (item.fileIdReal) {
+        item.archivo.fileIdReal = item.fileIdReal;
+      }
 
       // ✅ marcar como en revisión
       estadoInformes[item.id] = "en_revision";
@@ -386,9 +395,10 @@ function prepararEventosTabla() {
       await verArchivo(item);
       renderTabla();
     });
+
   });
 
-}// ✅ CIERRE CORRECTO DE prepararEventosTabla()
+}
 
 /* ======================================================================
    8) VER ARCHIVO — Vista previa del Excel + Fotos
