@@ -162,36 +162,26 @@ async function cargarDatosModulo() {
   );
   const listaKV = await respKV.json();
 
-  // ✅ 3. Mezclar: OneDrive + KV
-  //    • OneDrive entrega info del archivo
-  //    • KV entrega el fileIdReal verdadero y el estado
-  for (const a of listaOD) {
+  // ✅ 3. Mezclar: OneDrive + KV usando mciId (ya no usamos fileIdReal)
+for (const a of listaOD) {
 
-    const registro = listaKV.find(k => k.fileName === a.nombre);
+  // Buscar en KV por el nombre del archivo
+  const registro = listaKV.find(k => k.fileName === a.nombre);
 
-    if (registro) {
+  if (registro) {
+    // ✅ Guardamos el mciId que viene del KV
+    a.mciId = registro.mciId;
 
-      // ✅ Este es el fileId que Cloudflare SÍ reconoce
-      a.fileIdReal = registro.fileId;
-      a.estadoKV = registro.estado;
+    // ✅ Estado del informe en KV
+    a.estadoKV = registro.estado;
 
-      // ✅ CORRECCIÓN CLAVE:
-      //    El visor y el botón “Aprobar” usan item.archivo.fileIdReal
-      //    Debe ser IGUAL al de KV, no al de OneDrive
-      if (a.archivo) {
-        a.archivo.fileIdReal = registro.fileId;
-      }
+  } else {
 
-    } else {
-      // Archivos que existen en OneDrive pero no están aún en KV
-      a.fileIdReal = null;
-      a.estadoKV = "pendiente";
-
-      if (a.archivo) {
-        a.archivo.fileIdReal = null;
-      }
-    }
+    // ✅ Si no existe en KV, se muestra como pendiente
+    a.mciId = null;
+    a.estadoKV = "pendiente";
   }
+}
 
   // ✅ 4. Actualizar datos de la tabla
   datosActuales = listaOD;
@@ -276,7 +266,7 @@ filtrados.forEach((item) => {
   const tr = document.createElement("tr");
 
  // Estado actual del informe (por ID de archivo)
-const estado = estadoInformes[item.id] || "pendiente";
+const estado = item.estadoKV || "pendiente";
 
 let botonHTML = "";
 
