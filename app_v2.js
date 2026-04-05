@@ -397,7 +397,12 @@ async function verArchivo(item) {
 
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
-  window.__archivoActual = item;
+  // ✅ FIX: asegurar que el visor use el fileIdReal de KV (no null)
+if (item.fileIdReal) {
+    item.archivo.fileIdReal = item.fileIdReal;
+}
+
+window.__archivoActual = item;
 
   const token = await obtenerToken();
 
