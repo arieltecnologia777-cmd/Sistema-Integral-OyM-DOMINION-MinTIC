@@ -174,48 +174,46 @@ return `<th>${col.label}</th>`;
    5) CARGAR DATOS DESDE ONEDRIVE
    ====================================================================== */
 async function cargarDatosModulo() {
-  if (!moduloActivo.pendientes) { 
+  if (!moduloActivo.pendientes) {
     document.getElementById("tbodyDatos").innerHTML = `
       <tr><td colspan="99" style="padding:20px; text-align:center;">
-      No hay ruta configurada para este módulo.<br>
-      (Ariel deberá especificarla cuando toque)
+        No hay ruta configurada para este módulo.<br>
+        (Ariel deberá especificarla cuando toque)
       </td></tr>
     `;
     return;
   }
 
-  // 1. Archivos en OneDrive
+  // ✅ 1. Cargar archivos desde OneDrive
   const token = await obtenerToken();
   const listaOD = await listarArchivosMCI(token);
-   window.debugListaOD = listaOD;
+  window.debugListaOD = listaOD;   // solo para debug
 
-  // 2. Archivos registrados en KV
-  const tecnico = "usuario"; 
+  // ✅ 2. Cargar registros de KV
+  const tecnico = "usuario";
   const respKV = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`);
   const listaKV = await respKV.json();
 
-  // 3. Mostrar TODOS los archivos de OneDrive
-//    y solo añadir estado desde KV si existe
+  // ✅ 3. Combinar datos: mostrar TODOS los archivos y marcar estado si aparece en KV
+  for (const a of listaOD) {
+    const registro = listaKV.find(k => k.fileId.endsWith(a.id));
 
-for (const a of listaOD) {
-  const registro = listaKV.find(k => k.fileId.endsWith(a.id));
-
-  if (registro) {
-    a.fileIdReal = registro.fileId;
-    a.estadoKV = registro.estado;
-  } else {
-    a.fileIdReal = null;
-    a.estadoKV = "pendiente";
+    if (registro) {
+      a.fileIdReal = registro.fileId;
+      a.estadoKV = registro.estado;
+    } else {
+      a.fileIdReal = null;
+      a.estadoKV = "pendiente";
+    }
   }
+
+  // ✅ 4. Asignar lista final a la tabla
+  datosActuales = listaOD;
+
+  // ✅ 5. Renderizar tabla + activar sort
+  renderTabla();
+  setTimeout(() => activarOrdenamientoFecha(), 0);
 }
-
-}
-
-// ✅ 4. Actualizar datos y mostrar tabla
-datosActuales = listaOD;
-renderTabla();
-setTimeout(() => activarOrdenamientoFecha(), 0);
-
 /* ======================================================================
    6) RENDER DE TABLA  
    ====================================================================== */
