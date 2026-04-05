@@ -104,38 +104,45 @@ function prepararSidebar() {
 /* ======================================================================
    3) CAMBIAR DE MÓDULO
    ====================================================================== */
-async function seleccionarModulo(mod) {
-
-  const contenedor = document.getElementById("contenedor-modulo");
-  contenedor.innerHTML = "";
-
-  if (mod === "inicio") {
-    moduloActivo = null;
-
-    contenedor.innerHTML = `
-      <div style="padding:20px; font-size:16px;">
-        Bienvenido al <strong>Panel Auditor</strong>.<br>
-        Selecciona un módulo en la barra lateral para comenzar.
-      </div>
+async function cargarDatosModulo() {
+  if (!moduloActivo.pendientes) {
+    document.getElementById("tbodyDatos").innerHTML = `
+      <tr><td colspan="99" style="padding:20px; text-align:center;">
+        No hay ruta configurada para este módulo.<br>
+        (Ariel deberá especificarla cuando toque)
+      </td></tr>
     `;
     return;
   }
 
-  moduloActivo = obtenerModulo(mod);
+  // ✅ 1. Cargar archivos desde OneDrive
+  const token = await obtenerToken();
+  const listaOD = await listarArchivosMCI(token);
+  window.debugListaOD = listaOD;   // Debug opcional
 
-  if (!moduloActivo) {
-    contenedor.innerHTML = "<p>Error: módulo desconocido.</p>";
-    return;
+  // ✅ 2. Cargar registros KV
+  const tecnico = "usuario";
+  const respKV = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`);
+  const listaKV = await respKV.json();
+
+  // ✅ 3. Combinar: mostrar TODO OneDrive + estado si existe KV
+  for (const a of listaOD) {
+    const registro = listaKV.find(k => k.fileId.endsWith(a.id));
+    if (registro) {
+      a.fileIdReal = registro.fileId;
+      a.estadoKV = registro.estado;
+    } else {
+      a.fileIdReal = null;
+      a.estadoKV = "pendiente";
+    }
   }
 
-  contenedor.innerHTML = generarTablaHTML(moduloActivo);
+  // ✅ 4. Actualizar datos y mostrar tabla
+  datosActuales = listaOD;
 
-// ✅ Re-activar eventos del encabezado (incluyendo sort)
-prepararEventosTabla();
-
-await cargarDatosModulo();
+  renderTabla();
+  setTimeout(() => activarOrdenamientoFecha(), 0);
 }
-
 /* ======================================================================
    4) CREAR TABLA
    ====================================================================== */
