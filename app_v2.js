@@ -100,7 +100,41 @@ function prepararSidebar() {
     });
   });
 }
+/* ======================================================================
+   3) SELECCIONAR MODULO
+   ====================================================================== */
+async function seleccionarModulo(mod) {
+  const contenedor = document.getElementById("contenedor-modulo");
+  contenedor.innerHTML = "";
 
+  if (mod === "inicio") {
+    moduloActivo = null;
+    contenedor.innerHTML = `
+      <div style="padding:20px; font-size:16px;">
+        Bienvenido al <strong>Panel Auditor</strong>.<br>
+        Selecciona un módulo en la barra lateral para comenzar.
+      </div>
+    `;
+    return;
+  }
+
+  // Obtener configuración del módulo
+  moduloActivo = obtenerModulo(mod);
+
+  if (!moduloActivo) {
+    contenedor.innerHTML = "<p>Error: módulo desconocido.</p>";
+    return;
+  }
+
+  // Dibujar tabla
+  contenedor.innerHTML = generarTablaHTML(moduloActivo);
+
+  // Activar botones de la tabla
+  prepararEventosTabla();
+
+  // Cargar datos del módulo
+  await cargarDatosModulo();
+}
 /* ======================================================================
    3) CAMBIAR DE MÓDULO
    ====================================================================== */
