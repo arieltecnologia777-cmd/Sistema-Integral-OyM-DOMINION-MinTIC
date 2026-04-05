@@ -364,26 +364,6 @@ function prepararEventosTabla() {
 
 } // ✅ CIERRE CORRECTO DE prepararEventosTabla()
 
-
-
-// ✅ Evento APROBAR (ESTE DEBE IR FUERA de prepararEventosTabla)
-document.getElementById("visorAprobar").addEventListener("click", async () => {
-  const item = window.__archivoActual;
-  if (!item) return;
-
-  // ✅ cambiar estado visual ANTES de mover
-  estadoInformes[item.id] = "aprobado";
-  guardarEstados();
-
-  // ✅ mover archivo real en OneDrive
-  await aprobarArchivo(item);
-
-  // ✅ cerrar visor (cargarDatosModulo ya refresca tabla)
-  document.getElementById("visorVolver").click();
-});
-
-
-
 /* ======================================================================
    8) VER ARCHIVO — Vista previa del Excel + Fotos
    ====================================================================== */
@@ -688,23 +668,24 @@ document.getElementById("visorDescargar").addEventListener("click", async () => 
   link.click();
 });
 
-// ✅ Aprobar desde el visor (BOTÓN VERDE)
+// ✅ Aprobar desde el visor (SIN mover archivo)
 document.getElementById("visorAprobar").addEventListener("click", async () => {
+
   const item = window.__archivoActual;
   if (!item) return;
 
-  // ✅ mover archivo real en OneDrive (tu app OK sigue funcionando)
-  await aprobarArchivo(item);
-
-  // ✅ cambiar estado visual
+  // ✅ 1. Cambiar estado local
   estadoInformes[item.id] = "aprobado";
   guardarEstados();
 
-  // ✅ NUEVO: Registrar aprobación en Cloudflare KV
+  // ✅ 2. Registrar aprobación en Cloudflare KV usando fileIdReal
   await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.archivo.fileIdReal, {
       method: "PUT"
   });
 
-  // ✅ cerrar visor
+  // ✅ 3. Cerrar visor
   document.getElementById("visorVolver").click();
+
+  // ✅ 4. Refrescar tabla (para mostrar ✅ Aprobado)
+  renderTabla();
 });
