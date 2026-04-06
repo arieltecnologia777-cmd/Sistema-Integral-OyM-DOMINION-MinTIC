@@ -688,23 +688,17 @@ document.getElementById("visorDescargar").addEventListener("click", async () => 
   link.click();
 });
 
-// ✅ Aprobar desde el visor (SIN mover archivo)
+// ✅ Aprobar desde el visor usando fileId (estable y real)
 document.getElementById("visorAprobar").addEventListener("click", async () => {
+    const item = window.__archivoActual;
+    if (!item) return;
 
-  const item = window.__archivoActual;
-  if (!item) return;
+    const fileIdReal = item.id; // ✅ Este valor SIEMPRE existe
 
-  // ✅ 1. Cambiar estado local
-  
+    await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + fileIdReal, {
+        method: "PUT"
+    });
 
-  // ✅ 2. Registrar aprobación en Cloudflare KV usando mciId
- await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + window.__mciIdActual, {
-    method: "PUT"
-});
-
-  // ✅ 3. Cerrar visor
-  document.getElementById("visorVolver").click();
-
-  // ✅ 4. Refrescar tabla
-  renderTabla();
+    document.getElementById("visorVolver").click();
+    renderTabla();
 });
