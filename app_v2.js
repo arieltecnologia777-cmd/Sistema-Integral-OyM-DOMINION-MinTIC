@@ -390,7 +390,7 @@ async function verArchivo(item) {
   
 
 window.__archivoActual = item;
-window.__mciIdActual = item._mciId || null;
+window.__mciIdActual = item._mciId ?? null;
 
   const token = await obtenerToken();
 
