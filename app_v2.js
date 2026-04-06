@@ -171,6 +171,7 @@ for (const a of listaOD) {
   if (registro) {
     // ✅ Guardamos el mciId que viene del KV (en la raíz)
     a.mciId = registro.mciId;
+    a._mciId = registro.mciId; 
 
     // ✅ Estado KV en raíz
     a.estadoKV = registro.estado;
