@@ -390,6 +390,7 @@ async function verArchivo(item) {
   
 
 window.__archivoActual = item;
+window.__mciIdActual = item._mciId || null;
 
   const token = await obtenerToken();
 
@@ -696,7 +697,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   
 
   // ✅ 2. Registrar aprobación en Cloudflare KV usando mciId
- await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + item.mciId, {
+ await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + window.__mciIdActual, {
     method: "PUT"
 });
 
