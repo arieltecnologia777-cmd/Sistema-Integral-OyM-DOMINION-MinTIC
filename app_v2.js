@@ -300,6 +300,9 @@ async function verArchivo(item) {
   // ✅ GUARDAR EL ITEM ANTES DE QUE ONEDRIVE LO REEMPLACE
   window.__archivoActual = item;
   window.__mciIdActual = item.mciId ?? null;
+   estadoInformes[item.id] = "en_revision";
+guardarEstados();
+   
 
   const token = await obtenerToken();
 
