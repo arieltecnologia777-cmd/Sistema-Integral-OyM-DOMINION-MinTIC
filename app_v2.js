@@ -1,6 +1,7 @@
 /* ======================================================================
-   APP.JS — Panel Auditor  
-   Controlador principal del sistema
+   APP.JS — Panel Auditor 
+   Controlador principal del sistema 
+   Versión Final — Ariel
    ====================================================================== */
 
 import {
@@ -12,18 +13,7 @@ import {
   MODULOS
 } from './modulos_v2.js';
 
-import { cargarDesdeCarpeta, obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
-import { iniciarSesion, usuarioActual, cerrarSesion, obtenerToken } from "./auth.js";
-
-function parseFechaCol(fechaStr) {
-  if (!fechaStr) return new Date(0);
-  return new Date(
-    fechaStr
-      .replace(" a. m.", " AM")
-      .replace(" p. m.", " PM")
-      .replace(/\./g, "")
-  );
-}
+import { obtenerToken } from "./auth.js";
 
 /* ======================================================================
    ESTADO GLOBAL
@@ -46,105 +36,81 @@ function cargarEstados() {
 }
 
 /* ======================================================================
-   1) INICIALIZACIÓN GENERAL
+   INICIO
    ====================================================================== */
 
 window.addEventListener("DOMContentLoaded", async () => {
-  if (!usuarioActual()) await iniciarSesion();
-  prepararSidebar();
   cargarEstados();
+  prepararSidebar();
   seleccionarModulo("inicio");
 });
 
 /* ======================================================================
-   2) SIDEBAR
+   SIDEBAR
    ====================================================================== */
 
 function prepararSidebar() {
-  const botones = document.querySelectorAll(".sb-item");
-
-  botones.forEach(btn => {
-    btn.addEventListener("click", async () => {
-      if (btn.classList.contains("logout")) {
-        cerrarSesion();
-        return;
-      }
-
-      botones.forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".sb-item").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".sb-item")
+        .forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-
-      const mod = btn.dataset.mod;
-      seleccionarModulo(mod);
-    });
+      seleccionarModulo(btn.dataset.mod);
+    };
   });
 }
 
 /* ======================================================================
-   3) SELECCIONAR MÓDULO
+   SELECCIONAR MÓDULO
    ====================================================================== */
 
 async function seleccionarModulo(mod) {
-  const contenedor = document.getElementById("contenedor-modulo");
-  contenedor.innerHTML = "";
+  const cont = document.getElementById("contenedor-modulo");
+  cont.innerHTML = "";
 
   if (mod === "inicio") {
     moduloActivo = null;
-    contenedor.innerHTML = `
-      <div style="padding:20px; font-size:16px;">
-      Bienvenido al <strong>Panel Auditor</strong>.<br>
-      Selecciona un módulo en la barra lateral para comenzar.
+    cont.innerHTML = `
+      <div style="padding:20px">
+        Bienvenido al <b>Panel Auditor</b><br>
       </div>`;
     return;
   }
 
   moduloActivo = obtenerModulo(mod);
-
   if (!moduloActivo) {
-    contenedor.innerHTML = "<p>Error: módulo desconocido.</p>";
+    cont.innerHTML = "<p>Error: módulo no configurado.</p>";
     return;
   }
 
-  contenedor.innerHTML = generarTablaHTML(moduloActivo);
-  prepararEventosTabla();
+  cont.innerHTML = generarTablaHTML(moduloActivo);
   await cargarDatosModulo();
 }
 
 /* ======================================================================
-   4) CARGAR DATOS DEL MÓDULO
+   CARGAR DATOS
    ====================================================================== */
 
 async function cargarDatosModulo() {
 
-  if (!moduloActivo.pendientes) {
-    document.getElementById("tbodyDatos").innerHTML = `
-    <tr><td colspan="99" style="padding:20px; text-align:center;">
-    No hay ruta configurada para este módulo.<br>
-    (Ariel deberá especificarla cuando toque)
-    </td></tr>`;
-    return;
-  }
-
   const token = await obtenerToken();
 
-  // ✅ 1. Cargar archivos desde OneDrive
-  const listaOD = await listarArchivosMCI(token);
-  window.debugListaOD = listaOD;
+  const listaOD = await listarArchivosMCI(token); // Archivos OneDrive
+  window.debugOD = listaOD;
 
-  // ✅ 2. KV (pendientes, aprobados, etc.)
   const tecnico = "usuario";
   const respKV = await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
   );
   const listaKV = await respKV.json();
+  window.debugKV = listaKV;
 
-  // ✅ 3. Mezclar OneDrive + KV usando fileName
+  // ✅ Mezclar por fileName (la llave verdadera DEL SISTEMA)
   for (const a of listaOD) {
 
-    // ✅ COINCIDENCIA PERFECTA POR fileName
     const registro = listaKV.find(k => k.fileName === a.archivo.nombre);
 
     if (registro) {
-      // Guardamos mciId en raíz (NO se pierde)
       a.mciId = registro.mciId;
       a.estadoKV = registro.estado;
     } else {
@@ -155,141 +121,88 @@ async function cargarDatosModulo() {
 
   datosActuales = listaOD;
   renderTabla();
-  setTimeout(() => activarOrdenamientoFecha(), 0);
 }
 
 /* ======================================================================
-   5) GENERAR TABLA
+   TABLA
    ====================================================================== */
 
 function generarTablaHTML(modulo) {
-  const ths = modulo.columnas
-    .map(col => {
-      if (col.id === "fecha") {
-        return `
-        <th style="cursor:pointer;">
-          <span class="sortable" data-col="fecha" data-order="desc">
-          ${col.label} <span class="flecha">🔽</span>
-          </span>
-        </th>`;
-      }
-      return `<th>${col.label}</th>`;
-    })
-    .join("");
+  const ths = modulo.columnas.map(col => `<th>${col.label}</th>`).join("");
 
   return `
-  <div class="tabla-box">
   <table class="tabla">
-  <thead><tr>${ths}<th>Acciones</th></tr></thead>
-  <tbody id="tbodyDatos">
-  <tr><td colspan="${modulo.columnas.length + 1}" style="text-align:center; padding:20px;">Cargando…</td></tr>
-  </tbody>
+    <thead>
+      <tr>${ths}<th>Acciones</th></tr>
+    </thead>
+    <tbody id="tbodyDatos">
+      <tr><td colspan="99" style="text-align:center;padding:20px">Cargando…</td></tr>
+    </tbody>
   </table>
-  </div>`;
+  `;
 }
-
-/* ======================================================================
-   6) RENDER TABLA
-   ====================================================================== */
 
 function renderTabla() {
   const tbody = document.getElementById("tbodyDatos");
-
-  if (!datosActuales || datosActuales.length === 0) {
-    tbody.innerHTML = `
-    <tr><td colspan="99" style="padding:20px; text-align:center;">
-    No hay informes pendientes.
-    </td></tr>`;
-    return;
-  }
-
   tbody.innerHTML = "";
 
-  const filtrados = datosActuales.filter(item =>
-    item.archivo.nombre.endsWith(".xlsx") &&
-    !item.archivo.nombre.includes("PreviewFotos")
+  const filtrados = datosActuales.filter(i =>
+    i.archivo.nombre.endsWith(".xlsx") &&
+    !i.archivo.nombre.includes("PreviewFotos")
   );
 
   filtrados.forEach(item => {
-    const idxReal = datosActuales.indexOf(item);
-
-    const tds = moduloActivo.columnas
-      .map(col => `<td>${item[col.id]}</td>`)
-      .join("");
-
-    const tr = document.createElement("tr");
-
+    const idx = datosActuales.indexOf(item);
     const estado = item.estadoKV || "pendiente";
-    let botonHTML = "";
 
+    let boton = "";
     if (estado === "pendiente") {
-      botonHTML = `
-      <button class="btn-estado btn-gris btn-revisar" data-idx="${idxReal}">
-      Revisar
-      </button>`;
+      boton = `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`;
     }
     else if (estado === "en_revision") {
-      botonHTML = `
-      <button class="btn-estado btn-azul btn-revisar" data-idx="${idxReal}">
-      ✏️ Continuar revisión
-      </button>`;
+      boton = `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar revisión</button>`;
     }
     else if (estado === "aprobado") {
-      botonHTML = `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>`;
-    }
-    else if (estado === "rechazado") {
-      botonHTML = `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+      boton = `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>`;
     }
 
-    tr.innerHTML = `${tds}<td style="text-align:center;">${botonHTML}</td>`;
-    tbody.appendChild(tr);
+    const tds = moduloActivo.columnas.map(col => `<td>${item[col.id]}</td>`).join("");
+
+    tbody.innerHTML += `
+      <tr>
+        ${tds}
+        <td>${boton}</td>
+      </tr>
+    `;
   });
 
-  activarOrdenamientoFecha();
   prepararEventosTabla();
 }
 
 /* ======================================================================
-   7) ORDENAMIENTO POR FECHA
-   ====================================================================== */
-
-function activarOrdenamientoFecha() {
-  const th = document.querySelector("span.sortable[data-col='fecha']");
-  if (!th) return;
-
-  th.onclick = () => {
-    const estado = th.dataset.order || "desc";
-
-    datosActuales.sort((a, b) => {
-      const fA = new Date(a.fechaReal);
-      const fB = new Date(b.fechaReal);
-      return estado === "desc" ? fA - fB : fB - fA;
-    });
-
-    th.dataset.order = estado === "desc" ? "asc" : "desc";
-    th.querySelector(".flecha").textContent = estado === "desc" ? "🔽" : "🔼";
-
-    renderTabla();
-  };
-}
-
-/* ======================================================================
-   8) EVENTOS DE TABLA
+   EVENTOS DE TABLA
    ====================================================================== */
 
 function prepararEventosTabla() {
+
   document.querySelectorAll(".btn-revisar").forEach(btn => {
-    btn.addEventListener("click", async () => {
+
+    btn.onclick = async () => {
       const idx = btn.dataset.idx;
       const item = datosActuales[idx];
       await verArchivo(item);
+
+      // ✅ Si entra a revisar → EN REVISIÓN
+      estadoInformes[item.id] = "en_revision";
+      guardarEstados();
+
       renderTabla();
-    });
+    };
   });
 }
 
 /* ======================================================================
-   9) VER ARCHIVO
+   VISOR PREVIEW (COMPLETO Y FUNCIONAL)
    ====================================================================== */
 
 async function verArchivo(item) {
@@ -297,47 +210,83 @@ async function verArchivo(item) {
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
 
-  // ✅ GUARDAR EL ITEM ANTES DE QUE ONEDRIVE LO REEMPLACE
   window.__archivoActual = item;
-  window.__mciIdActual = item.mciId ?? null;
-   estadoInformes[item.id] = "en_revision";
-guardarEstados();
-   
+  window.__mciIdActual = item.mciId;
 
   const token = await obtenerToken();
 
-  // === DESCARGA EXCEL ===
-  const urlDescarga = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
-  const resp = await fetch(urlDescarga, { headers: { "Authorization": `Bearer ${token}` } });
+  // === Descargar Excel ===
+  const url = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
+  const resp = await fetch(url, { headers: { "Authorization": `Bearer ${token}` } });
   const blob = await resp.blob();
-  const arrayBuffer = await blob.arrayBuffer();
+  const ab = await blob.arrayBuffer();
 
-  const wb = XLSX.read(arrayBuffer);
+  const wb = XLSX.read(ab);
   const sheet = wb.Sheets[wb.SheetNames[0]];
 
-  // (Preview omitido para ahorrar espacio… lo tuyo queda igual)
+  // === Generar Previews ===
+  const rango1 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
+  const rango2 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
+  const rango3 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
 
-  // … tu preview …
+  let htmlPreview = `
+    <h3>Información General</h3>
+    ${rango1}
+    <h3>Descripción</h3>
+    ${rango2}
+    <h3>Declaración</h3>
+    ${rango3}
+  `;
+
+  // Fallback si Excel viene vacío
+  if (!htmlPreview || htmlPreview.trim() === "") {
+    htmlPreview = "<p style='color:#555;'>No se pudo generar vista previa del Excel.</p>";
+  }
+
+  // === Pintar el visor ===
+  document.getElementById("visorIframe").innerHTML = `
+    <div style="padding:20px">
+      <h3>Vista previa del archivo</h3>
+      <div style="background:white;padding:20px;border-radius:8px">
+        ${htmlPreview}
+      </div>
+    </div>
+  `;
 }
 
 /* ======================================================================
-   10) APROBAR — VERSIÓN CORRECTA FINAL (USANDO mciId de KV)
+   APROBAR (USANDO mciId)
    ====================================================================== */
 
-document.getElementById("visorAprobar").addEventListener("click", async () => {
+document.getElementById("visorAprobar").onclick = async () => {
 
-  const mciIdReal = window.__mciIdActual;
+  const mciId = window.__mciIdActual;
+  const item = window.__archivoActual;
 
-  if (!mciIdReal) {
-    alert("❌ Error: No se encontró el mciId para este informe.");
+  if (!mciId) {
+    alert("❌ No se encontró el mciId.");
     return;
   }
 
   await fetch(
-    "https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/" + mciIdReal,
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
     { method: "PUT" }
   );
 
+  // ✅ Estado local
+  estadoInformes[item.id] = "aprobado";
+  guardarEstados();
+
   document.getElementById("visorVolver").click();
   renderTabla();
-});
+};
+
+/* ======================================================================
+   VOLVER DEL VISOR
+   ====================================================================== */
+
+document.getElementById("visorVolver").onclick = () => {
+  document.getElementById("modalVisor").style.display = "none";
+  document.getElementById("contenedor-modulo").style.display = "block";
+  document.getElementById("visorIframe").innerHTML = "";
+};
