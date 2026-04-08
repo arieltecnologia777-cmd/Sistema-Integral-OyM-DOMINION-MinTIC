@@ -404,8 +404,9 @@ async function verArchivo(item) {
 
     // Construir URL de embebido Excel Online
     const embedUrl =
-      meta.webUrl.split("/_layouts/15/Doc.aspx")[0] +
-      `/_layouts/15/Doc.aspx?sourcedoc=${meta.id}&action=embedview`;
+  meta.webUrl.split("/_layouts/15/Doc.aspx")[0] +
+  `/_layouts/15/Doc.aspx?sourcedoc=${meta.id}&action=view`;
+
 
     // Inyectar iframe
     visor.innerHTML = `
