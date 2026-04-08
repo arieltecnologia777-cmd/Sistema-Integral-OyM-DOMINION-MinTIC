@@ -42,17 +42,18 @@ export function obtenerModulo(nombre) {
 export async function listarArchivosMCI(token) {
 
   // ============================
-  // 🔧 CONFIG SHAREPOINT (ANCLAS)
+  // CONFIG SHAREPOINT
   // ============================
-  // ⚠️ DEBES AJUSTAR ESTOS 2 VALORES
   const SITE_ID = "dominionglobal.sharepoint.com,10887380-6934-45ab-adf2-97b2aad78311,433b4a3a-96f7-4bf3-929a-eb5f824c466d";
 
-const LIBRARY_ID = "b!gHOIEDRpq0Wt8peyqteDETpKO0P3lvNLkprrX4JMRm3TjVug-HIEToXXjMDkE9rM";
+  const LIBRARY_ID = "b!gHOIEDRpq0Wt8peyqteDETpKO0P3lvNLkprrX4JMRm3TjVug-HIEToXXjMDkE9rM";
 
-const FOLDER_NAME = "MCI_Generados";
+  const FOLDER_NAME = "Base MCI - Proyecto automatización/MCI_Generados";
+
   // ============================
-
-  const url = `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${FOLDER_NAME}:/children`;
+  // URL CON RUTA CORRECTA
+  // ============================
+  const url = `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${encodeURIComponent(FOLDER_NAME)}:/children`;
 
   const res = await fetch(url, {
     headers: { "Authorization": `Bearer ${token}` }
@@ -65,10 +66,37 @@ const FOLDER_NAME = "MCI_Generados";
 
   const data = await res.json();
 
-  if (!data.value || !Array.isArray(data.value)) {
-    console.warn("⚠️ SharePoint no devolvió archivos válidos");
+  if (!Array.isArray(data.value)) {
+    console.warn("⚠️ SharePoint no devolvió una lista válida");
     return [];
   }
+
+  const lista = [];
+
+  for (const x of data.value) {
+    if (!x.name || !x.name.endsWith(".xlsx")) continue;
+
+    const d = new Date(x.lastModifiedDateTime);
+    const pad = n => String(n).padStart(2, "0");
+
+    lista.push({
+      id: x.id,
+      nombre: x.name,
+      fechaReal: x.lastModifiedDateTime,
+      fecha: `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
+      tamano: formatearTamano(x.size),
+      archivo: {
+        ruta: `/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${x.id}`,
+        nombre: x.name,
+        fileIdReal: x.id,
+        carpeta: FOLDER_NAME
+      },
+      fotosPreview: null
+    });
+  }
+
+  return lista;
+}
 
   // ============================
   // ✅ Filtrar solo Excel
