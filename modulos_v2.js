@@ -37,94 +37,84 @@ export function obtenerModulo(nombre) {
 }
 
 // ======================================================
-// LISTAR ARCHIVOS (pendientes)
+// LISTAR ARCHIVOS (pendientes) — SHAREPOINT
 // ======================================================
-
 export async function listarArchivosMCI(token) {
-    
-    const url = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${FOLDERS.pendientes}/children`;
 
-    const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${token}` }
-    });
+  // ============================
+  // 🔧 CONFIG SHAREPOINT (ANCLAS)
+  // ============================
+  // ⚠️ DEBES AJUSTAR ESTOS 2 VALORES
+  const SITE_ID = "TU_SITE_ID_SHAREPOINT";
+  // Ejemplo real:
+  // dominio.sharepoint.com,aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee,ffffffff-1111-2222-3333-444444444444
 
-    const data = await res.json();
+  const LIBRARY_ID = "TU_DOCUMENT_LIBRARY_ID";
+  // Normalmente es la biblioteca "Documentos"
 
-    // === 1) Separar excels y previewFotos ===
-    // === 1) Separar excels y previewFotos ===
-const excels = data.value.filter(f => {
-  const isExcel = f.name.endsWith(".xlsx");
+  const FOLDER_NAME = "MCI_Generados";
+  // ============================
 
-  if (isExcel) {
-    console.log("✅ ARCHIVO GRAPH ORIGINAL:", f);  // <-- ESTE SÍ IMPRIME EL OBJETO REAL
+  const url = `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${FOLDER_NAME}:/children`;
+
+  const res = await fetch(url, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    console.error("❌ Error listando archivos desde SharePoint:", res.status);
+    return [];
   }
 
-  return isExcel;
-});
+  const data = await res.json();
 
-const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
+  if (!data.value || !Array.isArray(data.value)) {
+    console.warn("⚠️ SharePoint no devolvió archivos válidos");
+    return [];
+  }
 
-    const lista = [];
+  // ============================
+  // ✅ Filtrar solo Excel
+  // ============================
+  const excels = data.value.filter(f =>
+    f.name && f.name.endsWith(".xlsx")
+  );
 
-    for (const x of excels) {
-    const metaResp = await fetch(
-    `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${x.id}?$select=parentReference`,
-    { headers: { "Authorization": `Bearer ${token}` } }
-);
-const meta = await metaResp.json();    
-    const item = {
-  id: x.id,
-  nombre: x.name,
+  const lista = [];
 
- // ✅ Fecha REAL desde OneDrive (UTC)
-fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
+  for (const x of excels) {
 
-// ✅ Fecha REAL humana (convertida a tu hora local Colombia)
-fecha: (() => {
-  const d = new Date(x.fileSystemInfo?.lastModifiedDateTime);
-  const pad = n => String(n).padStart(2, "0");
-  
-  // ✅ getHours(), getMinutes(), etc → usan tu zona local (UTC-5)
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-})(),
+    const d = new Date(x.lastModifiedDateTime);
+    const pad = n => String(n).padStart(2, "0");
 
-  tamano: formatearTamano(x.size),
+    lista.push({
+      id: x.id,
+      nombre: x.name,
 
-  archivo: {
-  ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-  nombre: x.name,
+      // Fecha real (UTC)
+      fechaReal: x.lastModifiedDateTime,
 
-  // ✅ SIEMPRE inicia en null — el auditor lo llenará con KV
-  fileIdReal: null,
+      // Fecha formateada (hora local)
+      fecha: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
 
-  carpeta: meta?.parentReference?.path ?? null
-},
+      tamano: formatearTamano(x.size),
 
-  fotosPreview: null
-};
+      archivo: {
+        // 👉 ESTA RUTA ES LA QUE USA verArchivo() PARA EMBEBER
+        ruta: `/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${x.id}`,
+        nombre: x.name,
+        fileIdReal: x.id,
+        carpeta: FOLDER_NAME
+      },
 
-        // Buscar su archivo JSON correspondiente
-        const base = x.name.replace(".xlsx", "");
-        const jsonMatch = previews.find(p => p.name.startsWith(base));
+      // 🚫 Preview hack eliminado
+      fotosPreview: null
+    });
+  }
 
-        if (jsonMatch) {
-            try {
-                const urlJ = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${jsonMatch.id}/content`;
-                const respJ = await fetch(urlJ, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                const texto = await respJ.text();
-                item.fotosPreview = JSON.parse(texto);
-            } catch(e) {
-                console.error("Error leyendo fotosPreview:", e);
-            }
-        }
-
-        lista.push(item);
-    }
-
-    return lista;
+  return lista;
 }
+
 
 // ======================================================
 // DESCARGAR ARCHIVO
