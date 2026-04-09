@@ -403,9 +403,7 @@ async function verArchivo(item) {
     const meta = await metaResp.json();
 
     // Construir URL de embebido Excel Online
-    const embedUrl =
-  meta.webUrl.split("/_layouts/15/Doc.aspx")[0] +
-  `/_layouts/15/Doc.aspx?sourcedoc=${meta.id}&action=view`;
+    const embedUrl = `${meta.webUrl}?web=1`;
 
 
     // Inyectar iframe
