@@ -365,27 +365,21 @@ function prepararEventosTabla() {
 } // ✅ CIERRE CORRECTO DE prepararEventosTabla()
 
 /* ======================================================================
-   8) VER ARCHIVO — Excel REAL embebido desde SharePoint
-   (Se elimina totalmente el preview hack)
+   8) VER ARCHIVO — Vista previa ligera + Abrir Excel completo
    ====================================================================== */
 async function verArchivo(item) {
 
-  // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
   window.__archivoActual = item;
 
   const visor = document.getElementById("visorIframe");
   visor.innerHTML = `
-    <div style="padding:20px; text-align:center;">
-      Cargando Excel Online…
-    </div>
+    <div style="padding:20px; text-align:center;">Cargando vista previa…</div>
   `;
 
   try {
     const token = await obtenerToken();
-
-    // Obtener metadata del archivo desde Graph
     const metaResp = await fetch(
       `https://graph.microsoft.com/v1.0${item.archivo.ruta}`,
       { headers: { "Authorization": `Bearer ${token}` } }
@@ -394,34 +388,96 @@ async function verArchivo(item) {
     if (!metaResp.ok) {
       visor.innerHTML = `
         <div style="padding:20px; color:red; text-align:center;">
-          Error cargando el archivo desde SharePoint.
-        </div>
-      `;
+          No se pudo obtener el archivo en SharePoint.
+        </div>`;
       return;
     }
 
     const meta = await metaResp.json();
+    const excelUrl = `${meta.webUrl}?web=1`;  // ✅ URL segura
 
-    // Construir URL de embebido Excel Online
-    const embedUrl = `${meta.webUrl}?web=1`;
-
-
-    // Inyectar iframe
     visor.innerHTML = `
-      <iframe
-        src="${embedUrl}"
-        style="width:100%; height:70vh; border:none;"
-        allowfullscreen
-      ></iframe>
-    `;
+      <div style="padding:20px; text-align:left;">
+        
+        <h3 style="font-weight:800;">Vista previa del informe</h3>
 
-  } catch (error) {
-    console.error("Error en verArchivo:", error);
-    visor.innerHTML = `
-      <div style="padding:20px; color:red; text-align:center;">
-        Error inesperado al abrir el archivo.
+        <div style="
+          background:white; border:1px solid #dce3f5; padding:14px; 
+          border-radius:8px; margin-bottom:20px;">
+          <p><strong>Nombre:</strong> ${item.archivo.nombre}</p>
+          <p><strong>Fecha:</strong> ${item.fecha}</p>
+          <p><strong>Tamaño:</strong> ${item.tamano}</p>
+          <p style="color:#666;">Vista previa ligera. Para ver el Excel completo, usa el botón de abajo.</p>
+        </div>
+
+        <div style="text-align:center; margin-bottom:25px;">
+          <a href="${excelUrl}" target="_blank" style="
+            background:#0d6efd; color:white; padding:12px 22px;
+            border-radius:8px; font-weight:700; text-decoration:none;
+            font-size:16px; display:inline-block;">
+            🔵 Abrir Excel completo
+          </a>
+        </div>
+
+        <h3 style="font-weight:800;">Fotos del informe</h3>
+        <div id="previewFotos" style="
+          display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+          gap:14px; margin-top:15px;">
+        </div>
+
       </div>
     `;
+
+    // ✅ Fotos
+    const galeria = document.getElementById("previewFotos");
+    const fotos = item.fotosPreview;
+
+    if (fotos) {
+      const orden = [
+        { key: "gps", titulo: "GPS" },
+        { key: "apInt", titulo: "AP Interior" },
+        { key: "apExt1", titulo: "AP Exterior 1" },
+        { key: "apExt2", titulo: "AP Exterior 2" },
+        { key: "pcInt", titulo: "PC Interior" },
+        { key: "movilExt", titulo: "Móvil Exterior" },
+        { key: "senal", titulo: "Señalética" },
+        { key: "med1", titulo: "Medición Eléctrica 1" },
+      ];
+
+      orden.forEach(f => {
+        const base64 = fotos[f.key];
+        if (!base64) return;
+
+        const cont = document.createElement("div");
+        cont.style.border = "1px solid #dce3f5";
+        cont.style.borderRadius = "10px";
+        cont.style.background = "#fff";
+        cont.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+        cont.style.cursor = "pointer";
+        cont.style.display = "flex";
+        cont.style.flexDirection = "column";
+
+        cont.innerHTML = `
+          <div style="padding:8px 10px; font-weight:700; border-bottom:1px solid #eee;">
+            ${f.titulo}
+          </div>
+          <img src="${base64}" style="width:100%; height:180px; object-fit:cover;">
+        `;
+
+        cont.onclick = () => window.open(base64, "_blank");
+        galeria.appendChild(cont);
+      });
+
+    } else {
+      galeria.innerHTML = "<p style='color:#777;'>Sin fotos disponibles.</p>";
+    }
+
+  } catch (e) {
+    console.error(e);
+    visor.innerHTML = `
+      <div style="padding:20px; text-align:center; color:red;">
+        Error inesperado en vista previa.
+      </div>`;
   }
 }
 
