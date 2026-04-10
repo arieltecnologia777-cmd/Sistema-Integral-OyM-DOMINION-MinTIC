@@ -1,124 +1,115 @@
-// ======================================================
-// CONFIG — IDs confirmados por Graph
-// ======================================================
-
-export const DRIVE_ID = "b!qDLeuVb8dE-_ocg255wGZSbL4Q0zxaNDvZnBorHVVnQq_CH66fH5Q6vXRgtmy0ua";
-
-export const FOLDERS = {
-  pendientes: "01IWRV3SZ7VKZ6DTAIUNDZ4GDTQ7RDSN34",   // ✅ EL VERDADERO
-  aprobados: "01IWRV3S7JHBELGMR54FAYX3Z3HRZFVODA"
-};
+// ======================================================================
+// CONFIG PARA SHAREPOINT ONLINE (PARTE 1/2)
+// ======================================================================
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
 
-// ======================================================
-// DEFINICIÓN DE MÓDULOS (lo que usa app.js)
-// ======================================================
+/*
+    ⚠️ REEMPLAZA ESTOS 3 VALORES CON LOS TUYOS:
+
+    1) SITE_ID:
+       Ejemplo:
+       "dominionglobal.sharepoint.com,XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX,YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"
+
+    2) LIBRARY_ID:
+       Ejemplo:
+       "b!zzZZZzzzZZzzZZzZZ_zZzZzzZZZZzzZzzZ"
+
+    3) FOLDER_PATH:
+       Ejemplo:
+       "Base MCI - Proyecto automatización/MCI_Generados"
+*/
+
+export const SITE_ID      = "";   // ← TU SITE ID REAL AQUÍ
+export const LIBRARY_ID   = "";   // ← TU LIBRARY ID REAL AQUÍ
+export const FOLDER_PATH  = "";   // ← TU RUTA REAL AQUÍ
+
+
+// ======================================================================
+// DEFINICIÓN DE MÓDULOS
+// ======================================================================
 
 export const MODULOS = {
     mci: {
         columnas: [
             { id: "nombre", label: "Archivo" },
-            { id: "fecha", label: "Fecha" },
+            { id: "fecha",  label: "Fecha" },
             { id: "tamano", label: "Tamaño" }
         ],
 
-        pendientes: FOLDERS.pendientes,
-        aprobados: FOLDERS.aprobados
+        // SE USA SOLO FOLDER_PATH
+        pendientes: FOLDER_PATH,
+
+        // Si luego tienes carpeta de aprobados:
+        aprobados: null
     }
 };
 
-// ======================================================
-// FUNCIÓN QUE NECESITA app.js
-// ======================================================
+
+// ======================================================================
+// OBTENER CONFIGURACIÓN DE MÓDULO
+// ======================================================================
 
 export function obtenerModulo(nombre) {
     return MODULOS[nombre] || null;
 }
-
-// ======================================================
-// LISTAR ARCHIVOS (pendientes)
-// ======================================================
+// ======================================================================
+// LISTAR ARCHIVOS DESDE SHAREPOINT (PARTE 2/2)
+// ======================================================================
 
 export async function listarArchivosMCI(token) {
-    
-    const url = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${FOLDERS.pendientes}/children`;
+
+    if (!SITE_ID || !LIBRARY_ID || !FOLDER_PATH) {
+        console.error("❌ ERROR: modulos_v2.js no tiene SITE_ID / LIBRARY_ID / FOLDER_PATH configurados.");
+        return [];
+    }
+
+    const url =
+`${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${encodeURIComponent(FOLDER_PATH)}:/children`;
 
     const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
+    if (!res.ok) {
+        console.error("❌ Error listando archivos MCI:", await res.text());
+        return [];
+    }
+
     const data = await res.json();
-
-    // === 1) Separar excels y previewFotos ===
-    // === 1) Separar excels y previewFotos ===
-const excels = data.value.filter(f => {
-  const isExcel = f.name.endsWith(".xlsx");
-
-  if (isExcel) {
-    console.log("✅ ARCHIVO GRAPH ORIGINAL:", f);  // <-- ESTE SÍ IMPRIME EL OBJETO REAL
-  }
-
-  return isExcel;
-});
-
-const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
+    if (!Array.isArray(data.value)) return [];
 
     const lista = [];
 
+    // ✅ Filtrar solo los excels reales
+    const excels = data.value.filter(f => f.name.endsWith(".xlsx"));
+
     for (const x of excels) {
-    const metaResp = await fetch(
-    `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${x.id}?$select=parentReference`,
-    { headers: { "Authorization": `Bearer ${token}` } }
-);
-const meta = await metaResp.json();    
-    const item = {
-  id: x.id,
-  nombre: x.name,
 
- // ✅ Fecha REAL desde OneDrive (UTC)
-fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
+        const d = new Date(x.lastModifiedDateTime);
+        const pad = n => String(n).padStart(2, "0");
 
-// ✅ Fecha REAL humana (convertida a tu hora local Colombia)
-fecha: (() => {
-  const d = new Date(x.fileSystemInfo?.lastModifiedDateTime);
-  const pad = n => String(n).padStart(2, "0");
-  
-  // ✅ getHours(), getMinutes(), etc → usan tu zona local (UTC-5)
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-})(),
+        const item = {
+            id: x.id,
+            nombre: x.name,
 
-  tamano: formatearTamano(x.size),
+            // ✅ Fecha UTC de SharePoint
+            fechaReal: x.lastModifiedDateTime,
 
-  archivo: {
-  ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
-  nombre: x.name,
+            // ✅ Fecha local humana
+            fecha: `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
 
-  // ✅ SIEMPRE inicia en null — el auditor lo llenará con KV
-  fileIdReal: null,
+            tamano: formatearTamano(x.size),
 
-  carpeta: meta?.parentReference?.path ?? null
-},
+            archivo: {
+                ruta: `/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${x.id}`,
+                nombre: x.name,
+                fileIdReal: x.id,
+                carpeta: FOLDER_PATH
+            },
 
-  fotosPreview: null
-};
-
-        // Buscar su archivo JSON correspondiente
-        const base = x.name.replace(".xlsx", "");
-        const jsonMatch = previews.find(p => p.name.startsWith(base));
-
-        if (jsonMatch) {
-            try {
-                const urlJ = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${jsonMatch.id}/content`;
-                const respJ = await fetch(urlJ, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                const texto = await respJ.text();
-                item.fotosPreview = JSON.parse(texto);
-            } catch(e) {
-                console.error("Error leyendo fotosPreview:", e);
-            }
-        }
+            fotosPreview: null   // ← tu visor usa esto
+        };
 
         lista.push(item);
     }
@@ -126,12 +117,13 @@ fecha: (() => {
     return lista;
 }
 
-// ======================================================
-// DESCARGAR ARCHIVO
-// ======================================================
+
+// ======================================================================
+// DESCARGAR ARCHIVO DESDE SHAREPOINT
+// ======================================================================
 
 export async function descargarArchivo(token, fileId) {
-    const url = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${fileId}/content`;
+    const url = `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${fileId}/content`;
 
     const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${token}` }
@@ -140,9 +132,10 @@ export async function descargarArchivo(token, fileId) {
     return res;
 }
 
-// ======================================================
+
+// ======================================================================
 // FORMATOS
-// ======================================================
+// ======================================================================
 
 export function formatearFecha(f) {
   return new Date(f).toLocaleString("es-CO", {
