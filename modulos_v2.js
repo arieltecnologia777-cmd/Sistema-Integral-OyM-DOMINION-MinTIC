@@ -36,54 +36,96 @@ export function obtenerModulo(nombre) {
     return MODULOS[nombre] || null;
 }
 
+// ======================================================
+// LISTAR ARCHIVOS (pendientes)
+// ======================================================
+
 export async function listarArchivosMCI(token) {
+    
+    const url = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${FOLDERS.pendientes}/children`;
 
-  const SITE_ID =
-    "dominionglobal.sharepoint.com,10887380-6934-45ab-adf2-97b2aad78311,433b4a3a-96f7-4bf3-929a-eb5f824c466d";
-
-  const LIBRARY_ID =
-    "b!gHOIEDRpq0Wt8peyqteDETpKO0P3lvNLkprrX4JMRm3TjVug-HIEToXXjMDkE9rM";
-
-  const FOLDER_PATH =
-    "Base MCI - Proyecto automatización/MCI_Generados";
-
-  const url = `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${encodeURIComponent(FOLDER_PATH)}:/children`;
-
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  if (!res.ok) return [];
-
-  const data = await res.json();
-  if (!Array.isArray(data.value)) return [];
-
-  const lista = [];
-
-  for (const x of data.value) {
-    if (!x.name || !x.name.endsWith(".xlsx")) continue;
-
-    const d = new Date(x.lastModifiedDateTime);
-    const pad = n => String(n).padStart(2, "0");
-
-    lista.push({
-      id: x.id,
-      nombre: x.name,
-      fechaReal: x.lastModifiedDateTime,
-      fecha: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
-      tamano: formatearTamano(x.size),
-      archivo: {
-        ruta: `/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${x.id}`,
-        nombre: x.name,
-        fileIdReal: x.id,
-        carpeta: FOLDER_PATH
-      },
-      fotosPreview: null
+    const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${token}` }
     });
+
+    const data = await res.json();
+
+    // === 1) Separar excels y previewFotos ===
+    // === 1) Separar excels y previewFotos ===
+const excels = data.value.filter(f => {
+  const isExcel = f.name.endsWith(".xlsx");
+
+  if (isExcel) {
+    console.log("✅ ARCHIVO GRAPH ORIGINAL:", f);  // <-- ESTE SÍ IMPRIME EL OBJETO REAL
   }
 
-  return lista;
+  return isExcel;
+});
+
+const previews = data.value.filter(f => f.name.includes("PreviewFotos"));
+
+    const lista = [];
+
+    for (const x of excels) {
+    const metaResp = await fetch(
+    `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${x.id}?$select=parentReference`,
+    { headers: { "Authorization": `Bearer ${token}` } }
+);
+const meta = await metaResp.json();    
+    const item = {
+  id: x.id,
+  nombre: x.name,
+
+ // ✅ Fecha REAL desde OneDrive (UTC)
+fechaReal: x.fileSystemInfo?.lastModifiedDateTime,
+
+// ✅ Fecha REAL humana (convertida a tu hora local Colombia)
+fecha: (() => {
+  const d = new Date(x.fileSystemInfo?.lastModifiedDateTime);
+  const pad = n => String(n).padStart(2, "0");
+  
+  // ✅ getHours(), getMinutes(), etc → usan tu zona local (UTC-5)
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+})(),
+
+  tamano: formatearTamano(x.size),
+
+  archivo: {
+  ruta: `/drives/${DRIVE_ID}/items/${x.id}`,
+  nombre: x.name,
+
+  // ✅ SIEMPRE inicia en null — el auditor lo llenará con KV
+  fileIdReal: null,
+
+  carpeta: meta?.parentReference?.path ?? null
+},
+
+  fotosPreview: null
+};
+
+        // Buscar su archivo JSON correspondiente
+        const base = x.name.replace(".xlsx", "");
+        const jsonMatch = previews.find(p => p.name.startsWith(base));
+
+        if (jsonMatch) {
+            try {
+                const urlJ = `${GRAPH_BASE}/drives/${DRIVE_ID}/items/${jsonMatch.id}/content`;
+                const respJ = await fetch(urlJ, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const texto = await respJ.text();
+                item.fotosPreview = JSON.parse(texto);
+            } catch(e) {
+                console.error("Error leyendo fotosPreview:", e);
+            }
+        }
+
+        lista.push(item);
+    }
+
+    return lista;
 }
+
 // ======================================================
 // DESCARGAR ARCHIVO
 // ======================================================
