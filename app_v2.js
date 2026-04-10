@@ -110,7 +110,7 @@ async function seleccionarModulo(mod) {
 }
 
 /* ======================================================================
-   4) CARGAR DATOS DEL MÓDULO
+   4) CARGAR DATOS DEL MÓDULO  — VERSIÓN CORREGIDA
    ====================================================================== */
 
 async function cargarDatosModulo() {
@@ -126,25 +126,22 @@ async function cargarDatosModulo() {
 
   const token = await obtenerToken();
 
-  // ✅ 1. Cargar archivos desde OneDrive
+  // ✅ 1. Cargar archivos reales desde SharePoint
   const listaOD = await listarArchivosMCI(token);
   window.debugListaOD = listaOD;
 
-  // ✅ 2. KV (pendientes, aprobados, etc.)
+  // ✅ 2. Datos KV
   const tecnico = "usuario";
   const respKV = await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
   );
   const listaKV = await respKV.json();
 
-  // ✅ 3. Mezclar OneDrive + KV usando fileName
+  // ✅ 3. Mezclar SP + KV
   for (const a of listaOD) {
-
-    // ✅ COINCIDENCIA PERFECTA POR fileName
-    const registro = listaKV.find(k => k.fileName === a.archivo.nombre);
+    const registro = listaKV.find(k => k.fileName === a.nombre);
 
     if (registro) {
-      // Guardamos mciId en raíz (NO se pierde)
       a.mciId = registro.mciId;
       a.estadoKV = registro.estado;
     } else {
@@ -153,8 +150,13 @@ async function cargarDatosModulo() {
     }
   }
 
+  // ✅ 4. AHORA SÍ se asigna a la variable GLOBAL
   datosActuales = listaOD;
+
+  // ✅ 5. Renderizar tabla
   renderTabla();
+
+  // ✅ 6. Activar sort tras redibujar
   setTimeout(() => activarOrdenamientoFecha(), 0);
 }
 
