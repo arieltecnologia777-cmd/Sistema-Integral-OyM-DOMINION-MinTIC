@@ -1,32 +1,23 @@
 // ======================================================================
-// CONFIG PARA SHAREPOINT ONLINE (PARTE 1/2)
+// CONFIG SHAREPOINT ONLINE — ID REALES Y VALORES CORRECTOS
 // ======================================================================
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
 
-/*
-    ⚠️ REEMPLAZA ESTOS 3 VALORES CON LOS TUYOS:
+// ✅ DATOS REALES EXTRAÍDOS DE TU ARCHIVO ANTERIOR (EL QUE SÍ FUNCIONABA)
+export const SITE_ID =
+ "dominionglobal.sharepoint.com,10887380-6934-45ab-adf2-97b2aad78311,433b4a3a-96f7-4bf3-929a-eb5f824c466d";
 
-    1) SITE_ID:
-       Ejemplo:
-       "dominionglobal.sharepoint.com,XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX,YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"
+export const LIBRARY_ID =
+ "b!gHOIEDRpq0Wt8peyqteDETpKO0P3lvNLkprrX4JMRm3TjVug-HIEToXXjMDkE9rM";
 
-    2) LIBRARY_ID:
-       Ejemplo:
-       "b!zzZZZzzzZZzzZZzZZ_zZzZzzZZZZzzZzzZ"
-
-    3) FOLDER_PATH:
-       Ejemplo:
-       "Base MCI - Proyecto automatización/MCI_Generados"
-*/
-
-export const SITE_ID      = "";   // ← TU SITE ID REAL AQUÍ
-export const LIBRARY_ID   = "";   // ← TU LIBRARY ID REAL AQUÍ
-export const FOLDER_PATH  = "";   // ← TU RUTA REAL AQUÍ
+// ✅ Carpeta REAL que usabas en tu versión estable
+export const FOLDER_PATH =
+ "Base MCI - Proyecto automatización/MCI_Generados";
 
 
 // ======================================================================
-// DEFINICIÓN DE MÓDULOS
+// DEFINICIÓN DE MÓDULOS (el Auditor usa este objeto)
 // ======================================================================
 
 export const MODULOS = {
@@ -37,42 +28,37 @@ export const MODULOS = {
             { id: "tamano", label: "Tamaño" }
         ],
 
-        // SE USA SOLO FOLDER_PATH
+        // ✅ carpeta de pendientes
         pendientes: FOLDER_PATH,
 
-        // Si luego tienes carpeta de aprobados:
+        // ✅ si luego quieres agregamos aprobados
         aprobados: null
     }
 };
 
 
 // ======================================================================
-// OBTENER CONFIGURACIÓN DE MÓDULO
+// OBTENER CONFIGURACIÓN DEL MÓDULO
 // ======================================================================
 
 export function obtenerModulo(nombre) {
     return MODULOS[nombre] || null;
 }
 // ======================================================================
-// LISTAR ARCHIVOS DESDE SHAREPOINT (PARTE 2/2)
+// LISTAR ARCHIVOS DESDE SHAREPOINT
 // ======================================================================
 
 export async function listarArchivosMCI(token) {
-
-    if (!SITE_ID || !LIBRARY_ID || !FOLDER_PATH) {
-        console.error("❌ ERROR: modulos_v2.js no tiene SITE_ID / LIBRARY_ID / FOLDER_PATH configurados.");
-        return [];
-    }
 
     const url =
 `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${encodeURIComponent(FOLDER_PATH)}:/children`;
 
     const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
     });
 
     if (!res.ok) {
-        console.error("❌ Error listando archivos MCI:", await res.text());
+        console.error("❌ Error listando en SharePoint:", await res.text());
         return [];
     }
 
@@ -81,7 +67,7 @@ export async function listarArchivosMCI(token) {
 
     const lista = [];
 
-    // ✅ Filtrar solo los excels reales
+    // ✅ Solo traer excels reales
     const excels = data.value.filter(f => f.name.endsWith(".xlsx"));
 
     for (const x of excels) {
@@ -89,14 +75,12 @@ export async function listarArchivosMCI(token) {
         const d = new Date(x.lastModifiedDateTime);
         const pad = n => String(n).padStart(2, "0");
 
-        const item = {
+        lista.push({
             id: x.id,
             nombre: x.name,
 
-            // ✅ Fecha UTC de SharePoint
             fechaReal: x.lastModifiedDateTime,
 
-            // ✅ Fecha local humana
             fecha: `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
 
             tamano: formatearTamano(x.size),
@@ -108,10 +92,8 @@ export async function listarArchivosMCI(token) {
                 carpeta: FOLDER_PATH
             },
 
-            fotosPreview: null   // ← tu visor usa esto
-        };
-
-        lista.push(item);
+            fotosPreview: null
+        });
     }
 
     return lista;
@@ -119,11 +101,12 @@ export async function listarArchivosMCI(token) {
 
 
 // ======================================================================
-// DESCARGAR ARCHIVO DESDE SHAREPOINT
+// DESCARGAR DESDE SHAREPOINT
 // ======================================================================
 
 export async function descargarArchivo(token, fileId) {
-    const url = `${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${fileId}/content`;
+    const url =
+`${GRAPH_BASE}/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${fileId}/content`;
 
     const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${token}` }
@@ -134,7 +117,7 @@ export async function descargarArchivo(token, fileId) {
 
 
 // ======================================================================
-// FORMATOS
+// FORMATOS — FECHA Y TAMAÑO
 // ======================================================================
 
 export function formatearFecha(f) {
