@@ -1,5 +1,5 @@
 /* ======================================================================
-   APP.JS — Panel Auditor (Versión corregida completa)
+   APP.JS — Panel Auditor (Versión completa con preview + fotos)
 ====================================================================== */
 
 /* ============================
@@ -8,15 +8,15 @@
 window.moduloActivo = null;
 window.datosActuales = [];
 window.estadoInformes = {};
-
+window.__archivoActual = null;
+window.__mciIdActual = null;
 
 /* ============================
    IMPORTS
 ============================ */
 import { listarArchivosMCI, obtenerModulo } from "./modulos_v2.js";
 import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
-import { moverArchivo, obtenerURLTemporal } from "./graph_v2.js";
-
+import { obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
 
 /* ============================
    ESTADO LOCAL
@@ -24,7 +24,6 @@ import { moverArchivo, obtenerURLTemporal } from "./graph_v2.js";
 function guardarEstados() {
   localStorage.setItem("estadoInformesAuditor", JSON.stringify(window.estadoInformes));
 }
-
 function cargarEstados() {
   const raw = localStorage.getItem("estadoInformesAuditor");
   if (raw) {
@@ -32,7 +31,6 @@ function cargarEstados() {
     catch { window.estadoInformes = {}; }
   }
 }
-
 
 /* ======================================================================
    1) INICIALIZACIÓN
@@ -44,32 +42,26 @@ window.addEventListener("DOMContentLoaded", async () => {
   seleccionarModulo("inicio");
 });
 
-
 /* ======================================================================
    2) SIDEBAR
 ====================================================================== */
 function prepararSidebar() {
   const botones = document.querySelectorAll(".sb-item");
-
   botones.forEach(btn => {
     btn.addEventListener("click", () => {
-
       if (btn.classList.contains("logout")) {
         cerrarSesion();
         return;
       }
-
       botones.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-
       seleccionarModulo(btn.dataset.mod);
     });
   });
 }
 
-
 /* ======================================================================
-   3) SELECTOR DE MÓDULO
+   3) SELECCIONAR MÓDULO
 ====================================================================== */
 async function seleccionarModulo(mod) {
 
@@ -79,10 +71,10 @@ async function seleccionarModulo(mod) {
   if (mod === "inicio") {
     window.moduloActivo = null;
     cont.innerHTML = `
-      <div style="padding:20px; font-size:16px;">
-        Bienvenido al <strong>Panel Auditor</strong>.<br>
-        Selecciona un módulo en la barra lateral para comenzar.
-      </div>`;
+    <div style="padding:20px; font-size:16px;">
+      Bienvenido al <strong>Panel Auditor</strong>.<br>
+      Selecciona un módulo en la barra lateral para comenzar.
+    </div>`;
     return;
   }
 
@@ -94,7 +86,6 @@ async function seleccionarModulo(mod) {
   }
 
   cont.innerHTML = generarTablaHTML(window.moduloActivo);
-
   prepararEventosTabla();
   await cargarDatosModulo();
 }
@@ -124,20 +115,18 @@ async function cargarDatosModulo() {
   );
   const listaKV = await respKV.json();
 
-  // Mezcla SP + KV
+  // ✅ Mezclar SP + KV
   for (const a of listaOD) {
     const reg = listaKV.find(k => k.fileName === a.nombre);
     a.mciId = reg ? reg.mciId : null;
     a.estadoKV = reg ? reg.estado : "pendiente";
   }
 
-  // ✅ GLOBAL REAL
   window.datosActuales = listaOD;
 
   renderTabla();
   setTimeout(() => activarOrdenamientoFecha(), 0);
 }
-
 
 /* ======================================================================
    5) GENERAR TABLA
@@ -169,7 +158,6 @@ function generarTablaHTML(modulo) {
   </div>`;
 }
 
-
 /* ======================================================================
    6) RENDER TABLA
 ====================================================================== */
@@ -200,21 +188,23 @@ function renderTabla() {
 
     const estado = item.estadoKV ?? "pendiente";
 
-    const estadoBoton =
-      estado === "pendiente"      ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idxReal}">Revisar</button>` :
-      estado === "en_revision"    ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idxReal}">✏️ Continuar revisión</button>` :
-      estado === "aprobado"       ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>` :
-      `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+    const htmlEstado =
+      estado === "pendiente"
+        ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idxReal}">Revisar</button>`
+        : estado === "en_revision"
+        ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idxReal}">✏️ Continuar revisión</button>`
+        : estado === "aprobado"
+        ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>`
+        : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
 
     const tr = document.createElement("tr");
-    tr.innerHTML = `${tds}<td style="text-align:center;">${estadoBoton}</td>`;
+    tr.innerHTML = `${tds}<td style="text-align:center;">${htmlEstado}</td>`;
     tbody.appendChild(tr);
   });
 
   activarOrdenamientoFecha();
   prepararEventosTabla();
 }
-
 
 /* ======================================================================
    7) ORDENAMIENTO POR FECHA
@@ -234,8 +224,7 @@ function activarOrdenamientoFecha() {
       return estado === "desc" ? fA - fB : fB - fA;
     });
 
-    th.dataset.order = (estado === "desc" ? "asc" : "desc");
-
+    th.dataset.order = estado === "desc" ? "asc" : "desc";
     th.querySelector(".flecha").textContent =
       estado === "desc" ? "🔽" : "🔼";
 
@@ -255,9 +244,8 @@ function prepararEventosTabla() {
   });
 }
 
-
 /* ======================================================================
-   9) VISOR — PREVIEW SheetJS (COMPLETO)
+   9) VISOR — PREVIEW XLSX + FOTOS
 ====================================================================== */
 async function verArchivo(item) {
 
@@ -274,13 +262,15 @@ async function verArchivo(item) {
   const resp = await fetch(urlDescarga, {
     headers: { "Authorization": `Bearer ${token}` }
   });
-
   const blob = await resp.blob();
   const arrayBuffer = await blob.arrayBuffer();
 
   const wb = XLSX.read(arrayBuffer);
   const sheet = wb.Sheets[wb.SheetNames[0]];
 
+  /* ============================
+     PREVIEW XLSX
+  ============================= */
   const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
   const visor = document.getElementById("visorIframe");
@@ -291,6 +281,7 @@ async function verArchivo(item) {
       border-collapse:collapse;
       font-family:Segoe UI, sans-serif;
       font-size:14px;
+      margin-bottom:25px;
   ">`;
 
   rows.forEach(row => {
@@ -307,17 +298,60 @@ async function verArchivo(item) {
 
   html += `</table>`;
 
+  /* ============================
+     PREVIEW FOTOS
+  ============================= */
+  if (item.fotosPreview && Array.isArray(item.fotosPreview)) {
+
+    html += `
+    <div style="display:flex; flex-wrap:wrap; gap:20px;">
+    `;
+
+    for (const foto of item.fotosPreview) {
+
+      const urlTemp = await obtenerURLTemporal(foto.ruta);
+
+      html += `
+        <div style="
+          width:300px;
+          border:1px solid #d0d7e7;
+          border-radius:10px;
+          padding:10px;
+          background:white;
+        ">
+          <img src="${urlTemp}" style="width:100%; border-radius:8px;">
+          <div style="text-align:center; margin-top:6px; font-size:13px;">
+            ${foto.nombre}
+          </div>
+        </div>
+      `;
+    }
+
+    html += `</div>`;
+  }
+
   visor.innerHTML = html;
 }
 /* ======================================================================
-   10) APROBAR
+   10) BOTÓN VOLVER
+====================================================================== */
+document.getElementById("visorVolver").addEventListener("click", () => {
+
+  document.getElementById("modalVisor").style.display = "none";
+  document.getElementById("contenedor-modulo").style.display = "block";
+
+  renderTabla();
+});
+
+/* ======================================================================
+   11) APROBAR
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
 
   const mciIdReal = window.__mciIdActual;
 
   if (!mciIdReal) {
-    alert("❌ No se encontró el mciId para este informe.");
+    alert("❌ Error: No se encontró el mciId para este informe.");
     return;
   }
 
