@@ -206,9 +206,9 @@ function renderTabla() {
   tbody.innerHTML = "";
 
   const filtrados = datosActuales.filter(item =>
-    item.archivo.nombre.endsWith(".xlsx") &&
-    !item.archivo.nombre.includes("PreviewFotos")
-  );
+  item.nombre.endsWith(".xlsx") &&
+  !item.nombre.includes("PreviewFotos")
+);
 
   filtrados.forEach(item => {
     const idxReal = datosActuales.indexOf(item);
