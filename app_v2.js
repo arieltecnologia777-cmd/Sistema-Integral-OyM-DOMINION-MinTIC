@@ -375,7 +375,13 @@ async function renderizarFotos(item) {
         <div style="padding:10px 12px; font-weight:700;">${clave}</div>
 
         <img src="${base64}"
-             style="width:100%; border-radius:10px; display:block;">
+     style="
+       width:100%;
+       height:180px;
+       object-fit:cover;
+       border-radius:10px;
+       display:block;
+     ">
       </div>
     `;
   }
