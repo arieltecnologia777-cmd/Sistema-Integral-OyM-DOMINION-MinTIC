@@ -305,51 +305,56 @@ async function verArchivo(item) {
   const wb = XLSX.read(arrayBuffer);
   const sheet = wb.Sheets[wb.SheetNames[0]];
 
-  // ✅ RANGOS ORIGINALES EXACTOS
-  let htmlInfoGeneral = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
-let htmlDescripcion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
-let htmlDeclaracion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
+  // ✅ RANGOS ORIGINALES EXACTOS (IMPORTANTE: todas en let)
+  let htmlInfoGeneral  = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
+  let htmlDescripcion  = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
+  let htmlDeclaracion  = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
 
-   // === ENCABEZADOS EXACTOS DEL EXCEL A PINTAR EN GRIS ===
-let info = htmlInfoGeneral;
+  // ✅ FUNCIÓN PARA PINTAR SOLO LOS CAMPOS REALES DEL EXCEL
+  function pintarGris(html) {
 
-const camposGrises = [
-  "N° DE CASO",
-  "FECHA",
-  "CONTRATO No",
-  "CONTRATISTA",
-  "DEPARTAMENTO",
-  "MUNICIPIO",
-  "CENTRO POBLADO",
-  "SEDE INSTITUCIÓN EDUCATIVA O CASO ESPECIAL",
-  "CORREO ELECTRÓNICO",
-  "3. DESCRIPCIÓN DE LA FALLA",
-  "4. DECLARACIÓN",
-  "DATOS DE QUIEN ACOMPAÑA EN EL CENTRO DIGITAL",
-  "NOMBRES Y APELLIDOS",
-  "CARGO",
-  "NÚMERO DE CEDULA",
-  "NÚMERO DE TELÉFONO O CELULAR 1",
-  "NÚMERO DE TELÉFONO O CELULAR 2",
-  "DATOS DE QUIEN REPARA EL SERVICIO EN EL CENTRO DIGITAL",
-  "NÚMERO DE TELÉFONO O  CELULAR",
-  "FIRMA"
-];
+    const campos = [
+      "N° DE CASO",
+      "FECHA",
+      "CONTRATO No",
+      "CONTRATISTA",
+      "DEPARTAMENTO",
+      "MUNICIPIO",
+      "CENTRO POBLADO",
+      "SEDE INSTITUCIÓN EDUCATIVA O CASO ESPECIAL",
+      "CORREO ELECTRÓNICO",
+      "3. DESCRIPCIÓN DE LA FALLA",
+      "4. DECLARACIÓN",
+      "DATOS DE QUIEN ACOMPAÑA EN EL CENTRO DIGITAL",
+      "NOMBRES Y APELLIDOS",
+      "CARGO",
+      "NÚMERO DE CEDULA",
+      "NÚMERO DE TELÉFONO O CELULAR 1",
+      "NÚMERO DE TELÉFONO O CELULAR 2",
+      "DATOS DE QUIEN REPARA EL SERVICIO EN EL CENTRO DIGITAL",
+      "NÚMERO DE TELÉFONO O  CELULAR",
+      "FIRMA"
+    ];
 
-// REGEX para detectar encabezados dentro de cualquier <td>
-camposGrises.forEach(titulo => {
-  const regex = new RegExp(`<td[^>]*>\\s*${titulo}[^<]*<\\/td>`, "gi");
+    campos.forEach(t => {
+      const rg = new RegExp(`(<td[^>]*>\\s*${t}[^<]*</td>)`, "gi");
+      html = html.replace(rg, celda =>
+        celda.replace(
+          "<td",
+          `<td style="background:#eef1f6; font-weight:700; border:1px solid #d6dce8;"`
+        )
+      );
+    });
 
-  info = info.replace(regex, (match) => {
-    return match.replace(
-      "<td",
-      `<td style="background:#eef1f6; font-weight:700; border:1px solid #d6dce8;"`
-    );
-  });
-});
+    return html;
+  }
 
-htmlInfoGeneral = info;
-  // ✅ Render del visor
+  // ✅ APLICAR A LOS TRES RANGOS
+  htmlInfoGeneral  = pintarGris(htmlInfoGeneral);
+  htmlDescripcion  = pintarGris(htmlDescripcion);
+  htmlDeclaracion  = pintarGris(htmlDeclaracion);
+
+  // ✅ Renderizar visor
   const visor = document.getElementById("visorIframe");
 
   visor.innerHTML = `
@@ -361,7 +366,7 @@ htmlInfoGeneral = info;
       box-shadow:0 8px 24px rgba(0,0,0,.12);
     ">
 
-      <!-- ✅ ENCABEZADO 1 — Información general -->
+      <!-- Encabezado 1 -->
       <div style="
         background:#eef1f6;
         padding:14px 18px;
@@ -375,11 +380,9 @@ htmlInfoGeneral = info;
         Información del Beneficiario y la Institución
       </div>
 
-      <div class="auditor-block">
-        ${htmlInfoGeneral}
-      </div>
+      <div class="auditor-block">${htmlInfoGeneral}</div>
 
-      <!-- ✅ ENCABEZADO 2 — Descripción -->
+      <!-- Encabezado 2 -->
       <div style="
         background:#eef1f6;
         padding:14px 18px;
@@ -393,11 +396,9 @@ htmlInfoGeneral = info;
         Descripción del Caso
       </div>
 
-      <div class="auditor-block">
-        ${htmlDescripcion}
-      </div>
+      <div class="auditor-block">${htmlDescripcion}</div>
 
-      <!-- ✅ ENCABEZADO 3 — Declaración -->
+      <!-- Encabezado 3 -->
       <div style="
         background:#eef1f6;
         padding:14px 18px;
@@ -411,29 +412,22 @@ htmlInfoGeneral = info;
         Declaración
       </div>
 
-      <div class="auditor-block">
-        ${htmlDeclaracion}
-      </div>
+      <div class="auditor-block">${htmlDeclaracion}</div>
 
-      <!-- ✅ Sección de fotos -->
       <h2 style="margin:30px 0 10px 0;">Fotos del informe (vista previa)</h2>
       <div id="visorFotos"></div>
 
     </div>
   `;
 
-  // ✅ Cargar JSON de fotos generado por tu Flow
+  // ✅ Cargar fotos (JSON)
   const jsonFotos = await obtenerJsonFotos(item);
   item.fotosPreview = jsonFotos;
 
-  if (jsonFotos) {
-    await renderizarFotos(item);
-  } else {
-    document.getElementById("visorFotos").innerHTML =
-      "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
-  }
+  if (jsonFotos) await renderizarFotos(item);
+  else document.getElementById("visorFotos").innerHTML =
+    "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
 }
-
 /* ======================================================================
    13) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
