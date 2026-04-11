@@ -149,11 +149,11 @@ async function cargarDatosModulo() {
 
   // ✅ Mezcla SP + KV
   listaOD.forEach(a => {
-    const reg = listaKV.find(k => k.fileName === a.nombre);
-    a.mciId = reg ? reg.mciId : null;
-    a.estadoKV = reg ? reg.estado : "pendiente";
-    a.fileId = reg ? reg.fileId : null;
-  });
+  const reg = listaKV.find(k => k.fileName === a.nombre);
+  a.mciId = reg ? reg.mciId : null;
+  a.estadoKV = reg ? reg.estado : "pendiente";
+  a.fileId = reg ? reg.fileId : null;   // ✅ AGREGA ESTA LÍNEA
+});
 
   window.datosActuales = listaOD;
 
