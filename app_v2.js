@@ -146,6 +146,7 @@ async function cargarDatosModulo() {
   const tecnico = "usuario";
   const respKV = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`);
   const listaKV = await respKV.json();
+  console.log("KV recibido:", listaKV);
 
   // ✅ Mezcla SP + KV
   listaOD.forEach(a => {
