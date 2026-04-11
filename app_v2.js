@@ -508,6 +508,8 @@ document.getElementById("visorVolver").addEventListener("click", () => {
 document.getElementById("visorAprobar").addEventListener("click", async () => {
 
   const mciId = window.__mciIdActual;
+  const item = window.__archivoActual;
+
   if (!mciId) {
     alert("❌ No se encontró el mciId.");
     return;
@@ -516,6 +518,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   console.log("⚡ Enviando aprobación al Worker…", mciId);
 
   try {
+    // ✅ 1. Aprobar en KV
     const resp = await fetch(
       `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
       { method: "PUT" }
@@ -525,23 +528,28 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     console.log("✅ Respuesta del Worker:", data);
 
     if (!resp.ok || !data.ok) {
-      alert("❌ Error al aprobar en el Worker.");
+      alert("❌ Error al aprobar en Cloudflare KV.");
       return;
     }
 
-    // ✅ Mostrar mensaje rápido al auditor
-    alert("✅ Informe aprobado correctamente.");
+    // ✅ 2. Mover archivo a la carpeta APROBADOS usando Graph
+    console.log("📦 Moviendo archivo a MCI_Aprobados…");
+    await moverArchivo(item.archivo.id, "MCI_Aprobados");
+    console.log("✅ Archivo movido correctamente.");
 
-    // ✅ Recargar tabla sin refrescar la página
+    // ✅ 3. Mostrar mensaje
+    alert("✅ Informe aprobado y movido a MCI_Aprobados.");
+
+    // ✅ 4. Recargar la tabla sin refrescar toda la página
     await cargarDatosModulo();
 
-    // ✅ Cerrar visor
+    // ✅ 5. Cerrar visor
     document.getElementById("modalVisor").style.display = "none";
     document.getElementById("contenedor-modulo").style.display = "block";
 
   } catch (err) {
     console.error("❌ Error en aprobar():", err);
-    alert("❌ No se pudo aprobar el informe.");
+    alert("❌ No se pudo completar la aprobación.");
   }
 });
 
