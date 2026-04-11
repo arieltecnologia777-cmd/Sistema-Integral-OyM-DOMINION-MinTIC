@@ -1,3 +1,6 @@
+import { SITE_ID, LIBRARY_ID, FOLDER_PATH } from "./modulos_nuevo.js";
+import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
+import { obtenerURLTemporal, moverArchivo } from "./graph_actual.js";
 // ======================================================================
 // BUSCAR EL JSON ASOCIADO AL EXCEL EN LA MISMA CARPETA
 // ======================================================================
