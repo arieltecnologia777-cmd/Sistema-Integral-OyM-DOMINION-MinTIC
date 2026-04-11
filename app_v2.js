@@ -282,6 +282,7 @@ async function obtenerJsonFotos(item) {
    12) VER ARCHIVO — PREVIEW EXCEL + JSON (ESTILO ORIGINAL)
 ====================================================================== */
 async function verArchivo(item) {
+   console.log("🟦 fileId en auditor:", item.fileId);
 
   // ✅ Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
