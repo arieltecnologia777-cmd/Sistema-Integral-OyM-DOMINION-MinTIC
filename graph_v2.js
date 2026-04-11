@@ -73,6 +73,10 @@ export async function obtenerURLTemporal(rutaItem) {
 // MOVER ARCHIVO (APROBAR)
 // ======================================================================
 
+// ======================================================================
+// MOVER ARCHIVO (APROBAR)
+// ======================================================================
+
 export async function moverArchivo(rutaOrigen, rutaDestino) {
 
     const nombreNuevo = rutaDestino.split("/").pop();
@@ -96,8 +100,6 @@ export async function moverArchivo(rutaOrigen, rutaDestino) {
         return false;
     }
 }
-
-
 // ======================================================================
 // CARGAR ARCHIVOS DESDE CARPETA (NO SE USA PARA LISTAR MCI)
 // PERO SE DEJA POR COMPATIBILIDAD
