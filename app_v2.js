@@ -278,7 +278,7 @@ async function obtenerJsonFotos(item) {
 }
 
 /* ======================================================================
-   12) VER ARCHIVO — PREVIEW EXCEL + JSON
+   12) VER ARCHIVO — PREVIEW EXCEL + JSON (ESTILO ORIGINAL)
 ====================================================================== */
 async function verArchivo(item) {
 
@@ -290,77 +290,98 @@ async function verArchivo(item) {
 
   const token = await obtenerToken();
 
+  // === Descargar Excel desde SharePoint ===
   const urlDescarga = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
   const resp = await fetch(urlDescarga, { headers: { "Authorization": `Bearer ${token}` } });
-  const blob = await resp.blob();
-  const arrayBuffer = await blob.arrayBuffer();
+  const arrayBuffer = await (await resp.blob()).arrayBuffer();
 
   const wb = XLSX.read(arrayBuffer);
   const sheet = wb.Sheets[wb.SheetNames[0]];
 
-  const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  // === Rangos EXCEL ORIGINALES (estilo Dominion) ===
+  const htmlInfoGeneral   = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
+  const htmlDescripcion   = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
+  const htmlDeclaracion   = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
 
   const visor = document.getElementById("visorIframe");
-  visor.innerHTML = "";
 
-  let html = `<h3>Vista previa del informe</h3><table style="
-      width:100%; border-collapse:collapse; font-family:Segoe UI; font-size:14px;
-      margin-bottom:20px;
-  ">`;
+  // === CONTENEDOR DOMINION COMPLETO ===
+  visor.innerHTML = `
+    <div style="
+      background:white;
+      padding:25px;
+      border-radius:14px;
+      border:1px solid #dce3f5;
+      box-shadow:0 8px 24px rgba(0,0,0,.12);
+    ">
 
-  rows.forEach(r => {
-    html += "<tr>";
-    r.forEach(c => {
-      html += `<td style="border:1px solid #cad3e7; padding:6px;">${c ?? ""}</td>`;
-    });
-    html += "</tr>";
-  });
+      <h2 style="margin:0 0 18px 0;">Información del técnico</h2>
+      <div class="auditor-block">${htmlInfoGeneral}</div>
 
-  html += "</table>";
-  visor.innerHTML = html;
+      <h2 style="margin:30px 0 10px 0;">Descripción</h2>
+      <div class="auditor-block">${htmlDescripcion}</div>
 
-  // ✅ JSON FOTOS
+      <h2 style="margin:30px 0 10px 0;">Declaración</h2>
+      <div class="auditor-block">${htmlDeclaracion}</div>
+
+      <h2 style="margin:30px 0 10px 0;">Fotos del informe (vista previa)</h2>
+      <div id="visorFotos"></div>
+
+    </div>
+  `;
+
+  // === Cargar JSON de fotos (base64) ===
   const jsonFotos = await obtenerJsonFotos(item);
   item.fotosPreview = jsonFotos;
 
-  if (jsonFotos) visor.innerHTML += `<h3>Fotos registradas</h3>`;
-  else visor.innerHTML += `<p style="color:#888;">(Este informe no tiene fotos)</p>`;
-
-  if (jsonFotos) await renderizarFotos(item);
+  if (jsonFotos) {
+    await renderizarFotos(item);
+  } else {
+    document.getElementById("visorFotos").innerHTML =
+      "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
+  }
 }
 
 /* ======================================================================
-   13) RENDER FOTOS
+   13) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
 async function renderizarFotos(item) {
 
-  const visor = document.getElementById("visorIframe");
+  const cont = document.getElementById("visorFotos");
   const fotos = item.fotosPreview;
   if (!fotos) return;
 
-  let htmlFotos = `<div style="display:flex; flex-wrap:wrap; gap:20px; margin-top:10px;">`;
+  let html = `<div style="
+      display:flex;
+      flex-wrap:wrap;
+      gap:28px;
+      margin-top:10px;
+    ">`;
 
   for (const clave in fotos) {
 
     const base64 = fotos[clave];
     if (!base64) continue;
 
-    htmlFotos += `
+    html += `
       <div style="
-        width:260px; border:1px solid #dde5f8; border-radius:10px;
-        padding:10px; background:white;
+        width:260px;
+        background:#fff;
+        border:1px solid #dde5f8;
+        border-radius:12px;
+        overflow:hidden;
+        box-shadow:0 6px 15px rgba(0,0,0,.08);
       ">
-        <img src="${base64}" style="width:100%; border-radius:8px;">
-        <div style="text-align:center; margin-top:8px; font-size:13px;">
-          ${clave}
-        </div>
+        <div style="padding:10px 12px; font-weight:700;">${clave}</div>
+
+        <img src="${base64}"
+             style="width:100%; border-radius:10px; display:block;">
       </div>
     `;
   }
 
-  htmlFotos += `</div>`;
-
-  visor.innerHTML += htmlFotos;
+  html += `</div>`;
+  cont.innerHTML = html;
 }
 /* ======================================================================
    14) VOLVER
