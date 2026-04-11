@@ -310,6 +310,36 @@ async function verArchivo(item) {
   const htmlDescripcion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
   const htmlDeclaracion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
 
+   // === ARREGLAR ENCABEZADOS GRIS EXACTOS ===
+let info = htmlInfoGeneral;
+
+// Lista exacta de títulos que deben ir en gris
+const camposGrises = [
+  "N° DE CASO:",
+  "FECHA:",
+  "CONTRATO No.",
+  "CONTRATISTA",
+  "DEPARTAMENTO",
+  "MUNICIPIO",
+  "CENTRO POBLADO",
+  "SEDE INSTITUCIÓN EDUCATIVA O CASO ESPECIAL",
+  "ID BENEFICIARIO",
+  "NOMBRE DEL RESPONSABLE (RESPONSABLE DE LA INSTITUCIÓN EDUCATIVA / AUTORIDAD COMPETENTE)",
+  "NÚMERO DE CEDULA",
+  "NÚMERO DE CONTACTO",
+  "CORREO ELECTRÓNICO"
+];
+
+// Para cada encabezado, aplicar fondo gris
+camposGrises.forEach(titulo => {
+  info = info.replaceAll(
+    `<td>${titulo}</td>`,
+    `<td style="background:#eef1f6; font-weight:700; border:1px solid #d6dce8;">${titulo}</td>`
+  );
+});
+
+htmlInfoGeneral = info;
+
   // ✅ Render del visor
   const visor = document.getElementById("visorIframe");
 
