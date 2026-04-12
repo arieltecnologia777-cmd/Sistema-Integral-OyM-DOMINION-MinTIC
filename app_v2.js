@@ -534,10 +534,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
       return;
     }
 
-    // ✅ 2. Mover archivo a la carpeta APROBADOS usando Graph
-    console.log("📦 Moviendo archivo a MCI_Aprobados…");
-    await moverArchivo(item.fileId, "MCI_Aprobados");
-    console.log("✅ Archivo movido correctamente.");
+    
 
     // ✅ 3. Mostrar mensaje
     alert("✅ Informe aprobado y movido a MCI_Aprobados.");
