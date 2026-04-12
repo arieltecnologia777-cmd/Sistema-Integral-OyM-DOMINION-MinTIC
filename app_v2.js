@@ -3,7 +3,7 @@
 ====================================================================== */
 import { SITE_ID, LIBRARY_ID, FOLDER_PATH, listarArchivosMCI, obtenerModulo } from "./modulos_v2.js";
 import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
-import { obtenerURLTemporal, moverArchivo } from "./graph_v2.js";
+import { obtenerURLTemporal } from "./graph_v2.js";
 
 /* ======================================================================
    1) VARIABLES GLOBALES
@@ -537,7 +537,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     
 
     // ✅ 3. Mostrar mensaje
-    alert("✅ Informe aprobado y movido a MCI_Aprobados.");
+    alert("✅ Informe aprobado correctamente.");
 
     // ✅ 4. Recargar la tabla sin refrescar toda la página
     await cargarDatosModulo();
