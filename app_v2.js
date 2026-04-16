@@ -291,7 +291,8 @@ async function verArchivo(item) {
 
   // ✅ Guardar referencia global
   window.__archivoActual = item;
-  window.__mciIdActual = item.mciId ?? null;
+  window.__mciIdActual = item.nombre.replace(".xlsx", "");
+
 
   // ✅ Obtener token para Graph
   const token = await obtenerToken();
