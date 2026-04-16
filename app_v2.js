@@ -293,7 +293,8 @@ async function verArchivo(item) {
 window.__archivoActual = item;
 
 // ✅ mciId SIEMPRE desde el nombre del archivo
-window.__mciIdActual = item.nombre.replace(".xlsx", "");
+const match = item.nombre.match(/OT\d+/);
+window.__mciIdActual = match ? match[0] : null;
 
 
   // ✅ Obtener token para Graph
