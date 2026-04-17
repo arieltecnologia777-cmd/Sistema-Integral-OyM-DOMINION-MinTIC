@@ -511,35 +511,11 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
   const item = window.__archivoActual;
   const mciId = item?.mciId || null;
-
   if (!mciId) return;
 
-  // ✅ 1. Pedir al Flow el link público del Excel
-  const respFlow = await fetch(
-    "URL_DEL_FLOW_CREAR_LINK",   // ← TU FLOW DE POWER AUTOMATE
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mciId })
-    }
-  );
-
-  const flowData = await respFlow.json();
-  const fileUrl = flowData.fileUrl;
-
-  if (!fileUrl) {
-    alert("No se pudo generar el link del archivo.");
-    return;
-  }
-
-  // ✅ 2. Aprobar en KV guardando el link
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileUrl })
-    }
+    { method: "PUT" }
   );
 
   await cargarDatosModulo();
