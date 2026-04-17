@@ -512,6 +512,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   const nombreArchivo = window.__archivoActual?.nombre || "";
 const match = nombreArchivo.match(/OT\d+|TM\d+/);
 const mciId = match ? match[0] : null;
+
   const item = window.__archivoActual;
 
   if (!mciId) {
@@ -562,6 +563,7 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   const nombreArchivo = window.__archivoActual?.nombre || "";
 const match = nombreArchivo.match(/OT\d+|TM\d+/);
 const mciId = match ? match[0] : null;
+
 
 if (!mciId) {
   alert("❌ No se encontró el mciId.");
