@@ -516,7 +516,9 @@ document.getElementById("visorVolver").addEventListener("click", () => {
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
 
-  const mciId = window.__mciIdActual;
+  const nombreArchivo = window.__archivoActual?.nombre || "";
+const match = nombreArchivo.match(/OT\d+|TM\d+/);
+const mciId = match ? match[0] : null;
   const item = window.__archivoActual;
 
   if (!mciId) {
