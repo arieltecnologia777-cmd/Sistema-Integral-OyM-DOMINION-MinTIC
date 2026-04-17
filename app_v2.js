@@ -156,7 +156,7 @@ async function cargarDatosModulo() {
 });
 a.mciId = reg ? (reg.mciId || reg.mcid) : null;
   a.estadoKV = reg ? reg.estado : "pendiente";
-  a.fileId = reg ? reg.fileId : null;   // ✅ AGREGA ESTA LÍNEA
+  a.fileId = a.archivo?.id || null;   // ✅ AGREGA ESTA LÍNEA
 });
 
   window.datosActuales = listaOD;
