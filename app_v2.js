@@ -290,7 +290,10 @@ async function obtenerJsonFotos(item) {
 ====================================================================== */
 async function verArchivo(item) {
    window.__archivoActual = item;
-   console.log("🟦 fileId en auditor:", item.fileId);
+
+  console.log("🟨 item completo:", item);
+  console.log("🟦 fileId en auditor:", item.fileId);
+
 
   // ✅ Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
