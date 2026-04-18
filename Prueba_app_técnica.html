@@ -6370,10 +6370,12 @@ setTimeout(async () => {
     if (!btn) return;
 
     if (informe) {
-        
-        console.log("✅ Informe aprobado — habilitando botón de descarga (login manual)");
-        btn.style.display = "block";
-    } else {
+    window.__mciIdActual = informe.mciId;
+    localStorage.setItem("ultimoMciId", informe.mciId);
+
+    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    btn.style.display = "block";
+} else {
         console.log("📌 Aún no aprobado en KV (login manual)");
         btn.style.display = "none";
     }
@@ -6455,10 +6457,12 @@ if (informe && informe.mciId) {
       if (!btn) return;
 
       if (informe) {
-          
-          console.log("✅ Informe aprobado — habilitando botón de descarga (auto-login)");
-          btn.style.display = "block";
-      } else {
+    window.__mciIdActual = informe.mciId;
+    localStorage.setItem("ultimoMciId", informe.mciId);
+
+    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    btn.style.display = "block";
+} else {
           console.log("📌 Aún no aprobado en KV (auto-login)");
           btn.style.display = "none";
       }
