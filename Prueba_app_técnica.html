@@ -6465,10 +6465,6 @@ if (informe && informe.mciId) {
 }
 
 document.getElementById("downloadBtn").onclick = async () => {
-    if (!window.__informeAprobado) {
-        alert("⏳ El informe aún no está aprobado por el auditor.");
-        return;
-    }
 
     const mciId = window.__mciIdActual;
     if (!mciId) {
@@ -6488,11 +6484,23 @@ document.getElementById("downloadBtn").onclick = async () => {
             return;
         }
 
-        const blob = await resp.blob();
-        const url = window.URL.createObjectURL(blob);
+        // ✅ AHORA ESPERAMOS JSON, NO BLOB
+        const { fileName, fileB64 } = await resp.json();
 
+        const bytes = atob(fileB64);
+        const buffer = new Uint8Array(bytes.length);
+        for (let i = 0; i < bytes.length; i++) {
+            buffer[i] = bytes.charCodeAt(i);
+        }
+
+        const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+
+        const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
+        a.download = fileName;
         a.click();
 
         window.URL.revokeObjectURL(url);
