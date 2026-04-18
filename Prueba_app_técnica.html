@@ -4204,34 +4204,6 @@ body.theme-pro #sec-pruebas
   </style>
 </head>
 <body class="theme-pro">
-
-<!-- =========================
- LOGIN TÉCNICOS
-========================= -->
-<div id="loginScreen" style="
-  position:fixed; inset:0; background:white;
-  display:flex; flex-direction:column; justify-content:center;
-  align-items:center; z-index:9999; padding:20px;
-">
-  <h2 style="margin-bottom:20px; color:#136BFF;">Ingreso de Técnicos</h2>
-
-  <input id="loginUser" type="text" placeholder="Usuario" 
-    style="padding:10px; width:220px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;">
-  
-  <input id="loginPass" type="password" placeholder="Contraseña" 
-    style="padding:10px; width:220px; margin-bottom:20px; border-radius:8px; border:1px solid #ccc;">
-  
-  <button id="loginBtn" style="
-    padding:10px 20px; background:#136BFF; color:white; 
-    border:none; border-radius:8px; font-weight:700; cursor:pointer;">
-    Ingresar
-  </button>
-
-  <p id="loginError" style="color:red; margin-top:10px; display:none;">
-    Usuario o contraseña incorrectos.
-  </p>
-</div>
-
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -4249,15 +4221,12 @@ body.theme-pro #sec-pruebas
       <a href="#" data-target="sec-etiqueta" style="display:none !important;">ETIQUETA RE FOTOGRÁFICO</a>      
     </nav>
 <div class="sidebar-actions">
+
   <button class="btn secondary" id="collapseBtn">Cerrar menú</button>
-  <button class="btn" id="exportBtn">📤 Cargar informe</button>
-
-  <!-- ✅ BOTÓN NUEVO -->
-  <button class="btn" id="downloadBtn" style="display:none;">📥 Descargar informe</button>
-
-  <button class="btn secondary" id="resetWorkBtn">Reiniciar trabajo</button>
+  <button class="btn" id="exportBtn">Exportar</button>
+<button class="btn secondary" id="resetWorkBtn">Reiniciar trabajo</button>
 </div>
-</aside>
+  </aside>
 
   <!-- MAIN -->
   <main class="main">
@@ -5040,9 +5009,6 @@ body.theme-pro #sec-pruebas
   </main>
 
   <script>
-
-
-
 const photoInputs = [
   "inp-firma-tec",
   "img-gps-geo",
@@ -5644,12 +5610,9 @@ restoreDraft();
     // ⚙️ URL del Trigger HTTP del Flow (pega la tuya)
     const FLOW_URL = 'https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/22e52a8b0ddf4b26aa1c13ee9df6d12c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=uVH7aAkzxBXlzwLu6tw4_HX6WmaheUTZtR14-P9miXI';
 
-// ✅ Endpoint Cloudflare KV
-const KV_URL = "https://cloudflare-index.modulo-de-exclusiones.workers.dev/registrar";
-
     const setWorking = (on, text) => {
       exportBtn.disabled = on;
-      exportBtn.textContent = on ? (text || 'Generando…') : '📤 Generar informe';
+      exportBtn.textContent = on ? (text || 'Generando…') : 'Exportar';
     };
     const setStatus = (msg, kind='')=>{
       statusEl.textContent = msg || '';
@@ -5674,31 +5637,66 @@ const KV_URL = "https://cloudflare-index.modulo-de-exclusiones.workers.dev/regis
       }
     }
 
-// ✅ Nueva función registrarEnKV — versión final y completa
-// ✅ Nueva función registrarEnKV — DEFINITIVA
-async function registrarEnKV(mciId, fileId, fileName, tecnico, fileUrl) {
-  try {
-    const payload = { mciId, fileId, fileName, tecnico, fileUrl };
-
-    const resp = await fetch(KV_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    if (!resp.ok) {
-      console.error("❌ Error KV:", resp.status);
-      return false;
+    function b64ToBlob(base64, mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'){
+      const binary = atob(base64);
+      const len = binary.length;
+      const chunk = 1024*1024;
+      const parts = [];
+      for (let i=0;i<len;i+=chunk){
+        const slice = binary.slice(i, i+chunk);
+        const arr = new Uint8Array(slice.length);
+        for (let j=0;j<slice.length;j++){ arr[j] = slice.charCodeAt(j); }
+        parts.push(arr);
+      }
+      return new Blob(parts, { type: mime });
     }
 
-    return true;
-  } catch (err) {
-    console.error("❌ Error KV:", err);
-    return false;
-  }
-}
+    function fileToDataURL(file){
+      return new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result || '');
+        fr.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+        fr.readAsDataURL(file);
+      });
+    }
 
-    // ✅ Obtiene foto desde input file o desde IndexedDB si fue restaurada
+    function downscaleDataUrl(dataUrl, maxPx=1600, quality=0.85){
+      return new Promise((resolve)=>{
+        try{
+          const img = new Image();
+          img.onload = () => {
+            const w = img.naturalWidth || img.width;
+            const h = img.naturalHeight || img.height;
+            const scale = Math.min(1, maxPx / Math.max(w, h));
+            if (scale < 1){
+              const canvas = document.createElement('canvas');
+              canvas.width  = Math.round(w * scale);
+              canvas.height = Math.round(h * scale);
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            } else {
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
+        }catch{
+          resolve(dataUrl);
+        }
+      });
+    }
+
+    async function pickDataUrl(id, maxPx=1600, quality=0.85){
+      const el = document.getElementById(id);
+      const f = el?.files?.[0];
+      if (!f) return '';
+      const raw = await fileToDataURL(f);
+      return await downscaleDataUrl(raw, maxPx, quality);
+    }
+
+
+// ✅ Obtiene foto desde input file o desde IndexedDB si fue restaurada
 async function getFoto(id, maxPx = 1600, quality = 0.85) {
     const input = document.getElementById(id);
 
@@ -5749,46 +5747,7 @@ async function getFoto(id, maxPx = 1600, quality = 0.85) {
       wireSapAntes();
     }
 
-// ===============================
-// ✅ NUEVA FUNCIÓN GLOBAL
-// ===============================
-async function verificarEstadoPorTecnico() {
-    try {
-        const tecnico = localStorage.getItem("tecnicoActual");
-        if (!tecnico) {
-            window.__informeAprobado = false;
-            return null;
-        }
-
-        const resp = await fetch(
-            `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
-        );
-
-        const lista = await resp.json();
-
-        const aprobado = lista.find(r => r.estado === "aprobado");
-
-        if (aprobado) {
-            window.__informeAprobado = true;
-            return aprobado;
-        } else {
-            window.__informeAprobado = false;
-            return null;
-        }
-
-    } catch (e) {
-        console.error("❌ Error consultando KV:", e);
-        window.__informeAprobado = false;
-        return null;
-    }
-}
-
     async function exportarMCI(){
-// ✅ Validar login antes de exportar
-if (!tecnicoActual) {
-    alert("Debes iniciar sesión para poder exportar el MCI.");
-    return;
-}
 
     // 1) Mínimos requeridos
     const numeroCaso = document.getElementById('inp-numero-caso').value.trim();
@@ -6003,21 +5962,31 @@ if (!tecnicoActual) {
         setWorking(true, 'Enviando…');
 
         const resp = await fetch(FLOW_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    payloadJson: JSON.stringify(payloadJson),
-    imgsJson: JSON.stringify(imgsJson),
-    tecnico: tecnicoActual
-  })
-});
+            method: 'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({
+                payloadJson: JSON.stringify(payloadJson),
+                imgsJson: JSON.stringify(imgsJson)
+            })
+        });
 
-if (!resp.ok) {
-  throw new Error(`Error HTTP ${resp.status} al generar el informe`);
-}
+        if (!resp.ok){
+            const t = await resp.text().catch(()=> '');
+            throw new Error(`HTTP ${resp.status} ${resp.statusText} ${t}`);
+        }
 
-setStatus("✅ Informe enviado para revisión del auditor", "ok");
-alert("El informe fue enviado correctamente. El auditor lo revisará y aprobará.");
+        const data = await resp.json();
+        const { fileName = 'FORMATO_MCI.xlsx', fileB64, result } = data || {};
+        if (!fileB64) throw new Error('La respuesta no incluye fileB64.');
+
+        const blob = b64ToBlob(fileB64);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+
+        setStatus(result ? `Listo: ${result}` : 'Archivo generado correctamente ✔', 'ok');
 
     }catch(err){
         console.error(err);
@@ -6027,11 +5996,7 @@ alert("El informe fue enviado correctamente. El auditor lo revisará y aprobará
         setWorking(false);
         clearDraft();
     }
-
-   
-    //-----------------------------------------------------------
-
-}  // ✅ ← CIERRA exportarMCI()
+}
 
 // === PASO 7: Propagar títulos de <label> a data-title en cada tarjeta de PRUEBAS ===
 // Ubicación recomendada: justo ANTES de document.getElementById('exportBtn')...
@@ -6317,8 +6282,9 @@ cargarFotoOffline(id, function(base64) {
 }
 
 
+
   </script>
-  <script>
+<script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js")
     .then(() => console.log("✅ SW registrado"))
@@ -6326,177 +6292,7 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-<script>
-// ================================
-// LOGIN PARA TÉCNICOS (CORREGIDO)
-// ================================
-const TECNICOS = {
-  "usuario": "1234",
-  "maria": "abcd",
-  "juan": "pass2026"
-};
 
-// ✅ VARIABLE GLOBAL NECESARIA PARA EXPORTAR MCI + CLOUDFLARE
-let tecnicoActual = localStorage.getItem("tecnicoActual") || null;
-
-// ✅ Variables globales para verificar aprobación y descarga (RAM)
-window.__mciIdActual = null;
-window.__fileNameActual = null;
-
-// ✅ EVENTO DE LOGIN
-document.getElementById("loginBtn").onclick = () => {
-  const u = loginUser.value.trim().toLowerCase();
-  const p = loginPass.value.trim();
-
-  if (TECNICOS[u] && TECNICOS[u] === p) {
-
-    localStorage.setItem("tecnicoActual", u);
-    tecnicoActual = u;
-
-    document.getElementById("loginScreen").style.display = "none";
-// ✅ Revisar aprobación al iniciar sesión (login manual)
-setTimeout(async () => {
-
-    const informe = await verificarEstadoPorTecnico();
-    const btn = document.getElementById("downloadBtn");
-    if (!btn) return;
-
-    if (informe) {
-        window.__fileUrlActual = informe.fileUrl;
-        console.log("✅ Informe aprobado — habilitando botón de descarga (login manual)");
-        btn.style.display = "block";
-    } else {
-        console.log("📌 Aún no aprobado en KV (login manual)");
-        btn.style.display = "none";
-    }
-
-}, 1500);
-
-//-----------------------------------------------------------
-    // ✅ FASE 3.5.2 — HABILITAR BOTÓN DE DESCARGA SI ESTÁ APROBADO
-    //-----------------------------------------------------------
-    setTimeout(async () => {
-
-    const informe = await verificarEstadoPorTecnico();
-
-    const btn = document.getElementById("downloadBtn");  
-    if (!btn) {
-    console.warn("⚠ downloadBtn no existe aún; reintentando…");
-
-    // Reintenta en 500ms hasta encontrarlo
-    return setTimeout(async () => {
-        const informe = await verificarEstadoPorTecnico();
-        const btn2 = document.getElementById("downloadBtn");
-        if (btn2) {
-            if (informe) {
-                window.__fileUrlActual = informe.fileUrl;
-                console.log("✅ Informe aprobado — habilitando botón (retry)");
-                btn2.style.display = "block";
-            } else {
-                btn2.style.display = "none";
-                console.log("📌 Aún no aprobado (retry)");
-            }
-        }
-    }, 500);
-}
-
-    if (informe) {
-        window.__fileUrlActual = informe.fileUrl;
-        console.log("✅ Informe aprobado — habilitando botón de descarga");
-        btn.style.display = "block";
-    } else {
-        console.log("📌 Aún no aprobado en KV");
-        btn.style.display = "none";
-    }
-
-}, 1500);
-
-    // ✅ Restaurar referencias guardadas en IndexedDB
-    window.__mciIdActual = localStorage.getItem("ultimoMciId");
-window.__fileNameActual = localStorage.getItem("ultimoFileName");
-
-  } else {
-    loginError.style.display = "block";
-  }
-};
-
-// ✅ Sesión previa → saltar login automáticamente
-const previo = localStorage.getItem("tecnicoActual");
-if (previo) {
-  tecnicoActual = previo;
-  document.getElementById("loginScreen").style.display = "none";
-
-  window.__mciIdActual = localStorage.getItem("ultimoMciId");
-if (!window.__mciIdActual) {
-  window.__mciIdActual = localStorage.getItem("ultimoMciId");
-}
-
-  window.__fileNameActual = localStorage.getItem("ultimoFileName");
-
-  // ✅ Revisar aprobación cuando entra por sesión previa (AQUÍ DEBE IR)
-  setTimeout(async () => {
-
-      const informe = await verificarEstadoPorTecnico();
-if (informe && informe.mciId) {
-  window.__mciIdActual = informe.mciId;
-  localStorage.setItem("ultimoMciId", informe.mciId);
-}
-      const btn = document.getElementById("downloadBtn");
-      if (!btn) return;
-
-      if (informe) {
-          window.__fileUrlActual = informe.fileUrl;
-          console.log("✅ Informe aprobado — habilitando botón de descarga (auto-login)");
-          btn.style.display = "block";
-      } else {
-          console.log("📌 Aún no aprobado en KV (auto-login)");
-          btn.style.display = "none";
-      }
-
-  }, 1500);
-}
-
-document.getElementById("downloadBtn").onclick = async () => {
-    if (!window.__informeAprobado) {
-        alert("⏳ El informe aún no está aprobado por el auditor.");
-        return;
-    }
-
-    const mciId = window.__mciIdActual;
-    if (!mciId) {
-        alert("No se encontró el número de caso.");
-        return;
-    }
-
-    try {
-        const resp = await fetch("URL_DEL_FLOW_DESCARGA", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mciId })
-        });
-
-        if (!resp.ok) {
-            alert("No se pudo descargar el archivo.");
-            return;
-        }
-
-        const blob = await resp.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.click();
-
-        window.URL.revokeObjectURL(url);
-
-    } catch (e) {
-        console.error(e);
-        alert("Error al descargar el archivo.");
-    }
-};
-
-
-</script>
 
 </body>
 </html>
