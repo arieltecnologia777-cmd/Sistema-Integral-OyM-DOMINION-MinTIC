@@ -5676,9 +5676,16 @@ const KV_URL = "https://cloudflare-index.modulo-de-exclusiones.workers.dev/regis
 
 // ✅ Nueva función registrarEnKV — versión final y completa
 // ✅ Nueva función registrarEnKV — DEFINITIVA
-async function registrarEnKV(mciId, fileId, fileName, tecnico, fileUrl) {
+async function registrarEnKV(mciId, tecnico) {
   try {
-    const payload = { mciId, fileId, fileName, tecnico, fileUrl };
+    const payload = {
+      mciId,
+      fileId: "",          // ✅ requerido por el Worker
+      fileName: "",        // ✅ requerido por el Worker
+      tecnico,
+      estado: "pendiente",
+      fileUrl: null
+    };
 
     const resp = await fetch(KV_URL, {
       method: "POST",
@@ -6016,9 +6023,10 @@ if (!resp.ok) {
   throw new Error(`Error HTTP ${resp.status} al generar el informe`);
 }
 
+await registrarEnKV(numeroCaso, tecnicoActual);
+
 setStatus("✅ Informe enviado para revisión del auditor", "ok");
 alert("El informe fue enviado correctamente. El auditor lo revisará y aprobará.");
-
     }catch(err){
         console.error(err);
         setStatus('Error al generar: ' + err.message, 'err');
@@ -6362,10 +6370,12 @@ setTimeout(async () => {
     if (!btn) return;
 
     if (informe) {
-        window.__fileUrlActual = informe.fileUrl;
-        console.log("✅ Informe aprobado — habilitando botón de descarga (login manual)");
-        btn.style.display = "block";
-    } else {
+    window.__mciIdActual = informe.mciId;
+    localStorage.setItem("ultimoMciId", informe.mciId);
+
+    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    btn.style.display = "block";
+} else {
         console.log("📌 Aún no aprobado en KV (login manual)");
         btn.style.display = "none";
     }
@@ -6389,7 +6399,7 @@ setTimeout(async () => {
         const btn2 = document.getElementById("downloadBtn");
         if (btn2) {
             if (informe) {
-                window.__fileUrlActual = informe.fileUrl;
+                
                 console.log("✅ Informe aprobado — habilitando botón (retry)");
                 btn2.style.display = "block";
             } else {
@@ -6401,10 +6411,12 @@ setTimeout(async () => {
 }
 
     if (informe) {
-        window.__fileUrlActual = informe.fileUrl;
-        console.log("✅ Informe aprobado — habilitando botón de descarga");
-        btn.style.display = "block";
-    } else {
+    window.__mciIdActual = informe.mciId;
+    localStorage.setItem("ultimoMciId", informe.mciId);
+
+    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    btn.style.display = "block";
+} else {
         console.log("📌 Aún no aprobado en KV");
         btn.style.display = "none";
     }
@@ -6445,10 +6457,12 @@ if (informe && informe.mciId) {
       if (!btn) return;
 
       if (informe) {
-          window.__fileUrlActual = informe.fileUrl;
-          console.log("✅ Informe aprobado — habilitando botón de descarga (auto-login)");
-          btn.style.display = "block";
-      } else {
+    window.__mciIdActual = informe.mciId;
+    localStorage.setItem("ultimoMciId", informe.mciId);
+
+    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    btn.style.display = "block";
+} else {
           console.log("📌 Aún no aprobado en KV (auto-login)");
           btn.style.display = "none";
       }
@@ -6457,42 +6471,58 @@ if (informe && informe.mciId) {
 }
 
 document.getElementById("downloadBtn").onclick = async () => {
-    if (!window.__informeAprobado) {
-        alert("⏳ El informe aún no está aprobado por el auditor.");
-        return;
+
+  // 1️⃣ Recuperar mciId (RAM o localStorage)
+  const mciId =
+    window.__mciIdActual ||
+    localStorage.getItem("ultimoMciId");
+
+  if (!mciId) {
+    alert("No se encontró el número de caso (mciId).");
+    return;
+  }
+
+  try {
+    // 2️⃣ Llamar SOLO al flujo GRANDE
+    const resp = await fetch(FLOW_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mciId })
+    });
+
+    if (!resp.ok) {
+      alert("Error al descargar el archivo.");
+      return;
     }
 
-    const mciId = window.__mciIdActual;
-    if (!mciId) {
-        alert("No se encontró el número de caso.");
-        return;
+    // 3️⃣ Leer respuesta Base64
+    const { fileName, fileB64 } = await resp.json();
+
+    // 4️⃣ Base64 → Blob
+    const binary = atob(fileB64);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
     }
 
-    try {
-        const resp = await fetch("URL_DEL_FLOW_DESCARGA", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mciId })
-        });
+    const blob = new Blob([bytes], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
 
-        if (!resp.ok) {
-            alert("No se pudo descargar el archivo.");
-            return;
-        }
+    // 5️⃣ Descargar archivo
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName || "APROBADO.xlsx";
+    a.click();
 
-        const blob = await resp.blob();
-        const url = window.URL.createObjectURL(blob);
+    URL.revokeObjectURL(url);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.click();
-
-        window.URL.revokeObjectURL(url);
-
-    } catch (e) {
-        console.error(e);
-        alert("Error al descargar el archivo.");
-    }
+  } catch (err) {
+    console.error(err);
+    alert("Error inesperado en la descarga.");
+  }
 };
 
 
