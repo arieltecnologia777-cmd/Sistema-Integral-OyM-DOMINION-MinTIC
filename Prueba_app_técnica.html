@@ -6511,7 +6511,7 @@ if (!window.__mciIdActual) {
 
       const informe = await verificarEstadoPorTecnico();
     const registro = Array.isArray(informe) ? informe[0] : informe;
-if (informe && registro.mciId) {
+if (registro && registro.estado === "aprobado") {
   window.__mciIdActual = registro.mciId;
   localStorage.setItem("ultimoMciId", registro.mciId);
 }
