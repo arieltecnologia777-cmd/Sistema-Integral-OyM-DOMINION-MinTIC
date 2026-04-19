@@ -6549,7 +6549,9 @@ document.getElementById("downloadBtn").onclick = async () => {
     const resp = await fetch(FLOW_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mciId })
+      body: JSON.stringify({
+  mciId: window.__mciIdActual || localStorage.getItem("ultimoMciId")
+})
     });
 
     if (!resp.ok) {
