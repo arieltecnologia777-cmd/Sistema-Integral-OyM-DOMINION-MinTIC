@@ -6429,10 +6429,10 @@ setTimeout(async () => {
     if (!btn) return;
 
     if (registro && registro.estado === "aprobado") {
-    window.__mciIdActual = informe.mciId;
-    localStorage.setItem("ultimoMciId", informe.mciId);
+    window.__mciIdActual = registro.mciId;
+    localStorage.setItem("ultimoMciId", registro.mciId);
 
-    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    console.log("✅ Informe aprobado — mciId fijado:", registro.mciId);
     btn.style.display = "block";
 } else {
         console.log("📌 Aún no aprobado en KV (login manual)");
