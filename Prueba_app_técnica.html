@@ -6549,13 +6549,14 @@ document.getElementById("downloadBtn").onclick = async () => {
 
   try {
     // 2️⃣ Llamar a flujo FLOW_DESCARGAR_URL
-    const resp = await fetch(FLOW_DESCARGAR_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-  mciId: window.__mciIdActual || localStorage.getItem("ultimoMciId")
-})
-    });
+   const resp = await fetch(FLOW_DESCARGAR_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    mciId: window.__mciIdActual || localStorage.getItem("ultimoMciId"),
+    tecnico: tecnicoActual
+  })
+});
 
     if (!resp.ok) {
       alert("Error al descargar el archivo.");
