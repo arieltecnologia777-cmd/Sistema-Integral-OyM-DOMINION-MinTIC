@@ -6424,10 +6424,11 @@ document.getElementById("loginBtn").onclick = () => {
 setTimeout(async () => {
 
     const informe = await verificarEstadoPorTecnico();
+  const registro = Array.isArray(informe) ? informe[0] : informe;
     const btn = document.getElementById("downloadBtn");
     if (!btn) return;
 
-    if (informe) {
+    if (registro && registro.estado === "aprobado") {
     window.__mciIdActual = informe.mciId;
     localStorage.setItem("ultimoMciId", informe.mciId);
 
@@ -6446,6 +6447,7 @@ setTimeout(async () => {
     setTimeout(async () => {
 
     const informe = await verificarEstadoPorTecnico();
+      const registro = Array.isArray(informe) ? informe[0] : informe;
 
     const btn = document.getElementById("downloadBtn");  
     if (!btn) {
@@ -6454,9 +6456,10 @@ setTimeout(async () => {
     // Reintenta en 500ms hasta encontrarlo
     return setTimeout(async () => {
         const informe = await verificarEstadoPorTecnico();
+      const registro = Array.isArray(informe) ? informe[0] : informe;
         const btn2 = document.getElementById("downloadBtn");
         if (btn2) {
-            if (informe) {
+            if (registro && registro.estado === "aprobado") {
                 
                 console.log("✅ Informe aprobado — habilitando botón (retry)");
                 btn2.style.display = "block";
@@ -6468,11 +6471,11 @@ setTimeout(async () => {
     }, 500);
 }
 
-    if (informe) {
-    window.__mciIdActual = informe.mciId;
-    localStorage.setItem("ultimoMciId", informe.mciId);
+    if (registro && registro.estado === "aprobado") {
+    window.__mciIdActual = registro.mciId;
+    localStorage.setItem("ultimoMciId", registro.mciId);
 
-    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    console.log("✅ Informe aprobado — mciId fijado:", registro.mciId);
     btn.style.display = "block";
 } else {
         console.log("📌 Aún no aprobado en KV");
@@ -6507,18 +6510,19 @@ if (!window.__mciIdActual) {
   setTimeout(async () => {
 
       const informe = await verificarEstadoPorTecnico();
-if (informe && informe.mciId) {
-  window.__mciIdActual = informe.mciId;
-  localStorage.setItem("ultimoMciId", informe.mciId);
+    const registro = Array.isArray(informe) ? informe[0] : informe;
+if (informe && registro.mciId) {
+  window.__mciIdActual = registro.mciId;
+  localStorage.setItem("ultimoMciId", registro.mciId);
 }
       const btn = document.getElementById("downloadBtn");
       if (!btn) return;
 
-      if (informe) {
-    window.__mciIdActual = informe.mciId;
-    localStorage.setItem("ultimoMciId", informe.mciId);
+      if (registro && registro.estado === "aprobado") {
+    window.__mciIdActual = registro.mciId;
+    localStorage.setItem("ultimoMciId", registro.mciId);
 
-    console.log("✅ Informe aprobado — mciId fijado:", informe.mciId);
+    console.log("✅ Informe aprobado — mciId fijado:", registro.mciId);
     btn.style.display = "block";
 } else {
           console.log("📌 Aún no aprobado en KV (auto-login)");
