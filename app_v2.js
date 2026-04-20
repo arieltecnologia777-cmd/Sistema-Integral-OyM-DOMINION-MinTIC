@@ -1,175 +1,337 @@
 /* ======================================================================
-   0) CONFIGURACIÓN — FLUJOS ONEDRIVE
+   0) CONFIGURACIÓN — FLUJO ÚNICO ONE DRIVE (EXCEL + JSON)
 ====================================================================== */
 
-// ✅ Flow SOLO para descargar / previsualizar Excel
+// ✅ URL del TRIGGER HTTP del flujo "Generar MCI"
+// (copiada directamente desde Power Automate, con & normales)
 const FLOW_GET_ONEDRIVE_FILE =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bd9e2227be594ecdb47c0da4a898d474/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j3SlbYcxilxwhnHJfL95lpTA-Y2RzAtiNrmug_D01eQ";
 
-// ✅ Flow SOLO para obtener JSON de fotos (base64)
-const FLOW_GET_FOTOS_PREVIEW =
+// ✅ URL del TRIGGER HTTP del flujo "Generar MCI"
+// (copiada directamente desde Power Automate, con & normales)
+onst FLOW_GET_FOTOS_PREVIEW =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc99f30c70a64d57b309dce1c13d1290/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMxJMh4pAr98EPpIwDJGzHb5_glsVkAv-A1TVjR9zsA";
-
 /* ======================================================================
-   IMPORTS
+   0) IMPORTS — NECESARIOS
 ====================================================================== */
-import { obtenerModulo } from "./modulos_v2.js";
-import { iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
+import {obtenerModulo } from "./modulos_v2.js";
+import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
 
 /* ======================================================================
-   VARIABLES GLOBALES
+   1) VARIABLES GLOBALES
 ====================================================================== */
 window.moduloActivo = null;
 window.datosActuales = [];
+window.estadoInformes = {};
 window.__archivoActual = null;
+window.__mciIdActual = null;
 
 /* ======================================================================
-   INICIO
+   2) GUARDAR / CARGAR ESTADO LOCAL
+====================================================================== */
+function guardarEstados() {
+  localStorage.setItem("estadoInformesAuditor", JSON.stringify(window.estadoInformes));
+}
+function cargarEstados() {
+  const raw = localStorage.getItem("estadoInformesAuditor");
+  if (raw) {
+    try { window.estadoInformes = JSON.parse(raw); }
+    catch { window.estadoInformes = {}; }
+  }
+}
+
+/* ======================================================================
+   3) INICIO DEL MÓDULO (MSAL SIN BLOQUEAR)
 ====================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
-  if (!usuarioActual()) iniciarSesion().catch(() => {});
+
+  // NO BLOQUEAR NUNCA EL MÓDULO
+  if (!usuarioActual()) iniciarSesion().catch(() => console.warn("MSAL pendiente…"));
+
   prepararSidebar();
+  cargarEstados();
   seleccionarModulo("inicio");
 });
 
 /* ======================================================================
-   SIDEBAR
+   4) SIDEBAR
 ====================================================================== */
 function prepararSidebar() {
-  document.querySelectorAll(".sb-item").forEach(btn => {
+  const botones = document.querySelectorAll(".sb-item");
+
+  botones.forEach(btn => {
     btn.addEventListener("click", () => {
+
       if (btn.classList.contains("logout")) {
         cerrarSesion();
         return;
       }
-      document.querySelectorAll(".sb-item").forEach(b => b.classList.remove("active"));
+
+      botones.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
+
       seleccionarModulo(btn.dataset.mod);
     });
   });
 }
 
 /* ======================================================================
-   SELECCIONAR MÓDULO
+   5) SELECCIONAR MÓDULO
 ====================================================================== */
 async function seleccionarModulo(mod) {
+
   const cont = document.getElementById("contenedor-modulo");
   cont.innerHTML = "";
 
   if (mod === "inicio") {
-    cont.innerHTML = `<div style="padding:20px">Bienvenido al <b>Panel Auditor</b></div>`;
+    window.moduloActivo = null;
+    cont.innerHTML = `
+      <div style="padding:20px;">
+        Bienvenido al <strong>Panel Auditor</strong>.<br>
+        Selecciona un módulo en la barra lateral para comenzar.
+      </div>`;
     return;
   }
 
   window.moduloActivo = obtenerModulo(mod);
+
+  if (!window.moduloActivo) {
+    cont.innerHTML = "<p>Error: módulo no encontrado.</p>";
+    return;
+  }
+
   cont.innerHTML = generarTablaHTML(window.moduloActivo);
+
+  prepararEventosTabla();
   await cargarDatosModulo();
 }
-
 /* ======================================================================
-   TABLA
+   6) GENERAR TABLA HTML
 ====================================================================== */
 function generarTablaHTML(modulo) {
-  const ths = modulo.columnas.map(c => `<th>${c.label}</th>`).join("");
+
+  const ths = modulo.columnas.map(col => {
+    if (col.id === "fecha") {
+      return `
+      <th style="cursor:pointer;">
+        <span class="sortable" data-col="fecha" data-order="desc">
+          ${col.label} <span class="flecha">🔽</span>
+        </span>
+      </th>`;
+    }
+    return `<th>${col.label}</th>`;
+  }).join("");
+
   return `
+  <div class="tabla-box">
     <table class="tabla">
       <thead><tr>${ths}<th>Acciones</th></tr></thead>
-      <tbody id="tbodyDatos"></tbody>
-    </table>`;
+      <tbody id="tbodyDatos">
+        <tr><td colspan="${modulo.columnas.length + 1}" style="padding:20px; text-align:center;">
+          Cargando…
+        </td></tr>
+      </tbody>
+    </table>
+  </div>`;
 }
 
 /* ======================================================================
-   CARGAR DATOS (KV)
+   7) CARGAR DATOS DEL MÓDULO (SharePoint + KV)
 ====================================================================== */
 async function cargarDatosModulo() {
-  const resp = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar`);
-  const listaKV = await resp.json();
 
-  // ✅ Mapeo correcto (evita undefined)
-  window.datosActuales = listaKV.map(reg => {
-    const fechaObj = reg.fechaGenerado ? new Date(reg.fechaGenerado) : null;
-    return {
-      nombre: reg.fileName,
-      fecha: fechaObj ? fechaObj.toLocaleString("es-CO") : "",
-      tamano: "", // KV no trae tamaño; se deja vacío
-      mciId: reg.mciId,
-      estadoKV: reg.estado,
-      fileIdentifierExcel: reg.fileIdentifierExcel,
-      jsonFileId: reg.jsonFileId,
-      fechaReal: fechaObj
-    };
-  });
+  if (!window.moduloActivo?.pendientes) {
+    document.getElementById("tbodyDatos").innerHTML = `
+      <tr><td colspan="99" style="padding:20px; text-align:center;">
+        No hay informes pendientes.
+      </td></tr>`;
+    return;
+  }
+
+  const tecnico = "usuario"; // o el auditor logueado
+  const respKV = await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
+  );
+
+  const listaKV = await respKV.json();
+
+  window.datosActuales = listaKV.map(reg => ({
+    nombre: reg.fileName,
+    mciId: reg.mciId,
+    estadoKV: reg.estado,
+    fileIdentifierExcel: reg.fileIdentifierExcel,
+    jsonFileId: reg.jsonFileId,
+    fechaReal: reg.fecha || null
+  }));
 
   renderTabla();
+  setTimeout(() => activarOrdenamientoFecha(), 0);
 }
-
 /* ======================================================================
-   RENDER TABLA
+   8) RENDER TABLA
 ====================================================================== */
 function renderTabla() {
+
   const tbody = document.getElementById("tbodyDatos");
+
+  if (!window.datosActuales || window.datosActuales.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="99" style="padding:20px; text-align:center;">
+        No hay informes pendientes.
+      </td></tr>`;
+    return;
+  }
+
   tbody.innerHTML = "";
 
-  window.datosActuales.forEach((item, idx) => {
+  const filtrados = window.datosActuales.filter(item =>
+    item.nombre.endsWith(".xlsx") &&
+    !item.nombre.includes("PreviewFotos")
+  );
+
+  filtrados.forEach(item => {
+    const idx = window.datosActuales.indexOf(item);
+
+    const tds = window.moduloActivo.columnas
+      .map(col => `<td>${item[col.id]}</td>`)
+      .join("");
+
+    const estado = item.estadoKV ?? "pendiente";
+
+    const btn =
+      estado === "pendiente" ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>` :
+      estado === "en_revision" ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>` :
+      estado === "aprobado" ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>` :
+      `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${item.nombre}</td>
-      <td>${item.fecha}</td>
-      <td>${item.tamano}</td>
-      <td><button class="btn-revisar" data-idx="${idx}">Revisar</button></td>
-    `;
+    tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
     tbody.appendChild(tr);
   });
 
+  prepararEventosTabla();
+}
+
+/* ======================================================================
+   9) ORDENAR POR FECHA
+====================================================================== */
+function activarOrdenamientoFecha() {
+  const th = document.querySelector("span.sortable[data-col='fecha']");
+  if (!th) return;
+
+  th.onclick = () => {
+    const orden = th.dataset.order ?? "desc";
+
+    window.datosActuales.sort((a, b) => {
+      const FA = new Date(a.fechaReal);
+      const FB = new Date(b.fechaReal);
+      return orden === "desc" ? FA - FB : FB - FA;
+    });
+
+    th.dataset.order = orden === "desc" ? "asc" : "desc";
+    th.querySelector(".flecha").textContent =
+      orden === "desc" ? "🔽" : "🔼";
+
+    renderTabla();
+  };
+}
+
+/* ======================================================================
+   10) EVENTOS DE TABLA
+====================================================================== */
+function prepararEventosTabla() {
   document.querySelectorAll(".btn-revisar").forEach(btn => {
-    btn.onclick = () => verArchivo(window.datosActuales[btn.dataset.idx]);
+    btn.addEventListener("click", async () => {
+      const idx = btn.dataset.idx;
+      const item = window.datosActuales[idx];
+      await verArchivo(item);
+    });
   });
 }
 /* ======================================================================
-   OBTENER JSON DE FOTOS
+   11) BUSCAR JSON DE FOTOS EN ONEDRIVE
 ====================================================================== */
 async function obtenerJsonFotos(item) {
   const resp = await fetch(FLOW_GET_FOTOS_PREVIEW, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fileId: item.jsonFileId })
+    body: JSON.stringify({
+      tipo: "json",
+      fileId: item.jsonFileId
+    })
   });
+
   if (!resp.ok) return null;
+
   const { fileB64 } = await resp.json();
   return JSON.parse(atob(fileB64));
 }
-
 /* ======================================================================
-   VER ARCHIVO (EXCEL)
+   12) VER ARCHIVO — PREVIEW EXCEL + JSON (ESTILO ORIGINAL)
 ====================================================================== */
 async function verArchivo(item) {
   window.__archivoActual = item;
 
+  // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
 
-  // ✅ Excel SIEMPRE desde el flow de Excel
-  const resp = await fetch(FLOW_GET_ONEDRIVE_FILE, {
+  // === OBTENER EXCEL DESDE ONEDRIVE (FLOW ÚNICO) ===
+  const resp = await fetch(FLOW_GET_FOTOS_PREVIEW, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fileId: item.fileIdentifierExcel })
+    body: JSON.stringify({
+      tipo: "excel",
+      fileId: item.fileIdentifierExcel
+    })
   });
 
-  if (!resp.ok) throw new Error("No se pudo obtener el Excel");
+  if (!resp.ok) {
+    throw new Error("No se pudo obtener el Excel desde OneDrive");
+  }
 
   const blob = await resp.blob();
-  const wb = XLSX.read(await blob.arrayBuffer());
+  const arrayBuffer = await blob.arrayBuffer();
 
-  // ✅ Leer la hoja donde escribe el script (última)
-  const sheet = wb.Sheets[wb.SheetNames[wb.SheetNames.length - 1]];
+  // === LEER EXCEL ===
+  const wb = XLSX.read(arrayBuffer);
+  const sheet = wb.Sheets[wb.SheetNames[0]];
 
   let htmlInfoGeneral = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
   let htmlDescripcion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
   let htmlDeclaracion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
 
+  function pintarGris(html) {
+    const campos = [
+      "N° DE CASO","FECHA","CONTRATO No","CONTRATISTA","DEPARTAMENTO","MUNICIPIO",
+      "CENTRO POBLADO","SEDE INSTITUCIÓN EDUCATIVA O CASO ESPECIAL","ID BENEFICIARIO",
+      "NOMBRE DEL RESPONSABLE (RESPONSABLE DE LA INSTITUCIÓN EDUCATIVA / AUTORIDAD COMPETENTE)",
+      "NÚMERO DE CEDULA","NÚMERO DE CONTACTO","CORREO ELECTRÓNICO",
+      "3. DESCRIPCIÓN DE LA FALLA / HALLAZGOS","4. DECLARACIÓN",
+      "DATOS DE QUIEN ACOMPAÑA EN EL CENTRO DIGITAL","NOMBRES Y APELLIDOS","CARGO",
+      "NÚMERO DE CEDULA","NÚMERO DE TELÉFONO O CELULAR 1",
+      "NÚMERO DE TELÉFONO O CELULAR 2",
+      "DATOS DE QUIEN REPARA EL SERVICIO EN EL CENTRO DIGITAL",
+      "NÚMERO DE TELÉFONO O CELULAR","FIRMA"
+    ];
+
+    campos.forEach(t => {
+      const rg = new RegExp(`(<td[^>]*>\\s*${t}[^<]*</td>)`, "gi");
+      html = html.replace(rg, c =>
+        c.replace("<td", `<td style="background:#eef1f6;font-weight:700;border:1px solid #d6dce8;"`)
+      );
+    });
+    return html;
+  }
+
+  htmlInfoGeneral = pintarGris(htmlInfoGeneral);
+  htmlDescripcion = pintarGris(htmlDescripcion);
+  htmlDeclaracion = pintarGris(htmlDeclaracion);
+
   const visor = document.getElementById("visorIframe");
   visor.innerHTML = `
     <div style="background:white;padding:25px;border-radius:14px;border:1px solid #dce3f5;box-shadow:0 8px 24px rgba(0,0,0,.12);">
+
       <div style="background:#eef1f6;padding:14px 18px;border-radius:10px;font-weight:800;margin-bottom:14px;">
         Información del Beneficiario y la Institución
       </div>
@@ -190,31 +352,79 @@ async function verArchivo(item) {
     </div>
   `;
 
-  const fotos = await obtenerJsonFotos(item);
-  if (fotos) renderizarFotos(fotos);
-  else document.getElementById("visorFotos").innerHTML =
-    "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
-}
+  // === CARGA DE FOTOS ===
+  const jsonFotos = await obtenerJsonFotos(item);
+  item.fotosPreview = jsonFotos;
 
+  if (jsonFotos) {
+    await renderizarFotos(item);
+  } else {
+    document.getElementById("visorFotos").innerHTML =
+      "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
+  }
+}
 /* ======================================================================
-   RENDER FOTOS
+   13) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
-function renderizarFotos(fotos) {
-  const cont = document.getElementById("visorFotos");
-  cont.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;width:100%;">
-      ${Object.keys(fotos).map(k => `
-        <div style="background:#fff;border:1px solid #dde5f8;border-radius:12px;box-shadow:0 6px 15px rgba(0,0,0,.08);overflow:hidden;">
-          <div style="padding:10px 12px;font-weight:700;font-size:14px;">${k}</div>
-          <img src="${fotos[k]}" style="width:100%;height:180px;object-fit:cover;display:block;">
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
+async function renderizarFotos(item) {
 
+  const cont = document.getElementById("visorFotos");
+  const fotos = item.fotosPreview;
+  if (!fotos) return;
+
+  // === CONTENEDOR GRID RESPONSIVE (SIN ESPACIOS BLANCOS) ===
+  let html = `
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+      width: 100%;
+    ">
+  `;
+
+  for (const clave in fotos) {
+
+    const base64 = fotos[clave];
+    if (!base64) continue;
+
+    html += `
+      <div style="
+        background: #fff;
+        border: 1px solid #dde5f8;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,.08);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      ">
+
+        <!-- Título superior -->
+        <div style="
+          padding: 10px 12px;
+          font-weight: 700;
+          font-size: 14px;
+        ">
+          ${clave}
+        </div>
+
+        <!-- Imagen recortada, centrada y del mismo tamaño -->
+        <img src="${base64}" style="
+          width: 100%;
+          height: 180px;
+          object-fit: cover;
+          object-position: center;
+          display: block;
+          border-radius: 0 0 12px 12px;
+        ">
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+  cont.innerHTML = html;
+}
 /* ======================================================================
-   VOLVER
+   14) VOLVER
 ====================================================================== */
 document.getElementById("visorVolver").addEventListener("click", () => {
   document.getElementById("modalVisor").style.display = "none";
@@ -223,19 +433,37 @@ document.getElementById("visorVolver").addEventListener("click", () => {
 });
 
 /* ======================================================================
-   APROBAR / RECHAZAR
+   15) APROBAR
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
-  const mciId = window.__archivoActual?.mciId;
+
+  const item = window.__archivoActual;
+  const mciId = item?.mciId || null;
   if (!mciId) return;
-  await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`, { method: "PUT" });
+
+  await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
+    { method: "PUT" }
+  );
+
   await cargarDatosModulo();
+
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
 });
 
+/* ======================================================================
+   16) RECHAZAR (OPCIONAL)
+====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
-  const mciId = window.__archivoActual?.mciId;
+
+  const item = window.__archivoActual;
+  const mciId = item?.mciId || null;
+
   if (!mciId) return;
-  await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`, { method: "PUT" });
+
+  await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
+    { method: "PUT" }
+  );
 });
