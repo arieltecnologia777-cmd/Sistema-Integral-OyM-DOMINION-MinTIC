@@ -267,7 +267,7 @@ async function obtenerJsonFotos(item) {
   return JSON.parse(atob(fileB64));
 }
 /* ======================================================================
-   12) VER ARCHIVO — PREVIEW EXCEL + JSON (ESTILO ORIGINAL)
+   12) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
 ====================================================================== */
 async function verArchivo(item) {
   window.__archivoActual = item;
@@ -276,7 +276,7 @@ async function verArchivo(item) {
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
 
-  // === OBTENER EXCEL DESDE ONEDRIVE (FLOW ÚNICO) ===
+  // === OBTENER EXCEL DESDE ONEDRIVE (FLOW DESCARGADOR) ===
   const resp = await fetch(FLOW_GET_ONEDRIVE_FILE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -297,62 +297,93 @@ async function verArchivo(item) {
   const wb = XLSX.read(arrayBuffer);
   const sheet = wb.Sheets[wb.SheetNames[wb.SheetNames.length - 1]];
 
-  let htmlInfoGeneral = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
-  let htmlDescripcion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
-  let htmlDeclaracion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
+  // === ELIMINAR SAP, EQUIPOS, SERIALES (IGUAL QUE ANTES) ===
+  const eliminarFilas = (sheet, desde, hasta) => {
+    for (let r = desde; r <= hasta; r++) {
+      for (let c = 65; c <= 90; c++) {
+        const celda = String.fromCharCode(c) + r;
+        delete sheet[celda];
+      }
+    }
+  };
+  eliminarFilas(sheet, 19, 67);
 
-  function pintarGris(html) {
-    const campos = [
-      "N° DE CASO","FECHA","CONTRATO No","CONTRATISTA","DEPARTAMENTO","MUNICIPIO",
-      "CENTRO POBLADO","SEDE INSTITUCIÓN EDUCATIVA O CASO ESPECIAL","ID BENEFICIARIO",
-      "NOMBRE DEL RESPONSABLE (RESPONSABLE DE LA INSTITUCIÓN EDUCATIVA / AUTORIDAD COMPETENTE)",
-      "NÚMERO DE CEDULA","NÚMERO DE CONTACTO","CORREO ELECTRÓNICO",
-      "3. DESCRIPCIÓN DE LA FALLA / HALLAZGOS","4. DECLARACIÓN",
-      "DATOS DE QUIEN ACOMPAÑA EN EL CENTRO DIGITAL","NOMBRES Y APELLIDOS","CARGO",
-      "NÚMERO DE CEDULA","NÚMERO DE TELÉFONO O CELULAR 1",
-      "NÚMERO DE TELÉFONO O CELULAR 2",
-      "DATOS DE QUIEN REPARA EL SERVICIO EN EL CENTRO DIGITAL",
-      "NÚMERO DE TELÉFONO O CELULAR","FIRMA"
-    ];
-
-    campos.forEach(t => {
-      const rg = new RegExp(`(<td[^>]*>\\s*${t}[^<]*</td>)`, "gi");
-      html = html.replace(rg, c =>
-        c.replace("<td", `<td style="background:#eef1f6;font-weight:700;border:1px solid #d6dce8;"`)
-      );
-    });
-    return html;
+  // === OCULTAR TÍTULO DUPLICADO DE SECCIÓN 1 (FILA 10) ===
+  for (let c = 66; c <= 80; c++) {
+    delete sheet[String.fromCharCode(c) + 10];
   }
 
-  htmlInfoGeneral = pintarGris(htmlInfoGeneral);
-  htmlDescripcion = pintarGris(htmlDescripcion);
-  htmlDeclaracion = pintarGris(htmlDeclaracion);
+  // === CONVERTIR RANGOS A HTML ===
+  const rango1 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
+  const rango2 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
+  const rango3 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
+
+  const htmlPreview = `
+    <h3 style="font-weight:800; margin-bottom:8px;">Información General</h3>
+    ${rango1}
+
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">
+      Descripción de la falla / hallazgos
+    </h3>
+    ${rango2}
+
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">
+      Declaración
+    </h3>
+    ${rango3}
+  `;
 
   const visor = document.getElementById("visorIframe");
+
   visor.innerHTML = `
-    <div style="background:white;padding:25px;border-radius:14px;border:1px solid #dce3f5;box-shadow:0 8px 24px rgba(0,0,0,.12);">
+    <div style="padding:20px; overflow:auto;">
 
-      <div style="background:#eef1f6;padding:14px 18px;border-radius:10px;font-weight:800;margin-bottom:14px;">
-        Información del Beneficiario y la Institución
+      <h3 style="font-weight:800; margin-bottom:10px;">Vista previa del archivo</h3>
+
+      <div style="
+        border:1px solid #dce3f5;
+        background:white;
+        border-radius:8px;
+        padding:20px;
+        margin-bottom:30px;">
+        ${htmlPreview}
       </div>
-      <div class="auditor-block">${htmlInfoGeneral}</div>
 
-      <div style="background:#eef1f6;padding:14px 18px;border-radius:10px;font-weight:800;margin:28px 0 14px;">
-        Descripción del Caso
+      <h3 style="font-weight:800; margin-top:20px;">Fotos del informe (vista previa)</h3>
+      <div id="visorFotos" style="
+        margin-top:15px;
+        display:grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap:14px;">
       </div>
-      <div class="auditor-block">${htmlDescripcion}</div>
 
-      <div style="background:#eef1f6;padding:14px 18px;border-radius:10px;font-weight:800;margin:28px 0 14px;">
-        Declaración
-      </div>
-      <div class="auditor-block">${htmlDeclaracion}</div>
-
-      <h2 style="margin:30px 0 10px;">Fotos del informe (vista previa)</h2>
-      <div id="visorFotos"></div>
     </div>
   `;
 
-  // === CARGA DE FOTOS ===
+  // ✅ Pintar encabezados internos en gris (versión vieja)
+  setTimeout(() => {
+    const patrones = [
+      "N° DE CASO","Nº DE CASO","FECHA","CONTRATO","CONTRATISTA",
+      "DEPARTAMENTO","MUNICIPIO","CENTRO POBLADO",
+      "SEDE INSTITUCIÓN EDUCATIVA","CASO ESPECIAL","ID BENEFICIARIO",
+      "NOMBRE DEL RESPONSABLE","NÚMERO DE CEDULA","NÚMERO DE CONTACTO",
+      "DESCRIPCIÓN DE LA FALLA","DECLARACIÓN",
+      "DATOS DE QUIÉN ACOMPAÑA","DATOS DE QUIÉN REPARA",
+      "NOMBRES Y APELLIDOS","CARGO","TELÉFONO","CELULAR",
+      "CORREO ELECTRÓNICO","CORREO ELECTRONICO","FIRMA"
+    ];
+
+    const celdas = visor.querySelectorAll("td");
+    celdas.forEach(td => {
+      const texto = td.innerText.toUpperCase().trim();
+      if (patrones.some(p => texto.includes(p))) {
+        td.style.backgroundColor = "#e6e6e6";
+        td.style.fontWeight = "700";
+      }
+    });
+  }, 80);
+
+  // === CARGA DE FOTOS (NO TOCADO) ===
   const jsonFotos = await obtenerJsonFotos(item);
   item.fotosPreview = jsonFotos;
 
