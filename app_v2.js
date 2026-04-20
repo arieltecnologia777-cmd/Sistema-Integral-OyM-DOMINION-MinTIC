@@ -255,38 +255,19 @@ function prepararEventosTabla() {
    11) BUSCAR JSON DE FOTOS EN SHAREPOINT
 ====================================================================== */
 async function obtenerJsonFotos(item) {
-
-  const token = await obtenerToken();
-
-  const urlListar = `https://graph.microsoft.com/v1.0/sites/${SITE_ID}/drives/${LIBRARY_ID}/root:/${encodeURIComponent(FOLDER_PATH)}:/children`;
-
-  const resp = await fetch(urlListar, {
-    headers: { "Authorization": `Bearer ${token}` }
+  const resp = await fetch(FLOW_GET_JSON_PREVIEW_ONEDRIVE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonFileId: item.jsonFileId
+    })
   });
 
-  const data = await resp.json();
-  if (!data.value) return null;
+  if (!resp.ok) return null;
 
-  const base = item.nombre;
-
-  const jsonFile = data.value.find(f =>
-    f.name.startsWith(base) &&
-    f.name.endsWith(".json")
-  );
-
-  if (!jsonFile) return null;
-
-  const urlContenido = `https://graph.microsoft.com/v1.0/sites/${SITE_ID}/drives/${LIBRARY_ID}/items/${jsonFile.id}/content`;
-
-  const respJson = await fetch(urlContenido, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-
-  const jsonTexto = await respJson.text();
-  try { return JSON.parse(jsonTexto); }
-  catch { return null; }
+  const { fileB64 } = await resp.json();
+  return JSON.parse(atob(fileB64));
 }
-
 /* ======================================================================
    12) VER ARCHIVO — PREVIEW EXCEL + JSON (ESTILO ORIGINAL)
 ====================================================================== */
