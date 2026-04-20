@@ -5,11 +5,11 @@
 // ✅ URL del TRIGGER HTTP del flujo "Generar MCI"
 // (copiada directamente desde Power Automate, con & normales)
 const FLOW_GET_ONEDRIVE_FILE =
-  "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bd9e2227be594ecdb47c0da4a898d474/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j3SlbYcxilxwhnHJfL95lpTA-Y2RzAtiNrmug_D01eQ";
+  "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc99f30c70a64d57b309dce1c13d1290/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMxJMh4pAr98EPpIwDJGzHb5_glsVkAv-A1TVjR9zsA";
 
 // ✅ URL del TRIGGER HTTP del flujo "Generar MCI"
 // (copiada directamente desde Power Automate, con & normales)
-onst FLOW_GET_FOTOS_PREVIEW =
+const FLOW_GET_FOTOS_PREVIEW =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc99f30c70a64d57b309dce1c13d1290/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMxJMh4pAr98EPpIwDJGzHb5_glsVkAv-A1TVjR9zsA";
 /* ======================================================================
    0) IMPORTS — NECESARIOS
@@ -277,7 +277,7 @@ async function verArchivo(item) {
   document.getElementById("modalVisor").style.display = "block";
 
   // === OBTENER EXCEL DESDE ONEDRIVE (FLOW ÚNICO) ===
-  const resp = await fetch(FLOW_GET_FOTOS_PREVIEW, {
+  const resp = await fetch(FLOW_GET_ONEDRIVE_FILE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -295,7 +295,7 @@ async function verArchivo(item) {
 
   // === LEER EXCEL ===
   const wb = XLSX.read(arrayBuffer);
-  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const sheet = wb.Sheets[wb.SheetNames[wb.SheetNames.length - 1]];
 
   let htmlInfoGeneral = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
   let htmlDescripcion = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
