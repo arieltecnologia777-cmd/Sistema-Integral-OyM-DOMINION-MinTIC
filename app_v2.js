@@ -1,9 +1,8 @@
 /* ======================================================================
    0) IMPORTS — NECESARIOS
 ====================================================================== */
-import { SITE_ID, LIBRARY_ID, FOLDER_PATH, listarArchivosMCI, obtenerModulo } from "./modulos_v2.js";
+import {obtenerModulo } from "./modulos_v2.js";
 import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
-import { obtenerURLTemporal } from "./graph_v2.js";
 
 /* ======================================================================
    1) VARIABLES GLOBALES
@@ -286,12 +285,21 @@ async function verArchivo(item) {
   const token = await obtenerToken();
 
   // ✅ Descargar EXCEL desde SharePoint
-  const urlDescarga = `https://graph.microsoft.com/v1.0${item.archivo.ruta}/content`;
-  const resp = await fetch(urlDescarga, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
+  const resp = await fetch(FLOW_GET_EXCEL_PREVIEW_ONEDRIVE, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    fileId: item.fileIdentifierExcel
+  })
+});
 
-  const arrayBuffer = await (await resp.blob()).arrayBuffer();
+if (!resp.ok) {
+  throw new Error("No se pudo obtener el Excel desde OneDrive");
+}
+
+const blob = await resp.blob();
+const arrayBuffer = await blob.arrayBuffer();
+
 
   // ✅ Leer Excel
   const wb = XLSX.read(arrayBuffer);
