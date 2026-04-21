@@ -4251,6 +4251,9 @@ body.theme-pro #sec-pruebas
 <div class="sidebar-actions">
   <button class="btn secondary" id="collapseBtn">Cerrar menú</button>
   <button class="btn" id="exportBtn">📤 Cargar informe</button>
+  <button class="btn secondary" id="misInformesBtn">
+  📄 Mostrar mis informes
+</button>
 
   <!-- ✅ BOTÓN NUEVO -->
   <button class="btn" id="downloadBtn" style="display:none;">📥 Descargar informe</button>
@@ -6645,8 +6648,108 @@ function enlazarBotonesDescargaFila() {
     });
   });
 }
+
+  // ================================
+// MODAL · MIS INFORMES (abrir/cerrar)
+// ================================
+
+const misInformesBtn = document.getElementById("misInformesBtn");
+const misInformesModal = document.getElementById("misInformesModal");
+const cerrarMisInformes = document.getElementById("cerrarMisInformes");
+
+// Abrir modal
+if (misInformesBtn) {
+  misInformesBtn.addEventListener("click", () => {
+    misInformesModal.style.display = "flex";
+  });
+}
+
+// Cerrar modal
+if (cerrarMisInformes) {
+  cerrarMisInformes.addEventListener("click", () => {
+    misInformesModal.style.display = "none";
+  });
+}
+
+// Cerrar también si hacen clic fuera del modal
+misInformesModal.addEventListener("click", (e) => {
+  if (e.target === misInformesModal) {
+    misInformesModal.style.display = "none";
+  }
+});
   
 </script>
+<!-- =========================
+ MODAL · MIS INFORMES
+========================= -->
+<div id="misInformesModal" style="
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+">
 
+  <!-- Contenedor principal -->
+  <div style="
+    background: white;
+    border-radius: 14px;
+    width: min(920px, 92%);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  ">
+
+    <!-- Header -->
+    <div style="
+      padding: 14px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    ">
+      <h3 style="margin:0; color:#0b2e59;">
+        Mis informes
+      </h3>
+
+      <button
+        id="cerrarMisInformes"
+        class="btn secondary"
+        style="padding:6px 12px; font-size:13px;"
+      >
+        Volver
+      </button>
+    </div>
+
+    <!-- Cuerpo del modal -->
+    <div style="
+      padding: 16px;
+      overflow: auto;
+      flex: 1;
+    ">
+
+      <!-- Aquí reutilizamos TU tabla -->
+      <table id="tablaInformesModal" class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Caso</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
