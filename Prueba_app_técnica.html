@@ -6492,35 +6492,7 @@ setTimeout(async () => {
 
 }, 1500);
 
-//-----------------------------------------------------------
-    // ✅ FASE 3.5.2 — HABILITAR BOTÓN DE DESCARGA SI ESTÁ APROBADO
-    //-----------------------------------------------------------
-    setTimeout(async () => {
 
-    const informe = await verificarEstadoPorTecnico();
-      const registro = Array.isArray(informe) ? informe[0] : informe;
-
-    const btn = document.getElementById("downloadBtn");  
-    if (!btn) {
-    console.warn("⚠ downloadBtn no existe aún; reintentando…");
-
-    // Reintenta en 500ms hasta encontrarlo
-    return setTimeout(async () => {
-        const informe = await verificarEstadoPorTecnico();
-      const registro = Array.isArray(informe) ? informe[0] : informe;
-        const btn2 = document.getElementById("downloadBtn");
-        if (btn2) {
-            if (registro && registro.estado === "aprobado") {
-                
-                console.log("✅ Informe aprobado — habilitando botón (retry)");
-                btn2.style.display = "block";
-            } else {
-                btn2.style.display = "none";
-                console.log("📌 Aún no aprobado (retry)");
-            }
-        }
-    }, 500);
-}
 
     if (registro && registro.estado === "aprobado") {
     window.__mciIdActual = registro.mciId;
