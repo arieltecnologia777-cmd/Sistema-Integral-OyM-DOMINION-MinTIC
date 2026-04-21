@@ -6553,65 +6553,6 @@ if (registro && registro.estado === "aprobado") {
   }, 1500);
 }
 
-document.getElementById("downloadBtn").onclick = async () => {
-  return; // ⛔ desactivado: legacy base64
-
-  // 1️⃣ Recuperar mciId (RAM o localStorage)
-  const mciId =
-    window.__mciIdActual ||
-    localStorage.getItem("ultimoMciId");
-
-  if (!mciId) {
-    alert("No se encontró el número de caso (mciId).");
-    return;
-  }
-
-  try {
-    // 2️⃣ Llamar a flujo FLOW_DESCARGAR_URL
-   const resp = await fetch(FLOW_DESCARGAR_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    mciId: window.__mciIdActual || localStorage.getItem("ultimoMciId"),
-    tecnico: tecnicoActual
-  })
-});
-
-    if (resp.status !== 200) {
-  alert("Error al descargar el informe");
-  return;
-}
-
-    // 3️⃣ Leer respuesta Base64
-    const { fileName, fileB64 } = await resp.json();
-
-    // 4️⃣ Base64 → Blob
-    const binary = atob(fileB64);
-    const bytes = new Uint8Array(binary.length);
-
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-
-    const blob = new Blob([bytes], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    });
-
-    // 5️⃣ Descargar archivo
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName || "APROBADO.xlsx";
-    a.click();
-
-    URL.revokeObjectURL(url);
-
-  } catch (err) {
-    console.error(err);
-    alert("Error inesperado en la descarga.");
-  }
-};
-
 
 </script>
 
