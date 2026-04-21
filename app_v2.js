@@ -155,38 +155,47 @@ async function cargarDatosModulo() {
 
   const listaKV = await respKV.json();
 
+  // ✅ Mapear datos correctamente desde el KV
   window.datosActuales = listaKV.map(reg => {
 
-  // 🔴 OJO: usa el campo que REALMENTE venga del KV
-  const fechaObj = reg.fechaGenerado
-    ? new Date(reg.fechaGenerado)
-    : (reg.fecha ? new Date(reg.fecha) : null);
+    const fechaTexto = reg.fechaGenerado || ""; // viene ISO desde el worker
 
-  return {
-    // ✅ Lo que se muestra en la tabla
-    nombre: reg.fileName,
-    fecha: fechaObj
-      ? fechaObj.toLocaleString("es-CO", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit"
-        })
-      : "",
-    tamano: "", // (no viene del KV, se deja vacío)
+    return {
+      // ✅ Columnas visibles en la tabla
+      nombre: reg.fileName,
+      fecha: fechaTexto
+        ? new Date(fechaTexto).toLocaleString("es-CO", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          })
+        : "",
+      tamano: reg.sizeBytes
+        ? (reg.sizeBytes / 1024 / 1024).toFixed(2) + " MB"
+        : "",
 
-    // ✅ Lo que usa la lógica interna
-    fechaReal: fechaObj,
-    mciId: reg.mciId,
-    estadoKV: reg.estado,
-    fileIdentifierExcel: reg.fileIdentifierExcel,
-    jsonFileId: reg.jsonFileId
-  };
-});
+      // ✅ Datos internos
+      fechaReal: fechaTexto, // para ordenamiento
+      mciId: reg.mciId,
+      estadoKV: reg.estado,
+      fileIdentifierExcel: reg.fileIdentifierExcel,
+      jsonFileId: reg.jsonFileId
+    };
+  });
+
+  // ✅ ORDENAR POR DEFECTO: MÁS RECIENTE ARRIBA
+  window.datosActuales.sort((a, b) => {
+    const fa = Date.parse(b.fechaReal || "") || 0;
+    const fb = Date.parse(a.fechaReal || "") || 0;
+    return fa - fb;
+  });
+
   renderTabla();
   setTimeout(() => activarOrdenamientoFecha(), 0);
 }
+
 /* ======================================================================
    8) RENDER TABLA
 ====================================================================== */
