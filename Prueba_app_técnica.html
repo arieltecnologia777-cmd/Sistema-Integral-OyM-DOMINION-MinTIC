@@ -6554,6 +6554,7 @@ if (registro && registro.estado === "aprobado") {
 }
 
 document.getElementById("downloadBtn").onclick = async () => {
+  return; // ⛔ desactivado: legacy base64
 
   // 1️⃣ Recuperar mciId (RAM o localStorage)
   const mciId =
