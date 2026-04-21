@@ -155,15 +155,35 @@ async function cargarDatosModulo() {
 
   const listaKV = await respKV.json();
 
-  window.datosActuales = listaKV.map(reg => ({
+  window.datosActuales = listaKV.map(reg => {
+
+  // 🔴 OJO: usa el campo que REALMENTE venga del KV
+  const fechaObj = reg.fechaGenerado
+    ? new Date(reg.fechaGenerado)
+    : (reg.fecha ? new Date(reg.fecha) : null);
+
+  return {
+    // ✅ Lo que se muestra en la tabla
     nombre: reg.fileName,
+    fecha: fechaObj
+      ? fechaObj.toLocaleString("es-CO", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "",
+    tamano: "", // (no viene del KV, se deja vacío)
+
+    // ✅ Lo que usa la lógica interna
+    fechaReal: fechaObj,
     mciId: reg.mciId,
     estadoKV: reg.estado,
     fileIdentifierExcel: reg.fileIdentifierExcel,
-    jsonFileId: reg.jsonFileId,
-    fechaReal: reg.fecha || null
-  }));
-
+    jsonFileId: reg.jsonFileId
+  };
+});
   renderTabla();
   setTimeout(() => activarOrdenamientoFecha(), 0);
 }
