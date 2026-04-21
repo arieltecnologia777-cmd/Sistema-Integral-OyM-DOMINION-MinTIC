@@ -396,7 +396,7 @@ async function verArchivo(item) {
 /* ======================================================================
    13) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
-async function renderizarFotos(item) {
+function renderizarFotos(item) {
   const cont = document.getElementById("visorFotos");
   const fotos = item.fotosPreview;
 
@@ -407,11 +407,12 @@ async function renderizarFotos(item) {
 
   let html = `
     <div style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 20px;
+      justify-content: flex-start;
+      align-items: flex-start;
       width: 100%;
-      align-items: start;
     ">
   `;
 
@@ -421,11 +422,13 @@ async function renderizarFotos(item) {
 
     html += `
       <div style="
+        flex: 1 1 360px;
+        max-width: 420px;
         background: #fff;
         border: 1px solid #dde5f8;
-        border-radius: 10px;
-        overflow: hidden;
+        border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        overflow: hidden;
       ">
         <div style="
           padding: 8px 12px;
@@ -433,13 +436,12 @@ async function renderizarFotos(item) {
           font-size: 14px;
           background: #f4f6fb;
           border-bottom: 1px solid #e1e6f5;
-          text-transform: lowercase;
         ">
           ${clave}
         </div>
 
         <div style="padding: 10px;">
-          ${src}
+          ${src.replace("<img", "<img style='width:100%; height:auto; max-height:420px; object-fit:contain;'")}
         </div>
       </div>
     `;
