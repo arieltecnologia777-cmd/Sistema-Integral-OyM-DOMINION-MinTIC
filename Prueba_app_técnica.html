@@ -4260,6 +4260,29 @@ body.theme-pro #sec-pruebas
 </aside>
 
   <!-- MAIN -->
+
+  <!-- ✅ LISTADO DE INFORMES DEL TÉCNICO -->
+<section id="misInformes" style="margin-top:20px; display:none;">
+
+  <h3>Mis informes</h3>
+
+  <table id="tablaInformes" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="text-align:left; padding:8px;">Fecha</th>
+        <th style="text-align:left; padding:8px;">Caso</th>
+        <th style="text-align:left; padding:8px;">Estado</th>
+        <th style="text-align:left; padding:8px;">Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Las filas se cargarán aquí -->
+    </tbody>
+  </table>
+
+</section>
+
+  
   <main class="main">
     <div class="topbar">
       <button class="hamburger" id="hamburger" aria-label="Abrir menú">
@@ -6471,24 +6494,21 @@ document.getElementById("loginBtn").onclick = () => {
     tecnicoActual = u;
 
     document.getElementById("loginScreen").style.display = "none";
+
+    
+// ✅ Mostrar listado de informes
+  mostrarMisInformes();
+
+    
 // ✅ Revisar aprobación al iniciar sesión (login manual)
 setTimeout(async () => {
 
-    const informe = await verificarEstadoPorTecnico();
-  const registro = Array.isArray(informe) ? informe[0] : informe;
-    const btn = document.getElementById("downloadBtn");
-    if (!btn) return;
+  const informe = await verificarEstadoPorTecnico();
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
 
-    if (registro && registro.estado === "aprobado") {
-    window.__mciIdActual = registro.mciId;
-    localStorage.setItem("ultimoMciId", registro.mciId);
-
-    console.log("✅ Informe aprobado — mciId fijado:", registro.mciId);
-    btn.style.display = "block";
-} else {
-        console.log("📌 Aún no aprobado en KV (login manual)");
-        btn.style.display = "none";
-    }
+  // 🔒 Lógica de selección se moverá al listado por fila (Opción A)
+  // registro global desactivado intencionalmente
 
 }, 1500);
 
@@ -6553,6 +6573,13 @@ if (registro && registro.estado === "aprobado") {
   }, 1500);
 }
 
+  // ✅ Mostrar listado de informes cuando el técnico ya inició sesión
+function mostrarMisInformes() {
+  const seccion = document.getElementById("misInformes");
+  if (seccion) {
+    seccion.style.display = "block";
+  }
+}
 
 </script>
 
