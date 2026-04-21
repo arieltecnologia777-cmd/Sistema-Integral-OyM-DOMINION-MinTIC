@@ -397,60 +397,57 @@ async function verArchivo(item) {
    13) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
 async function renderizarFotos(item) {
-
   const cont = document.getElementById("visorFotos");
   const fotos = item.fotosPreview;
-  if (!fotos) return;
 
-  // === CONTENEDOR GRID RESPONSIVE (SIN ESPACIOS BLANCOS) ===
+  if (!fotos || Object.keys(fotos).length === 0) {
+    cont.innerHTML = "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
+    return;
+  }
+
   let html = `
     <div style="
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
       width: 100%;
     ">
   `;
 
   for (const clave in fotos) {
-
-    const base64 = fotos[clave];
-    if (!base64) continue;
+    const src = fotos[clave];
+    if (!src) continue;
 
     html += `
       <div style="
         background: #fff;
         border: 1px solid #dde5f8;
-        border-radius: 12px;
-        box-shadow: 0 6px 15px rgba(0,0,0,.08);
+        border-radius: 10px;
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
       ">
-
-        <!-- Título superior -->
+        
         <div style="
-          padding: 10px 12px;
+          padding: 8px 12px;
           font-weight: 700;
           font-size: 14px;
+          background: #f4f6fb;
+          border-bottom: 1px solid #e1e6f5;
         ">
           ${clave}
         </div>
 
-        <!-- Imagen recortada, centrada y del mismo tamaño -->
-        <img src="${base64}" style="
+        <img src="${src}" style="
           width: 100%;
           height: 180px;
           object-fit: cover;
-          object-position: center;
           display: block;
-          border-radius: 0 0 12px 12px;
         ">
       </div>
     `;
   }
 
-  html += `</div>`;
+  html += "</div>";
   cont.innerHTML = html;
 }
 /* ======================================================================
