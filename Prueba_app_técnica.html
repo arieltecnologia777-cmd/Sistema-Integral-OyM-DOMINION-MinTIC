@@ -6495,9 +6495,12 @@ document.getElementById("loginBtn").onclick = () => {
 
     document.getElementById("loginScreen").style.display = "none";
 
-    
-// ✅ Mostrar listado de informes
-  mostrarMisInformes();
+// ✅ Mostrar sección de informes
+mostrarMisInformes();
+
+// ✅ Cargar informes del técnico en la tabla
+cargarInformesEnTabla();
+
 
     
 // ✅ Revisar aprobación al iniciar sesión (login manual)
@@ -6581,6 +6584,68 @@ function mostrarMisInformes() {
   }
 }
 
+  // ✅ Cargar y renderizar informes del técnico en la tabla
+async function cargarInformesEnTabla() {
+  const tecnico = localStorage.getItem("tecnicoActual");
+  if (!tecnico) return;
+
+  const resp = await fetch(
+    "https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar"
+  );
+  const informes = await resp.json();
+
+  // 🔎 Solo informes del técnico actual
+  const propios = informes.filter(i => i.tecnico === tecnico);
+
+  const tbody = document.querySelector("#tablaInformes tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  // 📅 Más recientes primero
+  propios.sort((a, b) =>
+    new Date(b.fechaGenerado) - new Date(a.fechaGenerado)
+  );
+
+  for (const inf of propios) {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td style="padding:8px;">
+        ${new Date(inf.fechaGenerado).toLocaleDateString()}
+      </td>
+      <td style="padding:8px;">${inf.mciId}</td>
+      <td style="padding:8px;">
+        ${inf.estado === "aprobado" ? "✅ Aprobado" : "⏳ Pendiente"}
+      </td>
+      <td style="padding:8px;">
+  ${
+    inf.estado === "aprobado"
+      ? `<button class="btnDescargar" data-mciid="${inf.mciId}">
+           📥 Descargar
+         </button>`
+      : ""
+  }
+</td>
+    `;
+
+    tbody.appendChild(tr);
+  }
+}
+
+  // ✅ Enlazar botones de descarga por fila
+function enlazarBotonesDescargaFila() {
+  document.querySelectorAll(".btnDescargar").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const mciId = btn.dataset.mciid;
+      if (!mciId) return;
+
+      // ✅ Reutiliza la descarga existente
+      descargarInforme(mciId);
+    });
+  });
+}
+  
 </script>
 
 </body>
