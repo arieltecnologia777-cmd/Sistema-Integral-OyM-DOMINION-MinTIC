@@ -6649,33 +6649,38 @@ function enlazarBotonesDescargaFila() {
   });
 }
 
-  // ================================
+ // ================================
 // MODAL · MIS INFORMES (abrir/cerrar)
 // ================================
+document.addEventListener("DOMContentLoaded", () => {
 
-const misInformesBtn = document.getElementById("misInformesBtn");
-const misInformesModal = document.getElementById("misInformesModal");
-const cerrarMisInformes = document.getElementById("cerrarMisInformes");
+  const misInformesBtn = document.getElementById("misInformesBtn");
+  const misInformesModal = document.getElementById("misInformesModal");
+  const cerrarMisInformes = document.getElementById("cerrarMisInformes");
 
-// Abrir modal
-if (misInformesBtn) {
-  misInformesBtn.addEventListener("click", () => {
-    misInformesModal.style.display = "flex";
-  });
-}
-
-// Cerrar modal
-if (cerrarMisInformes) {
-  cerrarMisInformes.addEventListener("click", () => {
-    misInformesModal.style.display = "none";
-  });
-}
-
-// Cerrar también si hacen clic fuera del modal
-misInformesModal.addEventListener("click", (e) => {
-  if (e.target === misInformesModal) {
-    misInformesModal.style.display = "none";
+  // Abrir modal
+  if (misInformesBtn && misInformesModal) {
+    misInformesBtn.addEventListener("click", () => {
+      misInformesModal.style.display = "flex";
+    });
   }
+
+  // Cerrar modal con botón
+  if (cerrarMisInformes && misInformesModal) {
+    cerrarMisInformes.addEventListener("click", () => {
+      misInformesModal.style.display = "none";
+    });
+  }
+
+  // Cerrar modal haciendo clic fuera del contenido
+  if (misInformesModal) {
+    misInformesModal.addEventListener("click", (e) => {
+      if (e.target === misInformesModal) {
+        misInformesModal.style.display = "none";
+      }
+    });
+  }
+
 });
   
 </script>
