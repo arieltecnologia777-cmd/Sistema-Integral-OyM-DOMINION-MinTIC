@@ -405,50 +405,55 @@ function renderizarFotos(item) {
     return;
   }
 
-  let html = `
-    <div style="
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: flex-start;
-      align-items: flex-start;
-      width: 100%;
-    ">
-  `;
+  // Contenedor flexible y adaptable
+  const grid = document.createElement("div");
+  grid.style.display = "flex";
+  grid.style.flexWrap = "wrap";
+  grid.style.gap = "20px";
+  grid.style.alignItems = "flex-start";
+  grid.style.width = "100%";
 
-  for (const clave in fotos) {
-    const src = fotos[clave];
-    if (!src) continue;
+  Object.entries(fotos).forEach(([clave, dataUrl]) => {
+    if (!dataUrl || typeof dataUrl !== "string") return;
 
-    html += `
-      <div style="
-        flex: 1 1 360px;
-        max-width: 420px;
-        background: #fff;
-        border: 1px solid #dde5f8;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,.08);
-        overflow: hidden;
-      ">
-        <div style="
-          padding: 8px 12px;
-          font-weight: 700;
-          font-size: 14px;
-          background: #f4f6fb;
-          border-bottom: 1px solid #e1e6f5;
-        ">
-          ${clave}
-        </div>
+    // Tarjeta
+    const card = document.createElement("div");
+    card.style.flex = "1 1 360px";
+    card.style.maxWidth = "420px";
+    card.style.background = "#fff";
+    card.style.border = "1px solid #dde5f8";
+    card.style.borderRadius = "12px";
+    card.style.boxShadow = "0 4px 12px rgba(0,0,0,.08)";
+    card.style.overflow = "hidden";
 
-        <div style="padding: 10px;">
-          ${src.replace("<img", "<img style='width:100%; height:auto; max-height:420px; object-fit:contain;'")}
-        </div>
-      </div>
-    `;
-  }
+    // Título
+    const title = document.createElement("div");
+    title.textContent = clave;
+    title.style.padding = "8px 12px";
+    title.style.fontWeight = "700";
+    title.style.fontSize = "14px";
+    title.style.background = "#f4f6fb";
+    title.style.borderBottom = "1px solid #e1e6f5";
 
-  html += "</div>";
-  cont.innerHTML = html;
+    // Imagen
+    const imgWrap = document.createElement("div");
+    imgWrap.style.padding = "10px";
+
+    const img = document.createElement("img");
+    img.src = dataUrl;
+    img.style.width = "100%";
+    img.style.height = "auto";
+    img.style.maxHeight = "420px";
+    img.style.objectFit = "contain";
+
+    imgWrap.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(imgWrap);
+    grid.appendChild(card);
+  });
+
+  cont.innerHTML = "";
+  cont.appendChild(grid);
 }
 /* ======================================================================
    14) VOLVER
