@@ -401,8 +401,7 @@ function renderizarFotos(item) {
   const fotos = item.fotosPreview;
 
   if (!fotos || Object.keys(fotos).length === 0) {
-    cont.innerHTML =
-      "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
+    cont.innerHTML = "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
     return;
   }
 
@@ -410,19 +409,18 @@ function renderizarFotos(item) {
     <div style="
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 16px;
       width: 100%;
       align-items: flex-start;
     ">
   `;
 
-  for (const clave in fotos) {
-    const dataUrl = fotos[clave];
-    if (!dataUrl || typeof dataUrl !== "string") continue;
+  Object.entries(fotos).forEach(([clave, dataUrl]) => {
+    if (!dataUrl || typeof dataUrl !== "string") return;
 
     html += `
       <div style="
-        flex: 0 0 calc(50% - 10px);
+        flex: 0 0 calc(33.333% - 11px);
         background: #fff;
         border: 1px solid #dde5f8;
         border-radius: 12px;
@@ -442,12 +440,17 @@ function renderizarFotos(item) {
         <div style="padding: 10px;">
           <img
             src="${dataUrl}"
-            style="width:100%; height:auto; object-fit:contain;"
+            style="
+              width: 100%;
+              height: auto;
+              object-fit: contain;
+              display: block;
+            "
           />
         </div>
       </div>
     `;
-  }
+  });
 
   html += "</div>";
   cont.innerHTML = html;
