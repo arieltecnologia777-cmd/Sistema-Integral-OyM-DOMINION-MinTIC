@@ -281,8 +281,6 @@ function prepararEventosTabla() {
    11) BUSCAR JSON DE FOTOS EN ONEDRIVE
 ====================================================================== */
 async function obtenerJsonFotos(item) {
-  console.log("DEBUG: entrar a obtenerJsonFotos", item);
-
   const resp = await fetch(FLOW_FOTOS, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -291,8 +289,14 @@ async function obtenerJsonFotos(item) {
     })
   });
 
-  const fotos = await resp.json(); // ✅ JSON puro que viene del flujo
-  return fotos;
+  const data = await resp.json();
+
+  // 🔑 imgsJson llega como STRING → lo convertimos a objeto
+  if (typeof data.imgsJson === "string") {
+    return JSON.parse(data.imgsJson);
+  }
+
+  return data.imgsJson;
 }
 /* ======================================================================
    12) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
