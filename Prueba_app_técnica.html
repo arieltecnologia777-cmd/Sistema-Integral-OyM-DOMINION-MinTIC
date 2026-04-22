@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    
     :root{
   /* Paleta base */
   --primary-900:#0b2e59; --primary-800:#103a70; --primary-700:#1e3a8a;
@@ -4200,6 +4201,33 @@ body.theme-pro #sec-pruebas
     width: 34px !important;
     height: 32px !important;
     background-size: 33px 33px !important;
+}
+
+    /* ================================
+   BOTÓN DESCARGAR EN MODAL
+   Mis informes (igual al sidebar)
+================================ */
+#misInformesModal .btnDescargar {
+  background: #3b82f6;           /* azul primary */
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;           /* pill */
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#misInformesModal .btnDescargar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(59, 130, 246, 0.45);
+}
+
+#misInformesModal .btnDescargar:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.35);
 }
   </style>
 </head>
