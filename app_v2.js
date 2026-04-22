@@ -331,8 +331,8 @@ item.excelWebUrl = data.excelWebUrl;
 
 
   // === LEER EXCEL ===
-  const wb = XLSX.read(arrayBuffer);
-  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const wb = XLSX.read(data.excelBase64, { type: "base64" });
+const sheet = wb.Sheets[wb.SheetNames[0]];
 
   // === ELIMINAR SAP, EQUIPOS, SERIALES (IGUAL QUE ANTES) ===
   const eliminarFilas = (sheet, desde, hasta) => {
