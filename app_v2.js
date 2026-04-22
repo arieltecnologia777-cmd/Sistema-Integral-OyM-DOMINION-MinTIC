@@ -531,7 +531,7 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   );
 });
 /* ======================================================================
- 17 ABRIR EXCEL EN LÍNEA — DESDE FLOW (FINAL)
+ 17)  ABRIR EXCEL EN LÍNEA — DESDE FLOW
 ====================================================================== */
 const btnAbrirExcel = document.getElementById("visorAbrirExcel");
 
@@ -544,6 +544,7 @@ if (btnAbrirExcel) {
       return;
     }
 
+    // ✅ Abre el Excel real en OneDrive web
     window.open(item.excelWebUrl, "_blank");
   });
 }
