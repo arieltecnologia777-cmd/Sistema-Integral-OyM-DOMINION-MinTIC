@@ -441,38 +441,50 @@ tbody td {
 
       <!-- Barra superior -->
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button id="visorVolver" style="
-          background:#e2e8f8;
-          border:none;
-          padding:8px 16px;
-          border-radius:10px;
-          font-weight:700;
-          cursor:pointer;
-        ">⬅ Volver</button>
+  <button id="visorVolver" style="
+    background:#e2e8f8;
+    border:none;
+    padding:8px 16px;
+    border-radius:10px;
+    font-weight:700;
+    cursor:pointer;
+  ">⬅ Volver</button>
 
-        <div style="display:flex; gap:10px;">
-          <button id="visorDescargar" style="
-            background:#0e4aa8; color:#fff;
-            border:none; padding:8px 16px;
-            border-radius:10px; cursor:pointer;
-            font-weight:700;
-          ">Descargar</button>
+  <div style="display:flex; gap:10px;">
+    <button id="visorAbrirExcel" style="
+      background:#2563eb;
+      color:white;
+      border:none;
+      padding:8px 16px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    ">
+      📊 Abrir Excel en línea
+    </button>
 
-          <button id="visorAprobar" style="
-            background:#16a34a; color:white;
-            border:none; padding:8px 16px;
-            border-radius:10px; cursor:pointer;
-            font-weight:700;
-          ">Aprobar</button>
+    <button id="visorDescargar" style="
+      background:#0e4aa8; color:#fff;
+      border:none; padding:8px 16px;
+      border-radius:10px; cursor:pointer;
+      font-weight:700;
+    ">Descargar</button>
 
-          <button id="visorRechazar" style="
-            background:#dc2626; color:white;
-            border:none; padding:8px 16px;
-            border-radius:10px; cursor:pointer;
-            font-weight:700;
-          ">Rechazar</button>
-        </div>
-      </div>
+    <button id="visorAprobar" style="
+      background:#16a34a; color:white;
+      border:none; padding:8px 16px;
+      border-radius:10px; cursor:pointer;
+      font-weight:700;
+    ">Aprobar</button>
+
+    <button id="visorRechazar" style="
+      background:#dc2626; color:white;
+      border:none; padding:8px 16px;
+      border-radius:10px; cursor:pointer;
+      font-weight:700;
+    ">Rechazar</button>
+  </div>
+</div>
 
       <!-- Contenedor del Excel (Preview) -->
       <div id="visorIframe" style="
