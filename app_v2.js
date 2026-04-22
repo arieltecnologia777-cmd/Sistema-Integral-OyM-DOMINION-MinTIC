@@ -546,3 +546,53 @@ if (btnAbrirExcel) {
     }
   });
 }
+/* ======================================================================
+ 18 ABRIR EXCEL EN LÍNEA — OneDrive Corporativo (Graph)
+====================================================================== */
+const btnAbrirExcel = document.getElementById("visorAbrirExcel");
+
+if (btnAbrirExcel) {
+  btnAbrirExcel.addEventListener("click", async () => {
+    const item = window.__archivoActual;
+
+    if (!item?.fileIdentifierExcel) {
+      alert("No se encontró el identificador del archivo.");
+      return;
+    }
+
+    try {
+      // ✅ Token MSAL (ya usado en tu app)
+      const token = await obtenerToken();
+
+      // ✅ Obtener el webUrl real desde OneDrive
+      const resp = await fetch(
+        `https://graph.microsoft.com/v1.0/me/drive/items/${item.fileIdentifierExcel}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (!resp.ok) {
+        throw new Error("Graph no devolvió el archivo");
+      }
+
+      const data = await resp.json();
+
+      if (!data.webUrl) {
+        throw new Error("El archivo no tiene webUrl");
+      }
+
+      // ✅ Abrir Excel real en línea (como antes)
+      window.open(data.webUrl, "_blank");
+
+    } catch (e) {
+      console.error(e);
+      alert(
+        "No fue posible abrir el Excel en línea.\n" +
+        "La vista previa sigue funcionando correctamente."
+      );
+    }
+  });
+}
