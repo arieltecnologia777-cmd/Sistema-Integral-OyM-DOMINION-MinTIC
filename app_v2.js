@@ -547,28 +547,29 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     { method: "PUT" }
   );
 });
+// 🔒 Forzar Aprobar DESACTIVADO al abrir visor
+const btnAprobar = document.getElementById("visorAprobar");
+if (btnAprobar) btnAprobar.disabled = true;
+
 /* ======================================================================
- 17)  ABRIR EXCEL EN LÍNEA — DESDE FLOW
+   17) 🔒 Forzar Aprobar DESACTIVADO al abrir visor
 ====================================================================== */
-const btnAbrirExcel = document.getElementById("visorAbrirExcel");
-
-if (btnAbrirExcel) {
-  btnAbrirExcel.addEventListener("click", () => {
+const btnExcel = document.getElementById("visorAbrirExcel");
+if (btnExcel) {
+  btnExcel.onclick = () => {
     const item = window.__archivoActual;
-
     if (!item?.excelWebUrl) {
       alert("No se encontró el enlace al Excel en línea.");
       return;
     }
 
-    // ✅ Abrir Excel en línea
+    // Abrir Excel
     window.open(item.excelWebUrl, "_blank");
 
-    // ✅ Marcar que el Excel fue abierto
+    // Marcar Excel como abierto
     window.__excelAbierto = true;
 
-    // ✅ Habilitar botón Aprobar
-    const btnAprobar = document.getElementById("visorAprobar");
+    // ✅ Activar Aprobar
     if (btnAprobar) btnAprobar.disabled = false;
-  });
+  };
 }
