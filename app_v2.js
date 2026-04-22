@@ -517,42 +517,15 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     { method: "PUT" }
   );
 });
+
 /* ======================================================================
- 17 ABRIR EXCEL EN LÍNEA — PASO SEGURO (NO TOCA PREVIEW)
+  ABRIR EXCEL EN LÍNEA — OneDrive Corporativo (Graph)
 ====================================================================== */
-const btnAbrirExcel = document.getElementById("visorAbrirExcel");
+(() => {
+  const btn = document.getElementById("visorAbrirExcel");
+  if (!btn) return;
 
-if (btnAbrirExcel) {
-  btnAbrirExcel.addEventListener("click", () => {
-    const item = window.__archivoActual;
-
-    if (!item) {
-      alert("No hay archivo cargado.");
-      return;
-    }
-
-    // ✅ Solo abrir si el valor YA es una URL válida
-    if (
-      item.fileIdentifierExcel &&
-      typeof item.fileIdentifierExcel === "string" &&
-      item.fileIdentifierExcel.startsWith("http")
-    ) {
-      window.open(item.fileIdentifierExcel, "_blank");
-    } else {
-      alert(
-        "Este informe no tiene un enlace directo al Excel en línea.\n\n" +
-        "La vista previa sigue disponible y funcionando."
-      );
-    }
-  });
-}
-/* ======================================================================
- 18 ABRIR EXCEL EN LÍNEA — OneDrive Corporativo (Graph)
-====================================================================== */
-const btnAbrirExcel = document.getElementById("visorAbrirExcel");
-
-if (btnAbrirExcel) {
-  btnAbrirExcel.addEventListener("click", async () => {
+  btn.addEventListener("click", async () => {
     const item = window.__archivoActual;
 
     if (!item?.fileIdentifierExcel) {
@@ -561,16 +534,14 @@ if (btnAbrirExcel) {
     }
 
     try {
-      // ✅ Token MSAL (ya usado en tu app)
       const token = await obtenerToken();
 
-      // ✅ Obtener el webUrl real desde OneDrive
       const resp = await fetch(
         `https://graph.microsoft.com/v1.0/me/drive/items/${item.fileIdentifierExcel}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -584,15 +555,14 @@ if (btnAbrirExcel) {
         throw new Error("El archivo no tiene webUrl");
       }
 
-      // ✅ Abrir Excel real en línea (como antes)
       window.open(data.webUrl, "_blank");
 
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
       alert(
         "No fue posible abrir el Excel en línea.\n" +
         "La vista previa sigue funcionando correctamente."
       );
     }
   });
-}
+})();
