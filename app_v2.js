@@ -310,7 +310,27 @@ window.__excelAbierto = false;
 // 🔒 Deshabilitar Aprobar al entrar al visor
 const btnAprobar = document.getElementById("visorAprobar");
 if (btnAprobar) btnAprobar.disabled = true;
+   
+// ✅ Enganchar Abrir Excel (YA existe el botón)
+const btnExcel = document.getElementById("visorAbrirExcel");
+if (btnExcel) {
+  btnExcel.onclick = () => {
+    const item = window.__archivoActual;
+    if (!item?.excelWebUrl) {
+      alert("No se encontró el enlace al Excel en línea.");
+      return;
+    }
 
+    // Abrir Excel
+    window.open(item.excelWebUrl, "_blank");
+
+    // Marcar Excel como abierto
+    window.__excelAbierto = true;
+
+    // ✅ ACTIVAR Aprobar SOLO AQUÍ
+    btnAprobar.disabled = false;
+  };
+}
 
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
@@ -547,29 +567,3 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     { method: "PUT" }
   );
 });
-// 🔒 Forzar Aprobar DESACTIVADO al abrir visor
-const btnAprobar = document.getElementById("visorAprobar");
-if (btnAprobar) btnAprobar.disabled = true;
-
-/* ======================================================================
-   17) 🔒 Forzar Aprobar DESACTIVADO al abrir visor
-====================================================================== */
-const btnExcel = document.getElementById("visorAbrirExcel");
-if (btnExcel) {
-  btnExcel.onclick = () => {
-    const item = window.__archivoActual;
-    if (!item?.excelWebUrl) {
-      alert("No se encontró el enlace al Excel en línea.");
-      return;
-    }
-
-    // Abrir Excel
-    window.open(item.excelWebUrl, "_blank");
-
-    // Marcar Excel como abierto
-    window.__excelAbierto = true;
-
-    // ✅ Activar Aprobar
-    if (btnAprobar) btnAprobar.disabled = false;
-  };
-}
