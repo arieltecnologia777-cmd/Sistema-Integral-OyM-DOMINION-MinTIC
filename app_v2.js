@@ -532,3 +532,20 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     { method: "PUT" }
   );
 });
+/* ======================================================================
+ 17 ABRIR EXCEL EN LÍNEA — DESDE FLOW (FINAL)
+====================================================================== */
+const btnAbrirExcel = document.getElementById("visorAbrirExcel");
+
+if (btnAbrirExcel) {
+  btnAbrirExcel.addEventListener("click", () => {
+    const item = window.__archivoActual;
+
+    if (!item?.excelWebUrl) {
+      alert("No se encontró el enlace al Excel en línea.");
+      return;
+    }
+
+    window.open(item.excelWebUrl, "_blank");
+  });
+}
