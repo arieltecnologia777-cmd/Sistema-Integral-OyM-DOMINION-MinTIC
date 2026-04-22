@@ -562,14 +562,23 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
    16) RECHAZAR (OPCIONAL)
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
-
   const item = window.__archivoActual;
-  const mciId = item?.mciId || null;
+  const mciId = item?.mciId ?? null;
 
-  if (!mciId) return;
+  if (!mciId) {
+    alert("No se pudo identificar el informe a rechazar.");
+    return;
+  }
 
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
     { method: "PUT" }
   );
+
+  // ✅ Cerrar visor
+  document.getElementById("modalVisor").style.display = "none";
+  document.getElementById("contenedor-modulo").style.display = "block";
+
+  // ✅ Recargar tabla
+  await cargarDatosModulo();
 });
