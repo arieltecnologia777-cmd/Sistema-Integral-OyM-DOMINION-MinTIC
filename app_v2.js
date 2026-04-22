@@ -312,10 +312,15 @@ function renderTabla() {
     const estado = item.estadoKV ?? "pendiente";
 
     const btn =
-      estado === "pendiente" ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>` :
-      estado === "en_revision" ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>` :
-      estado === "aprobado" ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>` :
-      `<button class="btn-estado btn-rojo" disabled>⛔ Rechazado</button>`;
+  estado === "pendiente"
+    ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
+  : estado === "en_revision"
+    ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
+  : estado === "aprobado"
+    ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>`
+  : estado === "rechazado"
+    ? `<button class="btn-estado btn-rechazado" disabled>⛔ Rechazado</button>`
+  : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
