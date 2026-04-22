@@ -5127,21 +5127,45 @@ async function descargarInforme(mciId) {
   }
 }
 // ===================================================
-// EVENT DELEGATION · DESCARGA DESDE MODAL
+// EVENT DELEGATION · DESCARGA DESDE MODAL (con feedback)
 // ===================================================
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
   const btn = e.target.closest(".btnDescargar");
   if (!btn) return;
 
   const mciId = btn.dataset.mciid;
   if (!mciId) {
-    console.error("❌ Botón sin mciId");
-    alert("No se pudo identificar el informe a descargar.");
+    alert("No se pudo identificar el informe.");
     return;
   }
 
-  console.log("📥 Click detectado — descargar informe:", mciId);
-  descargarInforme(mciId);
+  // ✅ Guardar texto original
+  const textoOriginal = btn.innerHTML;
+
+  try {
+    // ✅ Estado visual: descargando
+    btn.innerHTML = "⏳ Descargando…";
+    btn.disabled = true;
+    btn.style.opacity = "0.8";
+    btn.style.cursor = "not-allowed";
+
+    console.log("📥 Iniciando descarga:", mciId);
+
+    // ✅ Ejecutar descarga
+    await descargarInforme(mciId);
+
+    console.log("✅ Descarga finalizada:", mciId);
+
+  } catch (err) {
+    console.error("❌ Error en la descarga:", err);
+    alert("Ocurrió un error al descargar el informe.");
+  } finally {
+    // ✅ Restaurar botón
+    btn.innerHTML = textoOriginal;
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+  }
 });
 const photoInputs = [
   "inp-firma-tec",
