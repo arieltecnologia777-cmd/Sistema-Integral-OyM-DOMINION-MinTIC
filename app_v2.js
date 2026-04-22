@@ -306,13 +306,13 @@ async function verArchivo(item) {
 
   // === OBTENER EXCEL DESDE ONEDRIVE (FLOW DESCARGADOR) ===
   const resp = await fetch(FLOW_FOTOS, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      tipo: "excel",
-      fileId: item.fileIdentifierExcel
-    })
-  });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    fileIdentifierExcel: item.fileIdentifierExcel
+  })
+});
+
 
   if (!resp.ok) {
     throw new Error("No se pudo obtener el Excel desde OneDrive");
