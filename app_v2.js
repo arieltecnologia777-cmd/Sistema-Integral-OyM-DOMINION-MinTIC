@@ -517,3 +517,32 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     { method: "PUT" }
   );
 });
+/* ======================================================================
+ 17 ABRIR EXCEL EN LÍNEA — PASO SEGURO (NO TOCA PREVIEW)
+====================================================================== */
+const btnAbrirExcel = document.getElementById("visorAbrirExcel");
+
+if (btnAbrirExcel) {
+  btnAbrirExcel.addEventListener("click", () => {
+    const item = window.__archivoActual;
+
+    if (!item) {
+      alert("No hay archivo cargado.");
+      return;
+    }
+
+    // ✅ Solo abrir si el valor YA es una URL válida
+    if (
+      item.fileIdentifierExcel &&
+      typeof item.fileIdentifierExcel === "string" &&
+      item.fileIdentifierExcel.startsWith("http")
+    ) {
+      window.open(item.fileIdentifierExcel, "_blank");
+    } else {
+      alert(
+        "Este informe no tiene un enlace directo al Excel en línea.\n\n" +
+        "La vista previa sigue disponible y funcionando."
+      );
+    }
+  });
+}
