@@ -41,10 +41,21 @@ function cargarEstados() {
    3) INICIO DEL MÓDULO (MSAL SIN BLOQUEAR)
 ====================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
+  const usuario = usuarioActual();
 
-  // NO BLOQUEAR NUNCA EL MÓDULO
-  if (!usuarioActual()) iniciarSesion().catch(() => console.warn("MSAL pendiente…"));
+  // 🔒 SI NO HAY SESIÓN → FORZAR LOGIN Y NO CARGAR NADA
+  if (!usuario) {
+    await iniciarSesion().catch(() => {
+      alert("Debes iniciar sesión con tu cuenta corporativa.");
+    });
 
+    if (!usuarioActual()) {
+      // ❌ SIN SESIÓN → NO AVANZAMOS
+      return;
+    }
+  }
+
+  // ✅ SOLO CON SESIÓN VÁLIDA
   prepararSidebar();
   cargarEstados();
   seleccionarModulo("inicio");
