@@ -6741,9 +6741,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Cargar informes SOLO cuando se abre el modal
   cargarInformesEnTabla();
-});
+});// ================================
+// ✅ Botón 🔄 Actualizar informes
+// ================================
+const refreshBtn = document.getElementById("refreshMisInformes");
+
+if (refreshBtn) {
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.innerHTML = "⏳ Actualizando...";
+    refreshBtn.disabled = true;
+
+    try {
+      await cargarInformesEnTabla();
+    } finally {
+      refreshBtn.innerHTML = "🔄 Actualizar";
+      refreshBtn.disabled = false;
+    }
+  });
+}
+    
   }
 
+  
   // Cerrar modal con botón
   if (cerrarMisInformes && misInformesModal) {
     cerrarMisInformes.addEventListener("click", () => {
@@ -6799,6 +6818,10 @@ document.addEventListener("DOMContentLoaded", () => {
       <h3 style="margin:0; color:#0b2e59;">
         Mis informes
       </h3>
+
+<button id="refreshMisInformes" class="btn secondary" style="margin-right:8px;">
+  🔄 Actualizar
+</button>
 
       <button
         id="cerrarMisInformes"
