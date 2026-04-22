@@ -306,10 +306,6 @@ async function verArchivo(item) {
   window.__archivoActual = item;
    // 🔒 Resetear estado de apertura de Excel
 window.__excelAbierto = false;
-
-// 🔒 Deshabilitar Aprobar al entrar al visor
-const btnAprobar = document.getElementById("visorAprobar");
-if (btnAprobar) btnAprobar.disabled = true;
    
 // ✅ Enganchar Abrir Excel (YA existe el botón)
 const btnExcel = document.getElementById("visorAbrirExcel");
@@ -335,6 +331,12 @@ if (btnExcel) {
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
+   
+   // 🔒 Forzar Aprobar DESACTIVADO una vez el modal ya está visible
+setTimeout(() => {
+  const btnAprobar = document.getElementById("visorAprobar");
+  if (btnAprobar) btnAprobar.disabled = true;
+}, 0);
 
    console.log("ENVIANDO AL FLOW (Excel):", {
   fileIdentifierExcel: item.fileIdentifierExcel
