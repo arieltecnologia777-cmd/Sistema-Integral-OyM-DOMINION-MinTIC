@@ -429,30 +429,6 @@ const infoInforme = {
 infoInforme.tecnico = item.nombre ?? "—";
 infoInforme.fecha   = item.fecha ?? "—";
 
-// ==============================
-// PASO 3 — Sobrescribir infoInforme desde Excel (si existe)
-// (NO toca el DOM)
-// ==============================
-if (data.excelBase64) {
-  try {
-    const wb = XLSX.read(data.excelBase64, { type: "base64" });
-
-    const tecnicoExcel      = leerCeldaExcel(wb, "E16");
-    const celularExcel      = leerCeldaExcel(wb, "E12");
-    const deptoExcel        = leerCeldaExcel(wb, "E11");
-    const beneficiarioExcel = leerCeldaExcel(wb, "E13");
-    const otExcel           = leerCeldaExcel(wb, "E9");
-
-    if (tecnicoExcel !== "—")      infoInforme.tecnico = tecnicoExcel;
-    if (celularExcel !== "—")      infoInforme.celular = celularExcel;
-    if (deptoExcel !== "—")        infoInforme.depto = deptoExcel;
-    if (beneficiarioExcel !== "—") infoInforme.beneficiario = beneficiarioExcel;
-    if (otExcel !== "—")           infoInforme.ot = otExcel;
-
-  } catch (e) {
-    console.warn("Error leyendo Excel:", e);
-  }
-}
 
    // ==============================
 // PASO 4 — Render único de la info del informe
@@ -571,6 +547,31 @@ setTimeout(() => {
 const data = await resp.json();
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
+
+  // ==============================
+// PASO 3 — Sobrescribir infoInforme desde Excel (si existe)
+// (NO toca el DOM)
+// ==============================
+if (data.excelBase64) {
+  try {
+    const wb = XLSX.read(data.excelBase64, { type: "base64" });
+
+    const tecnicoExcel      = leerCeldaExcel(wb, "E16");
+    const celularExcel      = leerCeldaExcel(wb, "E12");
+    const deptoExcel        = leerCeldaExcel(wb, "E11");
+    const beneficiarioExcel = leerCeldaExcel(wb, "E13");
+    const otExcel           = leerCeldaExcel(wb, "E9");
+
+    if (tecnicoExcel !== "—")      infoInforme.tecnico = tecnicoExcel;
+    if (celularExcel !== "—")      infoInforme.celular = celularExcel;
+    if (deptoExcel !== "—")        infoInforme.depto = deptoExcel;
+    if (beneficiarioExcel !== "—") infoInforme.beneficiario = beneficiarioExcel;
+    if (otExcel !== "—")           infoInforme.ot = otExcel;
+
+  } catch (e) {
+    console.warn("Error leyendo Excel:", e);
+  }
+} 
 
 // ✅ Guardar URL del Excel para abrir en línea
 window.__archivoActual.excelWebUrl = data.excelWebUrl;
