@@ -7,14 +7,41 @@
 const FLOW_FOTOS =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e5f65d8cc4aa4001b6966552ed454170/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ybNuejYFtJf4p_P2vNPf_TY_Zzm2uvkSVYkqPu0GyQg";
 
+
+async function tienePermisoOneDrive() {
+  try {
+    const token = await obtenerToken();
+    if (!token) return false;
+
+    // ✅ Intento mínimo: listar root (o una carpeta específica si prefieres)
+    const resp = await fetch(
+      "https://graph.microsoft.com/v1.0/me/drive/root/children?$top=1",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    // ✅ 200 = tiene acceso
+    if (resp.status === 200) return true;
+
+    // ❌ 403 / 401 = NO tiene permisos
+    return false;
+
+  } catch (err) {
+    console.warn("Sin permisos OneDrive:", err);
+    return false;
+  }
+}
 /* ======================================================================
-   0) IMPORTS — NECESARIOS
+   1) IMPORTS — NECESARIOS
 ====================================================================== */
 import {obtenerModulo } from "./modulos_v2.js";
 import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
 
 /* ======================================================================
-   1) VARIABLES GLOBALES
+   2) VARIABLES GLOBALES
 ====================================================================== */
 window.moduloActivo = null;
 window.datosActuales = [];
@@ -24,7 +51,7 @@ window.__mciIdActual = null;
 window.__excelAbierto = false;
 
 /* ======================================================================
-   2) GUARDAR / CARGAR ESTADO LOCAL
+   3) GUARDAR / CARGAR ESTADO LOCAL
 ====================================================================== */
 function guardarEstados() {
   localStorage.setItem("estadoInformesAuditor", JSON.stringify(window.estadoInformes));
@@ -38,20 +65,31 @@ function cargarEstados() {
 }
 
 /* ======================================================================
-   3) INICIO DEL MÓDULO (MSAL SIN BLOQUEAR)
+   4) INICIO DEL MÓDULO (MSAL SIN BLOQUEAR)
 ====================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
+  const usuario = usuarioActual();
 
-  // NO BLOQUEAR NUNCA EL MÓDULO
-  if (!usuarioActual()) iniciarSesion().catch(() => console.warn("MSAL pendiente…"));
+  // 🔒 SI NO HAY SESIÓN → FORZAR LOGIN Y NO CARGAR NADA
+  if (!usuario) {
+    await iniciarSesion().catch(() => {
+      alert("Debes iniciar sesión con tu cuenta corporativa.");
+    });
 
+    if (!usuarioActual()) {
+      // ❌ SIN SESIÓN → NO AVANZAMOS
+      return;
+    }
+  }
+
+  // ✅ SOLO CON SESIÓN VÁLIDA
   prepararSidebar();
   cargarEstados();
   seleccionarModulo("inicio");
 });
 
 /* ======================================================================
-   4) SIDEBAR
+   5) SIDEBAR
 ====================================================================== */
 function prepararSidebar() {
   const botones = document.querySelectorAll(".sb-item");
@@ -73,7 +111,7 @@ function prepararSidebar() {
 }
 
 /* ======================================================================
-   5) SELECCIONAR MÓDULO
+   6) SELECCIONAR MÓDULO
 ====================================================================== */
 async function seleccionarModulo(mod) {
 
@@ -103,7 +141,7 @@ async function seleccionarModulo(mod) {
   await cargarDatosModulo();
 }
 /* ======================================================================
-   6) GENERAR TABLA HTML
+   7) GENERAR TABLA HTML
 ====================================================================== */
 function generarTablaHTML(modulo) {
 
@@ -133,19 +171,66 @@ function generarTablaHTML(modulo) {
 }
 
 /* ======================================================================
-   7) CARGAR DATOS DEL MÓDULO (SharePoint + KV)
+   8) CARGAR DATOS DEL MÓDULO (SharePoint + KV)
 ====================================================================== */
 async function cargarDatosModulo() {
 
-  if (!window.moduloActivo?.pendientes) {
-    document.getElementById("tbodyDatos").innerHTML = `
-      <tr><td colspan="99" style="padding:20px; text-align:center;">
-        No hay informes pendientes.
-      </td></tr>`;
+  // 🔒 0) Si no hay sesión activa, no cargar nada
+  if (!usuarioActual()) {
     return;
   }
 
-  const tecnico = "usuario"; // o el auditor logueado
+  // 🔒 1) Verificar permisos reales en OneDrive
+  try {
+    const token = await obtenerToken();
+    if (!token) throw new Error("Sin token");
+
+    const check = await fetch(
+      "https://graph.microsoft.com/v1.0/me/drive/root/children?$top=1",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    // ❌ Sin permisos → tabla vacía con leyenda estándar
+    if (check.status !== 200) {
+      document.getElementById("tbodyDatos").innerHTML = `
+        <tr>
+          <td colspan="99" style="padding:20px; text-align:center;">
+            No hay informes pendientes.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+  } catch (e) {
+    // ❌ Error / sin permisos → misma salida limpia
+    document.getElementById("tbodyDatos").innerHTML = `
+      <tr>
+        <td colspan="99" style="padding:20px; text-align:center;">
+          No hay informes pendientes.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  // 🔒 2) Si el módulo no tiene pendientes, mostrar leyenda
+  if (!window.moduloActivo?.pendientes) {
+    document.getElementById("tbodyDatos").innerHTML = `
+      <tr>
+        <td colspan="99" style="padding:20px; text-align:center;">
+          No hay informes pendientes.
+        </td>
+      </tr>`;
+    return;
+  }
+
+  // ✅ 3) Cargar datos desde KV (usuario AUTORIZADO)
+  const tecnico = "usuario"; // o auditor logueado
   const respKV = await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
   );
@@ -154,11 +239,10 @@ async function cargarDatosModulo() {
 
   // ✅ Mapear datos correctamente desde el KV
   window.datosActuales = listaKV.map(reg => {
-
-    const fechaTexto = reg.fechaGenerado || ""; // viene ISO desde el worker
+    const fechaTexto = reg.fechaGenerado || "";
 
     return {
-      // ✅ Columnas visibles en la tabla
+      // ✅ Columnas visibles
       nombre: reg.fileName,
       fecha: fechaTexto
         ? new Date(fechaTexto).toLocaleString("es-CO", {
@@ -174,7 +258,7 @@ async function cargarDatosModulo() {
         : "",
 
       // ✅ Datos internos
-      fechaReal: fechaTexto, // para ordenamiento
+      fechaReal: fechaTexto,
       mciId: reg.mciId,
       estadoKV: reg.estado,
       fileIdentifierExcel: reg.fileIdentifierExcel,
@@ -182,7 +266,7 @@ async function cargarDatosModulo() {
     };
   });
 
-  // ✅ ORDENAR POR DEFECTO: MÁS RECIENTE ARRIBA
+  // ✅ 4) Ordenar por fecha descendente
   window.datosActuales.sort((a, b) => {
     const fa = Date.parse(b.fechaReal || "") || 0;
     const fb = Date.parse(a.fechaReal || "") || 0;
@@ -192,9 +276,8 @@ async function cargarDatosModulo() {
   renderTabla();
   setTimeout(() => activarOrdenamientoFecha(), 0);
 }
-
 /* ======================================================================
-   8) RENDER TABLA
+   9) RENDER TABLA
 ====================================================================== */
 function renderTabla() {
 
@@ -229,10 +312,15 @@ function renderTabla() {
     const estado = item.estadoKV ?? "pendiente";
 
     const btn =
-      estado === "pendiente" ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>` :
-      estado === "en_revision" ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>` :
-      estado === "aprobado" ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>` :
-      `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+  estado === "pendiente"
+    ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
+  : estado === "en_revision"
+    ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
+  : estado === "aprobado"
+  ? `<button class="btn-estado btn-verde btn-ver" data-idx="${idx}">✅ Aprobado</button>`
+: estado === "rechazado"
+  ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
+  : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
@@ -243,7 +331,7 @@ function renderTabla() {
 }
 
 /* ======================================================================
-   9) ORDENAR POR FECHA
+   10) ORDENAR POR FECHA
 ====================================================================== */
 function activarOrdenamientoFecha() {
   const th = document.querySelector("span.sortable[data-col='fecha']");
@@ -267,19 +355,19 @@ function activarOrdenamientoFecha() {
 }
 
 /* ======================================================================
-   10) EVENTOS DE TABLA
+   11) EVENTOS DE TABLA
 ====================================================================== */
 function prepararEventosTabla() {
-  document.querySelectorAll(".btn-revisar").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const idx = btn.dataset.idx;
-      const item = window.datosActuales[idx];
-      await verArchivo(item);
-    });
+  document.querySelectorAll(".btn-revisar, .btn-ver").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const idx = btn.dataset.idx;
+    const item = window.datosActuales[idx];
+    await verArchivo(item);
   });
+});
 }
 /* ======================================================================
-   11) BUSCAR JSON DE FOTOS EN ONEDRIVE
+   12) BUSCAR JSON DE FOTOS EN ONEDRIVE
 ====================================================================== */
 async function obtenerJsonFotos(item) {
   const resp = await fetch(FLOW_FOTOS, {
@@ -300,10 +388,12 @@ async function obtenerJsonFotos(item) {
   return data.imgsJson;
 }
 /* ======================================================================
-   12) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
+   13) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
 ====================================================================== */
 async function verArchivo(item) {
   window.__archivoActual = item;
+   // ✅ Estado actual del informe
+const estado = item.estadoKV || "pendiente";
    // 🔒 Resetear estado de apertura de Excel
 window.__excelAbierto = false;
    
@@ -315,7 +405,7 @@ if (btnExcel && btnAprobar) {
   btnExcel.addEventListener("click", () => {
 
     if (!window.__archivoActual?.excelWebUrl) {
-      alert("No se encontró el enlace al Excel en línea.");
+      alert("⏳ por favor espere la vista previa para abrirl el Excel en línea.");
       return;
     }
 
@@ -335,6 +425,27 @@ if (btnExcel && btnAprobar) {
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
+
+   // ==============================
+// PASO 1 — Modal dinámico por estado
+// ==============================
+const btnAprobarUI   = document.getElementById("visorAprobar");
+const btnRechazarUI  = document.getElementById("visorRechazar");
+const btnDescargarUI = document.getElementById("visorDescargar");
+   
+if (estado === "aprobado") {
+  btnAprobarUI.style.display = "none";
+  btnRechazarUI.style.display = "none";
+  btnDescargarUI.style.display = "none";
+}
+
+if (estado === "rechazado") {
+  btnAprobarUI.style.display = "none";
+  btnRechazarUI.style.display = "none";
+  btnDescargarUI.style.display = "none";
+}
+
+// Para pendientes / en revisión → no tocamos nada
    
    // 🔒 Forzar Aprobar DESACTIVADO una vez el modal ya está visible
 setTimeout(() => {
@@ -474,7 +585,7 @@ const sheet = wb.Sheets[wb.SheetNames[0]];
   }
 }
 /* ======================================================================
-   13) RENDER FOTOS — ESTILO DOMINION
+   14) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
 function renderizarFotos(item) {
   const fotos = item.fotosPreview;
@@ -525,7 +636,7 @@ function renderizarFotos(item) {
   });
 }
 /* ======================================================================
-   14) VOLVER
+   15) VOLVER
 ====================================================================== */
 document.getElementById("visorVolver").addEventListener("click", () => {
   document.getElementById("modalVisor").style.display = "none";
@@ -534,7 +645,7 @@ document.getElementById("visorVolver").addEventListener("click", () => {
 });
 
 /* ======================================================================
-   15) APROBAR
+   16) APROBAR
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
 
@@ -559,17 +670,26 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 });
 
 /* ======================================================================
-   16) RECHAZAR (OPCIONAL)
+   17) RECHAZAR (OPCIONAL)
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
-
   const item = window.__archivoActual;
-  const mciId = item?.mciId || null;
+  const mciId = item?.mciId ?? null;
 
-  if (!mciId) return;
+  if (!mciId) {
+    alert("No se pudo identificar el informe a rechazar.");
+    return;
+  }
 
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
     { method: "PUT" }
   );
+
+  // ✅ Cerrar visor
+  document.getElementById("modalVisor").style.display = "none";
+  document.getElementById("contenedor-modulo").style.display = "block";
+
+  // ✅ Recargar tabla
+  await cargarDatosModulo();
 });
