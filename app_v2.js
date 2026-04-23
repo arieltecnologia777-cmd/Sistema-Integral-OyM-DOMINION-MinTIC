@@ -435,19 +435,35 @@ visor.innerHTML = `
 // ==============================
 // MICRO‑PASO C — Llenar datos visuales
 // ==============================
-document.getElementById("infoTecnico").innerText =
-  item.nombre ?? "—";
-
-document.getElementById("infoOT").innerText =
-  item.nombre?.match(/\d+/)?.[0] ?? "—";
-
+// Fecha sí viene correctamente del KV
 document.getElementById("infoFecha").innerText =
   item.fecha ?? "—";
 
+// Estos se llenarán desde el Excel (por ahora los limpiamos)
+document.getElementById("infoTecnico").innerText = "—";
+document.getElementById("infoOT").innerText = "—";
 // Aún pendientes
-document.getElementById("infoCelular").innerText = "—";
-document.getElementById("infoDepto").innerText = "—";
-document.getElementById("infoBeneficiario").innerText = "—";
+// ✅ Mapeo correcto desde el Excel
+
+// Técnico → Datos de quien repara el servicio → Nombres y apellidos
+document.getElementById("infoTecnico").innerText =
+  leerCeldaExcel(wb, "E16"); // ⬅ AJUSTA la celda si es otra
+
+// Celular
+document.getElementById("infoCelular").innerText =
+  leerCeldaExcel(wb, "E12");
+
+// Departamento
+document.getElementById("infoDepto").innerText =
+  leerCeldaExcel(wb, "E11");
+
+// ID Beneficiario
+document.getElementById("infoBeneficiario").innerText =
+  leerCeldaExcel(wb, "E13");
+
+// IM / OT → N° de caso
+document.getElementById("infoOT").innerText =
+  leerCeldaExcel(wb, "E9"); // ⬅ celda típica de N° de caso
    
    // ==============================
 // PASO 1 — Modal dinámico por estado
