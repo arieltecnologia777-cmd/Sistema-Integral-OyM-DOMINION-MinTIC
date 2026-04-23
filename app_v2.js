@@ -615,6 +615,8 @@ if (jsonFotos) {
   document.getElementById("visorFotos").innerHTML =
     "<p style='color:#777;'>Este informe no tiene fotos adjuntas.</p>";
 }
+
+   }
 /* ======================================================================
    14) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
