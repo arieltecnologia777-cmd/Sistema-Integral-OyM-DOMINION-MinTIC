@@ -462,7 +462,7 @@ const data = await resp.json();
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
 
-
+window.__archivoActual.excelWebUrl = data.excelWebUrl;
 
   // === CARGA DE FOTOS (NO TOCADO) ===
   const jsonFotos = await obtenerJsonFotos(item);
@@ -584,3 +584,20 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   // ✅ Recargar tabla
   await cargarDatosModulo();
 });
+/* =========================================================
+   ABRIR EXCEL EN LÍNEA — LISTENER GLOBAL ÚNICO
+========================================================= */
+const btnAbrirExcel = document.getElementById("visorAbrirExcel");
+
+if (btnAbrirExcel) {
+  btnAbrirExcel.addEventListener("click", () => {
+    const url = window.__archivoActual?.excelWebUrl;
+
+    if (!url) {
+      alert("El enlace al Excel aún no está disponible.");
+      return;
+    }
+
+    window.open(url, "_blank");
+  });
+}
