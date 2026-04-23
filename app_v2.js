@@ -406,6 +406,27 @@ window.__excelAbierto = false;
    // ✅ Crear contenedor de fotos (OBLIGATORIO)
 const visor = document.getElementById("visorIframe");
 visor.innerHTML = `
+  <div style="
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:12px;
+    background:#f9fafb;
+    margin-bottom:16px;
+  ">
+    <div style="font-weight:700; margin-bottom:8px;">
+      Información del informe
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:14px;">
+      <div><strong>Técnico:</strong> <span id="infoTecnico">—</span></div>
+      <div><strong>Celular:</strong> <span id="infoCelular">—</span></div>
+      <div><strong>Departamento:</strong> <span id="infoDepto">—</span></div>
+      <div><strong>ID Beneficiario:</strong> <span id="infoBeneficiario">—</span></div>
+      <div><strong>IM / OT:</strong> <span id="infoOT">—</span></div>
+      <div><strong>Fecha reporte:</strong> <span id="infoFecha">—</span></div>
+    </div>
+  </div>
+
   <h3 style="font-weight:800; margin-bottom:10px;">
     Fotos del informe
   </h3>
