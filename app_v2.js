@@ -392,8 +392,6 @@ async function obtenerJsonFotos(item) {
 ====================================================================== */
 async function verArchivo(item) {
   window.__archivoActual = item;
-   // ✅ Estado actual del informe
-const estado = item.estadoKV || "pendiente";
    // 🔒 Resetear estado de apertura de Excel
 window.__excelAbierto = false;
    
@@ -425,27 +423,6 @@ if (btnExcel && btnAprobar) {
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
-
-   // ==============================
-// PASO 1 — Modal dinámico por estado
-// ==============================
-const btnAprobarUI   = document.getElementById("visorAprobar");
-const btnRechazarUI  = document.getElementById("visorRechazar");
-const btnDescargarUI = document.getElementById("visorDescargar");
-   
-if (estado === "aprobado") {
-  btnAprobarUI.style.display = "none";
-  btnRechazarUI.style.display = "none";
-  btnDescargarUI.style.display = "none";
-}
-
-if (estado === "rechazado") {
-  btnAprobarUI.style.display = "none";
-  btnRechazarUI.style.display = "none";
-  btnDescargarUI.style.display = "none";
-}
-
-// Para pendientes / en revisión → no tocamos nada
    
    // 🔒 Forzar Aprobar DESACTIVADO una vez el modal ya está visible
 setTimeout(() => {
@@ -474,6 +451,81 @@ setTimeout(() => {
 const data = await resp.json();
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
+// ✅ Guardar base64 para preview
+const base64Excel = data.excelBase64;
+
+// ✅ Guardar URL real para Excel en línea
+item.excelWebUrl = data.excelWebUrl;
+
+// === Base64 → ArrayBuffer (para SheetJS) ===
+
+
+  // === LEER EXCEL ===
+  const wb = XLSX.read(data.excelBase64, { type: "base64" });
+const sheet = wb.Sheets[wb.SheetNames[0]];
+
+  // === ELIMINAR SAP, EQUIPOS, SERIALES (IGUAL QUE ANTES) ===
+  const eliminarFilas = (sheet, desde, hasta) => {
+    for (let r = desde; r <= hasta; r++) {
+      for (let c = 65; c <= 90; c++) {
+        const celda = String.fromCharCode(c) + r;
+        delete sheet[celda];
+      }
+    }
+  };
+  eliminarFilas(sheet, 19, 67);
+
+  // === OCULTAR TÍTULO DUPLICADO DE SECCIÓN 1 (FILA 10) ===
+  for (let c = 66; c <= 80; c++) {
+    delete sheet[String.fromCharCode(c) + 10];
+  }
+
+  // === CONVERTIR RANGOS A HTML ===
+  const rango1 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
+  const rango2 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
+  const rango3 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
+
+  const htmlPreview = `
+    <h3 style="font-weight:800; margin-bottom:8px;">Información General</h3>
+    ${rango1}
+
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">
+      Descripción de la falla / hallazgos
+    </h3>
+    ${rango2}
+
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">
+      Declaración
+    </h3>
+    ${rango3}
+  `;
+
+  const visor = document.getElementById("visorIframe");
+
+  visor.innerHTML = `
+    <div style="padding:20px; overflow:auto;">
+
+      <h3 style="font-weight:800; margin-bottom:10px;">Vista previa del archivo</h3>
+
+      <div style="
+        border:1px solid #dce3f5;
+        background:white;
+        border-radius:8px;
+        padding:20px;
+        margin-bottom:30px;">
+        ${htmlPreview}
+      </div>
+
+      <h3 style="font-weight:800; margin-top:20px;">Fotos del informe (vista previa)</h3>
+      <div id="visorFotos" style="
+  margin-top:15px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:14px;">
+</div>
+
+    </div>
+  `;
 
   // ✅ Pintar encabezados internos en gris (versión vieja)
   setTimeout(() => {
