@@ -423,11 +423,14 @@ const infoInforme = {
 };
 
    // ==============================
-// PASO 2 — Fallback con datos que SI llegan
-// (NO toca el DOM)
+// PASO 2 — Estado inicial (cargando datos)
 // ==============================
-infoInforme.tecnico = item.nombre ?? "—";
-infoInforme.fecha   = item.fecha ?? "—";
+infoInforme.tecnico = "Cargando datos…";
+infoInforme.celular = "Cargando datos…";
+infoInforme.depto = "Cargando datos…";
+infoInforme.beneficiario = "Cargando datos…";
+infoInforme.ot = "Cargando datos…";
+infoInforme.fecha = item.fecha ?? "—"; // la fecha sí puede mostrarse
 
 
    // ==============================
