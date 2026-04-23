@@ -7,41 +7,14 @@
 const FLOW_FOTOS =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e5f65d8cc4aa4001b6966552ed454170/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ybNuejYFtJf4p_P2vNPf_TY_Zzm2uvkSVYkqPu0GyQg";
 
-
-async function tienePermisoOneDrive() {
-  try {
-    const token = await obtenerToken();
-    if (!token) return false;
-
-    // ✅ Intento mínimo: listar root (o una carpeta específica si prefieres)
-    const resp = await fetch(
-      "https://graph.microsoft.com/v1.0/me/drive/root/children?$top=1",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    // ✅ 200 = tiene acceso
-    if (resp.status === 200) return true;
-
-    // ❌ 403 / 401 = NO tiene permisos
-    return false;
-
-  } catch (err) {
-    console.warn("Sin permisos OneDrive:", err);
-    return false;
-  }
-}
 /* ======================================================================
-   1) IMPORTS — NECESARIOS
+   0) IMPORTS — NECESARIOS
 ====================================================================== */
 import {obtenerModulo } from "./modulos_v2.js";
 import { obtenerToken, iniciarSesion, usuarioActual, cerrarSesion } from "./auth.js";
 
 /* ======================================================================
-   2) VARIABLES GLOBALES
+   1) VARIABLES GLOBALES
 ====================================================================== */
 window.moduloActivo = null;
 window.datosActuales = [];
@@ -51,7 +24,7 @@ window.__mciIdActual = null;
 window.__excelAbierto = false;
 
 /* ======================================================================
-   3) GUARDAR / CARGAR ESTADO LOCAL
+   2) GUARDAR / CARGAR ESTADO LOCAL
 ====================================================================== */
 function guardarEstados() {
   localStorage.setItem("estadoInformesAuditor", JSON.stringify(window.estadoInformes));
@@ -65,7 +38,7 @@ function cargarEstados() {
 }
 
 /* ======================================================================
-   4) INICIO DEL MÓDULO (MSAL SIN BLOQUEAR)
+   3) INICIO DEL MÓDULO (MSAL SIN BLOQUEAR)
 ====================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
   const usuario = usuarioActual();
@@ -89,7 +62,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ======================================================================
-   5) SIDEBAR
+   4) SIDEBAR
 ====================================================================== */
 function prepararSidebar() {
   const botones = document.querySelectorAll(".sb-item");
@@ -111,7 +84,7 @@ function prepararSidebar() {
 }
 
 /* ======================================================================
-   6) SELECCIONAR MÓDULO
+   5) SELECCIONAR MÓDULO
 ====================================================================== */
 async function seleccionarModulo(mod) {
 
@@ -141,7 +114,7 @@ async function seleccionarModulo(mod) {
   await cargarDatosModulo();
 }
 /* ======================================================================
-   7) GENERAR TABLA HTML
+   6) GENERAR TABLA HTML
 ====================================================================== */
 function generarTablaHTML(modulo) {
 
@@ -171,66 +144,19 @@ function generarTablaHTML(modulo) {
 }
 
 /* ======================================================================
-   8) CARGAR DATOS DEL MÓDULO (SharePoint + KV)
+   7) CARGAR DATOS DEL MÓDULO (SharePoint + KV)
 ====================================================================== */
 async function cargarDatosModulo() {
 
-  // 🔒 0) Si no hay sesión activa, no cargar nada
-  if (!usuarioActual()) {
-    return;
-  }
-
-  // 🔒 1) Verificar permisos reales en OneDrive
-  try {
-    const token = await obtenerToken();
-    if (!token) throw new Error("Sin token");
-
-    const check = await fetch(
-      "https://graph.microsoft.com/v1.0/me/drive/root/children?$top=1",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    // ❌ Sin permisos → tabla vacía con leyenda estándar
-    if (check.status !== 200) {
-      document.getElementById("tbodyDatos").innerHTML = `
-        <tr>
-          <td colspan="99" style="padding:20px; text-align:center;">
-            No hay informes pendientes.
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-  } catch (e) {
-    // ❌ Error / sin permisos → misma salida limpia
-    document.getElementById("tbodyDatos").innerHTML = `
-      <tr>
-        <td colspan="99" style="padding:20px; text-align:center;">
-          No hay informes pendientes.
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  // 🔒 2) Si el módulo no tiene pendientes, mostrar leyenda
   if (!window.moduloActivo?.pendientes) {
     document.getElementById("tbodyDatos").innerHTML = `
-      <tr>
-        <td colspan="99" style="padding:20px; text-align:center;">
-          No hay informes pendientes.
-        </td>
-      </tr>`;
+      <tr><td colspan="99" style="padding:20px; text-align:center;">
+        No hay informes pendientes.
+      </td></tr>`;
     return;
   }
 
-  // ✅ 3) Cargar datos desde KV (usuario AUTORIZADO)
-  const tecnico = "usuario"; // o auditor logueado
+  const tecnico = "usuario"; // o el auditor logueado
   const respKV = await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
   );
@@ -239,10 +165,11 @@ async function cargarDatosModulo() {
 
   // ✅ Mapear datos correctamente desde el KV
   window.datosActuales = listaKV.map(reg => {
-    const fechaTexto = reg.fechaGenerado || "";
+
+    const fechaTexto = reg.fechaGenerado || ""; // viene ISO desde el worker
 
     return {
-      // ✅ Columnas visibles
+      // ✅ Columnas visibles en la tabla
       nombre: reg.fileName,
       fecha: fechaTexto
         ? new Date(fechaTexto).toLocaleString("es-CO", {
@@ -258,7 +185,7 @@ async function cargarDatosModulo() {
         : "",
 
       // ✅ Datos internos
-      fechaReal: fechaTexto,
+      fechaReal: fechaTexto, // para ordenamiento
       mciId: reg.mciId,
       estadoKV: reg.estado,
       fileIdentifierExcel: reg.fileIdentifierExcel,
@@ -266,7 +193,7 @@ async function cargarDatosModulo() {
     };
   });
 
-  // ✅ 4) Ordenar por fecha descendente
+  // ✅ ORDENAR POR DEFECTO: MÁS RECIENTE ARRIBA
   window.datosActuales.sort((a, b) => {
     const fa = Date.parse(b.fechaReal || "") || 0;
     const fb = Date.parse(a.fechaReal || "") || 0;
@@ -276,8 +203,9 @@ async function cargarDatosModulo() {
   renderTabla();
   setTimeout(() => activarOrdenamientoFecha(), 0);
 }
+
 /* ======================================================================
-   9) RENDER TABLA
+   8) RENDER TABLA
 ====================================================================== */
 function renderTabla() {
 
@@ -312,15 +240,10 @@ function renderTabla() {
     const estado = item.estadoKV ?? "pendiente";
 
     const btn =
-  estado === "pendiente"
-    ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
-  : estado === "en_revision"
-    ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
-  : estado === "aprobado"
-  ? `<button class="btn-estado btn-verde btn-ver" data-idx="${idx}">✅ Aprobado</button>`
-: estado === "rechazado"
-  ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
-  : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+      estado === "pendiente" ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>` :
+      estado === "en_revision" ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>` :
+      estado === "aprobado" ? `<button class="btn-estado btn-verde" disabled>✅ Aprobado</button>` :
+      `<button class="btn-estado btn-rojo" disabled>⛔ Rechazado</button>`;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
@@ -331,7 +254,7 @@ function renderTabla() {
 }
 
 /* ======================================================================
-   10) ORDENAR POR FECHA
+   9) ORDENAR POR FECHA
 ====================================================================== */
 function activarOrdenamientoFecha() {
   const th = document.querySelector("span.sortable[data-col='fecha']");
@@ -355,19 +278,19 @@ function activarOrdenamientoFecha() {
 }
 
 /* ======================================================================
-   11) EVENTOS DE TABLA
+   10) EVENTOS DE TABLA
 ====================================================================== */
 function prepararEventosTabla() {
-  document.querySelectorAll(".btn-revisar, .btn-ver").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    const idx = btn.dataset.idx;
-    const item = window.datosActuales[idx];
-    await verArchivo(item);
+  document.querySelectorAll(".btn-revisar").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const idx = btn.dataset.idx;
+      const item = window.datosActuales[idx];
+      await verArchivo(item);
+    });
   });
-});
 }
 /* ======================================================================
-   12) BUSCAR JSON DE FOTOS EN ONEDRIVE
+   11) BUSCAR JSON DE FOTOS EN ONEDRIVE
 ====================================================================== */
 async function obtenerJsonFotos(item) {
   const resp = await fetch(FLOW_FOTOS, {
@@ -387,162 +310,42 @@ async function obtenerJsonFotos(item) {
 
   return data.imgsJson;
 }
-
-/* =========================================================
-   LECTOR SEGURO DE CELDAS EXCEL (SIN RENDER)
-========================================================= */
-function leerCeldaExcel(workbook, ref) {
-  try {
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const celda = sheet?.[ref];
-    return celda ? String(celda.v).trim() : "—";
-  } catch (e) {
-    return "—";
-  }
-}
-
 /* ======================================================================
-   13) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
+   12) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
 ====================================================================== */
 async function verArchivo(item) {
   window.__archivoActual = item;
-   // Evita reconstruir el visor más de una vez por apertura
-let visorConstruido = false;
-
-   // ==============================
-// PASO 1 — Fuente única de verdad del informe
-// (NO toca el DOM, NO renderiza)
-// ==============================
-const infoInforme = {
-  tecnico: "—",
-  celular: "—",
-  depto: "—",
-  beneficiario: "—",
-  ot: "—",
-  fecha: "—"
-};
-
-   // ==============================
-// PASO 2 — Fallback con datos que SI llegan
-// (NO toca el DOM)
-// ==============================
-infoInforme.tecnico = item.nombre ?? "—";
-infoInforme.fecha   = item.fecha ?? "—";
-
-// ==============================
-// PASO 3 — Sobrescribir infoInforme desde Excel (si existe)
-// (NO toca el DOM)
-// ==============================
-if (data.excelBase64) {
-  try {
-    const wb = XLSX.read(data.excelBase64, { type: "base64" });
-
-    const tecnicoExcel      = leerCeldaExcel(wb, "E16");
-    const celularExcel      = leerCeldaExcel(wb, "E12");
-    const deptoExcel        = leerCeldaExcel(wb, "E11");
-    const beneficiarioExcel = leerCeldaExcel(wb, "E13");
-    const otExcel           = leerCeldaExcel(wb, "E9");
-
-    if (tecnicoExcel !== "—")      infoInforme.tecnico = tecnicoExcel;
-    if (celularExcel !== "—")      infoInforme.celular = celularExcel;
-    if (deptoExcel !== "—")        infoInforme.depto = deptoExcel;
-    if (beneficiarioExcel !== "—") infoInforme.beneficiario = beneficiarioExcel;
-    if (otExcel !== "—")           infoInforme.ot = otExcel;
-
-  } catch (e) {
-    console.warn("Error leyendo Excel:", e);
-  }
-}
-
-   // ==============================
-// PASO 4 — Render único de la info del informe
-// ==============================
-function renderInfoInforme(info) {
-  document.getElementById("infoTecnico").innerText     = info.tecnico;
-  document.getElementById("infoCelular").innerText     = info.celular;
-  document.getElementById("infoDepto").innerText       = info.depto;
-  document.getElementById("infoBeneficiario").innerText= info.beneficiario;
-  document.getElementById("infoOT").innerText          = info.ot;
-  document.getElementById("infoFecha").innerText       = info.fecha;
-}
-
-   // ✅ Renderizar información del informe UNA sola vez
-renderInfoInforme(infoInforme);
-
-   
-   // ✅ Estado actual del informe
-const estado = item.estadoKV || "pendiente";
    // 🔒 Resetear estado de apertura de Excel
 window.__excelAbierto = false;
    
+// ✅ Enganchar Abrir Excel (habilita Aprobar SOLO al hacer click real)
+const btnExcel = document.getElementById("visorAbrirExcel");
+const btnAprobar = document.getElementById("visorAprobar");
 
+if (btnExcel && btnAprobar) {
+  btnExcel.addEventListener("click", () => {
+
+    if (!window.__archivoActual?.excelWebUrl) {
+      alert("No se encontró el enlace al Excel en línea.");
+      return;
+    }
+
+    // Abrir Excel
+    window.open(window.__archivoActual.excelWebUrl, "_blank");
+
+    // Marcar Excel abierto
+    window.__excelAbierto = true;
+
+    // ✅ HABILITAR APROBAR (ESTE ERA EL PASO QUE FALLABA)
+    btnAprobar.disabled = false;
+    btnAprobar.style.opacity = "1";
+    btnAprobar.style.cursor = "pointer";
+  });
+}
 
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
-
-   // ✅ Crear contenedor de fotos (OBLIGATORIO)
-const visor = document.getElementById("visorIframe");
-visor.innerHTML = `
-  <div style="
-    border:1px solid #e5e7eb;
-    border-radius:10px;
-    padding:12px;
-    background:#f9fafb;
-    margin-bottom:16px;
-  ">
-    <div style="font-weight:700; margin-bottom:8px;">
-      Información del informe
-    </div>
-
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:14px;">
-      <div><strong>Técnico:</strong> <span id="infoTecnico">—</span></div>
-      <div><strong>Celular:</strong> <span id="infoCelular">—</span></div>
-      <div><strong>Departamento:</strong> <span id="infoDepto">—</span></div>
-      <div><strong>ID Beneficiario:</strong> <span id="infoBeneficiario">—</span></div>
-      <div><strong>IM / OT:</strong> <span id="infoOT">—</span></div>
-      <div><strong>Fecha reporte:</strong> <span id="infoFecha">—</span></div>
-    </div>
-  </div>
-
-  <h3 style="font-weight:800; margin-bottom:10px;">
-    Fotos del informe
-  </h3>
-  <div id="visorFotos"></div>
-`;
-
-// ==============================
-// Fallback de datos base (SÍ llegan siempre)
-// ==============================
-
-// Técnico: usar nombre del archivo mientras Excel no sobrescriba
-document.getElementById("infoTecnico").innerText =
-  item.nombre ?? "—";
-
-// Fecha: siempre desde KV
-document.getElementById("infoFecha").innerText =
-  item.fecha ?? "—";
-   
-   // ==============================
-// PASO 1 — Modal dinámico por estado
-// ==============================
-const btnAprobarUI   = document.getElementById("visorAprobar");
-const btnRechazarUI  = document.getElementById("visorRechazar");
-const btnDescargarUI = document.getElementById("visorDescargar");
-   
-if (estado === "aprobado") {
-  btnAprobarUI.style.display = "none";
-  btnRechazarUI.style.display = "none";
-  btnDescargarUI.style.display = "none";
-}
-
-if (estado === "rechazado") {
-  btnAprobarUI.style.display = "none";
-  btnRechazarUI.style.display = "none";
-  btnDescargarUI.style.display = "none";
-}
-
-// Para pendientes / en revisión → no tocamos nada
    
    // 🔒 Forzar Aprobar DESACTIVADO una vez el modal ya está visible
 setTimeout(() => {
@@ -571,43 +374,105 @@ setTimeout(() => {
 const data = await resp.json();
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
+// ✅ Guardar base64 para preview
+const base64Excel = data.excelBase64;
 
-// ✅ Guardar URL del Excel para abrir en línea
-window.__archivoActual.excelWebUrl = data.excelWebUrl;
+// ✅ Guardar URL real para Excel en línea
+item.excelWebUrl = data.excelWebUrl;
 
-// ✅ Fecha SIEMPRE desde KV (no depende del Excel)
-document.getElementById("infoFecha").innerText =
-  item.fecha ?? "—";
+// === Base64 → ArrayBuffer (para SheetJS) ===
 
-// ==============================
-// MICRO‑PASO D — Leer datos puntuales del Excel (BLOQUE ÚNICO Y BLINDADO)
-// ==============================
-if (data.excelBase64) {
-  try {
-    const wb = XLSX.read(data.excelBase64, { type: "base64" });
 
-    document.getElementById("infoTecnico").innerText =
-      leerCeldaExcel(wb, "E16");
+  // === LEER EXCEL ===
+  const wb = XLSX.read(data.excelBase64, { type: "base64" });
+const sheet = wb.Sheets[wb.SheetNames[0]];
 
-    document.getElementById("infoCelular").innerText =
-      leerCeldaExcel(wb, "E12");
+  // === ELIMINAR SAP, EQUIPOS, SERIALES (IGUAL QUE ANTES) ===
+  const eliminarFilas = (sheet, desde, hasta) => {
+    for (let r = desde; r <= hasta; r++) {
+      for (let c = 65; c <= 90; c++) {
+        const celda = String.fromCharCode(c) + r;
+        delete sheet[celda];
+      }
+    }
+  };
+  eliminarFilas(sheet, 19, 67);
 
-    document.getElementById("infoDepto").innerText =
-      leerCeldaExcel(wb, "E11");
-
-    document.getElementById("infoBeneficiario").innerText =
-      leerCeldaExcel(wb, "E13");
-
-    document.getElementById("infoOT").innerText =
-      leerCeldaExcel(wb, "E9");
-
-  } catch (e) {
-    console.warn("Error leyendo datos del Excel:", e);
+  // === OCULTAR TÍTULO DUPLICADO DE SECCIÓN 1 (FILA 10) ===
+  for (let c = 66; c <= 80; c++) {
+    delete sheet[String.fromCharCode(c) + 10];
   }
-} else {
-  console.warn("El FLOW no devolvió excelBase64; se mantienen valores visuales.");
-}
-   
+
+  // === CONVERTIR RANGOS A HTML ===
+  const rango1 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B9:P18" });
+  const rango2 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B69:P69" });
+  const rango3 = XLSX.utils.sheet_to_html({ ...sheet, "!ref": "B71:M77" });
+
+  const htmlPreview = `
+    <h3 style="font-weight:800; margin-bottom:8px;">Información General</h3>
+    ${rango1}
+
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">
+      Descripción de la falla / hallazgos
+    </h3>
+    ${rango2}
+
+    <h3 style="font-weight:800; margin-top:20px; margin-bottom:8px;">
+      Declaración
+    </h3>
+    ${rango3}
+  `;
+
+  const visor = document.getElementById("visorIframe");
+
+  visor.innerHTML = `
+    <div style="padding:20px; overflow:auto;">
+
+      <h3 style="font-weight:800; margin-bottom:10px;">Vista previa del archivo</h3>
+
+      <div style="
+        border:1px solid #dce3f5;
+        background:white;
+        border-radius:8px;
+        padding:20px;
+        margin-bottom:30px;">
+        ${htmlPreview}
+      </div>
+
+      <h3 style="font-weight:800; margin-top:20px;">Fotos del informe (vista previa)</h3>
+      <div id="visorFotos" style="
+  margin-top:15px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:14px;">
+</div>
+
+    </div>
+  `;
+
+  // ✅ Pintar encabezados internos en gris (versión vieja)
+  setTimeout(() => {
+    const patrones = [
+      "N° DE CASO","Nº DE CASO","FECHA","CONTRATO","CONTRATISTA",
+      "DEPARTAMENTO","MUNICIPIO","CENTRO POBLADO",
+      "SEDE INSTITUCIÓN EDUCATIVA","CASO ESPECIAL","ID BENEFICIARIO",
+      "NOMBRE DEL RESPONSABLE","NÚMERO DE CEDULA","NÚMERO DE CONTACTO",
+      "DESCRIPCIÓN DE LA FALLA","DECLARACIÓN",
+      "DATOS DE QUIÉN ACOMPAÑA","DATOS DE QUIÉN REPARA",
+      "NOMBRES Y APELLIDOS","CARGO","TELÉFONO","CELULAR",
+      "CORREO ELECTRÓNICO","CORREO ELECTRONICO","FIRMA"
+    ];
+
+    const celdas = visor.querySelectorAll("td");
+    celdas.forEach(td => {
+      const texto = td.innerText.toUpperCase().trim();
+      if (patrones.some(p => texto.includes(p))) {
+        td.style.backgroundColor = "#e6e6e6";
+        td.style.fontWeight = "700";
+      }
+    });
+  }, 80);
+
   // === CARGA DE FOTOS (NO TOCADO) ===
   const jsonFotos = await obtenerJsonFotos(item);
   item.fotosPreview = jsonFotos;
@@ -620,7 +485,7 @@ if (data.excelBase64) {
   }
 }
 /* ======================================================================
-   14) RENDER FOTOS — ESTILO DOMINION
+   13) RENDER FOTOS — ESTILO DOMINION
 ====================================================================== */
 function renderizarFotos(item) {
   const fotos = item.fotosPreview;
@@ -671,7 +536,7 @@ function renderizarFotos(item) {
   });
 }
 /* ======================================================================
-   15) VOLVER
+   14) VOLVER
 ====================================================================== */
 document.getElementById("visorVolver").addEventListener("click", () => {
   document.getElementById("modalVisor").style.display = "none";
@@ -680,7 +545,7 @@ document.getElementById("visorVolver").addEventListener("click", () => {
 });
 
 /* ======================================================================
-   16) APROBAR
+   15) APROBAR
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
 
@@ -705,7 +570,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 });
 
 /* ======================================================================
-   17) RECHAZAR (OPCIONAL)
+   16) RECHAZAR (OPCIONAL)
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
   const item = window.__archivoActual;
@@ -728,20 +593,3 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   // ✅ Recargar tabla
   await cargarDatosModulo();
 });
-/* =========================================================
-   ABRIR EXCEL EN LÍNEA — LISTENER GLOBAL ÚNICO
-========================================================= */
-const btnAbrirExcel = document.getElementById("visorAbrirExcel");
-
-if (btnAbrirExcel) {
-  btnAbrirExcel.addEventListener("click", () => {
-    const url = window.__archivoActual?.excelWebUrl;
-
-    if (!url) {
-      alert("El enlace al Excel aún no está disponible.");
-      return;
-    }
-
-    window.open(url, "_blank");
-  });
-}
