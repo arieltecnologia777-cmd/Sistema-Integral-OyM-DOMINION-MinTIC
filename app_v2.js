@@ -425,6 +425,7 @@ if (btnExcel && btnAprobar) {
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
+   document.getElementById("visorIframe").innerHTML = "";
 
    // ==============================
 // PASO 1 — Modal dinámico por estado
@@ -475,28 +476,7 @@ const data = await resp.json();
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
 
-  // ✅ Pintar encabezados internos en gris (versión vieja)
-  setTimeout(() => {
-    const patrones = [
-      "N° DE CASO","Nº DE CASO","FECHA","CONTRATO","CONTRATISTA",
-      "DEPARTAMENTO","MUNICIPIO","CENTRO POBLADO",
-      "SEDE INSTITUCIÓN EDUCATIVA","CASO ESPECIAL","ID BENEFICIARIO",
-      "NOMBRE DEL RESPONSABLE","NÚMERO DE CEDULA","NÚMERO DE CONTACTO",
-      "DESCRIPCIÓN DE LA FALLA","DECLARACIÓN",
-      "DATOS DE QUIÉN ACOMPAÑA","DATOS DE QUIÉN REPARA",
-      "NOMBRES Y APELLIDOS","CARGO","TELÉFONO","CELULAR",
-      "CORREO ELECTRÓNICO","CORREO ELECTRONICO","FIRMA"
-    ];
 
-    const celdas = visor.querySelectorAll("td");
-    celdas.forEach(td => {
-      const texto = td.innerText.toUpperCase().trim();
-      if (patrones.some(p => texto.includes(p))) {
-        td.style.backgroundColor = "#e6e6e6";
-        td.style.fontWeight = "700";
-      }
-    });
-  }, 80);
 
   // === CARGA DE FOTOS (NO TOCADO) ===
   const jsonFotos = await obtenerJsonFotos(item);
