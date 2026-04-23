@@ -503,28 +503,37 @@ console.log("excelWebUrl recibido:", data.excelWebUrl);
 window.__archivoActual.excelWebUrl = data.excelWebUrl;
 
    // ==============================
-// MICRO‑PASO D — Leer datos puntuales del Excel
+// MICRO‑PASO D — Leer datos puntuales del Excel (BLINDADO)
 // ==============================
-try {
-  const wb = XLSX.read(data.excelBase64, { type: "base64" });
+if (data.excelBase64) {
+  try {
+    const wb = XLSX.read(data.excelBase64, { type: "base64" });
 
-  document.getElementById("infoTecnico").innerText =
-    leerCeldaExcel(wb, "E16");
+    // Técnico → Datos de quien repara el servicio → Nombres y apellidos
+    document.getElementById("infoTecnico").innerText =
+      leerCeldaExcel(wb, "E16");
 
-  document.getElementById("infoCelular").innerText =
-    leerCeldaExcel(wb, "E12");
+    // Celular
+    document.getElementById("infoCelular").innerText =
+      leerCeldaExcel(wb, "E12");
 
-  document.getElementById("infoDepto").innerText =
-    leerCeldaExcel(wb, "E11");
+    // Departamento
+    document.getElementById("infoDepto").innerText =
+      leerCeldaExcel(wb, "E11");
 
-  document.getElementById("infoBeneficiario").innerText =
-    leerCeldaExcel(wb, "E13");
+    // ID Beneficiario
+    document.getElementById("infoBeneficiario").innerText =
+      leerCeldaExcel(wb, "E13");
 
-  document.getElementById("infoOT").innerText =
-    leerCeldaExcel(wb, "E9");
+    // IM / OT → N° de caso
+    document.getElementById("infoOT").innerText =
+      leerCeldaExcel(wb, "E9");
 
-} catch (e) {
-  console.warn("No se pudieron leer datos del Excel:", e);
+  } catch (e) {
+    console.warn("Error leyendo Excel:", e);
+  }
+} else {
+  console.warn("El FLOW no devolvió excelBase64. Se mantienen valores visuales.");
 }
    
   // === CARGA DE FOTOS (NO TOCADO) ===
