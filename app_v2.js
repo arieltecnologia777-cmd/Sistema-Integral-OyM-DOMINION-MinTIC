@@ -402,6 +402,16 @@ window.__excelAbierto = false;
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
+
+   // ✅ Crear contenedor de fotos (OBLIGATORIO)
+const visor = document.getElementById("visorIframe");
+visor.innerHTML = `
+  <h3 style="font-weight:800; margin-bottom:10px;">
+    Fotos del informe
+  </h3>
+  <div id="visorFotos"></div>
+`;
+
    
    // ==============================
 // PASO 1 — Modal dinámico por estado
