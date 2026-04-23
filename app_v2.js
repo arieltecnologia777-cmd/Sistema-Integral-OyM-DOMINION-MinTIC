@@ -401,6 +401,21 @@ function leerCeldaExcel(workbook, ref) {
   }
 }
 
+/* =========================================================
+   LECTOR DE CELDA CON HOJA ESPECÍFICA
+========================================================= */
+function leerCeldaExcelHoja(workbook, sheetName, ref) {
+  try {
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) return "—";
+
+    const celda = sheet[ref];
+    return celda ? String(celda.v).trim() : "—";
+  } catch (e) {
+    return "—";
+  }
+}
+
 /* ======================================================================
    13) VER ARCHIVO — Vista previa del Excel + Fotos (IGUAL A VERSIÓN VIEJA)
 ====================================================================== */
@@ -437,12 +452,20 @@ infoInforme.fecha = item.fecha ?? "—"; // la fecha sí puede mostrarse
 // PASO 4 — Render único de la info del informe
 // ==============================
 function renderInfoInforme(info) {
-  document.getElementById("infoTecnico").innerText     = info.tecnico;
-  document.getElementById("infoCelular").innerText     = info.celular;
-  document.getElementById("infoDepto").innerText       = info.depto;
-  document.getElementById("infoBeneficiario").innerText= info.beneficiario;
-  document.getElementById("infoOT").innerText          = info.ot;
-  document.getElementById("infoFecha").innerText       = info.fecha;
+  document.getElementById("infoTecnico").innerText = info.tecnico;
+  document.getElementById("infoCelular").innerText = info.celular;
+  document.getElementById("infoDepto").innerText = info.depto;
+  document.getElementById("infoBeneficiario").innerText = info.beneficiario;
+  document.getElementById("infoOT").innerText = info.ot;
+  document.getElementById("infoFecha").innerText = info.fecha;
+
+  // Coordenadas
+  const coords =
+    info.lat !== "No informado" && info.lng !== "No informado"
+      ? `${info.lat}, ${info.lng}`
+      : "No informado";
+
+  document.getElementById("infoCoords").innerText = coords;
 }
 
    // ✅ Renderizar información del informe UNA sola vez
@@ -481,6 +504,7 @@ visor.innerHTML = `
       <div><strong>ID Beneficiario:</strong> <span id="infoBeneficiario">—</span></div>
       <div><strong>IM / OT:</strong> <span id="infoOT">—</span></div>
       <div><strong>Fecha reporte:</strong> <span id="infoFecha">—</span></div>
+      <div><strong>Coordenadas:</strong> <span id="infoCoords">—</span></div>
     </div>
   </div>
 
@@ -592,6 +616,25 @@ if (data.excelBase64) {
     if (beneficiarioExcel)  infoInforme.beneficiario = beneficiarioExcel;
     if (deptoExcel)         infoInforme.depto = deptoExcel;
     if (celularExcel)       infoInforme.celular = celularExcel;
+
+     // ==============================
+    // PASO 2 — Coordenadas geográficas
+    // (hoja REG FOTOG PRUEBAS NECESARIAS)
+    // ==============================
+    const latExcel = leerCeldaExcelHoja(
+      wb,
+      "REG FOTOG PRUEBAS NECESARIAS",
+      "F12"
+    );
+
+    const lngExcel = leerCeldaExcelHoja(
+      wb,
+      "REG FOTOG PRUEBAS NECESARIAS",
+      "E12"
+    );
+
+    if (latExcel !== "—") infoInforme.lat = latExcel;
+    if (lngExcel !== "—") infoInforme.lng = lngExcel;
 
   } catch (e) {
     console.warn("Error leyendo Excel:", e);
