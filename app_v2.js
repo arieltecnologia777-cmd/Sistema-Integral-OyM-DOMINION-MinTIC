@@ -500,40 +500,40 @@ const data = await resp.json();
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
 
+// ✅ Guardar URL del Excel para abrir en línea
 window.__archivoActual.excelWebUrl = data.excelWebUrl;
 
-   // ==============================
-// MICRO‑PASO D — Leer datos puntuales del Excel (BLINDADO)
+// ✅ Fecha SIEMPRE desde KV (no depende del Excel)
+document.getElementById("infoFecha").innerText =
+  item.fecha ?? "—";
+
+// ==============================
+// MICRO‑PASO D — Leer datos puntuales del Excel (BLOQUE ÚNICO Y BLINDADO)
 // ==============================
 if (data.excelBase64) {
   try {
     const wb = XLSX.read(data.excelBase64, { type: "base64" });
 
-    // Técnico → Datos de quien repara el servicio → Nombres y apellidos
     document.getElementById("infoTecnico").innerText =
       leerCeldaExcel(wb, "E16");
 
-    // Celular
     document.getElementById("infoCelular").innerText =
       leerCeldaExcel(wb, "E12");
 
-    // Departamento
     document.getElementById("infoDepto").innerText =
       leerCeldaExcel(wb, "E11");
 
-    // ID Beneficiario
     document.getElementById("infoBeneficiario").innerText =
       leerCeldaExcel(wb, "E13");
 
-    // IM / OT → N° de caso
     document.getElementById("infoOT").innerText =
       leerCeldaExcel(wb, "E9");
 
   } catch (e) {
-    console.warn("Error leyendo Excel:", e);
+    console.warn("Error leyendo datos del Excel:", e);
   }
 } else {
-  console.warn("El FLOW no devolvió excelBase64. Se mantienen valores visuales.");
+  console.warn("El FLOW no devolvió excelBase64; se mantienen valores visuales.");
 }
    
   // === CARGA DE FOTOS (NO TOCADO) ===
