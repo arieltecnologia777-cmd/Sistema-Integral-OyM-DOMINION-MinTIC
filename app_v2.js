@@ -755,6 +755,33 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   const mciId = item?.mciId || null;
   if (!mciId) return;
 
+  // ==============================
+  // GUARDAR METADATA (TÉCNICO + BENEFICIARIO + COORDENADAS) EN KV
+  // ==============================
+  try {
+    const payloadGeo = {
+      tecnico: infoInforme.tecnico,
+      idBeneficiario: infoInforme.beneficiario,
+      lat: infoInforme.lat,
+      lng: infoInforme.lng
+    };
+
+    await fetch(
+      `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-coordenadas/${mciId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payloadGeo)
+      }
+    );
+  } catch (e) {
+    console.warn("No se pudieron guardar las coordenadas en KV:", e);
+    // ⚠️ NO bloquea la aprobación
+  }
+
+  // ==============================
+  // APROBAR INFORME (FLUJO EXISTENTE)
+  // ==============================
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
     { method: "PUT" }
