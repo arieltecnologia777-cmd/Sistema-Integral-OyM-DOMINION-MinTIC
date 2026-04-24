@@ -365,7 +365,9 @@ tbody td {
   stroke: #b91c1c !important;
 }
 
-  .fotos-grid {
+  /* === GALERÍA DE FOTOS - AJUSTES DE AUDITORÍA === */
+
+.fotos-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
@@ -377,24 +379,17 @@ tbody td {
   overflow: hidden;
   background: #ffffff;
   box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-  cursor: pointer;
-  min-height: 260px;          /* ✅ tarjeta más grande */
+  cursor: zoom-in;
+  min-height: 260px;
 }
 
 .foto-card img {
   width: 100%;
-  height: 240px;              /* ✅ imagen más grande */
-  object-fit: contain;        /* ✅ sin recorte */
+  height: 240px;
+  object-fit: contain;      /* ✅ NO recorta */
   background: #f4f6f8;
-  transition: transform 0.35s ease;
+  transition: transform 0.15s ease;
 }
-
-/* ✅ ZOOM MÁS POTENTE */
-.foto-card:hover img {
-  transform: scale(1.45);
-}
-``
-
 
 
   
