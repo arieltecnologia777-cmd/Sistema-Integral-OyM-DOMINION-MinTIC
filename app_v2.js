@@ -831,35 +831,42 @@ if (btnAbrirExcel) {
   });
 }
 /* =========================================================
-   ZOOM DINÁMICO EN FOTOS (SIGUE EL MOUSE)
+   ZOOM DINÁMICO REAL (FUNCIONA)
 ========================================================= */
 
-// Cuando el mouse se mueve dentro de una foto, aplica zoom dinámico
-document.addEventListener("mousemove", (e) => {
+document.addEventListener("mouseover", (e) => {
   const card = e.target.closest(".foto-card");
   if (!card) return;
 
+  const img = card.querySelector("img");
+  if (!img) return;
+
+  card.addEventListener("mousemove", moverZoom);
+  card.addEventListener("mouseleave", resetZoom);
+});
+
+function moverZoom(e) {
+  const card = e.currentTarget;
   const img = card.querySelector("img");
   if (!img) return;
 
   const rect = card.getBoundingClientRect();
-  const offsetX = e.clientX - rect.left;
-  const offsetY = e.clientY - rect.top;
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
 
-  const percentX = (offsetX / rect.width) * 100;
-  const percentY = (offsetY / rect.height) * 100;
+  const px = (x / rect.width) * 100;
+  const py = (y / rect.height) * 100;
 
-  img.style.transformOrigin = `${percentX}% ${percentY}%`;
+  img.style.transformOrigin = `${px}% ${py}%`;
   img.style.transform = "scale(1.5)";
-}, true);
+}
 
-// Cuando el mouse sale de la tarjeta, vuelve la imagen a normal
-document.addEventListener("mouseleave", (e) => {
-  const card = e.target.closest(".foto-card");
-  if (!card) return;
-
+function resetZoom(e) {
+  const card = e.currentTarget;
   const img = card.querySelector("img");
   if (!img) return;
 
   img.style.transform = "scale(1)";
-}, true);
+  card.removeEventListener("mousemove", moverZoom);
+  card.removeEventListener("mouseleave", resetZoom);
+}
