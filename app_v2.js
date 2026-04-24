@@ -781,6 +781,13 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
    17) RECHAZAR (OPCIONAL)
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
+
+  // 🔒 MISMA VALIDACIÓN QUE APROBAR
+  if (!window.__excelAbierto) {
+    alert("Debes abrir el Excel en línea antes de rechazar el informe.");
+    return;
+  }
+
   const item = window.__archivoActual;
   const mciId = item?.mciId ?? null;
 
@@ -794,11 +801,8 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     { method: "PUT" }
   );
 
-  // ✅ Cerrar visor
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
-
-  // ✅ Recargar tabla
   await cargarDatosModulo();
 });
 /* =========================================================
