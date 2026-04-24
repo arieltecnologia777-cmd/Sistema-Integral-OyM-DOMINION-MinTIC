@@ -543,8 +543,6 @@ visor.innerHTML = `
    // ==============================
 // PASO 1 — Modal dinámico por estado
 // ==============================
-const btnAprobarUI   = document.getElementById("visorAprobar");
-const btnRechazarUI  = document.getElementById("visorRechazar");
 const btnDescargarUI = document.getElementById("visorDescargar");
    
 if (estado === "aprobado") {
