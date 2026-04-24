@@ -490,12 +490,6 @@ if (btnAprobar) {
   btnAprobar.disabled = !window.__excelAbierto;
 }
 
-   // ✅ Estado inicial del botón Aprobar
-const btnAprobar = document.getElementById("visorAprobar");
-if (btnAprobar) {
-  btnAprobar.disabled = !window.__excelAbierto;
-}
-
    // ✅ Crear contenedor de fotos (OBLIGATORIO)
 const visor = document.getElementById("visorIframe");
 visor.innerHTML = `
