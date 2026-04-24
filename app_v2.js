@@ -832,11 +832,13 @@ if (btnAbrirExcel) {
     // ✅ Marcar Excel como abierto
     window.__excelAbierto = true;
 
-    // ✅ Habilitar el botón Aprobar QUE ESTÁ DENTRO DEL MODAL
-const modal = document.getElementById("modalVisor");
-if (modal) {
-  const btnAprobar = modal.querySelector("#visorAprobar");
-  if (btnAprobar) {
-    btnAprobar.disabled = false;
-  }
+    // ✅ Habilitar el botón Aprobar VISIBLE
+    const modal = document.getElementById("modalVisor");
+    if (modal) {
+      const btnAprobar = modal.querySelector("#visorAprobar");
+      if (btnAprobar) {
+        btnAprobar.disabled = false;
+      }
+    }
+  });
 }
