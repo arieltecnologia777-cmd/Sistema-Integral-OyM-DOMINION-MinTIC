@@ -690,6 +690,7 @@ function renderizarFotos(item) {
     return;
   }
 
+  // ✅ ORDEN ÚNICO DE FOTOS
   const orden = [
     { key: "gps", titulo: "GPS" },
     { key: "apInt", titulo: "AP Interior" },
@@ -701,29 +702,26 @@ function renderizarFotos(item) {
     { key: "med1", titulo: "Medición Eléctrica 1" }
   ];
 
+  // ✅ UN SOLO GRID
+  const grid = document.createElement("div");
+  grid.className = "fotos-grid";
+
   orden.forEach(f => {
     const base64 = fotos[f.key];
     if (!base64) return;
 
-    const titulo = document.createElement("h4");
-    titulo.textContent = f.titulo;
-    titulo.style.margin = "16px 0 8px";
-    titulo.style.fontWeight = "700";
-
-    const grid = document.createElement("div");
-    grid.className = "fotos-grid";
-
     const card = document.createElement("div");
     card.className = "foto-card";
-    card.innerHTML = `<img src="${base64}" />`;
+    card.innerHTML = `
+      <img src="${base64}" alt="${f.titulo}">
+    `;
 
     card.onclick = () => window.open(base64, "_blank");
 
     grid.appendChild(card);
-
-    galeria.appendChild(titulo);
-    galeria.appendChild(grid);
   });
+
+  galeria.appendChild(grid);
 }
 /* ======================================================================
    15) VOLVER
