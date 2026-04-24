@@ -498,6 +498,13 @@ window.__excelAbierto = false;
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
 
+   // 🔄 Reset visual de aprobador / rechazador al abrir el modal
+const spanAprobadoPor  = document.getElementById("infoAprobadoPor");
+const spanRechazadoPor = document.getElementById("infoRechazadoPor");
+
+if (spanAprobadoPor)  spanAprobadoPor.innerText  = "—";
+if (spanRechazadoPor) spanRechazadoPor.innerText = "—";
+
    // 🔄 Estado inicial del botón Abrir Excel (mientras llega la URL)
 const btnAbrirExcelUI = document.getElementById("visorAbrirExcel");
 
@@ -793,6 +800,7 @@ document.getElementById("visorVolver").addEventListener("click", () => {
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
 
+  // 🔒 Validación: Excel debe estar abierto
   if (!window.__excelAbierto) {
     alert("Debes abrir el Excel en línea antes de aprobar el informe.");
     return;
@@ -802,8 +810,17 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   const mciId = item?.mciId || null;
   if (!mciId) return;
 
-  // ✅ GUARDAR EN KV SOLO LO REQUERIDO
-  // Departamento, IM / OT, ID Beneficiario y Coordenadas
+  // ✅ Obtener usuario logueado
+  const usuario = usuarioActual();
+  const nombreUsuario = usuario?.username || usuario?.email || "desconocido";
+
+  // ✅ Mostrar quién aprobó (EN EL MODAL)
+  const spanAprobadoPor = document.getElementById("infoAprobadoPor");
+  if (spanAprobadoPor) {
+    spanAprobadoPor.innerText = nombreUsuario;
+  }
+
+  // ✅ Guardar metadata necesaria (si ya lo tienes)
   const payloadMetadata = {
     departamento: window.__infoInforme.depto,
     ot: window.__infoInforme.ot,
@@ -821,13 +838,13 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     }
   );
 
-  // ✅ APROBAR INFORME (FLUJO EXISTENTE)
+  // ✅ Aprobar informe
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
     { method: "PUT" }
   );
 
-  // ✅ ACTUALIZAR UI
+  // ✅ Cerrar modal y refrescar tabla
   await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
