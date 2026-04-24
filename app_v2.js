@@ -830,6 +830,15 @@ if (btnAbrirExcel) {
     }
   });
 }
+
+// ✅ FORZAR habilitación visual y funcional del botón RECHAZAR
+const btnRechazar = document.querySelector("#visorRechazar");
+if (btnRechazar) {
+  btnRechazar.disabled = false;
+  btnRechazar.style.pointerEvents = "auto";
+  btnRechazar.style.opacity = "1";
+  btnRechazar.style.cursor = "pointer";
+}
 /* =========================================================
    ZOOM DINÁMICO REAL (FUNCIONA)
 ========================================================= */
