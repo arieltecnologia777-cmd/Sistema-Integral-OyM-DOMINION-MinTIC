@@ -438,7 +438,7 @@ const infoInforme = {
   lat: "Cargando datos…",
   lng: "Cargando datos…"
 };
-
+window.__infoInforme = infoInforme;
    // ==============================
 // PASO 2 — Estado inicial (cargando datos)
 // ==============================
@@ -760,11 +760,11 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   // ==============================
   try {
     const payloadGeo = {
-      tecnico: infoInforme.tecnico,
-      idBeneficiario: infoInforme.beneficiario,
-      lat: infoInforme.lat,
-      lng: infoInforme.lng
-    };
+  tecnico: window.__infoInforme.tecnico,
+  idBeneficiario: window.__infoInforme.beneficiario,
+  lat: window.__infoInforme.lat,
+  lng: window.__infoInforme.lng
+};
 
     await fetch(
       `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-coordenadas/${mciId}`,
