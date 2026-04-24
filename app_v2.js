@@ -484,6 +484,11 @@ window.__excelAbierto = false;
   // Ocultar tabla y mostrar modal
   document.getElementById("contenedor-modulo").style.display = "none";
   document.getElementById("modalVisor").style.display = "block";
+   // ✅ Estado inicial del botón Aprobar
+const btnAprobar = document.getElementById("visorAprobar");
+if (btnAprobar) {
+  btnAprobar.disabled = !window.__excelAbierto;
+}
 
    // ✅ Estado inicial del botón Aprobar
 const btnAprobar = document.getElementById("visorAprobar");
