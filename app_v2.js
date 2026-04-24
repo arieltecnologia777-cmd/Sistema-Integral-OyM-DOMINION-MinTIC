@@ -822,7 +822,7 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   await cargarDatosModulo();
 });
 /* =========================================================
-   ABRIR EXCEL EN LÍNEA — HABILITA APROBAR DEFINITIVAMENTE
+   ABRIR EXCEL EN LÍNEA — HABILITA APROBAR Y RECHAZAR
 ========================================================= */
 const btnAbrirExcel = document.getElementById("visorAbrirExcel");
 
@@ -835,29 +835,28 @@ if (btnAbrirExcel) {
       return;
     }
 
-    // Abrir Excel
+    // ✅ Abrir Excel
     window.open(url, "_blank");
     window.__excelAbierto = true;
 
-    // ✅ FORZAR habilitación visual y funcional del botón APROBAR
-    const btnAprobar = document.querySelector("#visorAprobar");
+    // ✅ HABILITAR APROBAR
+    const btnAprobar = document.getElementById("visorAprobar");
     if (btnAprobar) {
       btnAprobar.disabled = false;
-      btnAprobar.style.pointerEvents = "auto";
       btnAprobar.style.opacity = "1";
-      btnAprobar.style.filter = "none";
       btnAprobar.style.cursor = "pointer";
+      btnAprobar.style.pointerEvents = "auto";
+    }
+
+    // ✅ HABILITAR RECHAZAR (MISMO COMPORTAMIENTO)
+    const btnRechazar = document.getElementById("visorRechazar");
+    if (btnRechazar) {
+      btnRechazar.disabled = false;
+      btnRechazar.style.opacity = "1";
+      btnRechazar.style.cursor = "pointer";
+      btnRechazar.style.pointerEvents = "auto";
     }
   });
-}
-
-// ✅ HABILITAR VISUALMENTE RECHAZAR (IGUAL QUE APROBAR)
-const btnRechazar = document.querySelector("#visorRechazar");
-if (btnRechazar) {
-  btnRechazar.disabled = false;
-  btnRechazar.style.opacity = "1";
-  btnRechazar.style.cursor = "pointer";
-  btnRechazar.style.pointerEvents = "auto";
 }
 /* =========================================================
    ZOOM DINÁMICO REAL (FUNCIONA)
