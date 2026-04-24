@@ -830,3 +830,41 @@ if (btnAbrirExcel) {
     }
   });
 }
+/* =========================================================
+   ZOOM DINÁMICO EN FOTOS (SE MUEVE CON EL MOUSE)
+========================================================= */
+
+// Aplica zoom siguiendo el cursor dentro de la imagen
+document.addEventListener("mousemove", (e) => {
+  const card = e.target.closest(".foto-card");
+  if (!card) return;
+
+  const img = card.querySelector("img");
+  if (!img) return;
+
+  const rect = card.getBoundingClientRect();
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+
+  const percentX = (offsetX / rect.width) * 100;
+  const percentY = (offsetY / rect.height) * 100;
+
+  img.style.transformOrigin = `${percentX}% ${percentY}%`;
+  img.style.transform = "scale(1.5)";
+});
+
+// Cuando el mouse sale de la tarjeta, vuelve a normal
+document.addEventListener(
+  "mouseleave",
+  (e) => {
+    const card = e.target.closest(".foto-card");
+    if (!card) return;
+
+    const img = card.querySelector("img");
+    if (!img) return;
+
+    img.style.transform = "scale(1)";
+  },
+  true
+);
+
