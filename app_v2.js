@@ -862,10 +862,16 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   );
 
   // ✅ Aprobar informe
-  await fetch(
-    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
-    { method: "PUT" }
-  );
+ await fetch(
+  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
+  {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      aprobadoPor: nombreUsuario
+    })
+  }
+);
 
   // ✅ Cerrar modal y refrescar tabla
   await cargarDatosModulo();
