@@ -50,20 +50,25 @@ window.__archivoActual = null;
 window.__mciIdActual = null;
 window.__excelAbierto = false;
 
-function nombreBonitoDesdeEmail(email) {
-  if ( Construir nombre "Juanito Perez"  if (!email || !email.includes("@")) return "Desconocido";
+// ✅ Convierte correo en nombre legible
+function nombreBonitoDesdeEmail, "");function nombreBonitoDesdeEmail(email) {
+
+  // ✅ Construir nombre "Juanito Perez"
   return base
     .split(".")
-    .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+    .map(function (p) {
+      return p.charAt(0).toUpperCase() + p.slice(1);
+    })
     .join(" ");
 }
+  if (!email || !email.includes("@")) {
+    return "Desconocido";
+  }
 
   // Parte antes del @
   let base = email.split("@")[0]; // ej: juanito.perez-ext
 
   // ✅ Eliminar sufijos tipo -ext, -etx, -external
-  base = base.replace(/-(ext|etx|external)$/i, "");
-
 
 
 /* =========================================================
