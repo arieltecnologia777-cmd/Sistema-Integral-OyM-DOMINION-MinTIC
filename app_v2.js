@@ -530,13 +530,7 @@ const spanRechazadoPor = document.getElementById("infoRechazadoPor");
 if (spanAprobadoPor) spanAprobadoPor.innerText = "—";
 if (spanRechazadoPor) spanRechazadoPor.innerText = "—";
 
-if (spanAprobadoPor && item.aprobadoPor) {
-  spanAprobadoPor.innerText = item.aprobadoPor;
-}
 
-if (spanRechazadoPor && item.rechazadoPor) {
-  spanRechazadoPor.innerText = item.rechazadoPor;
-}
 
    // 🔄 Estado inicial del botón Abrir Excel (mientras llega la URL)
 const btnAbrirExcelUI = document.getElementById("visorAbrirExcel");
@@ -600,6 +594,16 @@ visor.innerHTML = `
 `;
 
    renderInfoInforme(infoInforme);
+   const spanAprobadoPorFinal = document.getElementById("infoAprobadoPor");
+const spanRechazadoPorFinal = document.getElementById("infoRechazadoPor");
+
+if (spanAprobadoPorFinal && item.aprobadoPor) {
+  spanAprobadoPorFinal.innerText = item.aprobadoPor;
+}
+
+if (spanRechazadoPorFinal && item.rechazadoPor) {
+  spanRechazadoPorFinal.innerText = item.rechazadoPor;
+}
    
 // ==============================
 // Fallback de datos base (SÍ llegan siempre)
