@@ -527,8 +527,16 @@ window.__excelAbierto = false;
 const spanAprobadoPor  = document.getElementById("infoAprobadoPor");
 const spanRechazadoPor = document.getElementById("infoRechazadoPor");
 
-if (spanAprobadoPor)  spanAprobadoPor.innerText  = "—";
+if (spanAprobadoPor) spanAprobadoPor.innerText = "—";
 if (spanRechazadoPor) spanRechazadoPor.innerText = "—";
+
+if (spanAprobadoPor && item.aprobadoPor) {
+  spanAprobadoPor.innerText = item.aprobadoPor;
+}
+
+if (spanRechazadoPor && item.rechazadoPor) {
+  spanRechazadoPor.innerText = item.rechazadoPor;
+}
 
    // 🔄 Estado inicial del botón Abrir Excel (mientras llega la URL)
 const btnAbrirExcelUI = document.getElementById("visorAbrirExcel");
