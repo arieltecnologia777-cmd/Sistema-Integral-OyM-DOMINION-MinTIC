@@ -818,7 +818,34 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     return;
   }
 
-  const item = window.__archivoActual "PUT",  const item = window.__archivoActual;
+  const item = window.__archivoActual;
+  const mciId = item?.mciId || null;
+  if (!mciId) return;
+
+  // ✅ Obtener usuario y construir nombre legible
+  const usuario = usuarioActual();
+  const emailUsuario = usuario?.username || usuario?.email || "";
+  const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
+
+  // ✅ Mostrar "Aprobado por" en el modal
+  const spanAprobadoPor = document.getElementById("infoAprobadoPor");
+  if (spanAprobadoPor) {
+    spanAprobadoPor.innerText = nombreUsuario;
+  }
+
+  // ✅ Guardar metadata necesaria (EXISTENTE)
+  const payloadMetadata = {
+    departamento: window.__infoInforme.depto,
+    ot: window.__infoInforme.ot,
+    idBeneficiario: window.__infoInforme.beneficiario,
+    lat: window.__infoInforme.lat,
+    lng: window.__infoInforme.lng
+  };
+
+  await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-metadata/${mciId}`,
+    {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payloadMetadata)
     }
@@ -835,33 +862,6 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
 });
-  const mciId = item?.mciId || null;
-  if (!mciId) return;
-
-  // ✅ Obtener usuario y construir nombre legible
-  const usuario = usuarioActual();
-  const emailUsuario = usuario?.username || usuario?.email || "";
-  const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
-
-  // ✅ Mostrar "Aprobado por" en el modal
-  const spanAprobadoPor = document.getElementById("infoAprobadoPor");
-  if (spanAprobadoPor) {
-    spanAprobadoPor.innerText = nombreUsuario;
-  }
-
-  // ✅ Guardar metadata necesaria (si ya lo tienes)
-  const payloadMetadata = {
-    departamento: window.__infoInforme.depto,
-    ot: window.__infoInforme.ot,
-    idBeneficiario: window.__infoInforme.beneficiario,
-    lat: window.__infoInforme.lat,
-    lng: window.__infoInforme.lng
-  };
-
-  await fetch(
-    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-metadata/${mciId}`,
-    {
-
 
 /* ======================================================================
    17) RECHAZAR (OPCIONAL)
