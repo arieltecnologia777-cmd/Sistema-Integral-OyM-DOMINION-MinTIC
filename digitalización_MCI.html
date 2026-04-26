@@ -6705,7 +6705,7 @@ import { TECNICOS, PASSWORD_GLOBAL } from "./tecnicos.js";
 // ================================
 
 // variable global usada por el resto de la app
-let tecnicoActual = localStorage.getItem("tecnicoActual") || null;
+window.tecnicoActual = localStorage.getItem("tecnicoActual") || null;
 
 // evento del botón Ingresar
 document.getElementById("loginBtn").onclick = () => {
