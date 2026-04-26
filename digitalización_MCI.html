@@ -6697,18 +6697,12 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-<script>
+<script type="module">
+  import { TECNICOS } from "./tecnicos.js";
 // ================================
 // LOGIN PARA TÉCNICOS (CORREGIDO)
 // ================================
-const TECNICOS = {
-  "usuario": "1234",
-  "maria": "abcd",
-  "leonardo": "1234",
-  "elger": "1234",
-  "mairon": "1234",
-  "hader": "1234"
-};
+
 
 // ✅ VARIABLE GLOBAL NECESARIA PARA EXPORTAR MCI + CLOUDFLARE
 let tecnicoActual = localStorage.getItem("tecnicoActual") || null;
