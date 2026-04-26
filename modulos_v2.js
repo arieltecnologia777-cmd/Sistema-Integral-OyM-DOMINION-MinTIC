@@ -21,10 +21,10 @@ export const FOLDER_PATH =
 export const MODULOS = {
     mci: {
         columnas: [
-            { id: "nombre", label: "Archivo" },
-            { id: "fecha",  label: "Fecha" },
-            { id: "tamano", label: "Tamaño" }
-        ],
+  { id: "tecnico", label: "Técnico" },
+  { id: "nombre", label: "Nombre archivo" },
+  { id: "fecha", label: "Fecha" }
+]
         pendientes: FOLDER_PATH,
         aprobados: null
     }
