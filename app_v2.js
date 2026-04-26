@@ -898,8 +898,6 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
    17) RECHAZAR (OPCIONAL)
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
-
-  // 🔒 MISMA VALIDACIÓN QUE APROBAR
   if (!window.__excelAbierto) {
     alert("Debes abrir el Excel en línea antes de rechazar el informe.");
     return;
@@ -907,15 +905,29 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
 
   const item = window.__archivoActual;
   const mciId = item?.mciId ?? null;
-
   if (!mciId) {
     alert("No se pudo identificar el informe a rechazar.");
     return;
   }
 
+  const usuario = usuarioActual();
+  const emailUsuario = usuario?.username || usuario?.email || "";
+  const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
+
+  const spanRechazadoPor = document.getElementById("infoRechazadoPor");
+  if (spanRechazadoPor) {
+    spanRechazadoPor.innerText = nombreUsuario;
+  }
+
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
-    { method: "PUT" }
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rechazadoPor: nombreUsuario
+      })
+    }
   );
 
   document.getElementById("modalVisor").style.display = "none";
