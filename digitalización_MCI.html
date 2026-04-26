@@ -6742,68 +6742,6 @@ document.getElementById("loginBtn").onclick = () => {
     if (!btn) return;
   }, 1500);
 };
-
-
-
-    if (registro && registro.estado === "aprobado") {
-    window.__mciIdActual = registro.mciId;
-    localStorage.setItem("ultimoMciId", registro.mciId);
-
-    console.log("✅ Informe aprobado — mciId fijado:", registro.mciId);
-    btn.style.display = "block";
-} else {
-        console.log("📌 Aún no aprobado en KV");
-        btn.style.display = "none";
-    } 
-
-    // ✅ Restaurar referencias guardadas en IndexedDB
-    window.__mciIdActual = localStorage.getItem("ultimoMciId");
-window.__fileNameActual = localStorage.getItem("ultimoFileName");
-
-  } else {
-    loginError.style.display = "block";
-  }
-};
-
-// ✅ Sesión previa → saltar login automáticamente
-const previo = localStorage.getItem("tecnicoActual");
-if (previo) {
-  tecnicoActual = previo;
-  document.getElementById("loginScreen").style.display = "none";
-
-  window.__mciIdActual = localStorage.getItem("ultimoMciId");
-if (!window.__mciIdActual) {
-  window.__mciIdActual = localStorage.getItem("ultimoMciId");
-}
-
-  window.__fileNameActual = localStorage.getItem("ultimoFileName");
-
-  // ✅ Revisar aprobación cuando entra por sesión previa (AQUÍ DEBE IR)
-  setTimeout(async () => {
-
-      const informe = await verificarEstadoPorTecnico();
-    const registro = Array.isArray(informe) ? informe[0] : informe;
-if (registro && registro.estado === "aprobado") {
-  window.__mciIdActual = registro.mciId;
-  localStorage.setItem("ultimoMciId", registro.mciId);
-}
-      const btn = document.getElementById("downloadBtn");
-      if (!btn) return;
-
-      if (registro && registro.estado === "aprobado") {
-    window.__mciIdActual = registro.mciId;
-    localStorage.setItem("ultimoMciId", registro.mciId);
-
-    console.log("✅ Informe aprobado — mciId fijado:", registro.mciId);
-    btn.style.display = "block";
-} else {
-          console.log("📌 Aún no aprobado en KV (auto-login)");
-          btn.style.display = "none";
-      }
-
-  }, 1500);
-}
-
   // ✅ Mostrar listado de informes cuando el técnico ya inició sesión
 function mostrarMisInformes() {
   const seccion = document.getElementById("misInformes");
