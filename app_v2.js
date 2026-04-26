@@ -288,9 +288,7 @@ async function cargarDatosModulo() {
         minute: "2-digit"
       })
     : "",
-  tamano: reg.sizeBytes
-    ? (reg.sizeBytes / 1024 / 1024).toFixed(2) + " MB"
-    : "",
+  tecnico: reg.tecnico ?? "—",
 
   // ✅ Datos internos
   fechaReal: fechaTexto,
