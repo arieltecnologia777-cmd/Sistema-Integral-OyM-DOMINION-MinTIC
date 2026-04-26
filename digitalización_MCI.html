@@ -6710,24 +6710,20 @@ let tecnicoActual = localStorage.getItem("tecnicoActual") || null;
 // evento del botón Ingresar
 document.getElementById("loginBtn").onclick = () => {
 
-  // leer lo que escribió la persona
   const cedula = loginUser.value.trim();
   const password = loginPass.value.trim();
 
-  // validar contraseña única
-  if (password !== PASSWORD_GLOBAL) {
-    alert("Contraseña incorrecta");
-    return;
-  }
-
-  // buscar técnico por cédula
   const nombreTecnico = TECNICOS[cedula];
   if (!nombreTecnico) {
     alert("Técnico no registrado");
     return;
   }
 
-  // guardar sesión con el NOMBRE COMPLETO
+  if (password !== PASSWORD_GLOBAL) {
+    alert("Contraseña incorrecta");
+    return;
+  }
+
   localStorage.setItem("tecnicoActual", nombreTecnico);
   tecnicoActual = nombreTecnico;
 
@@ -6736,19 +6732,16 @@ document.getElementById("loginBtn").onclick = () => {
     loginTime: Date.now()
   }));
 
-  // continuar como siempre
   mostrarApp();
   mostrarMisInformes();
   cargarInformesEnTabla();
 
-  // lógica que ya tenías
   setTimeout(async () => {
     const informe = await verificarEstadoPorTecnico();
     const btn = document.getElementById("downloadBtn");
     if (!btn) return;
   }, 1500);
 };
-
 
 
 
