@@ -886,6 +886,34 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   }
 );
 
+   // ✅ Aprobar informe
+await fetch(
+  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
+  {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      aprobadoPor: nombreUsuario
+    })
+  }
+);
+
+// ✅ AVISAR A POWER AUTOMATE QUE MUEVA LOS ARCHIVOS
+await fetch(FLOW_MOVER, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    accion: "aprobado",
+    fileIdentifierExcel: item.fileIdentifierExcel,
+    jsonFileId: item.jsonFileId
+  })
+});
+
+// ✅ Cerrar modal y refrescar tabla
+await cargarDatosModulo();
+document.getElementById("modalVisor").style.display = "none";
+document.getElementById("contenedor-modulo").style.display = "block";
+   
   // ✅ Cerrar modal y refrescar tabla
   await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
@@ -934,6 +962,16 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
       })
     }
   );
+
+   await fetch(FLOW_MOVER, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    accion: "rechazado",
+    fileIdentifierExcel: item.fileIdentifierExcel,
+    jsonFileId: item.jsonFileId
+  })
+});
 
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
