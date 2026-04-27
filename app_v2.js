@@ -832,7 +832,7 @@ document.getElementById("visorVolver").addEventListener("click", () => {
   renderTabla();
 });
 
-/* ======================================================================
+ /* ======================================================================
    16) APROBAR
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
@@ -858,7 +858,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     spanAprobadoPor.innerText = nombreUsuario;
   }
 
-  // ✅ Guardar metadata necesaria (EXISTENTE)
+  // ✅ Guardar metadata necesaria
   const payloadMetadata = {
     departamento: window.__infoInforme.depto,
     ot: window.__infoInforme.ot,
@@ -876,47 +876,30 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     }
   );
 
-  // ✅ Aprobar informe
- await fetch(
-  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
-  {
-    method: "PUT",
+  // ✅ Aprobar informe (UNA SOLA VEZ)
+  await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        aprobadoPor: nombreUsuario
+      })
+    }
+  );
+
+  // ✅ Avisar a Power Automate para mover archivos
+  await fetch(FLOW_MOVER, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      aprobadoPor: nombreUsuario
+      accion: "aprobado",
+      fileIdentifierExcel: item.fileIdentifierExcel,
+      jsonFileId: item.jsonFileId
     })
-  }
-);
+  });
 
-   // ✅ Aprobar informe
-await fetch(
-  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
-  {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      aprobadoPor: nombreUsuario
-    })
-  }
-);
-
-// ✅ AVISAR A POWER AUTOMATE QUE MUEVA LOS ARCHIVOS
-await fetch(FLOW_MOVER, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    accion: "aprobado",
-    fileIdentifierExcel: item.fileIdentifierExcel,
-    jsonFileId: item.jsonFileId
-  })
-});
-
-// ✅ Cerrar modal y refrescar tabla
-await cargarDatosModulo();
-document.getElementById("modalVisor").style.display = "none";
-document.getElementById("contenedor-modulo").style.display = "block";
-   
-  // ✅ Cerrar modal y refrescar tabla
+  // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
   await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
@@ -926,6 +909,7 @@ document.getElementById("contenedor-modulo").style.display = "block";
    17) RECHAZAR (OPCIONAL)
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
+
   if (!window.__excelAbierto) {
     alert("Debes abrir el Excel en línea antes de rechazar el informe.");
     return;
@@ -939,7 +923,7 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   const emailUsuario = usuario?.username || usuario?.email || "";
   const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
 
-  // ✅ 1) GUARDAR METADATA (MISMO QUE APROBAR)
+  // ✅ Guardar metadata necesaria
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-metadata/${mciId}`,
     {
@@ -953,7 +937,7 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     }
   );
 
-  // ✅ 2) RECHAZAR
+  // ✅ Rechazar informe (UNA SOLA VEZ)
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
     {
@@ -965,19 +949,21 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     }
   );
 
-   await fetch(FLOW_MOVER, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    accion: "rechazado",
-    fileIdentifierExcel: item.fileIdentifierExcel,
-    jsonFileId: item.jsonFileId
-  })
-});
+  // ✅ Avisar a Power Automate para mover archivos
+  await fetch(FLOW_MOVER, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      accion: "rechazado",
+      fileIdentifierExcel: item.fileIdentifierExcel,
+      jsonFileId: item.jsonFileId
+    })
+  });
 
+  // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
+  await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
-  await cargarDatosModulo();
 });
 /* =========================================================
    ABRIR EXCEL EN LÍNEA — HABILITA APROBAR Y RECHAZAR
