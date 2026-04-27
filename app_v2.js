@@ -8,7 +8,7 @@ const FLOW_FOTOS =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e5f65d8cc4aa4001b6966552ed454170/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ybNuejYFtJf4p_P2vNPf_TY_Zzm2uvkSVYkqPu0GyQg";
 
 const FLOW_MOVER =
-  "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f8dc5e01ad44292a53f0fd9b6804f75/triggers/manual/paths/invoke?api-version=1";
+  "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f8dc5e01ad44292a53f0fd9b6804f75/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=THpnzSYpkHb6Sbg3uwHumruzolwNcvkN3Rw-YfvOj6A";
 
 async function tienePermisoOneDrive() {
   try {
