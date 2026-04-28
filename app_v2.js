@@ -7,6 +7,8 @@
 const FLOW_FOTOS =
   "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e5f65d8cc4aa4001b6966552ed454170/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ybNuejYFtJf4p_P2vNPf_TY_Zzm2uvkSVYkqPu0GyQg";
 
+const FLOW_MOVER =
+  "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f8dc5e01ad44292a53f0fd9b6804f75/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=THpnzSYpkHb6Sbg3uwHumruzolwNcvkN3Rw-YfvOj6A";
 
 async function tienePermisoOneDrive() {
   try {
@@ -288,9 +290,7 @@ async function cargarDatosModulo() {
         minute: "2-digit"
       })
     : "",
-  tamano: reg.sizeBytes
-    ? (reg.sizeBytes / 1024 / 1024).toFixed(2) + " MB"
-    : "",
+  tecnico: reg.tecnico ?? "—",
 
   // ✅ Datos internos
   fechaReal: fechaTexto,
@@ -832,7 +832,7 @@ document.getElementById("visorVolver").addEventListener("click", () => {
   renderTabla();
 });
 
-/* ======================================================================
+ /* ======================================================================
    16) APROBAR
 ====================================================================== */
 document.getElementById("visorAprobar").addEventListener("click", async () => {
@@ -858,7 +858,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     spanAprobadoPor.innerText = nombreUsuario;
   }
 
-  // ✅ Guardar metadata necesaria (EXISTENTE)
+  // ✅ Guardar metadata necesaria
   const payloadMetadata = {
     departamento: window.__infoInforme.depto,
     ot: window.__infoInforme.ot,
@@ -876,19 +876,30 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     }
   );
 
-  // ✅ Aprobar informe
- await fetch(
-  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
-  {
-    method: "PUT",
+  // ✅ Aprobar informe (UNA SOLA VEZ)
+  await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        aprobadoPor: nombreUsuario
+      })
+    }
+  );
+
+  // ✅ Avisar a Power Automate para mover archivos
+  await fetch(FLOW_MOVER, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      aprobadoPor: nombreUsuario
+      accion: "aprobado",
+      fileIdentifierExcel: item.fileIdentifierExcel,
+      jsonFileId: item.jsonFileId
     })
-  }
-);
+  });
 
-  // ✅ Cerrar modal y refrescar tabla
+  // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
   await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
@@ -899,7 +910,6 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 ====================================================================== */
 document.getElementById("visorRechazar").addEventListener("click", async () => {
 
-  // 🔒 MISMA VALIDACIÓN QUE APROBAR
   if (!window.__excelAbierto) {
     alert("Debes abrir el Excel en línea antes de rechazar el informe.");
     return;
@@ -907,20 +917,53 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
 
   const item = window.__archivoActual;
   const mciId = item?.mciId ?? null;
+  if (!mciId) return;
 
-  if (!mciId) {
-    alert("No se pudo identificar el informe a rechazar.");
-    return;
-  }
+  const usuario = usuarioActual();
+  const emailUsuario = usuario?.username || usuario?.email || "";
+  const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
 
+  // ✅ Guardar metadata necesaria
   await fetch(
-    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
-    { method: "PUT" }
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-metadata/${mciId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idBeneficiario: window.__infoInforme.beneficiario,
+        lat: window.__infoInforme.lat,
+        lng: window.__infoInforme.lng
+      })
+    }
   );
 
+  // ✅ Rechazar informe (UNA SOLA VEZ)
+  await fetch(
+    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/rechazar/${mciId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rechazadoPor: nombreUsuario
+      })
+    }
+  );
+
+  // ✅ Avisar a Power Automate para mover archivos
+  await fetch(FLOW_MOVER, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      accion: "rechazado",
+      fileIdentifierExcel: item.fileIdentifierExcel,
+      jsonFileId: item.jsonFileId
+    })
+  });
+
+  // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
+  await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
   document.getElementById("contenedor-modulo").style.display = "block";
-  await cargarDatosModulo();
 });
 /* =========================================================
    ABRIR EXCEL EN LÍNEA — HABILITA APROBAR Y RECHAZAR
