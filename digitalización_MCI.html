@@ -5995,16 +5995,16 @@ async function getFoto(id, maxPx = 1600, quality = 0.85) {
     });
   });
 }
-      // ⚙️ URL del Trigger HTTP del Flow (generar)
+      // ⚙️ URL del Trigger HTTP del Flow (pega la tuya)
     const FLOW_URL = 'https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc99f30c70a64d57b309dce1c13d1290/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMxJMh4pAr98EPpIwDJGzHb5_glsVkAv-A1TVjR9zsA';
 
-    // ⚙️ URL del Trigger HTTP del Flow (descargar)
+    // ⚙️ URL del Trigger HTTP del Flow (pega la tuya)
     const FLOW_DESCARGAR_URL = 'https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bd9e2227be594ecdb47c0da4a898d474/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j3SlbYcxilxwhnHJfL95lpTA-Y2RzAtiNrmug_D01eQ';
-   
-    // ⚙️ URL del Trigger HTTP del Flow (subsanar)
+ 
+// ⚙️ URL del Trigger HTTP del Flow (subsanar)
     const FLOW_SUBSANAR_URL = "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/960b8aa1c42041f39ca6f35251743971/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=snFK5pRBTUxuOzLIhGdl2Py32qlyPAI_up7Ob_vTKAs";
-
-    // ✅ Endpoint Cloudflare KV
+   
+// ✅ Endpoint Cloudflare KV
 const KV_URL = "https://cloudflare-index.modulo-de-exclusiones.workers.dev/registrar";
 
 const setWorking = (on, text) => {
@@ -6157,186 +6157,6 @@ async function verificarEstadoPorTecnico() {
 }
 
     async function exportarMCI(){
-// ✅ Validar login antes de exportar
-if (!tecnicoActual) {
-    alert("Debes iniciar sesión para poder exportar el MCI.");
-    return;
-}
-
-    // 1) Mínimos requeridos
-    const numeroCaso = document.getElementById('inp-numero-caso').value.trim();
-    const fechaISO = document.getElementById('inp-fecha').value;
-    const fecha = toDDMMYYYY(fechaISO);
-
-    if (!numeroCaso){ setStatus('Ingresa el N° de caso.', 'err'); return; }
-    if (!fecha){ setStatus('Selecciona una fecha válida.', 'err'); return; }
-
-    const idBen = document.getElementById('inp-idben').value.trim();
-    if (!idBen){ setStatus('Ingresa el ID beneficiario.', 'err'); return; }
-
-    // === SAP ANTES ===
-    const sapAntes1 = (document.getElementById('inp-sap-antes-1')?.value ?? '').trim();
-    const sapAntes2 = (document.getElementById('inp-sap-antes-2')?.value ?? '').trim();
-    const sapAntes3 = (document.getElementById('inp-sap-antes-3')?.value ?? '').trim();
-    const sapAntes4 = (document.getElementById('inp-sap-antes-4')?.value ?? '').trim();
-    const sapAntes5 = (document.getElementById('inp-sap-antes-5')?.value ?? '').trim();
-    const sapAntes6 = (document.getElementById('inp-sap-antes-6')?.value ?? '').trim();
-
-    // === ANTES SERIAL (6) ===
-    const fotoAntesSerial1 = await getFoto('img-antes-serial-1');
-    const fotoAntesSerial2 = await getFoto('img-antes-serial-2');
-    const fotoAntesSerial3 = await getFoto('img-antes-serial-3');
-    const fotoAntesSerial4 = await getFoto('img-antes-serial-4');
-    const fotoAntesSerial5 = await getFoto('img-antes-serial-5');
-    const fotoAntesSerial6 = await getFoto('img-antes-serial-6');
-
-    // === ANTES DIAGNÓSTICO (12) ===
-    const fotoAntesDiag1  = await getFoto('img-antes-diag-1');
-    const fotoAntesDiag2  = await getFoto('img-antes-diag-2');
-    const fotoAntesDiag3  = await getFoto('img-antes-diag-3');
-    const fotoAntesDiag4  = await getFoto('img-antes-diag-4');
-    const fotoAntesDiag5  = await getFoto('img-antes-diag-5');
-    const fotoAntesDiag6  = await getFoto('img-antes-diag-6');
-    const fotoAntesDiag7  = await getFoto('img-antes-diag-7');
-    const fotoAntesDiag8  = await getFoto('img-antes-diag-8');
-    const fotoAntesDiag9  = await getFoto('img-antes-diag-9');
-    const fotoAntesDiag10 = await getFoto('img-antes-diag-10');
-    const fotoAntesDiag11 = await getFoto('img-antes-diag-11');
-    const fotoAntesDiag12 = await getFoto('img-antes-diag-12');
-
-    // === DESPUÉS SERIAL (6) ===
-    const fotoDespuesSerial1 = await getFoto('img-despues-serial-1');
-    const fotoDespuesSerial2 = await getFoto('img-despues-serial-2');
-    const fotoDespuesSerial3 = await getFoto('img-despues-serial-3');
-    const fotoDespuesSerial4 = await getFoto('img-despues-serial-4');
-    const fotoDespuesSerial5 = await getFoto('img-despues-serial-5');
-    const fotoDespuesSerial6 = await getFoto('img-despues-serial-6');
-
-    // === DESPUÉS RESULTADO (12) ===
-    const fotoDespuesRes1  = await getFoto('img-despues-res-1');
-    const fotoDespuesRes2  = await getFoto('img-despues-res-2');
-    const fotoDespuesRes3  = await getFoto('img-despues-res-3');
-    const fotoDespuesRes4  = await getFoto('img-despues-res-4');
-    const fotoDespuesRes5  = await getFoto('img-despues-res-5');
-    const fotoDespuesRes6  = await getFoto('img-despues-res-6');
-    const fotoDespuesRes7  = await getFoto('img-despues-res-7');
-    const fotoDespuesRes8  = await getFoto('img-despues-res-8');
-    const fotoDespuesRes9  = await getFoto('img-despues-res-9');
-    const fotoDespuesRes10 = await getFoto('img-despues-res-10');
-    const fotoDespuesRes11 = await getFoto('img-despues-res-11');
-    const fotoDespuesRes12 = await getFoto('img-despues-res-12');
-
-    const fotosDespues = [
-        fotoDespuesSerial1, fotoDespuesSerial2, fotoDespuesSerial3,
-        fotoDespuesSerial4, fotoDespuesSerial5, fotoDespuesSerial6,
-        fotoDespuesRes1, fotoDespuesRes2, fotoDespuesRes3,
-        fotoDespuesRes4, fotoDespuesRes5, fotoDespuesRes6,
-        fotoDespuesRes7, fotoDespuesRes8, fotoDespuesRes9,
-        fotoDespuesRes10, fotoDespuesRes11, fotoDespuesRes12
-    ];
-
-    // === Observaciones ===
-    const antesObs   = (document.getElementById('inp-antes-obs')  ?.value ?? '').trim();
-    const despuesObs = (document.getElementById('inp-despues-obs')?.value ?? '').trim();
-
-    // === Coordenadas ===
-    const latitud  = (document.getElementById('inp-lat')?.value ?? '').trim();
-    const longitud = (document.getElementById('inp-lon')?.value ?? '').trim();
-
-    // === Declaración: acompañante ===
-    const acompNombre = (document.getElementById('inp-acomp-nombre')?.value ?? '').trim();
-    const acompCargo  = (document.getElementById('inp-acomp-cargo') ?.value ?? '').trim();
-    const acompCedula = (document.getElementById('inp-acomp-cedula')?.value ?? '').trim();
-    const acompTel1   = (document.getElementById('inp-acomp-tel1')  ?.value ?? '').trim();
-    const acompTel2   = (document.getElementById('inp-acomp-tel2')  ?.value ?? '').trim();
-    const acompCorreo = (document.getElementById('inp-acomp-correo')?.value ?? '').trim();
-
-    // === Declaración: técnico ===
-    const tecNombre = (document.getElementById('inp-tec-nombre')?.value ?? '').trim();
-    const tecCargo  = (document.getElementById('inp-tec-cargo') ?.value ?? '').trim();
-    const tecCedula = (document.getElementById('inp-tec-cedula')?.value ?? '').trim();
-    const tecTel    = (document.getElementById('inp-tec-tel')   ?.value ?? '').trim();
-    const tecCorreo = (document.getElementById('inp-tec-correo')?.value ?? '').trim();
-
-    // === Firma tecnico ===
-    let firmaActaDataUrl = '';
-    const firmaInput = document.getElementById('inp-firma-tec');
-    if (firmaInput?.files?.[0]) {
-        firmaActaDataUrl = await fileToDataURL(firmaInput.files[0]);
-    }
-
-    // === Datos ACTA ===
-    const departamento = (document.getElementById('inp-departamento')?.value ?? '').trim();
-    const municipio    = (document.getElementById('inp-municipio')?.value ?? '').trim();
-    const centroPoblado= (document.getElementById('inp-centro-poblado')?.value ?? '').trim();
-    const sede         = (document.getElementById('inp-sede')?.value ?? '').trim();
-    const correo       = (document.getElementById('inp-correo')?.value ?? '').trim();
-    const responsableNombre = (document.getElementById('inp-responsable')?.value ?? '').trim();
-    const cedula       = (document.getElementById('inp-cedula')?.value ?? '').trim();
-    const contacto     = (document.getElementById('inp-contacto')?.value ?? '').trim();
-
-    const descripcion = (document.getElementById('inp-descripcion')?.value ?? '');
-
-    // === Equipos tabla ===
-    const filasEquipos = [];
-    document.querySelectorAll('#tbody-equipos tr').forEach(tr => {
-        const sapRaw = tr.querySelector('.inp-sap')?.value?.trim() ?? '';
-        if (!sapRaw) return;
-
-        const sap = sapRaw.includes('·') ? sapRaw.split('·')[0].trim() : sapRaw;
-
-        const tipoInput = tr.querySelector('input.inp-tipo:checked');
-        const tipo = tipoInput ? tipoInput.value : '';
-
-        const serial = tr.querySelector('.inp-serial')?.value?.trim() ?? '';
-        if (!tipo || !serial) return;
-
-        filasEquipos.push({
-            sap,
-            descripcion: sapMap.get(sap) ?? '',
-            tipo,
-            serial
-        });
-    });
-
-    // === PRUEBAS ===
-    const imgsJson = {
-        gps        : await getFoto('img-gps-geo'),
-        apInt      : await getFoto('img-ap-int'),
-        apExt1     : await getFoto('img-ap-ext1'),
-        apExt2     : await getFoto('img-ap-ext2'),
-        pcInt      : await getFoto('img-pc-int'),
-        movilExt   : await getFoto('img-movil-ext'),
-        senalExt   : await getFoto('img-senal-ext'),
-        senalInt   : await getFoto('img-senal-int'),
-        respaldo   : await getFoto('img-respaldo'),
-        printUps   : await getFoto('img-print-ups'),
-        med1       : await getFoto('img-med1'),
-        med2       : await getFoto('img-med2'),
-
-        navIndoor: [
-          await getFoto('img-nav-indoor-0'),
-          await getFoto('img-nav-indoor-1'),
-          await getFoto('img-nav-indoor-2')
-        ],
-
-        navOutdoor: [
-          await getFoto('img-nav-outdoor-0'),
-          await getFoto('img-nav-outdoor-1'),
-          await getFoto('img-nav-outdoor-2')
-        ],
-
-        speedtest  : await getFoto('img-speedtest'),
-        portal     : await getFoto('img-portal'),
-        block1     : await getFoto('img-block1'),
-        block2     : await getFoto('img-block2'),
-
-        despues    : fotosDespues
-    };
-
-    const pruebasObs = (document.getElementById('inp-pruebas-obs')?.value ?? '');
-
-      async function subsanarMCI(){
 // ✅ Validar login antes de exportar
 if (!tecnicoActual) {
     alert("Debes iniciar sesión para poder exportar el MCI.");
