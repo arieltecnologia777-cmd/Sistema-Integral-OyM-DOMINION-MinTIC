@@ -7000,14 +7000,25 @@ if (logoutBtn) {
 
   <script>
 document.querySelectorAll(".remove-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    await saveDraft();
-  });
-});
+  btn.addEventListener("click", async (e) => {
 
-document.querySelectorAll('input[type="file"]').forEach(input => {
-  input.addEventListener('change', () => {
-    saveDraft();
+    const cell = e.target.closest(".photo-cell");
+
+    if (cell) {
+
+      const input = cell.querySelector('input[type="file"]');
+
+      if (input) {
+        input.value = "";
+      }
+
+      cell.classList.remove("has-image");
+
+      const img = cell.querySelector("img");
+      if (img) img.remove();
+    }
+
+    await saveDraft();
   });
 });
 </script>
