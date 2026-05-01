@@ -360,7 +360,7 @@ function renderTabla() {
         ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
 
         : estado === "subsanado"
-        ? `<button class="btn-estado btn-naranja btn-ver" disabled>🟡 Subsanado</button>`
+? `<button class="btn-estado btn-naranja btn-revisar" data-idx="${idx}">🟡 Subsanado</button>`
 
         : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
 
