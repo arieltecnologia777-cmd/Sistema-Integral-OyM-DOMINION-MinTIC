@@ -7086,6 +7086,13 @@ if (subsanarBtn) {
   subsanarBtn.style.opacity = "0.5";
   subsanarBtn.style.cursor = "not-allowed";
 }
+
+    // 🔥 FORZAR RECARGA UNA SOLA VEZ PARA EVITAR CACHE
+if (!sessionStorage.getItem("reloadFix")) {
+  sessionStorage.setItem("reloadFix", "true");
+  location.reload();
+}
+    
 </script>
 </body>
 </html>
