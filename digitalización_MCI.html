@@ -4407,7 +4407,9 @@ body:not(.logged-in) .main{
   <button class="btn secondary" id="collapseBtn">Cerrar menú</button>
   <button class="btn" id="exportBtn">📤 Cargar informe</button>
 
-<button class="btn secondary" id="subsanarBtn">🔄 Subsanar</button>
+<button class="btn secondary" id="subsanarBtn">
+  🔄 Subsanar
+</button>
   <button class="btn" id="misInformesBtn">
   🔎 Ver mis informes
 </button>
@@ -6852,7 +6854,11 @@ tr.querySelector(".btnSubsanar")?.addEventListener("click", () => {
   document.getElementById("misInformesModal").style.display = "none";
 
   // mostrar botón subsanar del sidebar
-  document.getElementById("subsanarBtn").style.display = "block";
+  const subsanarBtn = document.getElementById("subsanarBtn");
+
+subsanarBtn.disabled = false;
+subsanarBtn.style.opacity = "1";
+subsanarBtn.style.cursor = "pointer";
 
   // bloquear cargar informe
   const exportBtn = document.getElementById("exportBtn");
@@ -7071,19 +7077,13 @@ document.querySelectorAll(".remove-btn").forEach(btn => {
   });
 });
 
-    // 🔥 RESET MODO SUBSANAR AL ABRIR LA APP
-localStorage.removeItem("modoSubsanar");
-localStorage.removeItem("mciSubsanar");
-
-// ocultar botón subsanar
+    // 🔥 ESTADO INICIAL (DESHABILITADO)
 const subsanarBtn = document.getElementById("subsanarBtn");
-if (subsanarBtn) subsanarBtn.style.display = "none";
 
-// habilitar botón cargar informe
-const exportBtn = document.getElementById("exportBtn");
-if (exportBtn) {
-  exportBtn.disabled = false;
-  exportBtn.style.opacity = "1";
+if (subsanarBtn) {
+  subsanarBtn.disabled = true;
+  subsanarBtn.style.opacity = "0.5";
+  subsanarBtn.style.cursor = "not-allowed";
 }
 </script>
 </body>
