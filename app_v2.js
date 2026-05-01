@@ -334,9 +334,9 @@ function renderTabla() {
   );
 
   filtrados.forEach(item => {
+
     const idx = window.datosActuales.indexOf(item);
 
-    // ✅ Evitar undefined en columnas como fecha y tamaño
     const tds = window.moduloActivo.columnas
       .map(col => {
         const valor = item[col.id];
@@ -347,23 +347,31 @@ function renderTabla() {
     const estado = item.estadoKV ?? "pendiente";
 
     const btn =
-  estado === "pendiente"
-    ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
+      estado === "pendiente"
+        ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
 
-    : estado === "en_revision"
-    ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
+        : estado === "en_revision"
+        ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
 
-    : estado === "aprobado"
-    ? `<button class="btn-estado btn-verde btn-ver" data-idx="${idx}">✅ Aprobado</button>`
+        : estado === "aprobado"
+        ? `<button class="btn-estado btn-verde btn-ver" data-idx="${idx}">✅ Aprobado</button>`
 
-    : estado === "rechazado"
-    ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
+        : estado === "rechazado"
+        ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
 
-    // 🔥 NUEVO ESTADO SUBSANADO
-    : estado === "subsanado"
-    ? `<button class="btn-estado btn-naranja btn-ver" disabled>🟡 Subsanado</button>`
+        : estado === "subsanado"
+        ? `<button class="btn-estado btn-naranja btn-ver" disabled>🟡 Subsanado</button>`
 
-    : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+        : `<button class="btn-estado btn-rojo" disabled>⚠️ Pendiente por técnico</button>`;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
+    tbody.appendChild(tr);
+
+  });
+
+  prepararEventosTabla();
+}
 
 /* ======================================================================
    10) ORDENAR POR FECHA
