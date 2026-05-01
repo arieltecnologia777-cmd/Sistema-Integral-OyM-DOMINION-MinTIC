@@ -7000,19 +7000,29 @@ if (logoutBtn) {
 
   <script>
 document.querySelectorAll(".remove-btn").forEach(btn => {
-  btn.addEventListener("click", (e) => {
+  btn.addEventListener("click", async (e) => {
 
     const cell = e.target.closest(".photo-cell");
-
     if (!cell) return;
 
     const input = cell.querySelector("input[type='file']");
-    if (input) input.value = "";
+    if (!input) return;
 
+    const id = input.id;
+
+    // 🔥 LIMPIAR INPUT
+    input.value = "";
+
+    // 🔥 BORRAR IMAGEN VISUAL
     const img = cell.querySelector("img");
     if (img) img.remove();
 
     cell.classList.remove("has-image");
+
+    // 🔥 BORRAR DE INDEXEDDB (LA CLAVE DEL PROBLEMA)
+    if (window.dbSavePhoto) {
+      await dbSavePhoto(id, null);
+    }
 
   });
 });
