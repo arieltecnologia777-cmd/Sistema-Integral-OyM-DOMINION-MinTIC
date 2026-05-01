@@ -6999,21 +6999,22 @@ if (logoutBtn) {
 </div>
 
   <script>
-window.addEventListener("DOMContentLoaded", () => {
+document.querySelectorAll(".remove-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
 
-  document.querySelectorAll(".photo-cell").forEach(cell => {
+    const cell = e.target.closest(".photo-cell");
+
+    if (!cell) return;
 
     const input = cell.querySelector("input[type='file']");
-    const img = cell.querySelector("img");
+    if (input) input.value = "";
 
-    // 🔥 SI NO HAY ARCHIVO REAL → BORRAR IMAGEN
-    if (!input || input.files.length === 0) {
-      if (img) img.remove();
-      cell.classList.remove("has-image");
-    }
+    const img = cell.querySelector("img");
+    if (img) img.remove();
+
+    cell.classList.remove("has-image");
 
   });
-
 });
 </script>
   
