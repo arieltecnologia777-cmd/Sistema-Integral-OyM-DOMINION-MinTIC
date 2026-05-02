@@ -236,11 +236,10 @@ async function seleccionarModulo(mod) {
 
       <!-- DERECHA -->
       <div style="
-        flex:1;
-        display:flex;
-        justify-content:center;
-        position:relative;
-      ">
+  display:flex;
+  align-items:center;
+  margin-left:-80px; /* 🔥 ESTO ES LO QUE FALTABA */
+">
 
         <!-- ✅ FONDO SUAVE -->
         <div style="
