@@ -152,7 +152,7 @@ async function seleccionarModulo(mod) {
   const cont = document.getElementById("contenedor-modulo");
   cont.innerHTML = "";
 
-  // ✅ PANTALLA DE INICIO — VERSIÓN CORPORATIVA PREMIUM
+  // ✅ PANTALLA DE INICIO — CORPORATIVA SIN EMOJIS
   if (mod === "inicio") {
     window.moduloActivo = null;
 
@@ -165,7 +165,7 @@ async function seleccionarModulo(mod) {
         padding:20px;
       ">
 
-        <!-- ✅ LADO IZQUIERDO -->
+        <!-- IZQUIERDA -->
         <div style="max-width:520px;">
 
           <h1 style="
@@ -189,55 +189,67 @@ async function seleccionarModulo(mod) {
             color:#1f2937;
             margin-bottom:6px;
           ">
-            Bienvenido al <strong>Panel Auditor</strong>
+            Bienvenido al Panel Auditor
           </p>
 
           <p style="
             font-size:15px;
             color:#6b7280;
-            margin-bottom:20px;
+            margin-bottom:22px;
           ">
-            Sistema de validación y control de informes técnicos.
-            Selecciona un módulo en la barra lateral para comenzar.
+            Plataforma de validación y control de informes técnicos.
+            Seleccione un módulo en la barra lateral para comenzar.
           </p>
 
-          <!-- ✅ CARD PROFESIONAL -->
+          <!-- CARD CORPORATIVA -->
           <div style="
-            background: linear-gradient(135deg, #f4f7ff, #eef4ff);
+            background:#f4f6fb;
             padding:20px;
             border-radius:16px;
-            border:1px solid #dbe4ff;
-            box-shadow: 0 8px 20px rgba(14,74,168,0.08);
+            border:1px solid #e3e8f5;
+            box-shadow:0 10px 24px rgba(0,0,0,0.04);
           ">
 
             <div style="
-              font-size:13px;
+              font-size:12px;
               font-weight:800;
               color:#0e4aa8;
-              margin-bottom:10px;
-              letter-spacing:0.3px;
+              margin-bottom:12px;
+              letter-spacing:0.6px;
             ">
               FLUJO DE AUDITORÍA
             </div>
 
-            <ul style="
-              list-style:none;
-              padding:0;
-              margin:0;
+            <div style="
+              display:flex;
+              flex-direction:column;
+              gap:10px;
               font-size:15px;
-              line-height:2.2;
               color:#1f2937;
             ">
-              <li>🔎 Revisar informes técnicos</li>
-              <li>🛠 Validar correcciones realizadas</li>
-              <li>✔ Aprobar o rechazar reportes</li>
-            </ul>
+
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
+                Revisar informes técnicos
+              </div>
+
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
+                Validar correcciones realizadas
+              </div>
+
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:8px; height:8px; background:#16a34a; border-radius:50%;"></div>
+                Aprobar o rechazar reportes
+              </div>
+
+            </div>
 
           </div>
 
         </div>
 
-        <!-- ✅ LADO DERECHO (VISUAL CORPORATIVO) -->
+        <!-- DERECHA -->
         <div style="
           flex:1;
           display:flex;
@@ -245,14 +257,49 @@ async function seleccionarModulo(mod) {
         ">
 
           <div style="
-            background:rgba(14,74,168,0.06);
-            border-radius:22px;
-            padding:35px;
-            box-shadow: inset 0 0 20px rgba(14,74,168,0.04);
+            background:linear-gradient(145deg, #eef4ff, #f7faff);
+            border-radius:24px;
+            padding:40px;
+            border:1px solid #e3ecff;
           ">
-            <div style="font-size:120px;">
-              📊🔍✅
+
+            <div style="
+              width:240px;
+              height:160px;
+              border:2px solid #0e4aa8;
+              border-radius:12px;
+              position:relative;
+            ">
+
+              <div style="
+                position:absolute;
+                bottom:20px;
+                left:30px;
+                width:20px;
+                height:40px;
+                background:#0e4aa8;
+              "></div>
+
+              <div style="
+                position:absolute;
+                bottom:20px;
+                left:80px;
+                width:20px;
+                height:65px;
+                background:#0e4aa8;
+              "></div>
+
+              <div style="
+                position:absolute;
+                bottom:20px;
+                left:130px;
+                width:20px;
+                height:90px;
+                background:#0e4aa8;
+              "></div>
+
             </div>
+
           </div>
 
         </div>
@@ -275,11 +322,11 @@ async function seleccionarModulo(mod) {
 
   await cargarDatosModulo();
 
-  // ✅ EVENTOS DESPUÉS DE CARGAR
   prepararEventosTabla();
   activarFiltroEstado();
   actualizarContadores();
 }
+ 
 /* ======================================================================
    7) GENERAR TABLA HTML
 ====================================================================== */
