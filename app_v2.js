@@ -238,31 +238,31 @@ async function seleccionarModulo(mod) {
       <div style="
   display:flex;
   align-items:center;
-  margin-left:-80px; /* 🔥 ESTO ES LO QUE FALTABA */
+  justify-content:center;
+  margin-left:-80px;
 ">
 
-        <!-- ✅ FONDO SUAVE -->
-        <div style="
-          position:absolute;
-          width:420px;
-          height:260px;
-          background:#e9f1ff;
-          border-radius:24px;
-          top:20px;
-          z-index:0;
-        "></div>
+  <div style="
+    width:420px;
+    height:260px;
+    background:#e9f1ff;
+    border-radius:24px;
 
-        <!-- ✅ IMAGEN -->
-        <img 
-          src="./auditor-dashboard.png"
-          style="
-            width:360px;
-            position:relative;
-            z-index:1;
-          "
-        />
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  ">
 
-      </div>
+    <img 
+      src="./auditor-dashboard.png" 
+      style="
+        width:300px;
+      " 
+    />
+
+  </div>
+
+</div>
 
     </div>
   `;
