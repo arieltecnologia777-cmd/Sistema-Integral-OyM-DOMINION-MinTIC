@@ -6004,25 +6004,7 @@ function downscaleDataUrl(dataUrl, maxPx = 1600, quality = 0.85) {
   });
 }
 
-// ✅ Obtiene foto desde input file o desde IndexedDB si fue restaurada
-async function getFoto(id, maxPx = 1600, quality = 0.85) {
-  const input = document.getElementById(id);
 
-  // 1️⃣ Si el input tiene archivo → usarlo
-  if (input && input.files && input.files[0]) {
-    const raw = await fileToDataURL(input.files[0]);
-    return await downscaleDataUrl(raw, maxPx, quality);
-  }
-
-  // 2️⃣ Si NO tiene archivo → cargar desde IndexedDB
-  return new Promise(resolve => {
-    cargarFotoOffline(id, async base64 => {
-      if (!base64) return resolve("");
-      const scaled = await downscaleDataUrl(base64, maxPx, quality);
-      resolve(scaled);
-    });
-  });
-}
       // ⚙️ URL del Flow (generar Excel)
 const FLOW_URL = "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc99f30c70a64d57b309dce1c13d1290/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMxJMh4pAr98EPpIwDJGzHb5_glsVkAv-A1TVjR9zsA";
 
