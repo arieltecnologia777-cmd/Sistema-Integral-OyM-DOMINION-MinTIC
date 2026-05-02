@@ -154,150 +154,93 @@ async function seleccionarModulo(mod) {
 
   // ✅ PANTALLA DE INICIO — CORPORATIVA SIN EMOJIS
   if (mod === "inicio") {
-    window.moduloActivo = null;
+  window.moduloActivo = null;
 
-    cont.innerHTML = `
-      <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:40px;
-        padding:20px;
-      ">
+  cont.innerHTML = `
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:40px;
+      padding:20px;
+    ">
 
-        <!-- IZQUIERDA -->
-        <div style="max-width:520px;">
+      <!-- IZQUIERDA -->
+      <div style="max-width:520px;">
 
-          <h1 style="
-            font-size:34px;
-            font-weight:900;
-            color:#0e2040;
-            margin-bottom:6px;
-            letter-spacing:-0.4px;
-          ">
-            Panel Auditor
-          </h1>
+        <h1 style="
+          font-size:34px;
+          font-weight:900;
+          color:#0e2040;
+          margin-bottom:6px;
+          letter-spacing:-0.4px;
+        ">
+          Panel Auditor
+        </h1>
 
-          <div style="
-            height:2px;
-            background:#e1e6f3;
-            margin:12px 0 18px 0;
-          "></div>
-
-          <p style="
-            font-size:18px;
-            color:#1f2937;
-            margin-bottom:6px;
-          ">
-            Bienvenido al Panel Auditor
-          </p>
-
-          <p style="
-            font-size:15px;
-            color:#6b7280;
-            margin-bottom:22px;
-          ">
-            Plataforma de validación y control de informes técnicos.
-            Seleccione un módulo en la barra lateral para comenzar.
-          </p>
-
-          <!-- CARD CORPORATIVA -->
-          <div style="
-            background:#f4f6fb;
-            padding:20px;
-            border-radius:16px;
-            border:1px solid #e3e8f5;
-            box-shadow:0 10px 24px rgba(0,0,0,0.04);
-          ">
-
-            <div style="
-              font-size:12px;
-              font-weight:800;
-              color:#0e4aa8;
-              margin-bottom:12px;
-              letter-spacing:0.6px;
-            ">
-              FLUJO DE AUDITORÍA
-            </div>
-
-            <div style="
-              display:flex;
-              flex-direction:column;
-              gap:10px;
-              font-size:15px;
-              color:#1f2937;
-            ">
-
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
-                Revisar informes técnicos
-              </div>
-
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
-                Validar correcciones realizadas
-              </div>
-
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:8px; height:8px; background:#16a34a; border-radius:50%;"></div>
-                Aprobar o rechazar reportes
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- DERECHA -->
         <div style="
-          flex:1;
-          display:flex;
-          justify-content:center;
+          height:2px;
+          background:#e1e6f3;
+          margin:12px 0 18px 0;
+        "></div>
+
+        <p style="
+          font-size:18px;
+          color:#1f2937;
+          margin-bottom:6px;
+        ">
+          Bienvenido al Panel Auditor
+        </p>
+
+        <p style="
+          font-size:15px;
+          color:#6b7280;
+          margin-bottom:22px;
+        ">
+          Plataforma de validación y control de informes técnicos.
+          Seleccione un módulo en la barra lateral para comenzar.
+        </p>
+
+        <!-- CARD -->
+        <div style="
+          background:#f4f6fb;
+          padding:20px;
+          border-radius:16px;
+          border:1px solid #e3e8f5;
+          box-shadow:0 10px 24px rgba(0,0,0,0.04);
         ">
 
           <div style="
-            background:linear-gradient(145deg, #eef4ff, #f7faff);
-            border-radius:24px;
-            padding:40px;
-            border:1px solid #e3ecff;
+            font-size:12px;
+            font-weight:800;
+            color:#0e4aa8;
+            margin-bottom:12px;
+            letter-spacing:0.6px;
+          ">
+            FLUJO DE AUDITORÍA
+          </div>
+
+          <div style="
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            font-size:15px;
+            color:#1f2937;
           ">
 
-            <div style="
-              width:240px;
-              height:160px;
-              border:2px solid #0e4aa8;
-              border-radius:12px;
-              position:relative;
-            ">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
+              Revisar informes técnicos
+            </div>
 
-              <div style="
-                position:absolute;
-                bottom:20px;
-                left:30px;
-                width:20px;
-                height:40px;
-                background:#0e4aa8;
-              "></div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
+              Validar correcciones realizadas
+            </div>
 
-              <div style="
-                position:absolute;
-                bottom:20px;
-                left:80px;
-                width:20px;
-                height:65px;
-                background:#0e4aa8;
-              "></div>
-
-              <div style="
-                position:absolute;
-                bottom:20px;
-                left:130px;
-                width:20px;
-                height:90px;
-                background:#0e4aa8;
-              "></div>
-
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:8px; height:8px; background:#16a34a; border-radius:50%;"></div>
+              Aprobar o rechazar reportes
             </div>
 
           </div>
@@ -305,10 +248,38 @@ async function seleccionarModulo(mod) {
         </div>
 
       </div>
-    `;
 
-    return;
-  }
+      <!-- DERECHA (ILUSTRACIÓN PRO) -->
+      <div style="
+        flex:1;
+        display:flex;
+        justify-content:center;
+      ">
+
+        <div style="
+          background:#edf3ff;
+          border-radius:20px;
+          padding:30px;
+        ">
+
+          <img 
+            src="img/auditor-dashboard.png"
+            style="
+              width:320px;
+              max-width:100%;
+              display:block;
+            "
+          />
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  return;
+}
 
   // ✅ MÓDULOS NORMALES
   window.moduloActivo = obtenerModulo(mod);
