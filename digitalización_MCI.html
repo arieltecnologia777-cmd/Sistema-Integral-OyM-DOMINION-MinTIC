@@ -7076,25 +7076,24 @@ document.querySelectorAll(".remove-btn").forEach(btn => {
 
     const id = input.id;
 
-    // 🔥 LIMPIAR INPUT
+    // ✅ LIMPIAR INPUT + marcar como borrada
     input.value = "";
     input.dataset.deleted = "true";
 
-    // 🔥 BORRAR IMAGEN VISUAL
+    // ✅ BORRAR IMAGEN VISUAL
     const img = cell.querySelector("img");
     if (img) img.remove();
 
+    // ✅ LIMPIAR ESTADO VISUAL
     cell.classList.remove("has-image");
 
-    // 🔥 BORRAR DE INDEXEDDB (LA CLAVE DEL PROBLEMA)
-    if (window.dbSavePhoto) {
-      const tx = db.transaction("photos", "readwrite");
-      tx.objectStore("photos").delete(id);
-
-    }
+    // ✅ BORRAR DE INDEXEDDB (CLAVE REAL)
+    const tx = db.transaction("photos", "readwrite");
+    tx.objectStore("photos").delete(id);
 
   });
 });
+
 
     // 🔥 ESTADO INICIAL (DESHABILITADO)
 const subsanarBtn = document.getElementById("subsanarBtn");
