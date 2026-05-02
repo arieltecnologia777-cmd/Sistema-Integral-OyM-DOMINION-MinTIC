@@ -432,7 +432,7 @@ function renderTabla() {
 prepararEventosTabla();
 activarFiltroEstado();
 actualizarContadores();
-activarBuscador();
+activarBuscadorTecnico();
 }
 
 function actualizarContadores() {
