@@ -153,35 +153,28 @@ async function seleccionarModulo(mod) {
   cont.innerHTML = "";
 
   // ✅ PANTALLA DE INICIO — CORPORATIVA SIN EMOJIS
-  if (mod === "inicio") {
+ if (mod === "inicio") {
   window.moduloActivo = null;
 
   cont.innerHTML = `
     <div style="
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      align-items:flex-start;
       gap:40px;
       padding:20px;
+      position:relative;
     ">
 
       <!-- IZQUIERDA -->
-      <div style="max-width:520px;">
+      <div style="max-width:520px; z-index:2;">
 
-        <h1 style="
-          font-size:34px;
-          font-weight:900;
-          color:#0e2040;
-          margin-bottom:6px;
-          letter-spacing:-0.4px;
-        ">
-          Panel Auditor
-        </h1>
-
+        <!-- ❌ QUITAMOS 'Panel Auditor' -->
+        <!-- ✅ SOLO TEXTO -->
         <div style="
           height:2px;
           background:#e1e6f3;
-          margin:12px 0 18px 0;
+          margin-bottom:18px;
         "></div>
 
         <p style="
@@ -189,58 +182,49 @@ async function seleccionarModulo(mod) {
           color:#1f2937;
           margin-bottom:6px;
         ">
-          Bienvenido al Panel Auditor
+          Bienvenido al Panel Auditor.
         </p>
 
         <p style="
-          font-size:15px;
-          color:#6b7280;
-          margin-bottom:22px;
+          font-size:16px;
+          color:#374151;
+          margin-bottom:20px;
         ">
-          Plataforma de validación y control de informes técnicos.
-          Seleccione un módulo en la barra lateral para comenzar.
+          Selecciona un módulo en la barra lateral para comenzar.
         </p>
 
-        <!-- CARD -->
+        <!-- ✅ CARD SOBREPOSICION -->
         <div style="
-          background:#f4f6fb;
-          padding:20px;
+          margin-top:20px;
+          background:#ffffff;
+          padding:22px;
           border-radius:16px;
           border:1px solid #e3e8f5;
-          box-shadow:0 10px 24px rgba(0,0,0,0.04);
+          box-shadow:0 12px 24px rgba(0,0,0,0.06);
+          width:480px;
         ">
-
-          <div style="
-            font-size:12px;
-            font-weight:800;
-            color:#0e4aa8;
-            margin-bottom:12px;
-            letter-spacing:0.6px;
-          ">
-            FLUJO DE AUDITORÍA
-          </div>
 
           <div style="
             display:flex;
             flex-direction:column;
-            gap:10px;
-            font-size:15px;
+            gap:14px;
+            font-size:16px;
             color:#1f2937;
           ">
 
             <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
-              Revisar informes técnicos
+              <img src="https://img.icons8.com/color/48/search.png" width="22"/>
+              Revisar informes
             </div>
 
             <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:8px; height:8px; background:#0e4aa8; border-radius:50%;"></div>
-              Validar correcciones realizadas
+              <img src="https://img.icons8.com/color/48/wrench.png" width="22"/>
+              Validar correcciones
             </div>
 
             <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:8px; height:8px; background:#16a34a; border-radius:50%;"></div>
-              Aprobar o rechazar reportes
+              <img src="https://img.icons8.com/color/48/checked.png" width="22"/>
+              Aprobar o rechazar
             </div>
 
           </div>
@@ -249,29 +233,34 @@ async function seleccionarModulo(mod) {
 
       </div>
 
-      <!-- DERECHA (ILUSTRACIÓN PRO) -->
+      <!-- DERECHA -->
       <div style="
         flex:1;
         display:flex;
         justify-content:center;
+        position:relative;
       ">
 
+        <!-- ✅ FONDO SUAVE -->
         <div style="
-          background:#edf3ff;
-          border-radius:20px;
-          padding:30px;
-        ">
+          position:absolute;
+          width:420px;
+          height:260px;
+          background:#e9f1ff;
+          border-radius:24px;
+          top:20px;
+          z-index:0;
+        "></div>
 
-          <img 
-            src="auditor-dashboard.png"
-            style="
-              width:320px;
-              max-width:100%;
-              display:block;
-            "
-          />
-
-        </div>
+        <!-- ✅ IMAGEN -->
+        <img 
+          src="./auditor-dashboard.png"
+          style="
+            width:360px;
+            position:relative;
+            z-index:1;
+          "
+        />
 
       </div>
 
