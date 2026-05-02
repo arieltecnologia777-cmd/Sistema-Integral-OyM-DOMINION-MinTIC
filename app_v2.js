@@ -168,7 +168,7 @@ async function seleccionarModulo(mod) {
 
 
       <!-- IZQUIERDA -->
-      <div style="max-width:520px; position:relative; z-index:2;">
+      <div style="max-width:700px; position:relative; z-index:2;">
 
         <!-- ❌ QUITAMOS 'Panel Auditor' -->
         <!-- ✅ SOLO TEXTO -->
