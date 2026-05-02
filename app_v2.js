@@ -191,7 +191,15 @@ function generarTablaHTML(modulo) {
     return `<th>${col.label}</th>`;
   }).join("");
 
-  return `
+ return `
+  <div id="filtroEstados" style="margin-bottom:10px;">
+    <button data-filtro="todos">Todos</button>
+    <button data-filtro="pendiente">Pendiente</button>
+    <button data-filtro="subsanado">🔧 Corregido</button>
+    <button data-filtro="aprobado">Aprobado</button>
+    <button data-filtro="rechazado">Rechazado</button>
+  </div>
+
   <div class="tabla-box">
     <table class="tabla">
       <thead><tr>${ths}<th>Acciones</th></tr></thead>
