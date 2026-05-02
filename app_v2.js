@@ -152,16 +152,118 @@ async function seleccionarModulo(mod) {
   const cont = document.getElementById("contenedor-modulo");
   cont.innerHTML = "";
 
+  // ✅ PANTALLA DE INICIO — VERSIÓN CORPORATIVA PREMIUM
   if (mod === "inicio") {
     window.moduloActivo = null;
+
     cont.innerHTML = `
-      <div style="padding:20px;">
-        Bienvenido al <strong>Panel Auditor</strong>.<br>
-        Selecciona un módulo en la barra lateral para comenzar.
-      </div>`;
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:40px;
+        padding:20px;
+      ">
+
+        <!-- ✅ LADO IZQUIERDO -->
+        <div style="max-width:520px;">
+
+          <h1 style="
+            font-size:34px;
+            font-weight:900;
+            color:#0e2040;
+            margin-bottom:6px;
+            letter-spacing:-0.4px;
+          ">
+            Panel Auditor
+          </h1>
+
+          <div style="
+            height:2px;
+            background:#e1e6f3;
+            margin:12px 0 18px 0;
+          "></div>
+
+          <p style="
+            font-size:18px;
+            color:#1f2937;
+            margin-bottom:6px;
+          ">
+            Bienvenido al <strong>Panel Auditor</strong>
+          </p>
+
+          <p style="
+            font-size:15px;
+            color:#6b7280;
+            margin-bottom:20px;
+          ">
+            Sistema de validación y control de informes técnicos.
+            Selecciona un módulo en la barra lateral para comenzar.
+          </p>
+
+          <!-- ✅ CARD PROFESIONAL -->
+          <div style="
+            background: linear-gradient(135deg, #f4f7ff, #eef4ff);
+            padding:20px;
+            border-radius:16px;
+            border:1px solid #dbe4ff;
+            box-shadow: 0 8px 20px rgba(14,74,168,0.08);
+          ">
+
+            <div style="
+              font-size:13px;
+              font-weight:800;
+              color:#0e4aa8;
+              margin-bottom:10px;
+              letter-spacing:0.3px;
+            ">
+              FLUJO DE AUDITORÍA
+            </div>
+
+            <ul style="
+              list-style:none;
+              padding:0;
+              margin:0;
+              font-size:15px;
+              line-height:2.2;
+              color:#1f2937;
+            ">
+              <li>🔎 Revisar informes técnicos</li>
+              <li>🛠 Validar correcciones realizadas</li>
+              <li>✔ Aprobar o rechazar reportes</li>
+            </ul>
+
+          </div>
+
+        </div>
+
+        <!-- ✅ LADO DERECHO (VISUAL CORPORATIVO) -->
+        <div style="
+          flex:1;
+          display:flex;
+          justify-content:center;
+        ">
+
+          <div style="
+            background:rgba(14,74,168,0.06);
+            border-radius:22px;
+            padding:35px;
+            box-shadow: inset 0 0 20px rgba(14,74,168,0.04);
+          ">
+            <div style="font-size:120px;">
+              📊🔍✅
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
     return;
   }
 
+  // ✅ MÓDULOS NORMALES
   window.moduloActivo = obtenerModulo(mod);
 
   if (!window.moduloActivo) {
@@ -171,12 +273,12 @@ async function seleccionarModulo(mod) {
 
   cont.innerHTML = generarTablaHTML(window.moduloActivo);
 
-await cargarDatosModulo();
+  await cargarDatosModulo();
 
-// ⚠️ los dejas AQUÍ después de cargar datos
-prepararEventosTabla();
-activarFiltroEstado();
-actualizarContadores();
+  // ✅ EVENTOS DESPUÉS DE CARGAR
+  prepararEventosTabla();
+  activarFiltroEstado();
+  actualizarContadores();
 }
 /* ======================================================================
    7) GENERAR TABLA HTML
