@@ -6104,16 +6104,21 @@ async function registrarEnKV({
 async function getFoto(id, maxPx = 1600, quality = 0.85) {
     const input = document.getElementById(id);
 
-    // ✅ 1. Si el input tiene archivo → usarlo
+    // ✅ clave: respetar eliminación del usuario
+    if (input?.dataset?.deleted === "true") {
+        return null;
+    }
+
+    // ✅ si hay archivo nuevo
     if (input && input.files && input.files[0]) {
         const raw = await fileToDataURL(input.files[0]);
         return await downscaleDataUrl(raw, maxPx, quality);
     }
 
-    // ✅ 2. Si NO tiene archivo → intentar obtener desde IndexedDB (restaurada)
+    // ✅ restore offline normal
     return new Promise(resolve => {
         cargarFotoOffline(id, async base64 => {
-            if (!base64) return resolve("");
+            if (!base64) return resolve(null);
             const scaled = await downscaleDataUrl(base64, maxPx, quality);
             resolve(scaled);
         });
