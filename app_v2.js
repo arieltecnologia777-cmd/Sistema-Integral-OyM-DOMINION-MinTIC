@@ -171,7 +171,10 @@ async function seleccionarModulo(mod) {
 
   cont.innerHTML = generarTablaHTML(window.moduloActivo);
 
-  prepararEventosTabla();
+await cargarDatosModulo();
+
+// ⚠️ los dejas AQUÍ después de cargar datos
+prepararEventosTabla();
 activarFiltroEstado();
 actualizarContadores();
 }
