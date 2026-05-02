@@ -259,7 +259,7 @@ async function seleccionarModulo(mod) {
     <img
   src="./auditor-dashboard.png" 
   style="
-    width:520px;
+    width:650px;
     position:relative;
     z-index:10; /* ✅ IMAGEN MÁXIMA PRIORIDAD */
     transform: translateX(20px); /* ✅ la hace sobresalir */
