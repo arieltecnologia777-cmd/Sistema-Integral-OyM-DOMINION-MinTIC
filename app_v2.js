@@ -398,19 +398,17 @@ function activarFiltroEstado() {
 
       const filas = document.querySelectorAll("#tbodyDatos tr");
 
-      filas.forEach(fila => {
+      filas.forEach((fila, index) => {
 
-        const texto = fila.innerText.toLowerCase();
+        const item = window.datosActuales[index];
+        const estado = item?.estadoKV ?? "pendiente";
 
         if (filtro === "todos") {
           fila.style.display = "";
-        } 
-        else if (filtro === "subsanado" && texto.includes("corregido")) {
+        }
+        else if (estado === filtro) {
           fila.style.display = "";
-        } 
-        else if (texto.includes(filtro)) {
-          fila.style.display = "";
-        } 
+        }
         else {
           fila.style.display = "none";
         }
@@ -422,7 +420,6 @@ function activarFiltroEstado() {
   });
 
 }
-
 
 /* ======================================================================
    10) ORDENAR POR FECHA
