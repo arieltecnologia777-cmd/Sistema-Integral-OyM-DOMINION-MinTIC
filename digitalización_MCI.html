@@ -7073,6 +7073,7 @@ document.querySelectorAll(".remove-btn").forEach(btn => {
 
     // 🔥 LIMPIAR INPUT
     input.value = "";
+    input.dataset.deleted = "true";
 
     // 🔥 BORRAR IMAGEN VISUAL
     const img = cell.querySelector("img");
