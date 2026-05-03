@@ -242,7 +242,7 @@ async function seleccionarModulo(mod) {
   display:flex;
   align-items:center;
   justify-content:center;
- margin-left:-130px;
+ margin-left:-90px;
 ">
 
   <div style="
