@@ -6102,27 +6102,22 @@ async function registrarEnKV({
     
     // ✅ Obtiene foto desde input file o desde IndexedDB si fue restaurada
 async function getFoto(id, maxPx = 1600, quality = 0.85) {
-    const input = document.getElementById(id);
+  const input = document.getElementById(id);
 
-    // ✅ clave: respetar eliminación del usuario
-    if (input?.dataset?.deleted === "true") {
-        return null;
-    }
+  // ✅ 1. Si hay archivo en el input (caso ideal)
+  if (input && input.files && input.files[0]) {
+    const raw = await fileToDataURL(input.files[0]);
+    return await downscaleDataUrl(raw, maxPx, quality);
+  }
 
-    // ✅ si hay archivo nuevo
-    if (input && input.files && input.files[0]) {
-        const raw = await fileToDataURL(input.files[0]);
-        return await downscaleDataUrl(raw, maxPx, quality);
-    }
-
-    // ✅ restore offline normal
-    return new Promise(resolve => {
-        cargarFotoOffline(id, async base64 => {
-            if (!base64) return resolve(null);
-            const scaled = await downscaleDataUrl(base64, maxPx, quality);
-            resolve(scaled);
-        });
+  // ✅ 2. FALLBACK → buscar en IndexedDB (ESTO ES LA SOLUCIÓN)
+  return new Promise(resolve => {
+    cargarFotoOffline(id, async base64 => {
+      if (!base64) return resolve(null);
+      const scaled = await downscaleDataUrl(base64, maxPx, quality);
+      resolve(scaled);
     });
+  });
 }
 
 
@@ -6408,6 +6403,11 @@ if (!tecnicoActual) {
     try{
         setStatus('Enviando al Flow…');
         setWorking(true, 'Enviando…');
+      
+console.log("portal:", await getFoto("img-portal"));
+console.log("block1:", await getFoto("img-block1"));
+console.log("block2:", await getFoto("img-block2"));
+      
 
         const resp = await fetch(currentFlowUrl, {
   method: "POST",
