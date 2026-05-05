@@ -5305,7 +5305,7 @@ async function descargarInforme(mciId) {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = window.__archivoActual?.nombre || `${mciId}.xlsx`;
+    a.download = `MCI_${mciId}.xlsx`;
     document.body.appendChild(a);
     a.click();
 
