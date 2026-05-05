@@ -5286,6 +5286,7 @@ try {
 
   const estado = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/estado?mciId=${mciId}`)
     .then(r => r.json());
+  console.log("ESTADO:", estado);
 
   const resp = await fetch(FLOW_DESCARGAR_MCI, {
     method: "POST",
