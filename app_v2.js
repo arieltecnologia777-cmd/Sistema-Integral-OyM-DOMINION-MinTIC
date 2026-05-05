@@ -892,8 +892,21 @@ if (estado === "rechazado") {
   fileIdentifierExcel: item.fileIdentifierExcel
 });
 
+const resp = await fetch(FLOW_FOTOS, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    fileIdentifierExcel: item.fileIdentifierExcel
+  })
+});
+
+const data = await resp.json();
+
+// ✅ guardar URL que viene del flow
+window.__archivoActual.excelWebUrl = data.excelWebUrl;
+   
 // ✅ Guardar URL del Excel para abrir en línea
-window.__archivoActual.excelWebUrl = item.excelWebUrl;
+window.__archivoActual.excelWebUrl = data.excelWebUrl;
 
 // ✅ Flow respondió → habilitar Abrir Excel
 
