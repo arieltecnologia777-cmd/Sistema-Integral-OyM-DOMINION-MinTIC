@@ -7116,11 +7116,11 @@ if (subsanarBtn) {
 <script src="./version.js"></script>
   <script>
 function filtrar() {
-  const fecha = document.getElementById("filtroFecha").value;
   const filas = document.querySelectorAll("#tbody-equipos tr");
 
   filas.forEach(fila => {
-    fila.style.display = fecha ? "none" : "";
+    fila.style.display =
+      fila.style.display === "none" ? "" : "none";
   });
 }
 </script>
