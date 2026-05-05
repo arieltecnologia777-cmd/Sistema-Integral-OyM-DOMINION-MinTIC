@@ -678,28 +678,6 @@ function prepararEventosTabla() {
   });
 });
 }
-/* ======================================================================
-   12) BUSCAR JSON DE FOTOS EN ONEDRIVE
-====================================================================== */
-async function obtenerJsonFotos(item) {
-  const resp = await fetch(FLOW_FOTOS, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      fileId: item.jsonFileId
-    })
-  });
-
-  const data = await resp.json();
-
-  // 🔑 imgsJson llega como STRING → lo convertimos a objeto
-  if (typeof data.imgsJson === "string") {
-    return JSON.parse(data.imgsJson);
-  }
-
-  return data.imgsJson;
-}
-
 /* =========================================================
    LECTOR SEGURO DE CELDAS EXCEL (SIN RENDER)
 ========================================================= */
@@ -913,22 +891,7 @@ if (estado === "rechazado") {
    console.log("ENVIANDO AL FLOW (Excel):", {
   fileIdentifierExcel: item.fileIdentifierExcel
 });
-  // === OBTENER EXCEL DESDE ONEDRIVE (FLOW DESCARGADOR) ===
-  const resp = await fetch(FLOW_FOTOS, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    fileIdentifierExcel: item.fileIdentifierExcel
-  })
-});
-
-
-  if (!resp.ok) {
-    throw new Error("No se pudo obtener el Excel desde OneDrive");
-  }
-
-  // === RESPUESTA DEL FLOW ===
-const data = await resp.json();
+  
 console.log("RESPUESTA FLOW EXCEL:", data);
 console.log("excelWebUrl recibido:", data.excelWebUrl);
 
@@ -1005,7 +968,7 @@ if (data.excelBase64) {
 }
 
 // ✅ Guardar URL del Excel para abrir en línea
-window.__archivoActual.excelWebUrl = data.excelWebUrl;
+window.__archivoActual.excelWebUrl = item.excelWebUrl;
 
 // ✅ Flow respondió → habilitar Abrir Excel
 
