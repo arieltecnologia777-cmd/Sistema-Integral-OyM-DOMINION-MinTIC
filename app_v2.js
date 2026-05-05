@@ -991,6 +991,16 @@ document.getElementById("visorVolver").addEventListener("click", () => {
   renderTabla();
 });
 
+document.getElementById("visorDescargar").addEventListener("click", async () => {
+  const item = window.__archivoActual;
+
+  if (!item || !item.mciId) {
+    alert("No hay informe para descargar.");
+    return;
+  }
+
+  await descargarInforme(item.mciId);
+});
  /* ======================================================================
    16) APROBAR
 ====================================================================== */
