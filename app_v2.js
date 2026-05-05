@@ -991,33 +991,31 @@ document.getElementById("visorVolver").addEventListener("click", () => {
   renderTabla();
 });
 
-// 🔥 BOTÓN DESCARGAR (CORREGIDO)
+// 🔥 BOTÓN DESCARGAR (FINAL FUNCIONANDO)
 const btn = document.getElementById("visorDescargar");
 
 btn.addEventListener("click", async () => {
 
-  // ✅ Validar existencia
   const item = window.__archivoActual;
+
   if (!item || !item.mciId) {
     alert("No hay informe para descargar.");
     return;
   }
 
-  // ✅ UI: estado cargando
   btn.disabled = true;
   const textoOriginal = btn.innerText;
   btn.innerText = "⏳ Descargando...";
 
   try {
-    // ✅ Descargar
-    await descargarInforme(item.mciId);
+    // 👇 LLAMA A LA FUNCIÓN GLOBAL
+    await window.descargarInforme(item.mciId);
 
   } catch (err) {
     console.error("Error al descargar:", err);
     alert("Error en la descarga.");
   }
 
-  // ✅ Restaurar botón
   btn.disabled = false;
   btn.innerText = textoOriginal;
 });
