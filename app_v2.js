@@ -1008,13 +1008,42 @@ btn.addEventListener("click", async () => {
   btn.innerText = "⏳ Descargando...";
 
   try {
-    // 👇 LLAMA A LA FUNCIÓN GLOBAL
-    await window.descargarInforme(item.mciId);
 
-  } catch (err) {
-    console.error("Error al descargar:", err);
-    alert("Error en la descarga.");
+  const resp = await fetch(
+    "https://prod-xx.westus.logic.azure.com/..." // ⚠️ PON AQUÍ TU FLOW_DESCARGAR_MCI REAL
+    , {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mciId: item.mciId })
+    }
+  );
+
+  if (resp.status !== 200) {
+    alert("Error al descargar el informe");
+    return;
   }
+
+  const blob = await resp.blob();
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+
+  // ✅ nombre BONITO (usa el que ya tienes)
+  const nombre = (item.nombre || `MCI_${item.mciId}.xlsx`).replace(/^MCI_/, '');
+
+  a.download = nombre;
+
+  document.body.appendChild(a);
+  a.click();
+
+  a.remove();
+  URL.revokeObjectURL(url);
+
+} catch (err) {
+  console.error("Error al descargar:", err);
+  alert("Error en la descarga.");
+}
 
   btn.disabled = false;
   btn.innerText = textoOriginal;
