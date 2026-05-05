@@ -875,7 +875,7 @@ if (btnDescargarUI) btnDescargarUI.style.display = "inline-block";
 if (estado === "aprobado") {
   btnAprobarUI.style.display = "none";
   btnRechazarUI.style.display = "none";
-  btnDescargarUI.style.display = "none";
+  btnDescargarUI.style.display = "inline-block"; // ✅ mostrar Descargar
 }
 
 if (estado === "rechazado") {
