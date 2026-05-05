@@ -925,6 +925,7 @@ infoInforme.ot = normalizarCampo(infoInforme.ot);
 // ==============================
 renderInfoInforme(infoInforme);
 
+   }
 
 /* ======================================================================
    14) RENDER FOTOS — ESTILO DOMINION
