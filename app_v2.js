@@ -337,22 +337,36 @@ function generarTablaHTML(modulo) {
   />
 
   <!-- FECHA -->
-  <span style="display:flex; align-items:center; gap:6px;">
+<div style="
+  display:flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  gap:8px;
+">
+
   <span style="font-size:14px;">📅</span>
-  <span style="font-size:13px; color:#374151;">Filtrar</span>
+
+  <span style="
+    font-size: 13px;
+    color: #374151;
+  ">
+    Filtrar
+  </span>
 
   <input
     id="filtroFecha"
     type="date"
     style="
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
+      border:none;
+      background:transparent;
       font-size: 14px;
-      cursor: pointer;
+      outline:none;
+      cursor:pointer;
     "
   />
-</span>
 
 </div>
 
