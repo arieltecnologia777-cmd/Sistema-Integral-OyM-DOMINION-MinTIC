@@ -4521,6 +4521,7 @@ body:not(.logged-in) .main{
    <th style="width:10%"></th>
   </tr>
 </thead>
+              <input type="date" id="filtroFecha" onchange="filtrar()">
               <tbody id="tbody-equipos"></tbody>
               <tfoot>
                 <tr><td colspan="5"><button class="btn secondary"
@@ -7113,5 +7114,21 @@ if (subsanarBtn) {
     
 </script>
 <script src="./version.js"></script>
+  <script>
+function filtrar() {
+  const fecha = document.getElementById("filtroFecha").value;
+  const filas = document.querySelectorAll("#tbody-equipos tr");
+
+  filas.forEach(fila => {
+    const texto = fila.innerText;
+
+    if (!fecha || texto.includes(fecha)) {
+      fila.style.display = "";
+    } else {
+      fila.style.display = "none";
+    }
+  });
+}
+</script>
 </body>
 </html>
