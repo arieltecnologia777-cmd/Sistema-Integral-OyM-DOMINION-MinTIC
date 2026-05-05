@@ -336,31 +336,58 @@ function generarTablaHTML(modulo) {
     "
   />
 
-  <!-- FECHA -->
-  <input
-    id="filtroFecha"
-    type="date"
-    style="
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
+  <!-- ✅ FILTRO FECHA ESTILO TARJETA -->
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    height: 38px;
+    position: relative;
+  ">
+
+    <span style="font-size:16px;">📅</span>
+
+    <span style="
       font-size: 14px;
-      cursor: pointer;
-    "
-  />
+      color: #374151;
+      font-weight: 500;
+    ">
+      Filtrar por fecha
+    </span>
+
+    <input
+      id="filtroFecha"
+      type="date"
+      style="
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      "
+    />
+
+  </div>
 
 </div>
 
-  <div class="tabla-box">
-    <table class="tabla">
-      <thead><tr>${ths}<th>Acciones</th></tr></thead>
-      <tbody id="tbodyDatos">
-        <tr><td colspan="${modulo.columnas.length + 1}" style="padding:20px; text-align:center;">
+<div class="tabla-box">
+  <table class="tabla">
+    <thead><tr>${ths}<th>Acciones</th></tr></thead>
+    <tbody id="tbodyDatos">
+      <tr>
+        <td colspan="${modulo.columnas.length + 1}" style="padding:20px; text-align:center;">
           Cargando…
-        </td></tr>
-      </tbody>
-    </table>
-  </div>`;
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
 }
 
 /* ======================================================================
