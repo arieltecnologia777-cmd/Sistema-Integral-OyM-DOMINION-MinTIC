@@ -991,7 +991,10 @@ document.getElementById("visorVolver").addEventListener("click", () => {
   renderTabla();
 });
 
-// 🔥 BOTÓN DESCARGAR (FINAL FUNCIONANDO)
+// ✅ USA TU FLOW REAL (REEMPLAZA CON EL TUYO)
+const FLOW_DESCARGAR_MCI = "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bd9e2227be594ecdb47c0da4a898d474/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j3SlbYcxilxwhnHJfL95lpTA-Y2RzAtiNrmug_D01eQ";
+
+// 🔥 BOTÓN DESCARGAR FINAL
 const btn = document.getElementById("visorDescargar");
 
 btn.addEventListener("click", async () => {
@@ -1009,41 +1012,42 @@ btn.addEventListener("click", async () => {
 
   try {
 
-  const resp = await fetch(
-    "https://prod-xx.westus.logic.azure.com/..." // ⚠️ PON AQUÍ TU FLOW_DESCARGAR_MCI REAL
-    , {
+    const resp = await fetch(FLOW_DESCARGAR_MCI, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mciId: item.mciId })
+    });
+
+    // ✅ DEBUG REAL
+    if (!resp.ok) {
+      const txt = await resp.text();
+      console.error("❌ Error Flow:", txt);
+      alert("El flujo no respondió correctamente");
+      return;
     }
-  );
 
-  if (resp.status !== 200) {
-    alert("Error al descargar el informe");
-    return;
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+
+    // ✅ NOMBRE LIMPIO
+    const nombre = (item.nombre || `MCI_${item.mciId}.xlsx`).replace(/^MCI_/, '');
+    a.download = nombre;
+
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    console.log("✅ Descarga completada:", nombre);
+
+  } catch (err) {
+    console.error("❌ Error al descargar:", err);
+    alert("Error al conectar con el flujo.");
   }
-
-  const blob = await resp.blob();
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-
-  // ✅ nombre BONITO (usa el que ya tienes)
-  const nombre = (item.nombre || `MCI_${item.mciId}.xlsx`).replace(/^MCI_/, '');
-
-  a.download = nombre;
-
-  document.body.appendChild(a);
-  a.click();
-
-  a.remove();
-  URL.revokeObjectURL(url);
-
-} catch (err) {
-  console.error("Error al descargar:", err);
-  alert("Error en la descarga.");
-}
 
   btn.disabled = false;
   btn.innerText = textoOriginal;
