@@ -319,8 +319,8 @@ function generarTablaHTML(modulo) {
     <button data-filtro="rechazado">⛔ Rechazado</button>
   </div>
 
-  <!-- 🔍 BUSCADOR + 📅 FILTRO VISUAL PRO -->
-<div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+  <!-- 🔍 BUSCADOR + 📅 FECHA -->
+<div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
 
   <!-- BUSCADOR -->
   <input
@@ -328,7 +328,7 @@ function generarTablaHTML(modulo) {
     type="text"
     placeholder="🔍 Buscar por técnico o archivo..."
     style="
-      width: 260px;
+      width: 280px;
       padding: 8px 12px;
       border-radius: 10px;
       border: 1px solid #d1d5db;
@@ -336,59 +336,32 @@ function generarTablaHTML(modulo) {
     "
   />
 
-  <!-- CONTENEDOR FILTRO -->
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding: 6px 10px;
-    border-radius: 12px;
-    border: 1px solid #d1d5db;
-    background: #f9fafb;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-  ">
-
-    <!-- ICONO -->
-    <span style="font-size:16px;">📅</span>
-
-    <!-- TEXTO -->
-    <span style="
-      font-size: 13px;
-      color: #374151;
-      font-weight: 600;
-    ">Filtrar por fecha</span>
-
-    <!-- INPUT REAL -->
-    <input
-      id="filtroFecha"
-      type="date"
-      style="
-        border: none;
-        outline: none;
-        font-size: 13px;
-        background: transparent;
-        cursor: pointer;
-      "
-    />
-
-  </div>
-
-  <!-- BOTÓN LIMPIAR -->
-  <button 
-    id="limpiarFiltroFecha"
+  <!-- FECHA -->
+  <input
+    id="filtroFecha"
+    type="date"
     style="
-      padding:6px 10px;
-      border-radius:8px;
-      border:1px solid #e5e7eb;
-      background:#fff;
-      font-size:12px;
-      cursor:pointer;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      cursor: pointer;
     "
-  >
-    Limpiar
-  </button>
+  />
 
 </div>
+
+  <div class="tabla-box">
+    <table class="tabla">
+      <thead><tr>${ths}<th>Acciones</th></tr></thead>
+      <tbody id="tbodyDatos">
+        <tr><td colspan="${modulo.columnas.length + 1}" style="padding:20px; text-align:center;">
+          Cargando…
+        </td></tr>
+      </tbody>
+    </table>
+  </div>`;
+}
 
 /* ======================================================================
    8) CARGAR DATOS DEL MÓDULO (SharePoint + KV)
