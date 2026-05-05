@@ -319,21 +319,37 @@ function generarTablaHTML(modulo) {
     <button data-filtro="rechazado">⛔ Rechazado</button>
   </div>
 
-  <!-- 🔍 BUSCADOR -->
-  <div style="margin-bottom:10px;">
-    <input
-  id="buscadorTecnico"
-      type="text"
-      placeholder="🔍 Buscar por técnico o archivo..."
-      style="
-        width: 300px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        border: 1px solid #d1d5db;
-        font-size: 14px;
-      "
-    />
-  </div>
+  <!-- 🔍 BUSCADOR + 📅 FECHA -->
+<div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+
+  <!-- BUSCADOR -->
+  <input
+    id="buscadorTecnico"
+    type="text"
+    placeholder="🔍 Buscar por técnico o archivo..."
+    style="
+      width: 280px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+    "
+  />
+
+  <!-- FECHA -->
+  <input
+    id="filtroFecha"
+    type="date"
+    style="
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      cursor: pointer;
+    "
+  />
+
+</div>
 
   <div class="tabla-box">
     <table class="tabla">
