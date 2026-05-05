@@ -5282,12 +5282,16 @@ async function descargarInforme(mciId) {
 
   console.log("📥 Descargando informe:", mciId);
 
-  try {
-    const resp = await fetch(FLOW_DESCARGAR_MCI, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mciId })
-    });
+try {
+
+  const estado = await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/estado?mciId=${mciId}`)
+    .then(r => r.json());
+
+  const resp = await fetch(FLOW_DESCARGAR_MCI, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mciId })
+  });
 
     if (resp.status === 403) {
       const data = await resp.json();
@@ -5305,7 +5309,7 @@ async function descargarInforme(mciId) {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = `MCI_${mciId}.xlsx`;
+    a.download = estado.fileName || `${mciId}.xlsx`;
     document.body.appendChild(a);
     a.click();
 
