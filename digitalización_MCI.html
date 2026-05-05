@@ -6727,7 +6727,13 @@ cargarFotoOffline(id, function(base64) {
           img = document.createElement("img");
           cell.appendChild(img);
         }
-        img.src = URL.createObjectURL(file);
+        const reader = new FileReader();
+
+reader.onload = function(e) {
+  img.src = e.target.result;
+};
+
+reader.readAsDataURL(file);
       }
     });
 
