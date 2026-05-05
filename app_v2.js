@@ -533,9 +533,11 @@ const fechaItem = f ? `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0
       }
 
       // 📅 filtro fecha exacta
-      if (fechaSeleccionada && fechaItem !== fechaSeleccionada) {
-        visible = false;
-      }
+      if (fechaSeleccionada) {
+  if (!fechaItem || !fechaItem.includes(fechaSeleccionada)) {
+    visible = false;
+  }
+}
 
       fila.style.display = visible ? "" : "none";
     });
