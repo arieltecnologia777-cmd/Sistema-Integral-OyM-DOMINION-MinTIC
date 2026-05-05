@@ -6404,10 +6404,6 @@ if (!tecnicoActual) {
         setStatus('Enviando al Flow…');
         setWorking(true, 'Enviando…');
       
-console.log("portal:", await getFoto("img-portal"));
-console.log("block1:", await getFoto("img-block1"));
-console.log("block2:", await getFoto("img-block2"));
-      
 
         const resp = await fetch(currentFlowUrl, {
   method: "POST",
