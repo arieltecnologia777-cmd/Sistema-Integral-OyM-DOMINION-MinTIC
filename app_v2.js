@@ -499,7 +499,7 @@ async function cargarDatosModulo() {
 }
 
 /* ======================================================================
-   FUNCIÓN BSUCAR TÉCNICO
+   FUNCIÓN BUSCAR TÉCNICO
 ====================================================================== */
 function activarBuscadorTecnico() {
 
@@ -515,29 +515,39 @@ function activarBuscadorTecnico() {
 
     const filas = document.querySelectorAll("#tbodyDatos tr");
 
+    // ✅ FILAS REALES QUE USA EL RENDER (CLAVE)
+    const filasDatos = window.datosActuales.filter(item =>
+      item.nombre &&
+      item.nombre.endsWith(".xlsx") &&
+      !item.nombre.includes("PreviewFotos")
+    );
+
     filas.forEach((fila, index) => {
 
-      const item = window.datosActuales[index];
+      const item = filasDatos[index];
       if (!item) return;
 
       const contenido = fila.innerText.toLowerCase();
 
       const f = item.fechaReal ? new Date(item.fechaReal) : null;
-const fechaItem = f ? `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}-${String(f.getDate()).padStart(2,'0')}` : "";
+
+      const fechaItem = f
+        ? `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}`
+        : "";
 
       let visible = true;
 
-      // 🔎 filtro texto
+      // 🔎 FILTRO POR TEXTO
       if (texto && !contenido.includes(texto)) {
         visible = false;
       }
 
-      // 📅 filtro fecha exacta
+      // 📅 FILTRO POR FECHA (TOLERANTE)
       if (fechaSeleccionada) {
-  if (!fechaItem || !fechaItem.includes(fechaSeleccionada)) {
-    visible = false;
-  }
-}
+        if (!fechaItem || !fechaItem.includes(fechaSeleccionada)) {
+          visible = false;
+        }
+      }
 
       fila.style.display = visible ? "" : "none";
     });
@@ -652,11 +662,6 @@ function actualizarContadores() {
   });
 
 }
-
-
-/* ======================================================================
-   ACTIVAR FILTROS ESTADO
-====================================================================== */
 
 /* ======================================================================
    ACTIVAR FILTROS ESTADO
