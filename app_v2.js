@@ -1165,12 +1165,14 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
   // ✅ Guardar metadata necesaria
   const payloadMetadata = {
-    departamento: window.__infoInforme.depto,
-    ot: window.__infoInforme.ot,
-    idBeneficiario: window.__infoInforme.beneficiario,
-    lat: window.__infoInforme.lat,
-    lng: window.__infoInforme.lng
-  };
+  tecnico: window.__infoInforme.tecnico,
+  departamento: window.__infoInforme.depto,
+  celular: window.__infoInforme.celular,
+  ot: window.__infoInforme.ot,
+  idBeneficiario: window.__infoInforme.beneficiario,
+  lat: window.__infoInforme.lat,
+  lng: window.__infoInforme.lng
+};
 
   await fetch(
     `https://cloudflare-index.modulo-de-exclusiones.workers.dev/guardar-metadata/${mciId}`,
