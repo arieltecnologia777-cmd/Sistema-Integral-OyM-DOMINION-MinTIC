@@ -500,12 +500,15 @@ function activarBuscadorTecnico() {
 
   if (!input || !fecha) return;
 
+  // ✅ REEMPLAZAS SOLO ESTA FUNCIÓN
   function filtrar() {
 
     const texto = input.value.toLowerCase();
     const fechaSeleccionada = fecha.value;
 
     const filas = document.querySelectorAll("#tbodyDatos tr");
+
+    let visibles = [];
 
     filas.forEach((fila, index) => {
 
@@ -520,17 +523,40 @@ function activarBuscadorTecnico() {
 
       let visible = true;
 
-      // 🔎 filtro texto
       if (texto && !contenido.includes(texto)) {
         visible = false;
       }
 
-      // 📅 filtro fecha exacta
       if (fechaSeleccionada && fechaItem !== fechaSeleccionada) {
         visible = false;
       }
 
       fila.style.display = visible ? "" : "none";
+
+      if (visible) visibles.push(item);
+    });
+
+    const estados = {
+      todos: visibles.length,
+      pendiente: 0,
+      subsanado: 0,
+      aprobado: 0,
+      rechazado: 0
+    };
+
+    visibles.forEach(item => {
+      const estado = item.estadoKV ?? "pendiente";
+      if (estado in estados) estados[estado]++;
+    });
+
+    document.querySelectorAll("#filtroEstados button").forEach(btn => {
+      const f = btn.dataset.filtro;
+
+      if (f === "todos") btn.innerHTML = `Todos (${estados.todos})`;
+      if (f === "pendiente") btn.innerHTML = `⏳ Pendiente (${estados.pendiente})`;
+      if (f === "subsanado") btn.innerHTML = `🔧 Corregido (${estados.subsanado})`;
+      if (f === "aprobado") btn.innerHTML = `✅ Aprobado (${estados.aprobado})`;
+      if (f === "rechazado") btn.innerHTML = `⛔ Rechazado (${estados.rechazado})`;
     });
   }
 
