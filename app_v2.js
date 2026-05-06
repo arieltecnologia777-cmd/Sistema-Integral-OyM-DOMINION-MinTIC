@@ -330,7 +330,7 @@ function generarTablaHTML(modulo) {
     type="text"
     placeholder="🔍 Buscar por técnico o archivo..."
     style="
-      width: 280px;
+      width: 220px;
       padding: 8px 12px;
       border-radius: 10px;
       border: 1px solid #d1d5db;
