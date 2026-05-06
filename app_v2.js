@@ -807,6 +807,12 @@ const infoInforme = {
   lng: item.geo?.lng ?? "No informado"
 };
 window.__infoInforme = infoInforme;
+   // ✅ INYECTAR DATOS REALES DEL ITEM
+infoInforme.tecnico = item.tecnico ?? infoInforme.tecnico;
+infoInforme.beneficiario = item.idBeneficiario ?? infoInforme.beneficiario;
+infoInforme.ot = item.mciId ?? infoInforme.ot;
+infoInforme.lat = item.geo?.lat ?? infoInforme.lat;
+infoInforme.lng = item.geo?.lng ?? infoInforme.lng;
    // ==============================
 // PASO 2 — Estado inicial (cargando datos)
 // ==============================
