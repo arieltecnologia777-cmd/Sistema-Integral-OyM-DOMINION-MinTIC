@@ -336,36 +336,19 @@ function generarTablaHTML(modulo) {
     "
   />
 
-  <!-- FECHA --><!-- FE="position:relative; display:flex; align-items:center;">
-
-  <span style="
-    position:absolute;
-    left:8px;
-    top:50%;
-    transform:translateY(-50%);
-    font-size:13px;
-    color:#374151;
-    pointer-events:none;
-    display:flex;
-    align-items:center;
-    gap:4px;
-  ">
-    📅 Filtrar
-  </span>
-
+  <!-- FECHA -->
   <input
-    id="filtroFecha"
-    type="date"
-    style="
-      padding: 8px 10px 8px 85px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      cursor: pointer;
-    "
-  />
-
-</span>
+  id="filtroFecha" 
+  type="date" 
+  style="
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    cursor: pointer;
+  "
+  title="📅 Filtrar por fecha"
+/>
 
 
   <div class="tabla-box">
