@@ -451,33 +451,37 @@ async function cargarDatosModulo() {
 
   // ✅ Mapear datos correctamente desde el KV
   window.datosActuales = listaKV.map(reg => {
-    const fechaTexto = reg.fechaGenerado || "";
+  const fechaTexto = reg.fechaGenerado || "";
 
-   return {
-  // ✅ Columnas visibles
-  nombre: reg.fileName,
-  fecha: fechaTexto
-    ? new Date(fechaTexto).toLocaleString("es-CO", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-      })
-    : "",
-  tecnico: reg.tecnico ?? "—",
+  return {
+    // ✅ Columnas visibles
+    nombre: reg.fileName,
+    fecha: fechaTexto
+      ? new Date(fechaTexto).toLocaleString("es-CO", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "",
+    tecnico: reg.tecnico ?? "—",
 
-  // ✅ Datos internos
-  fechaReal: fechaTexto,
-  mciId: reg.mciId,
-  estadoKV: reg.estado,
-  fileIdentifierExcel: reg.fileIdentifierExcel,
-  jsonFileId: reg.jsonFileId,
+    // ✅ 🔥 NUEVOS (CLAVE PARA EL MODAL)
+    idBeneficiario: reg.idBeneficiario,
+    geo: reg.geo,
 
-  // ✅ NUEVO (para que no se pierda al refrescar)
-  aprobadoPor: reg.aprobadoPor,
-  rechazadoPor: reg.rechazadoPor
-};
+    // ✅ Datos internos
+    fechaReal: fechaTexto,
+    mciId: reg.mciId,
+    estadoKV: reg.estado,
+    fileIdentifierExcel: reg.fileIdentifierExcel,
+    jsonFileId: reg.jsonFileId,
+
+    // ✅ Estado auditor
+    aprobadoPor: reg.aprobadoPor,
+    rechazadoPor: reg.rechazadoPor
+  };
 });
   // ✅ 4) Ordenar por fecha descendente
   window.datosActuales.sort((a, b) => {
