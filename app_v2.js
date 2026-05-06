@@ -466,6 +466,10 @@ async function cargarDatosModulo() {
         })
       : "",
     tecnico: reg.tecnico ?? "—",
+     idBeneficiario: reg.idBeneficiario,
+     geo: reg.geo,
+     departamento: reg.departamento,
+     celular: reg.celular,
 
     // ✅ 🔥 NUEVOS (CLAVE PARA EL MODAL)
     idBeneficiario: reg.idBeneficiario,
@@ -802,19 +806,12 @@ let visorConstruido = false;
 // ==============================
 const infoInforme = {
   tecnico: item.tecnico ?? "No informado",
-
   celular: "No informado", // no existe en KV
-
   depto: "No informado", // no existe en KV
-
   beneficiario: item.idBeneficiario ?? "No informado",
-
   ot: item.mciId ?? "No informado",
-
   fecha: item.fecha ?? "—",
-
   lat: item.geo?.lat ?? "No informado",
-
   lng: item.geo?.lng ?? "No informado"
 };
 window.__infoInforme = infoInforme;
