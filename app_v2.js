@@ -1165,13 +1165,13 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
   // ✅ Guardar metadata necesaria
   const payloadMetadata = {
-  tecnico: window.__infoInforme.tecnico,
-  departamento: window.__infoInforme.depto,
-  celular: window.__infoInforme.celular,
-  ot: window.__infoInforme.ot,
-  idBeneficiario: window.__infoInforme.beneficiario,
-  lat: window.__infoInforme.lat,
-  lng: window.__infoInforme.lng
+  tecnico: item.tecnico,
+  departamento: item.departamento ?? null,
+  celular: item.celular ?? null,
+  ot: item.mciId,
+  idBeneficiario: item.idBeneficiario ?? null,
+  lat: item.geo?.lat ?? null,
+  lng: item.geo?.lng ?? null
 };
 
   await fetch(
