@@ -798,13 +798,13 @@ let visorConstruido = false;
 // ==============================
 const infoInforme = {
   tecnico: item.tecnico ?? "No informado",
-  celular: item.celular ?? "No informado",
-  depto: item.departamento ?? "No informado",
-  beneficiario: item.beneficiario ?? "No informado",
-  ot: item.ot ?? "No informado",
+  celular: "No informado", // KV no lo tiene aún
+  depto: "No informado",   // KV no lo tiene aún
+  beneficiario: item.idBeneficiario ?? "No informado",
+  ot: item.mciId ?? "No informado",
   fecha: item.fecha ?? "—",
-  lat: item.lat ?? "No informado",
-  lng: item.lng ?? "No informado"
+  lat: item.geo?.lat ?? "No informado",
+  lng: item.geo?.lng ?? "No informado"
 };
 window.__infoInforme = infoInforme;
    // ==============================
