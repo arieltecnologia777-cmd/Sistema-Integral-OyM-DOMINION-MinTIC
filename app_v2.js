@@ -325,18 +325,19 @@ function generarTablaHTML(modulo) {
 
 
   <!-- BUSCADOR -->
-  <input
-    id="buscadorTecnico"
-    type="text"
-    placeholder="🔍 Buscar por técnico o archivo..."
-    style="
-      width: 220px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-    "
-  />
+<input
+  id="buscadorTecnico"
+  type="text"
+  placeholder="🔍 Buscar por técnico o archivo..."
+  style="
+    width: 220px;
+    flex-shrink:0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+  "
+/>
 
   <!-- FECHA -->
 <span style="position:relative; display:inline-block;">
