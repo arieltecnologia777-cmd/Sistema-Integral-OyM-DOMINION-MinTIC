@@ -6294,10 +6294,17 @@ if (!tecnicoActual) {
 
     // === Firma tecnico ===
     let firmaActaDataUrl = '';
-    const firmaInput = document.getElementById('inp-firma-tec');
-    if (firmaInput?.files?.[0]) {
-        firmaActaDataUrl = await fileToDataURL(firmaInput.files[0]);
-    }
+
+const firmaInput = document.getElementById('inp-firma-tec');
+
+// ✅ 1. Si el usuario seleccionó nueva firma → usar esa SIEMPRE
+if (firmaInput && firmaInput.files && firmaInput.files.length > 0) {
+    firmaActaDataUrl = await fileToDataURL(firmaInput.files[0]);
+}
+// ✅ 2. Si no hay nueva → usar la guardada
+else {
+    firmaActaDataUrl = await cargarFotoOffline("firma_tecnico");
+}
 
     // === Datos ACTA ===
     const departamento = (document.getElementById('inp-departamento')?.value ?? '').trim();
