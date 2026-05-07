@@ -7114,19 +7114,5 @@ if (subsanarBtn) {
     
 </script>
 <script src="./version.js"></script>
-
-<script>
-const url = new URL(window.location);
-
-// ✅ toma el valor actual de la URL
-const currentVersion = url.searchParams.get("v");
-
-// ✅ solo cambia si es diferente (evita loop infinito)
-if (currentVersion !== String(window.APP_VERSION)) {
-  url.searchParams.set("v", window.APP_VERSION);
-  window.location.replace(url.toString());
-}
-</script>
-
 </body>
 </html>
