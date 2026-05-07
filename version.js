@@ -1,1 +1,1 @@
-window.APP_VERSION = Date.now();
+window.APP_VERSION = "v1.0.0";
