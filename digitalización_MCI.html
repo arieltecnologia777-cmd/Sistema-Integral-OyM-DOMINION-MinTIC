@@ -6293,7 +6293,12 @@ if (!tecnicoActual) {
     const tecCorreo = (document.getElementById('inp-tec-correo')?.value ?? '').trim();
 
     // === Firma tecnico ===
-   let firmaActaDataUrl = await cargarFotoOffline("firma_tecnico");
+    let firmaActaDataUrl = '';
+    const firmaInput = document.getElementById('inp-firma-tec');
+    if (firmaInput?.files?.[0]) {
+        firmaActaDataUrl = await fileToDataURL(firmaInput.files[0]);
+    }
+
     // === Datos ACTA ===
     const departamento = (document.getElementById('inp-departamento')?.value ?? '').trim();
     const municipio    = (document.getElementById('inp-municipio')?.value ?? '').trim();
@@ -6364,7 +6369,7 @@ if (!tecnicoActual) {
     };
 
     const pruebasObs = (document.getElementById('inp-pruebas-obs')?.value ?? '');
-console.log("FIRMA FINAL:", firmaActaDataUrl);
+
     // === PAYLOAD FINAL ===
     const payloadJson = {
         numeroCaso, fecha, idBen, insertImages: false,
@@ -6595,12 +6600,6 @@ document.addEventListener("change", function(e) {
     }
 });
 
-document.getElementById("inp-firma-tec").addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    await guardarFotoOffline("firma_tecnico", file);
-});
 
 
 
@@ -6649,29 +6648,20 @@ function guardarFotoOffline(id, file) {
   reader.readAsDataURL(file);
 }
 // === Paso 4: Cargar foto desde IndexedDB y mostrar preview (CORREGIDO) ===
-function cargarFotoOffline(id) {
-  return new Promise((resolve) => {
-    if (!mciDB) {
-      resolve(null);
-      return;
+function cargarFotoOffline(id, callback) {
+  if (!mciDB) return;
+
+  const tx = mciDB.transaction("photos", "readonly");
+  const store = tx.objectStore("photos");
+  const req = store.get(id);
+
+  req.onsuccess = function () {
+    if (req.result && req.result.blob) {
+      callback(req.result.blob);
+    } else {
+      callback(null);
     }
-
-    const tx = mciDB.transaction("photos", "readonly");
-    const store = tx.objectStore("photos");
-    const req = store.get(id);
-
-    req.onsuccess = function () {
-      if (req.result && req.result.blob) {
-        resolve(req.result.blob);
-      } else {
-        resolve(null);
-      }
-    };
-
-    req.onerror = function () {
-      resolve(null);
-    };
-  });
+  };
 }
 // === Paso 2 + Paso 4: Detectar, guardar y restaurar fotos ===
 
