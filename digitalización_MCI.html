@@ -4406,6 +4406,7 @@ body:not(.logged-in) .main{
       <div class="brand">
         <span class="title">¡Hola, soy Dominic!</span>
         <span class="subtitle">Gestiona de manera digital tu formato MCI</span>
+        <span id="appVersion" style="font-size:11px; opacity:.7;">Versión</span>
       </div>
     </div>
     <nav class="nav" id="nav">
@@ -7128,6 +7129,8 @@ if (currentVersion !== window.APP_VERSION) {
   window.location.replace(url.toString());
 }
 </script>
-
+<script>
+document.getElementById("appVersion").textContent = "Versión " + window.APP_VERSION;
+</script>
 </body>
 </html>
