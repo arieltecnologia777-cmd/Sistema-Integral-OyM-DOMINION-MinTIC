@@ -5402,7 +5402,7 @@ try {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = estado.fileName || `${mciId}.xlsx`;
+    a.download = (estado.fileName || `${mciId}.xlsx`).replace(/^MCI_/, "");
     document.body.appendChild(a);
     a.click();
 
