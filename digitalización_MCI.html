@@ -6576,17 +6576,18 @@ document.getElementById("subsanarBtn").addEventListener("click", () => {
   exportarMCI();
 });
 
-document.addEventListener("change", function(e) {
+document.addEventListener("change", async function(e) {
     if (e.target.matches('.photo-cell.indoor-mini input[type="file"]')) {
         const cell = e.target.closest('.photo-cell.indoor-mini');
         const file = e.target.files[0];
 
-        if (file) {
+        const fixedFile = await normalizarFirma(file) || file;
+
+        if (fixedFile) {
             cell.classList.add("has-image");
 
             const reader = new FileReader();
             reader.onload = function(ev) {
-                // elimina imagen previa
                 let existing = cell.querySelector("img");
                 if (existing) existing.remove();
 
@@ -6595,7 +6596,7 @@ document.addEventListener("change", function(e) {
                 cell.appendChild(img);
             };
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fixedFile);
         }
     }
 });
