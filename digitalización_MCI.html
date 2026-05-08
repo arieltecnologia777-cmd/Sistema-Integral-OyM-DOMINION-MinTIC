@@ -6373,13 +6373,20 @@ async function verificarEstadoPorTecnico() {
     }
 }
 
-    async function exportarMCI(){
-// ✅ Validar login antes de exportar
-if (!tecnicoActual) {
+   
+async function exportarMCI(){
+// ✅ 1. Validar login primero
+  if (!tecnicoActual) {
     alert("Debes iniciar sesión para poder exportar el MCI.");
     return;
-}
+  }
+  // ✅ 2. Validar firma
+  const firma = await getFoto("img-firma-tec");
 
+  if (!firma) {
+    alert("Debes subir la firma del técnico antes de continuar");
+    return;
+  }
     // 1) Mínimos requeridos
     const numeroCaso = document.getElementById('inp-numero-caso').value.trim();
     const fechaISO = document.getElementById('inp-fecha').value;
