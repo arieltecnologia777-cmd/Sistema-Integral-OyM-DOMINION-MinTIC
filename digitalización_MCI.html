@@ -4662,7 +4662,7 @@ body:not(.logged-in) .main{
                   <div class="col-12 field"><label>Firma (imagen)</label>
                     <div class="photo-grid">
                       <div class="photo-cell" data-title="Firma técnico">
-                        <input id="inp-firma-tec" type="file" accept="image/*">
+                        <input id="img-firma-tec" type="file" accept="image/*">
                         <div class="placeholder">
                           <svg viewBox="0 0 24 24" fill="none">
                             <path d="M4 16v3a1 1 0 0 0 1 1h3M16 4h3a1 1 0 0 1 1 1v3M4 8V5a1 1 0 0 1 1-1h3M16 20h3a1 1 0 0 0 1-1v-3"
@@ -5458,7 +5458,7 @@ document.addEventListener("click", async (e) => {
   }
 });
 const photoInputs = [
-  "inp-firma-tec",
+  "img-firma-tec",
   "img-gps-geo",
   "img-ap-int",
   "img-ap-ext1",
@@ -6477,7 +6477,7 @@ if (!tecnicoActual) {
 
     // === Firma tecnico ===
     let firmaActaDataUrl = '';
-    const firmaInput = document.getElementById('inp-firma-tec');
+    const firmaInput = document.getElementById('img-firma-tec');
     if (firmaInput?.files?.[0]) {
         firmaActaDataUrl = await fileToDataURL(firmaInput.files[0]);
     }
