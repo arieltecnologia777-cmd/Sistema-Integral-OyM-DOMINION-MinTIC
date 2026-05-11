@@ -6483,11 +6483,7 @@ async function exportarMCI(){
     const tecCorreo = (document.getElementById('inp-tec-correo')?.value ?? '').trim();
 
     // === Firma tecnico ===
-    let firmaActaDataUrl = '';
-    const firmaInput = document.getElementById('img-firma-tec');
-    if (firmaInput?.files?.[0]) {
-        firmaActaDataUrl = await fileToDataURL(firmaInput.files[0]);
-    }
+    let firmaActaDataUrl = firma;
 
     // === Datos ACTA ===
     const departamento = (document.getElementById('inp-departamento')?.value ?? '').trim();
