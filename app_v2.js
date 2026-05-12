@@ -1361,17 +1361,20 @@ document.addEventListener("click", function(e) {
       return;
     }
 
-    let csv = "\ufeffTécnico;Nombre archivo;Fecha;Estado\n";
+    let csv = "\ufeffTécnico;Nombre archivo;IDBen;Fecha;Estado\n";
 
     filas.forEach(item => {
 
       // ✅ SOLO EL NUMERO DE CASO (IMxxxx)
       const nombreLimpio = item.mciId || "";
 
-      csv += `"${item.tecnico}";"${nombreLimpio}";"${(item.fecha || "").split(",")[0]}";"${item.estadoKV}"\n`;
+      // ✅ EXTRAER IDBen (ej: 74129)
+      const idBen = (item.nombre.match(/IDBen_(\d+)/) || [])[1] || "";
+
+      csv += `"${item.tecnico}";"${nombreLimpio}";"${idBen}";"${(item.fecha || "").split(",")[0]}";"${item.estadoKV}"\n`;
     });
 
-    // ✅ 👇 ESTA LÍNEA ES LA CLAVE FINAL
+    // ✅ mantener salto final
     csv += "\n";
 
     const blob = new Blob([csv], { type: "application/vnd.ms-excel;charset=utf-8;" });
