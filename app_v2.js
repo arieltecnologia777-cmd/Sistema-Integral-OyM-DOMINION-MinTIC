@@ -367,12 +367,11 @@ function generarTablaHTML(modulo) {
 
   </span>
 
-</div>  <!-- ✅ ESTE CIERRE ES CLAVE -->
-
-<button id="exportarTablaBtn" style="margin-bottom:10px;" class="btn">
-  📥 Exportar tabla
+<button id="exportarTablaBtn" style="margin-left:6px;" class="btn">
+  📥 Exportar
 </button>
 
+</div>  <!-- ✅ ESTE CIERRE ES CLAVE -->
 
 <!-- TABLA -->
 <div class="tabla-box">
