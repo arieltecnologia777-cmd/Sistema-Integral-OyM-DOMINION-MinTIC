@@ -1371,6 +1371,9 @@ document.addEventListener("click", function(e) {
       csv += `"${item.tecnico}";"${nombreLimpio}";"${item.fecha}";"${item.estadoKV}"\n`;
     });
 
+    // ✅ 👇 ESTA LÍNEA ES LA CLAVE FINAL
+    csv += "\n";
+
     const blob = new Blob([csv], { type: "application/vnd.ms-excel;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
