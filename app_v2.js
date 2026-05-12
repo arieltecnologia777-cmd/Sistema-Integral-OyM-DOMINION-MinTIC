@@ -1361,7 +1361,7 @@ document.addEventListener("click", function(e) {
       return;
     }
 
-    let csv = "\ufeffTécnico,Nombre archivo,Fecha,Estado\n";
+    let csv = "\ufeffsep=,\nTécnico,Nombre archivo,Fecha,Estado\n";
 
     filas.forEach(item => {
 
