@@ -1361,14 +1361,14 @@ document.addEventListener("click", function(e) {
       return;
     }
 
-    let csv = "\ufeffsep=,\nTécnico,Nombre archivo,Fecha,Estado\n";
+    let csv = "\ufeffTécnico;Nombre archivo;Fecha;Estado\n";
 
     filas.forEach(item => {
 
       // ✅ SOLO EL NUMERO DE CASO (IMxxxx)
       const nombreLimpio = item.mciId || "";
 
-      csv += `"${item.tecnico}","${nombreLimpio}","${item.fecha}","${item.estadoKV}"\n`;
+      csv += `"${item.tecnico}";"${nombreLimpio}";"${item.fecha}";"${item.estadoKV}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
