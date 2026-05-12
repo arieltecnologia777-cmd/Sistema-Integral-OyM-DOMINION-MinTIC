@@ -370,15 +370,14 @@ function generarTablaHTML(modulo) {
 <button id="exportarTablaBtn"
   style="
     margin-left:6px;
-    background:#1e3a8a;
+    background:#2563eb;
     color:#fff;
     border:none;
     border-radius:10px;
     padding:8px 16px;
     font-weight:600;
     cursor:pointer;
-    box-shadow:0 4px 10px rgba(30,58,138,0.35);
-    transition:all .15s ease;
+    box-shadow:0 4px 12px rgba(37,99,235,0.4);
   "
 >
   📥 Exportar
