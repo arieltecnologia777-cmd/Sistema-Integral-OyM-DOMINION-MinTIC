@@ -1368,7 +1368,7 @@ document.addEventListener("click", function(e) {
       // ✅ SOLO EL NUMERO DE CASO (IMxxxx)
       const nombreLimpio = item.mciId || "";
 
-      csv += `"${item.tecnico}";"${nombreLimpio}";"${item.fecha}";"${item.estadoKV}"\n`;
+      csv += `"${item.tecnico}";"${nombreLimpio}";"${(item.fecha || "").split(",")[0]}";"${item.estadoKV}"\n`;
     });
 
     // ✅ 👇 ESTA LÍNEA ES LA CLAVE FINAL
