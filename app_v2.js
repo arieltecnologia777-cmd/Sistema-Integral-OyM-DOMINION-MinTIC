@@ -1361,7 +1361,7 @@ document.addEventListener("click", function(e) {
       return;
     }
 
-    let csv = "Técnico,Nombre archivo,Fecha,Estado\n";
+    let csv = "\ufeffTécnico,Nombre archivo,Fecha,Estado\n";
 
     filas.forEach(item => {
 
@@ -1371,7 +1371,7 @@ document.addEventListener("click", function(e) {
       csv += `"${item.tecnico}","${nombreLimpio}","${item.fecha}","${item.estadoKV}"\n`;
     });
 
-    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
