@@ -367,9 +367,23 @@ function generarTablaHTML(modulo) {
 
   </span>
 
-<button id="exportarTablaBtn" style="margin-left:6px;" class="btn">
+<button id="exportarTablaBtn"
+  style="
+    margin-left:6px;
+    background:#1e3a8a;
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:8px 16px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 4px 10px rgba(30,58,138,0.35);
+    transition:all .15s ease;
+  "
+>
   📥 Exportar
 </button>
+
 
 </div>  <!-- ✅ ESTE CIERRE ES CLAVE -->
 
