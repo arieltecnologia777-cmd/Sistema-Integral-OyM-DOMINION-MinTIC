@@ -1375,7 +1375,7 @@ document.addEventListener("click", function(e) {
       const fechaCorta = (item.fecha || "").split(",")[0];
 
       // ✅ AUDITOR (aprobó o rechazó)
-      const auditor = item.aprobadoPor || item.rechazadoPor || "";
+      const auditor = item.aprobadoPor || item.rechazadoPor || "No revisado";
 
       csv += `"${item.tecnico}";"${nombreLimpio}";"${idBen}";"${fechaCorta}";"${item.estadoKV}";"${auditor}"\n`;
     });
