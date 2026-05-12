@@ -62,12 +62,19 @@ function nombreBonitoDesdeEmail(email) {
   base = base.replace(/-(ext|etx|external)$/i, "");
 
   // ✅ Construir nombre "Juanito Perez"
-  return base
-    .split(".")
-    .map(function (p) {
-      return p.charAt(0).toUpperCase() + p.slice(1);
-    })
-    .join(" ");
+  let nombre = base
+  .split(".")
+  .map(function (p) {
+    return p.charAt(0).toUpperCase() + p.slice(1);
+  })
+  .join(" ");
+
+// ✅ corrección puntual
+if (nombre === "Jeniferyireth Arbelaez") {
+  nombre = "Jenifer Yireth Arbelaez";
+}
+
+return nombre;
 }
 
 /* =========================================================
