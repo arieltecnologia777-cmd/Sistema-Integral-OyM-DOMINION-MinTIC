@@ -369,6 +369,11 @@ function generarTablaHTML(modulo) {
 
 </div>  <!-- ✅ ESTE CIERRE ES CLAVE -->
 
+<button id="exportarTablaBtn" style="margin-bottom:10px;" class="btn">
+  📥 Exportar tabla
+</button>
+
+
 <!-- TABLA -->
 <div class="tabla-box">
     <table class="tabla">
@@ -1333,3 +1338,37 @@ function resetZoom(e) {
   card.removeEventListener("mousemove", moverZoom);
   card.removeEventListener("mouseleave", resetZoom);
 }
+
+document.addEventListener("click", function(e) {
+  if (e.target && e.target.id === "exportarTablaBtn") {
+
+    const filas = window.datosActuales;
+
+    if (!filas || filas.length === 0) {
+      alert("No hay datos para exportar");
+      return;
+    }
+
+    let csv = "Técnico,Nombre archivo,Fecha,Estado\n";
+
+    filas.forEach(item => {
+
+      // ✅ SOLO EL NUMERO DE CASO (IMxxxx)
+      const nombreLimpio = item.mciId || "";
+
+      csv += `"${item.tecnico}","${nombreLimpio}","${item.fecha}","${item.estadoKV}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Reporte_Auditor.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+  }
+});
