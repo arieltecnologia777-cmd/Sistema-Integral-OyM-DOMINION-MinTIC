@@ -1382,7 +1382,12 @@ document.addEventListener("click", function(e) {
       const fechaCorta = (item.fecha || "").split(",")[0];
 
       // ✅ AUDITOR (aprobó o rechazó)
-      const auditor = item.aprobadoPor || item.rechazadoPor || "No revisado";
+      let auditor = item.aprobadoPor || item.rechazadoPor || "";
+
+// ✅ normalizar nombres viejos
+if (auditor === "Jeniferyireth Arbelaez") {
+  auditor = "Jenifer Yireth Arbelaez";
+}
 
       csv += `"${item.tecnico}";"${nombreLimpio}";"${idBen}";"${fechaCorta}";"${item.estadoKV}";"${auditor}"\n`;
     });
