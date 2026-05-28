@@ -1259,10 +1259,22 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   );
 
 
-  // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
-  // ✅ cerrar inmediato
+  // ✅ 1. actualizar visual inmediato (YA se guardó en KV arriba)
+const index = window.datosActuales.findIndex(d => d.mciId === mciId);
+if (index !== -1) {
+  window.datosActuales[index].estadoKV = "aprobado";
+  window.datosActuales[index].aprobadoPor = nombreUsuario;
+}
+
+// ✅ 2. refrescar tabla inmediato
+renderTabla();
+
+// ✅ 3. cerrar modal inmediato
 document.getElementById("modalVisor").style.display = "none";
 document.getElementById("contenedor-modulo").style.display = "block";
+
+// ✅ 4. sincronizar con KV sin bloquear (en segundo plano)
+cargarDatosModulo();
 
 // ✅ refrescar en segundo plano (SIN BLOQUEAR)
 cargarDatosModulo();
@@ -1313,9 +1325,19 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
     }
   );
 
-  // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
-  document.getElementById("modalVisor").style.display = "none";
+  const index = window.datosActuales.findIndex(d => d.mciId === mciId);
+if (index !== -1) {
+  window.datosActuales[index].estadoKV = "rechazado";
+  window.datosActuales[index].rechazadoPor = nombreUsuario;
+}
+
+renderTabla();
+
+document.getElementById("modalVisor").style.display = "none";
 document.getElementById("contenedor-modulo").style.display = "block";
+
+cargarDatosModulo();
+
 
 cargarDatosModulo();
 });
