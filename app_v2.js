@@ -293,7 +293,7 @@ async function seleccionarModulo(mod) {
 
   cont.innerHTML = generarTablaHTML(window.moduloActivo);
 
-  await cargarDatosModulo();
+  cargarDatosModulo();
 
   prepararEventosTabla();
   activarFiltroEstado();
