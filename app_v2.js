@@ -1260,9 +1260,13 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
 
   // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
-  await cargarDatosModulo();
-  document.getElementById("modalVisor").style.display = "none";
-  document.getElementById("contenedor-modulo").style.display = "block";
+  // ✅ cerrar inmediato
+document.getElementById("modalVisor").style.display = "none";
+document.getElementById("contenedor-modulo").style.display = "block";
+
+// ✅ refrescar en segundo plano (SIN BLOQUEAR)
+cargarDatosModulo();
+
 });
 
 /* ======================================================================
@@ -1310,9 +1314,10 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   );
 
   // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
-  await cargarDatosModulo();
   document.getElementById("modalVisor").style.display = "none";
-  document.getElementById("contenedor-modulo").style.display = "block";
+document.getElementById("contenedor-modulo").style.display = "block";
+
+cargarDatosModulo();
 });
 /* =========================================================
    ABRIR EXCEL EN LÍNEA — HABILITA APROBAR Y RECHAZAR
