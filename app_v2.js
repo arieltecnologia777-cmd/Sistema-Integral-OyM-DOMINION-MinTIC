@@ -1003,19 +1003,55 @@ if (estado === "rechazado") {
   fileIdentifierExcel: item.fileIdentifierExcel
 });
 
-const resp = await fetch(FLOW_FOTOS, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    fileIdentifierExcel: item.fileIdentifierExcel
-  })
-});
+let data = null;
 
-const data = await resp.json();
-console.log("DATA FLOW:", data);
+try {
 
-// ✅ guardar URL que viene del flow
-window.__archivoActual.excelWebUrl = data.excelWebUrl;
+  const resp = await fetch(FLOW_FOTOS, { 
+    method: "POST", 
+    headers: { "Content-Type": "application/json" }, 
+    body: JSON.stringify({ 
+      fileIdentifierExcel: item.fileIdentifierExcel 
+    }) 
+  });
+
+  if (!resp.ok) {
+    throw new Error("Flow respondió mal: " + resp.status);
+  }
+
+  data = await resp.json(); 
+  console.log("DATA FLOW:", data); 
+
+} catch (err) {
+
+  console.error("Error Flow fotos:", err);
+  data = { excelWebUrl: null };
+
+}
+
+
+/* ✅ SOLO ESTO DESPUÉS */
+if (data && data.excelWebUrl) {
+
+  window.__archivoActual.excelWebUrl = data.excelWebUrl;
+
+  if (btnAbrirExcelUI) {
+    btnAbrirExcelUI.disabled = false;
+    btnAbrirExcelUI.innerText = "📊 Abrir Excel en línea";
+    btnAbrirExcelUI.style.opacity = "1";
+    btnAbrirExcelUI.style.cursor = "pointer";
+  }
+
+} else {
+
+  if (btnAbrirExcelUI) {
+    btnAbrirExcelUI.innerText = "⚠️ Excel no disponible";
+    btnAbrirExcelUI.style.opacity = "0.6";
+    btnAbrirExcelUI.style.cursor = "not-allowed";
+  }
+
+}
+
 
 // ✅ habilitar botón
 if (btnAbrirExcelUI && window.__archivoActual?.excelWebUrl) {
