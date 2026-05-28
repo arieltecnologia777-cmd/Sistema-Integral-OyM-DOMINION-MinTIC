@@ -1260,9 +1260,12 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
 
   // ✅ Cerrar modal y refrescar tabla (UNA SOLA VEZ)
-  await cargarDatosModulo();
-  document.getElementById("modalVisor").style.display = "none";
-  document.getElementById("contenedor-modulo").style.display = "block";
+  // ✅ cerrar primero
+document.getElementById("modalVisor").style.display = "none";
+document.getElementById("contenedor-modulo").style.display = "block";
+
+// ✅ luego cargar
+await cargarDatosModulo();
 });
 
 /* ======================================================================
