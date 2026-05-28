@@ -618,47 +618,49 @@ function renderTabla() {
 
   tbody.innerHTML = "";
 
-  const filtrados = window.datosActuales.filter(item =>
-    item.nombre && item.nombre.endsWith(".xlsx") &&
-    !item.nombre.includes("PreviewFotos")
-  );
+const filtrados = window.datosActuales.filter(item =>
+  item.nombre && item.nombre.endsWith(".xlsx") &&
+  !item.nombre.includes("PreviewFotos")
+);
 
-  filtrados.forEach(item => {
+// ✅ fragmento (clave rendimiento)
+const fragment = document.createDocumentFragment();
 
-    const idx = window.datosActuales.indexOf(item);
+filtrados.forEach(item => {
 
-    const tds = window.moduloActivo.columnas
-      .map(col => {
-        const valor = item[col.id];
-        return `<td>${valor ?? ""}</td>`;
-      })
-      .join("");
+  const idx = window.datosActuales.indexOf(item);
 
-    const estado = item.estadoKV ?? "pendiente";
+  const tds = window.moduloActivo.columnas
+    .map(col => {
+      const valor = item[col.id];
+      return `<td>${valor ?? ""}</td>`;
+    })
+    .join("");
 
-    const btn =
-      estado === "pendiente"
-        ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
+  const estado = item.estadoKV ?? "pendiente";
 
-        : estado === "en_revision"
-        ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
+  const btn =
+    estado === "pendiente"
+      ? `<button class="btn-estado btn-gris btn-revisar" data-idx="${idx}">Revisar</button>`
+      : estado === "en_revision"
+      ? `<button class="btn-estado btn-azul btn-revisar" data-idx="${idx}">✏️ Continuar</button>`
+      : estado === "aprobado"
+      ? `<button class="btn-estado btn-verde btn-ver" data-idx="${idx}">✅ Aprobado</button>`
+      : estado === "rechazado"
+      ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
+      : estado === "subsanado"
+      ? `<button class="btn-estado btn-naranja btn-revisar" data-idx="${idx}">🔧 Corregido por técnico ✅</button>`
+      : `<button class="btn-estado btn-rojo" disabled>⚠️ Estado desconocido</button>`;
 
-        : estado === "aprobado"
-        ? `<button class="btn-estado btn-verde btn-ver" data-idx="${idx}">✅ Aprobado</button>`
+  const tr = document.createElement("tr");
+  tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
 
-        : estado === "rechazado"
-        ? `<button class="btn-estado btn-rechazado btn-ver" data-idx="${idx}">⛔ Rechazado</button>`
+  fragment.appendChild(tr);
 
-        : estado === "subsanado"
-? `<button class="btn-estado btn-naranja btn-revisar" data-idx="${idx}">🔧 Corregido por técnico ✅</button>`
+});
 
-        : `<button class="btn-estado btn-rojo" disabled>⚠️ Estado desconocido</button>`;
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `${tds}<td style="text-align:center;">${btn}</td>`;
-    tbody.appendChild(tr);
-
-  });
+// ✅ inserta TODO de una sola vez (esto mejora el rendimiento)
+tbody.appendChild(fragment);
 
 prepararEventosTabla();
 activarFiltroEstado();
