@@ -444,11 +444,15 @@ function setKPIs(total, ok, down){
 }
 function refreshKPIs(results, cols){
   const total = results.length; let ok=0, down=0;
+
   results.forEach(o => {
     const est = (o[cols.colEst] || '').toString();
+    console.log("ESTADO =", est);
+
     if(/ok|activo|operativo|operativa|en servicio|funciona/i.test(est)) ok++;
     else if(/baja|inactivo|caido|caído|fuera|no operativo/i.test(est)) down++;
   });
+
   setKPIs(total, ok, down);
 }
 
