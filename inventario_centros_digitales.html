@@ -191,8 +191,13 @@ const DATA_URL = SHEET_CSV_URL;
 
 /* Mapa oficial de departamentos de Colombia (DANE).
    La geometría se usa solo como capa visual; los conteos y nodos provienen del dataset de Centros Digitales. */
-const DANE_DEPARTMENTS_GEOJSON =
-  'https://geoportal.dane.gov.co/mparcgis/rest/services/Divipola/Cache_V_DP_DivipolaEntidadesTerritorialesLimitesMar_CNA/MapServer/6/query?where=1%3D1&outFields=COD_DPTO%2CNOM_DPTO&returnGeometry=true&f=geojson';
+const DEPARTMENTS_GEOJSON_SOURCES = [
+  // GeoJSON simplificado de los 33 departamentos de Colombia.
+  // Se sirve como archivo estático y evita depender de CORS del Geoportal.
+  'https://raw.githubusercontent.com/ytolosa/mapas-colombia/main/output/geojson/col_departamentos_inset_nacional.geojson',
+  // Respaldo oficial DANE.
+  'https://geoportal.dane.gov.co/mparcgis/rest/services/Divipola/Cache_V_DP_DivipolaEntidadesTerritorialesLimitesMar_CNA/MapServer/6/query?where=1%3D1&outFields=COD_DPTO%2CNOM_DPTO&returnGeometry=true&f=geojson'
+];
 /* ========================== */
 
 const state = {
@@ -333,15 +338,35 @@ function mapStats(){
 }
 async function loadDepartmentGeometry(){
   if(state.mapGeo) return state.mapGeo;
-  try{
-    const {text}=await fetchWithFallbacks(DANE_DEPARTMENTS_GEOJSON); state.mapGeo=JSON.parse(text); return state.mapGeo;
-  }catch(e){ console.warn('No se pudo cargar la geometría oficial de DANE:',e); return null; }
+  let lastError=null;
+  for(const source of DEPARTMENTS_GEOJSON_SOURCES){
+    try{
+      // Para GitHub usamos fetch directo; para DANE conservamos los proxys CORS.
+      const result = source.includes('raw.githubusercontent.com')
+        ? {text: await (await fetch(source,{cache:'no-store'})).text()}
+        : await fetchWithFallbacks(source);
+      const geo=JSON.parse(result.text);
+      if(geo && Array.isArray(geo.features) && geo.features.length){
+        state.mapGeo=geo;
+        return geo;
+      }
+      throw new Error('La fuente no devolvió features GeoJSON.');
+    }catch(e){
+      lastError=e;
+      console.warn('No se pudo cargar geometría desde',source,e);
+    }
+  }
+  return null;
 }
 function renderNetworkMap(){
   const svg=$('#colombiaMap'), deptLayer=$('#mapDepartments'), nodeLayer=$('#mapNodes'), routeLayer=$('#mapRoutes');
   if(!svg||!deptLayer||!nodeLayer||!routeLayer) return;
   loadDepartmentGeometry().then(geo=>{
-    if(!geo?.features?.length) return;
+    if(!geo?.features?.length){
+      const loading=$('#mapLoading');
+      if(loading){ loading.textContent='No se pudo cargar el mapa. Pulsa “Actualizar red” para reintentar.'; loading.classList.remove('hidden'); }
+      return;
+    }
     const stats=mapStats();
     const max=Math.max(1,...[...stats.values()].map(x=>x.total));
     const points=[]; deptLayer.innerHTML=''; nodeLayer.innerHTML=''; routeLayer.innerHTML='';
