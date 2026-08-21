@@ -72,13 +72,14 @@
     .hero-stage{position:relative;min-height:680px;display:flex;align-items:center;justify-content:center}
     .map-glow{position:absolute;width:760px;height:520px;border-radius:50%;background:radial-gradient(ellipse,rgba(37,230,255,.16),rgba(155,92,255,.13) 45%,transparent 70%);filter:blur(14px)}
     .map-card{position:relative;width:min(780px,100%);height:570px;transform:perspective(1200px) rotateX(7deg) rotateZ(-1.5deg);filter:drop-shadow(0 35px 45px rgba(0,0,0,.34))}
-    .colombia{position:absolute;inset:65px 70px 55px 70px;clip-path:polygon(38% 0,56% 4%,66% 13%,83% 19%,91% 32%,82% 41%,87% 52%,74% 61%,78% 75%,66% 86%,53% 79%,45% 91%,35% 76%,22% 72%,27% 59%,15% 50%,24% 40%,17% 28%,29% 20%);background:linear-gradient(135deg,#173fcb,#167edc 34%,#4d43d6 62%,#a448e8);border:1px solid rgba(255,255,255,.24);box-shadow:inset 0 0 70px rgba(45,227,255,.23),0 0 55px rgba(76,99,255,.2)}
-    .colombia:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:42px 42px;opacity:.45}
-    .route{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),transparent);transform-origin:left;filter:drop-shadow(0 0 7px var(--cyan));opacity:.95}
-    .r1{width:250px;left:290px;top:250px;transform:rotate(-16deg)}.r2{width:290px;left:290px;top:250px;transform:rotate(28deg)}.r3{width:220px;left:315px;top:285px;transform:rotate(82deg)}.r4{width:245px;left:300px;top:285px;transform:rotate(145deg)}.r5{width:180px;left:395px;top:330px;transform:rotate(-145deg)}
-    .node{position:absolute;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(30,46,128,.94),rgba(84,41,161,.86));border:1px solid rgba(255,255,255,.28);box-shadow:0 0 0 7px rgba(37,230,255,.05),0 0 35px rgba(37,230,255,.3);font-size:27px;z-index:2}.node:after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--cyan);top:-5px;right:8px;box-shadow:0 0 15px var(--cyan)}
-    .node span{position:absolute;top:70px;white-space:nowrap;font-size:11px;font-weight:800;color:white;background:rgba(10,15,49,.72);border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;backdrop-filter:blur(10px)}
-    .n1{left:245px;top:190px}.n2{left:420px;top:235px}.n3{left:505px;top:160px}.n4{left:325px;top:335px}.n5{left:500px;top:360px}.n6{left:215px;top:355px}.n7{left:390px;top:420px}
+    .colombia-map{position:absolute;inset:20px 0 10px;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 22px 38px rgba(35,58,180,.34));}
+    .map-dept{fill:url(#mapFill);fill-opacity:.18;stroke:rgba(126,239,255,.55);stroke-width:.55;vector-effect:non-scaling-stroke;transition:.25s;cursor:pointer;filter:url(#mapGlow)}
+    .map-dept:hover,.map-dept.active{fill-opacity:.48;stroke:#fff;stroke-width:1.15}
+    .map-dept-label{fill:#fff;font-size:9px;font-weight:800;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:rgba(8,11,37,.9);stroke-width:3px;stroke-linejoin:round}
+    .map-route{fill:none;stroke:url(#routeGradient);stroke-width:2;stroke-linecap:round;stroke-dasharray:5 7;filter:drop-shadow(0 0 5px rgba(37,230,255,.7));animation:dash 3.5s linear infinite}
+    @keyframes dash{to{stroke-dashoffset:-60}}
+    .map-node{cursor:pointer}.map-node .pulse{fill:rgba(37,230,255,.12);stroke:rgba(37,230,255,.32);animation:pulse 2.2s ease-in-out infinite}.map-node .core{fill:#25e6ff;stroke:#fff;stroke-width:1.4;filter:drop-shadow(0 0 7px #25e6ff)}.map-node .label{fill:#fff;font-size:10px;font-weight:900;text-anchor:middle;paint-order:stroke;stroke:rgba(8,11,37,.9);stroke-width:4px}.map-node .count{fill:#c8f8ff;font-size:8px;font-weight:700;text-anchor:middle}.map-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:12px;letter-spacing:.4px;pointer-events:none}.map-loading.hidden{display:none}
+    @keyframes pulse{50%{r:15;opacity:.25}}
     .satellite{position:absolute;right:24px;top:35px;font-size:64px;filter:drop-shadow(0 0 18px rgba(37,230,255,.65));animation:float 5s ease-in-out infinite}
     @keyframes float{50%{transform:translateY(-10px) rotate(2deg)}}
     .glass-card{position:absolute;background:linear-gradient(145deg,rgba(31,37,91,.78),rgba(25,27,72,.46));border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(20px);box-shadow:var(--shadow);border-radius:24px;z-index:5}
@@ -126,9 +127,17 @@
         <div class="hero-stage">
           <div class="map-glow"></div>
           <div class="map-card">
-            <div class="colombia"></div>
-            <div class="route r1"></div><div class="route r2"></div><div class="route r3"></div><div class="route r4"></div><div class="route r5"></div>
-            <div class="node n1">🏫<span>Atlántico</span></div><div class="node n2">📡<span>Cesar</span></div><div class="node n3">🏫<span>La Guajira</span></div><div class="node n4">🛰️<span>Antioquia</span></div><div class="node n5">🏫<span>Santander</span></div><div class="node n6">📚<span>Valle del Cauca</span></div><div class="node n7">📡<span>Nariño</span></div>
+            <svg id="colombiaMap" class="colombia-map" viewBox="0 0 760 570" role="img" aria-label="Mapa interactivo de Centros Digitales por departamento">
+              <defs>
+                <filter id="mapGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <linearGradient id="mapFill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#17d9ff"/><stop offset=".45" stop-color="#5267ff"/><stop offset="1" stop-color="#b04cff"/></linearGradient>
+                <linearGradient id="routeGradient"><stop stop-color="#25e6ff"/><stop offset=".5" stop-color="#ff65dc"/><stop offset="1" stop-color="#ffae42"/></linearGradient>
+              </defs>
+              <g id="mapRoutes"></g>
+              <g id="mapDepartments"></g>
+              <g id="mapNodes"></g>
+            </svg>
+            <div class="map-loading" id="mapLoading">Conectando la red nacional…</div>
             <div class="satellite">🛰️</div>
             <div class="glass-card learn-card"><div class="art">👩🏽‍💻📚</div><h3>Aprende sin límites</h3><p>Cursos, actividades y recursos digitales para todos.</p><button class="btn">Explorar cursos →</button></div>
             <div class="glass-card community-card"><div class="people">🧑🏽‍🤝‍🧑🏾</div><strong>Tu comunidad</strong><p>Conecta con estudiantes, docentes y aliados en todo el país.</p></div>
@@ -179,11 +188,16 @@ const CORS_PROXIES = [
 
 /* DATA_URL lógico (se usa solo para mostrar fuente) */
 const DATA_URL = SHEET_CSV_URL;
+
+/* Mapa oficial de departamentos de Colombia (DANE).
+   La geometría se usa solo como capa visual; los conteos y nodos provienen del dataset de Centros Digitales. */
+const DANE_DEPARTMENTS_GEOJSON =
+  'https://geoportal.dane.gov.co/mparcgis/rest/services/Divipola/Cache_V_DP_DivipolaEntidadesTerritorialesLimitesMar_CNA/MapServer/6/query?where=1%3D1&outFields=COD_DPTO%2CNOM_DPTO&returnGeometry=true&f=geojson';
 /* ========================== */
 
 const state = {
   raw: [], items: [], headers: [], headerMap: {},
-  page: 0, pageSize: 30, lastFilter: null,
+  page: 0, pageSize: 30, lastFilter: null, mapDept: null, mapGeo: null,
   theme: (localStorage.getItem('hv_theme') || 'dark'),
   keys: {
     id: ['id','cd','codigo','codigo_centro','centro_id','centroid','id_centro','codigo_cd'],
@@ -273,12 +287,88 @@ async function loadData(){
     state.items = items.map(o => { const oo={}; headers.forEach(h => oo[h]=(o[h]??'').toString().trim()); return oo; });
 
     state.page=0; applyFilters();
+    renderNetworkMap();
   }catch(err){
     resumen.innerHTML = `<span style="color:var(--danger)">No se pudo cargar el dataset:</span><br>${(err && err.message) || err}`;
     $('#grid').innerHTML = ''; setKPIs(0,0,0);
   }finally{
     delete state.forceRefresh;
   }
+}
+
+/* ===== Mapa vivo: geometría oficial + datos reales ===== */
+const MAP_BOUNDS = { minLon:-81.9, maxLon:-66.7, minLat:-4.5, maxLat:13.6 };
+function projectLonLat(coord){
+  const lon=coord[0], lat=coord[1];
+  return [((lon-MAP_BOUNDS.minLon)/(MAP_BOUNDS.maxLon-MAP_BOUNDS.minLon))*760,
+          ((MAP_BOUNDS.maxLat-lat)/(MAP_BOUNDS.maxLat-MAP_BOUNDS.minLat))*570];
+}
+function ringPath(ring){
+  return ring.map((c,i)=>{const [x,y]=projectLonLat(c);return `${i?'L':'M'}${x.toFixed(2)},${y.toFixed(2)}`}).join(' ')+' Z';
+}
+function geometryPath(geometry){
+  if(!geometry) return '';
+  if(geometry.type==='Polygon') return geometry.coordinates.map(ringPath).join(' ');
+  if(geometry.type==='MultiPolygon') return geometry.coordinates.flat().map(ringPath).join(' ');
+  return '';
+}
+function geometryPoint(geometry){
+  let ring=null;
+  if(geometry?.type==='Polygon') ring=geometry.coordinates[0];
+  if(geometry?.type==='MultiPolygon') ring=geometry.coordinates.slice().sort((a,b)=>b[0].length-a[0].length)[0]?.[0];
+  if(!ring?.length) return [380,285];
+  let lon=0,lat=0; ring.forEach(c=>{lon+=c[0];lat+=c[1]});
+  return projectLonLat([lon/ring.length,lat/ring.length]);
+}
+function departmentColumn(){ const sample=state.items[0]||{}; return guessKey(sample,state.keys.depto.map(toKey)); }
+function statusColumn(){ const sample=state.items[0]||{}; return guessKey(sample,state.keys.estado.map(toKey)); }
+function mapStats(){
+  const depCol=departmentColumn(), estCol=statusColumn(); const stats=new Map();
+  state.items.forEach(o=>{
+    const dep=(o[depCol]||'').trim(); if(!dep) return;
+    const rawKey=normalize(dep); const key=rawKey==='sai'?'archipielago de san andres, providencia y santa catalina':rawKey; if(!stats.has(key)) stats.set(key,{name:dep,total:0,online:0,offline:0});
+    const st=normalize(o[estCol]); const x=stats.get(key); x.total++; if(st==='online')x.online++; if(st==='offline')x.offline++;
+  });
+  return stats;
+}
+async function loadDepartmentGeometry(){
+  if(state.mapGeo) return state.mapGeo;
+  try{
+    const {text}=await fetchWithFallbacks(DANE_DEPARTMENTS_GEOJSON); state.mapGeo=JSON.parse(text); return state.mapGeo;
+  }catch(e){ console.warn('No se pudo cargar la geometría oficial de DANE:',e); return null; }
+}
+function renderNetworkMap(){
+  const svg=$('#colombiaMap'), deptLayer=$('#mapDepartments'), nodeLayer=$('#mapNodes'), routeLayer=$('#mapRoutes');
+  if(!svg||!deptLayer||!nodeLayer||!routeLayer) return;
+  loadDepartmentGeometry().then(geo=>{
+    if(!geo?.features?.length) return;
+    const stats=mapStats();
+    const max=Math.max(1,...[...stats.values()].map(x=>x.total));
+    const points=[]; deptLayer.innerHTML=''; nodeLayer.innerHTML=''; routeLayer.innerHTML='';
+    geo.features.forEach((f,idx)=>{
+      const name=f.properties?.NOM_DPTO || f.properties?.NOM_DPTO_M || f.properties?.DEPARTAMENTO || `Departamento ${idx+1}`;
+      const key=normalize(name), st=stats.get(key)||{name,total:0,online:0,offline:0};
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',geometryPath(f.geometry)); path.setAttribute('class','map-dept'); path.dataset.department=name; path.dataset.count=st.total;
+      path.style.fillOpacity=(st.total?(.16+.32*(st.total/max)):.07).toFixed(2);
+      path.addEventListener('click',()=>{ state.mapDept=state.mapDept===name?null:name; renderNetworkMap(); applyFilters(); document.getElementById('conectar')?.scrollIntoView({behavior:'smooth',block:'start'}); });
+      if(state.mapDept && normalize(state.mapDept)===key) path.classList.add('active');
+      deptLayer.appendChild(path);
+      const [x,y]=geometryPoint(f.geometry); if(st.total){ points.push({x,y,name,total:st.total,online:st.online,offline:st.offline}); }
+    });
+    points.sort((a,b)=>b.total-a.total);
+    points.slice(0,10).forEach((p,i)=>{
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.classList.add('map-node'); g.dataset.department=p.name;
+      g.innerHTML=`<circle class="pulse" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="10"></circle><circle class="core" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${Math.min(8,4+p.total/max*4).toFixed(1)}"></circle><text class="label" x="${p.x.toFixed(1)}" y="${(p.y+22).toFixed(1)}">${p.name}</text><text class="count" x="${p.x.toFixed(1)}" y="${(p.y+32).toFixed(1)}">${p.total.toLocaleString('es-CO')} centros</text>`;
+      g.addEventListener('click',()=>{state.mapDept=state.mapDept===p.name?null:p.name; renderNetworkMap(); applyFilters();}); nodeLayer.appendChild(g);
+    });
+    const routePoints=points.slice(0,7);
+    for(let i=1;i<routePoints.length;i++){
+      const a=routePoints[i-1],b=routePoints[i]; const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2-25;
+      line.setAttribute('d',`M ${a.x.toFixed(1)} ${a.y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`); line.setAttribute('class','map-route'); routeLayer.appendChild(line);
+    }
+    $('#mapLoading')?.classList.add('hidden');
+  });
 }
 
 /* ===== Render / KPIs ===== */
@@ -297,6 +387,7 @@ function applyFilters(){
       const hay=[o[colId],o[colNombre],o[colMun],o[colDep],o[colOpe]].filter(Boolean).some(v=>normalize(v).includes(q));
       if(!hay) return false;
     }
+    if(state.mapDept && normalize(o[colDep]) !== normalize(state.mapDept)) return false;
     return true;
   });
 
@@ -505,7 +596,7 @@ function init(){
   safeOn('heroSearch','click', openModal);
   safeOn('btnLimpiar','click', () => {
     ['#fldDep','#fldMun','#fldIE','#fldSede','#fldProy'].forEach(id => { const el=$(id); if(el) el.value=''; });
-    closeDetail(); applyFilters();
+    closeDetail(); state.mapDept=null; renderNetworkMap(); applyFilters();
   });
   safeOn('btnRefrescar','click', () => { state.forceRefresh=true; loadData(); });
   safeOn('btnTheme','click', toggleTheme);
@@ -517,6 +608,8 @@ function init(){
   document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(); closeDetail(); } });
 
   applyTheme();
+  renderNetworkMap();
+  document.addEventListener('keydown', e => { if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openModal(); } });
   loadData().catch(err => console.error(err));
 }
 window.addEventListener('DOMContentLoaded', init);
