@@ -443,17 +443,36 @@ function setKPIs(total, ok, down){
   $('#barDown').style.width = pctDown+'%';
 }
 function refreshKPIs(results, cols){
-  const total = results.length; let ok=0, down=0;
+
+  let online = 0;
+  let offline = 0;
+  let p3 = 0;
+  let parcial = 0;
+  let pqr = 0;
+  let velocidad = 0;
 
   results.forEach(o => {
-    const est = (o[cols.colEst] || '').toString();
-    console.log("ESTADO =", est);
 
-    if(/ok|activo|operativo|operativa|en servicio|funciona/i.test(est)) ok++;
-    else if(/baja|inactivo|caido|caído|fuera|no operativo/i.test(est)) down++;
+    const est = (o[cols.colEst] || '')
+      .toString()
+      .trim()
+      .toLowerCase();
+
+    if(est === 'online') online++;
+    else if(est === 'offline') offline++;
+    else if(est === 'p3') p3++;
+    else if(est === 'parcial') parcial++;
+    else if(est === 'pqr') pqr++;
+    else if(est === 'velocidad') velocidad++;
+
   });
 
-  setKPIs(total, ok, down);
+  document.getElementById('kpiOnline').textContent = online;
+  document.getElementById('kpiOffline').textContent = offline;
+  document.getElementById('kpiP3').textContent = p3;
+  document.getElementById('kpiParcial').textContent = parcial;
+  document.getElementById('kpiPQR').textContent = pqr;
+  document.getElementById('kpiVelocidad').textContent = velocidad;
 }
 
 /* ===== Drawer & detalle ===== */
