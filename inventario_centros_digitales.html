@@ -371,6 +371,24 @@ function renderNetworkMap(){
     const max=Math.max(1,...[...stats.values()].map(x=>x.total));
     const points=[]; deptLayer.innerHTML=''; nodeLayer.innerHTML=''; routeLayer.innerHTML='';
     geo.features.forEach((f,idx)=>{
+      const DEPARTAMENTOS_VISIBLES = [
+  'antioquia',
+  'cesar',
+  'la guajira',
+  'archipielago de san andres, providencia y santa catalina'
+];
+
+const nombreDepto =
+  normalize(
+    f.properties?.NOM_DPTO ||
+    f.properties?.NOM_DPTO_M ||
+    f.properties?.DEPARTAMENTO ||
+    ''
+  );
+
+if(!DEPARTAMENTOS_VISIBLES.includes(nombreDepto)){
+  return;
+}
       const name=f.properties?.NOM_DPTO || f.properties?.NOM_DPTO_M || f.properties?.DEPARTAMENTO || `Departamento ${idx+1}`;
       const key=normalize(name), st=stats.get(key)||{name,total:0,online:0,offline:0};
       const path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',geometryPath(f.geometry)); path.setAttribute('class','map-dept'); path.dataset.department=name; path.dataset.count=st.total;
