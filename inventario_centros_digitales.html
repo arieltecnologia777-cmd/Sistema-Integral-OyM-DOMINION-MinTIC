@@ -466,6 +466,10 @@ function setKPIs(total, ok, down){
 function refreshKPIs(results, cols){
   let online = 0;
   let offline = 0;
+  let p3 = 0;
+  let parcial = 0;
+  let pqr = 0;
+  let velocidad = 0;
 
   results.forEach(o => {
     const est = (o[cols.colEst] || '')
@@ -479,9 +483,26 @@ function refreshKPIs(results, cols){
     else if (est === 'offline') {
       offline++;
     }
+    else if (est === 'p3') {
+      p3++;
+    }
+    else if (est === 'parcial') {
+      parcial++;
+    }
+    else if (est === 'pqr') {
+      pqr++;
+    }
+    else if (est === 'velocidad') {
+      velocidad++;
+    }
   });
 
   setKPIs(results.length, online, offline);
+
+  document.getElementById('kpiP3').textContent = p3;
+  document.getElementById('kpiParcial').textContent = parcial;
+  document.getElementById('kpiPQR').textContent = pqr;
+  document.getElementById('kpiVelocidad').textContent = velocidad;
 }
 
 /* ===== Drawer & detalle ===== */
