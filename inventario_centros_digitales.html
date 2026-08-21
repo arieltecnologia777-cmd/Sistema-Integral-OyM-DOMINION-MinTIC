@@ -377,24 +377,6 @@ function renderNetworkMap(){
   f.properties?.DEPARTAMENTO ||
   `Departamento ${idx+1}`;
 
-const permitidos = [
-  'antioquia',
-  'cesar',
-  'la guajira',
-  'archipielago de san andres providencia y santa catalina',
-  'san andres y providencia',
-  'san andres'
-];
-
-const nombreNormalizado = normalize(name)
-  .replace(/,/g, '')
-  .replace(/\s+/g, ' ')
-  .trim();
-
-if (!permitidos.includes(nombreNormalizado)) {
-  return;
-}
-
 const key = normalize(name),
       st = stats.get(key) || {
         name,
