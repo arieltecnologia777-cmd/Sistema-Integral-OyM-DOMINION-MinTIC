@@ -386,9 +386,26 @@ const nombreDepto =
     ''
   );
 
+const name=f.properties?.NOM_DPTO ||
+           f.properties?.NOM_DPTO_M ||
+           f.properties?.DEPARTAMENTO ||
+           `Departamento ${idx+1}`;
 
-      const name=f.properties?.NOM_DPTO || f.properties?.NOM_DPTO_M || f.properties?.DEPARTAMENTO || `Departamento ${idx+1}`;
-      console.log("DEPTO MAPA:", name);
+console.log("NORMALIZADO:", normalize(name));
+
+const permitidos = [
+  'antioquia',
+  'cesar',
+  'la guajira',
+  'archipielago de san andres, providencia y santa catalina'
+];
+
+if (!permitidos.includes(normalize(name))) {
+  return;
+}
+
+console.log("DEPTO MAPA:", name);
+
       const key=normalize(name), st=stats.get(key)||{name,total:0,online:0,offline:0};
       const path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',geometryPath(f.geometry)); path.setAttribute('class','map-dept'); path.dataset.department=name; path.dataset.count=st.total;
       path.style.fillOpacity=(st.total?(.16+.32*(st.total/max)):.07).toFixed(2);
