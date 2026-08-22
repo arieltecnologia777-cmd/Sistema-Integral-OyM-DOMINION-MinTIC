@@ -124,20 +124,99 @@
         </div>
 
         <div class="hero-stage">
-          <div class="map-glow"></div>
-          <div class="map-card">
-            <div class="colombia"></div>
-            <div class="route r1"></div><div class="route r2"></div><div class="route r3"></div><div class="route r4"></div><div class="route r5"></div>
-            <div class="node n1">🏫<span>Atlántico</span></div><div class="node n2">📡<span>Cesar</span></div><div class="node n3">🏫<span>La Guajira</span></div><div class="node n4">🛰️<span>Antioquia</span></div><div class="node n5">🏫<span>Santander</span></div><div class="node n6">📚<span>Valle del Cauca</span></div><div class="node n7">📡<span>Nariño</span></div>
-            <div class="satellite">🛰️</div>
-            <div class="glass-card learn-card"><div class="art">👩🏽‍💻📚</div><h3>Aprende sin límites</h3><p>Cursos, actividades y recursos digitales para todos.</p><button class="btn">Explorar cursos →</button></div>
-            <div class="glass-card community-card"><div class="people">🧑🏽‍🤝‍🧑🏾</div><strong>Tu comunidad</strong><p>Conecta con estudiantes, docentes y aliados en todo el país.</p></div>
-          </div>
-          <div class="status-orbs">
-            <div class="orb-wrap"><div class="orb online">◉</div><small>Online</small></div><div class="orb-wrap"><div class="orb offline">⚡</div><small>Offline</small></div><div class="orb-wrap"><div class="orb p3">◇</div><small>P3</small></div><div class="orb-wrap"><div class="orb parcial">◔</div><small>Parcial</small></div><div class="orb-wrap"><div class="orb">•••</div><small>PQR</small></div><div class="orb-wrap"><div class="orb">⌁</div><small>Velocidad</small></div>
-          </div>
-        </div>
+
+  <div class="showcase">
+
+    <div class="hero-panel">
+      <div class="panel-badge">
+        🌎 Red Nacional de Centros Digitales
       </div>
+
+      <h3>
+        Explora, descubre y conecta con cada
+        Centro Digital de Colombia
+      </h3>
+
+      <p>
+        Consulta instituciones educativas, revisa su estado,
+        explora municipios y encuentra información clave
+        en una sola experiencia.
+      </p>
+
+      <div class="hero-buttons">
+        <button class="btn" id="btnIngresar">
+          🔍 Explorar Centros
+        </button>
+
+        <button class="btn btn-secondary" id="btnRefrescar">
+          🔄 Actualizar Red
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-kpi online">
+      <div class="hero-icon">🟢</div>
+      <div class="hero-value" id="heroOnline">0</div>
+      <div class="hero-label">Online</div>
+    </div>
+
+    <div class="hero-kpi offline">
+      <div class="hero-icon">🔴</div>
+      <div class="hero-value" id="heroOffline">0</div>
+      <div class="hero-label">Offline</div>
+    </div>
+
+    <div class="hero-kpi p3">
+      <div class="hero-icon">🟣</div>
+      <div class="hero-value" id="heroP3">0</div>
+      <div class="hero-label">P3</div>
+    </div>
+
+    <div class="hero-kpi parcial">
+      <div class="hero-icon">🟠</div>
+      <div class="hero-value" id="heroParcial">0</div>
+      <div class="hero-label">Parcial</div>
+    </div>
+
+    <div class="hero-kpi pqr">
+      <div class="hero-icon">🔵</div>
+      <div class="hero-value" id="heroPQR">0</div>
+      <div class="hero-label">PQR</div>
+    </div>
+
+    <div class="hero-kpi velocidad">
+      <div class="hero-icon">🟡</div>
+      <div class="hero-value" id="heroVelocidad">0</div>
+      <div class="hero-label">Velocidad</div>
+    </div>
+
+    <div class="region-card">
+      <div class="region-emoji">🏫</div>
+      <strong>Antioquia</strong>
+      <span>Centros Digitales</span>
+    </div>
+
+    <div class="region-card">
+      <div class="region-emoji">📡</div>
+      <strong>Cesar</strong>
+      <span>Centros Digitales</span>
+    </div>
+
+    <div class="region-card">
+      <div class="region-emoji">🌎</div>
+      <strong>La Guajira</strong>
+      <span>Centros Digitales</span>
+    </div>
+
+    <div class="region-card">
+      <div class="region-emoji">🏝️</div>
+      <strong>San Andrés</strong>
+      <span>Centros Digitales</span>
+    </div>
+
+  </div>
+
+</div>
 
       <div class="toolbar" id="toolbar-specific">
         <div class="info"><label for="fldDep">Departamento</label><input id="fldDep" placeholder="Selecciona un centro" readonly></div>
