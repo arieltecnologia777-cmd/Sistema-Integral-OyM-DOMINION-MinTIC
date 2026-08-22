@@ -130,8 +130,35 @@
     
     .route{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),transparent);transform-origin:left;filter:drop-shadow(0 0 7px var(--cyan));opacity:.95}
     .r1{width:250px;left:290px;top:250px;transform:rotate(-16deg)}.r2{width:290px;left:290px;top:250px;transform:rotate(28deg)}.r3{width:220px;left:315px;top:285px;transform:rotate(82deg)}.r4{width:245px;left:300px;top:285px;transform:rotate(145deg)}.r5{width:180px;left:395px;top:330px;transform:rotate(-145deg)}
-    .node{position:absolute;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(30,46,128,.94),rgba(84,41,161,.86));border:1px solid rgba(255,255,255,.28);box-shadow:0 0 0 7px rgba(37,230,255,.05),0 0 35px rgba(37,230,255,.3);font-size:27px;z-index:2}.node:after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--cyan);top:-5px;right:8px;box-shadow:0 0 15px var(--cyan)}
-    .node span{position:absolute;top:70px;white-space:nowrap;font-size:11px;font-weight:800;color:white;background:rgba(10,15,49,.72);border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;backdrop-filter:blur(10px)}
+    .node{position:absolute;width:90px;height:90px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(30,46,128,.94),rgba(84,41,161,.86));border:1px solid rgba(255,255,255,.28);box-shadow:0 0 0 7px rgba(37,230,255,.05),0 0 35px rgba(37,230,255,.3);font-size:27px;z-index:2}.node:after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--cyan);top:-5px;right:8px;box-shadow:0 0 15px var(--cyan)}
+    .node span{
+  position:absolute;
+
+  min-width:140px;
+
+  padding:12px 16px;
+
+  border-radius:18px;
+
+  font-size:13px;
+  font-weight:800;
+
+  line-height:1.35;
+
+  color:white;
+
+  background:
+    rgba(6,13,45,.88);
+
+  border:2px solid rgba(255,255,255,.18);
+
+  box-shadow:
+    0 0 24px rgba(0,0,0,.35);
+
+  backdrop-filter:blur(18px);
+
+  white-space:normal;
+}
     .n1{left:245px;top:190px}.n2{left:420px;top:235px}.n3{left:505px;top:160px}.n4{left:325px;top:335px}.n5{left:500px;top:360px}.n6{left:215px;top:355px}.n7{left:390px;top:420px}
     .satellite{position:absolute;right:24px;top:35px;font-size:64px;filter:drop-shadow(0 0 18px rgba(37,230,255,.65));animation:float 5s ease-in-out infinite}
     @keyframes float{50%{transform:translateY(-10px) rotate(2deg)}}
@@ -291,22 +318,34 @@
 
   <div class="node n2">
     📡
-    <span>CESAR · 320</span>
+    <span>
+  CESAR<br>
+  320 centros
+</span>
   </div>
 
   <div class="node n3">
     🏫
-    <span>LA GUAJIRA · 230</span>
+    <span>
+  LA GUAJIRA<br>
+  230 centros
+</span>
   </div>
 
   <div class="node n4">
     🛰️
-    <span>ANTIOQUIA · 560</span>
+    <span>
+  ANTIOQUIA<br>
+  560 centros
+</span>
   </div>
 
   <div class="node n5">
     🏝️
-    <span>SAN ANDRÉS · 80</span>
+    <span>
+  SAN ANDRÉS Y P.<br>
+  80 centros
+</span>
   </div>
 
   <div class="satellite">
