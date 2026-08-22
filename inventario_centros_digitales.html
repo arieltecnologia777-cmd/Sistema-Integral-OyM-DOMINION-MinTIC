@@ -94,10 +94,14 @@
     .colombia{
   position:absolute;
   inset:20px 230px 20px 20px;
-  clip-path:polygon(38% 0,56% 4%,66% 13%,83% 19%,91% 32%,82% 41%,87% 52%,74% 61%,78% 75%,66% 86%,53% 79%,45% 91%,35% 76%,22% 72%,27% 59%,15% 50%,24% 40%,17% 28%,29% 20%);
-  background:linear-gradient(135deg,#173fcb,#167edc 34%,#4d43d6 62%,#a448e8);
-  border:1px solid rgba(255,255,255,.24);
-  box-shadow:inset 0 0 70px rgba(45,227,255,.23),0 0 55px rgba(76,99,255,.2);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:none;
+  border:none;
+  box-shadow:none;
 }
     .colombia:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:42px 42px;opacity:.45}
     .route{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),transparent);transform-origin:left;filter:drop-shadow(0 0 7px var(--cyan));opacity:.95}
@@ -241,7 +245,13 @@
           <div class="map-glow"></div>
           <div class="map-card">
 
-  <div class="colombia"></div>
+  <div class="colombia">
+  <img
+    src="colombia-glow.png"
+    alt="Mapa de Colombia"
+    class="colombia-img"
+  >
+
 
   <div class="route r1"></div>
   <div class="route r2"></div>
