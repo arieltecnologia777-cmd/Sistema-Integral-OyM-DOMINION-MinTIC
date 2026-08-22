@@ -254,6 +254,44 @@
   z-index:30;
 }
 
+.marker::before{
+  content:"";
+
+  position:absolute;
+
+  left:-10px;
+  top:-10px;
+
+  width:42px;
+  height:42px;
+
+  border-radius:50%;
+
+  border:2px solid currentColor;
+
+  opacity:.35;
+}
+
+.marker::after{
+  content:"";
+
+  position:absolute;
+
+  left:-28px;
+  top:-28px;
+
+  width:78px;
+  height:78px;
+
+  border-radius:50%;
+
+  background:currentColor;
+
+  opacity:.15;
+
+  filter:blur(15px);
+}
+
 /* GUAJIRA */
 .marker-guajira{
   left:195px;
