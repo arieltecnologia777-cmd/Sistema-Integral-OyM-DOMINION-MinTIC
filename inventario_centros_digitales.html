@@ -423,11 +423,13 @@ function updateFeatureMap(item){
 
     L.control.zoom({position:'topright'}).addTo(featureMap);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-      maxZoom:19,
-      attribution:'&copy; OpenStreetMap &copy; CARTO',
-      subdomains:'abcd'
-    }).addTo(featureMap);
+    L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom: 19,
+    attribution: 'Tiles © Esri'
+  }
+).addTo(featureMap);
   }
 
   featureMap.setView([lat,lon],13,{animate:true});
