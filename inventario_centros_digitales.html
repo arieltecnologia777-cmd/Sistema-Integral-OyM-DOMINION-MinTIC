@@ -471,7 +471,16 @@
   background:rgba(57,233,255,.45);
 
   filter:blur(28px);
-}.kpi h4{margin:0;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.8px}.kpi .val{
+}
+   .kpi-online{
+  border-color:rgba(44,245,160,.25);
+
+  box-shadow:
+    0 0 30px rgba(44,245,160,.12),
+    inset 0 0 30px rgba(44,245,160,.05);
+}
+    
+    .kpi h4{margin:0;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.8px}.kpi .val{
   font-size:22px;
   font-weight:900;
   margin-top:6px;
@@ -730,7 +739,11 @@ d="M27 27 Q 80 -20 100 -10"
 
 <div class="kpis">
       <div class="kpi"><h4>Total centros</h4><div id="kpiTotal" class="val">—</div><div id="barTotal" class="bar"></div></div>
-      <div class="kpi"><h4>Operativos</h4><div id="kpiOk" class="val" style="color:var(--green)">—</div><div id="barOk" class="bar"></div></div>
+      <div class="kpi kpi-online">
+  <h4>ONLINE</h4>
+  <div id="kpiOk" class="val" style="color:#2cf5a0">—</div>
+  <div id="barOk" class="bar"></div>
+</div>
       <div class="kpi"><h4>No operativos</h4><div id="kpiDown" class="val" style="color:var(--red)">—</div><div id="barDown" class="bar"></div></div>
       <div class="kpi"><h4>P3</h4><div id="kpiP3" class="val">0</div></div><div class="kpi"><h4>Parcial</h4><div id="kpiParcial" class="val">0</div></div><div class="kpi"><h4>PQR</h4><div id="kpiPQR" class="val">0</div></div><div class="kpi"><h4>Velocidad</h4><div id="kpiVelocidad" class="val">0</div></div>
     </div>
