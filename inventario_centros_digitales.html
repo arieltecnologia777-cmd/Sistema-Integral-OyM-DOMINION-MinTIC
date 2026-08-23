@@ -401,10 +401,34 @@ async function loadData(){
     state.page=0;
     applyFilters();
 
-    /* Centro destacado = primer centro del dataset */
-    if(state.items.length){
-      updateFeatureCard(state.items[0]);
-    }
+   /* Centro destacado = mayor DIAS_SIN_INCIDENTES */
+if(state.items.length){
+
+  const colInc =
+    guessKey(
+      state.items[0],
+      state.keys.diasIncidentes.map(toKey)
+    );
+
+  let destacado = null;
+
+  if(colInc){
+
+    destacado = state.items
+      .filter(item => {
+        const v = Number(item[colInc]);
+        return Number.isFinite(v) && v > 0;
+      })
+      .sort((a,b) =>
+        Number(b[colInc]) - Number(a[colInc])
+      )[0];
+
+  }
+
+  updateFeatureCard(
+    destacado || state.items[0]
+  );
+}
   }catch(err){
     resumen.innerHTML=`<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err&&err.message)||err}`;
     $('#grid').innerHTML=''; setKPIs(0,0,0);
@@ -593,8 +617,34 @@ function applyFilters(){
   renderResults(results,{colId,colNombre,colDep,colMun,colOpe,colEst});
   refreshKPIs(results,{colEst});
 
-  /* El centro destacado acompaña los filtros. */
-  if(results.length) updateFeatureCard(results[0]);
+  /* Centro destacado = mayor DIAS_SIN_INCIDENTES del filtro */
+if(results.length){
+
+  const colInc =
+    guessKey(
+      results[0],
+      state.keys.diasIncidentes.map(toKey)
+    );
+
+  let destacado = null;
+
+  if(colInc){
+
+    destacado = results
+      .filter(item => {
+        const v = Number(item[colInc]);
+        return Number.isFinite(v) && v > 0;
+      })
+      .sort((a,b) =>
+        Number(b[colInc]) - Number(a[colInc])
+      )[0];
+
+  }
+
+  updateFeatureCard(
+    destacado || results[0]
+  );
+}
 }
 
 function renderResults(results,cols){
