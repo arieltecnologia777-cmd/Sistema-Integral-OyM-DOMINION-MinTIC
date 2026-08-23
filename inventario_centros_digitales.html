@@ -283,6 +283,13 @@ const state = {
     sedeDet: ['sede','nombre_sede','sede_ie'],
     proyecto: ['proyecto','programa','contrato','proyecto_cd'],
 
+centroPoblado: [
+  'centro_poblado',
+  'centro poblado',
+  'cp',
+  'vereda'
+],
+
     /* NUEVO: coordenadas reales */
     latitud: ['latitud','latitude','lat','coord_lat','coordenada_latitud','y'],
     longitud: ['longitud','longitude','lon','lng','long','coord_lon','coord_longitud','coordenada_longitud','x'],
@@ -469,18 +476,22 @@ function updateFeatureCard(item){
   const sample=state.items[0]||{};
   const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
   const colDep=guessKey(sample,state.keys.depto.map(toKey));
-  const colMun=guessKey(sample,state.keys.mun.map(toKey));
+  const colCentroPoblado=
+  guessKey(sample,state.keys.centroPoblado.map(toKey));
   const colEst=guessKey(sample,state.keys.estado.map(toKey));
   const colInc=guessKey(sample,state.keys.diasIncidentes.map(toKey));
   const colConn=guessKey(sample,state.keys.conectividad.map(toKey));
 
   const nombre=colNombre ? item[colNombre] : 'Centro destacado';
-  const municipio=colMun ? item[colMun] : '';
+  const centroPoblado=
+  colCentroPoblado ? item[colCentroPoblado] : '';
   const departamento=colDep ? item[colDep] : '';
   const estado=colEst ? item[colEst] : '';
 
   $('#featureName').textContent=nombre||'Centro destacado';
-  $('#featureLocation').textContent=`${municipio}${municipio&&departamento?', ':''}${departamento}` || 'Ubicación';
+  $('#featureLocation').textContent =
+`${centroPoblado}${centroPoblado && departamento ? ', ' : ''}${departamento}`
+|| 'Ubicación';
 
   const online=/online|activo|operativo|en servicio|funciona/i.test(estado);
   const statusColor=online?'#45e0a1':'#ff5c7a';
