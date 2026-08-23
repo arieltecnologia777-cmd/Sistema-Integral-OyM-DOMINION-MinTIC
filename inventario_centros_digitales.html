@@ -437,17 +437,26 @@
     .kpi{
   flex:1 1 145px;
   min-width:120px;
+
   padding:12px 14px;
+
   border-radius:20px;
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(8,12,35,.05);
-  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(57,233,255,.25);
+
+  background:rgba(8,12,35,.02);
+
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
+
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.03),
-    0 0 20px rgba(0,0,0,.18);
+    0 0 25px rgba(57,233,255,.08),
+    inset 0 0 20px rgba(57,233,255,.03);
+
   position:relative;
   overflow:hidden;
-}.kpi:before{
+}
+    .kpi:before{
   content:"";
   position:absolute;
 
