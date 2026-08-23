@@ -198,6 +198,13 @@
                 </div>
               </div>
 
+              <div id="featureId" style="
+  color:#8ca0ff;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.8px;
+  margin-bottom:4px;
+"></div>
               <h3 id="featureName">Centro destacado</h3>
               <p id="featureLocation">Ubicación</p>
 
@@ -487,15 +494,18 @@ function updateFeatureCard(item){
   const colCentroPoblado=
   guessKey(sample,state.keys.centroPoblado.map(toKey));
   const colEst=guessKey(sample,state.keys.estado.map(toKey));
+  const colId=guessKey(sample,state.keys.id.map(toKey));
   const colInc=guessKey(sample,state.keys.diasIncidentes.map(toKey));
   const colConn=guessKey(sample,state.keys.conectividad.map(toKey));
 
   const nombre=colNombre ? item[colNombre] : 'Centro destacado';
-  const centroPoblado=
+const id=colId ? item[colId] : '';
+const centroPoblado=
   colCentroPoblado ? item[colCentroPoblado] : '';
-  const departamento=colDep ? item[colDep] : '';
-  const estado=colEst ? item[colEst] : '';
+const departamento=colDep ? item[colDep] : '';
+const estado=colEst ? item[colEst] : '';
 
+  $('#featureId').textContent=id;
   $('#featureName').textContent=nombre||'Centro destacado';
   $('#featureLocation').textContent =
 `${centroPoblado}${centroPoblado && departamento ? ', ' : ''}${departamento}`
