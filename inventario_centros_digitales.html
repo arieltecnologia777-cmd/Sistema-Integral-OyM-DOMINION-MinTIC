@@ -228,7 +228,7 @@
 
               <div class="feature-metrics">
                 <div class="metric"><strong id="featureIncidents">—</strong><span>días sin incidentes</span></div>
-                <div class="metric"><strong id="featureConnectivity">—</strong><span>conectividad</span></div>
+                <div class="metric"><strong id="featureConnectivity">—</strong><span>última visita</span></div>
               </div>
 
               <button class="btn btn-secondary" id="featureDetailBtn">Ver hoja de vida →</button>
@@ -316,7 +316,14 @@ centroPoblado: [
 
     /* NUEVO: métricas de la tarjeta destacada */
     diasIncidentes: ['dias_sin_incidentes','dias_incidentes','dias_sin_incidencias','incidentes_dias'],
-    conectividad: ['conectividad','porcentaje_conectividad','pct_conectividad','disponibilidad']
+    conectividad: ['conectividad','porcentaje_conectividad','pct_conectividad','disponibilidad'],
+
+ultimaVisita: [
+  'ultima_visita',
+  'última_visita',
+  'ultima visita',
+  'última visita'
+]
   }
 };
 
@@ -533,7 +540,8 @@ function updateFeatureCard(item){
   const colEst=guessKey(sample,state.keys.estado.map(toKey));
   const colId=guessKey(sample,state.keys.id.map(toKey));
   const colInc=guessKey(sample,state.keys.diasIncidentes.map(toKey));
-  const colConn=guessKey(sample,state.keys.conectividad.map(toKey));
+  const colVisita=
+  guessKey(sample,state.keys.ultimaVisita.map(toKey));
 
   const nombre=colNombre ? item[colNombre] : 'Centro destacado';
 const id=colId ? item[colId] : '';
@@ -557,9 +565,10 @@ const estado=colEst ? item[colEst] : '';
   statusEl.innerHTML=`<span style="width:8px;height:8px;display:inline-block;border-radius:50%;background:${statusColor};box-shadow:0 0 10px ${statusColor}"></span>${escapeHtml(estado||'Sin estado')}`;
 
   $('#featureIncidents').textContent=colInc ? (item[colInc]||'—') : '—';
-  let connectivity=colConn ? (item[colConn]||'—') : '—';
-  if(connectivity!=='—' && !String(connectivity).includes('%')) connectivity += '%';
-  $('#featureConnectivity').textContent=connectivity;
+  const ultimaVisita =
+  colVisita ? (item[colVisita] || 'Sin visita') : 'Sin visita';
+
+$('#featureConnectivity').textContent = ultimaVisita;
 
   updateFeatureMap(item);
 
