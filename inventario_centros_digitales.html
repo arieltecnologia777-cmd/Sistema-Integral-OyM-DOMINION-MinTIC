@@ -327,20 +327,14 @@
 
   overflow:hidden;
 }
-    .card-map-preview::after{
-  content:"📍";
-
-  position:absolute;
-
-  left:50%;
-  top:50%;
-
-  transform:translate(-50%,-50%);
-
-  font-size:26px;
-
-  filter:drop-shadow(0 0 10px #9b5cff);
+    .mini-map{
+  width:100%;
+  height:100%;
 }
+    .card-map-preview::after{
+  display:none;
+}
+
     
     @media(max-width:1100px){.nav{display:none}.hero-layout{grid-template-columns:1fr}.hero-copy{padding:20px 0 0}.hero-stage{min-height:650px}.toolbar{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.feature-card{right:0}.community-card{left:0}}
     @media(max-width:700px){.wrap{width:min(100% - 24px,1420px)}.hero{min-height:auto}.topbar{height:auto;padding:15px 0}.search-mini{display:none}.hero-copy h2{font-size:48px;letter-spacing:-2.5px}.hero-stage{min-height:540px;transform:scale(.88);transform-origin:top center;margin-bottom:-60px}.map-card{height:520px}.toolbar{margin-top:0;grid-template-columns:1fr}.grid{grid-template-columns:1fr}.section-head{padding-top:40px}.kpis{display:grid;grid-template-columns:repeat(2,1fr)}.feature-card{width:330px;max-width:90vw}.feature-map{height:165px}}
@@ -902,6 +896,66 @@ setTimeout(() => {
   renderMiniMaps(slice);
 }, 100);
 
+}
+
+}
+
+function renderMiniMaps(items){
+
+  const sample = state.items[0] || {};
+
+  const colLat = guessKey(
+    sample,
+    state.keys.latitud.map(toKey)
+  );
+
+  const colLon = guessKey(
+    sample,
+    state.keys.longitud.map(toKey)
+  );
+
+  items.forEach((item,index)=>{
+
+    const lat = parseFloat(
+      String(item[colLat] || '').replace(',','.')
+    );
+
+    const lon = parseFloat(
+      String(item[colLon] || '').replace(',','.')
+    );
+
+    if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+    const container =
+      document.getElementById(`mini-map-${index}`);
+
+    if(!container) return;
+
+    const map = L.map(container,{
+      zoomControl:false,
+      attributionControl:false,
+      dragging:false,
+      scrollWheelZoom:false,
+      doubleClickZoom:false,
+      touchZoom:false
+    });
+
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom:19
+      }
+    ).addTo(map);
+
+    map.setView([lat,lon],15);
+
+    L.circleMarker([lat,lon],{
+      radius:6,
+      color:'#9b5cff',
+      fillColor:'#9b5cff',
+      fillOpacity:1
+    }).addTo(map);
+  });
 }
 
 function setKPIs(total,ok,down){
