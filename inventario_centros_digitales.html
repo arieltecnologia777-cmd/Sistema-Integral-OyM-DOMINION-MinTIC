@@ -868,7 +868,9 @@ function renderResults(results,cols){
     return `<article class="card" data-id="${encodeURIComponent(id)}" title="Ver detalle">
   <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
 
-  <div class="card-map-preview"></div>
+  <div class="card-map-preview">
+  <div class="mini-map" id="mini-map-${i}"></div>
+</div>
 
   <h3>${escapeHtml(nombre)}</h3>
       <div class="meta" style="margin-bottom:10px">
@@ -888,13 +890,18 @@ function renderResults(results,cols){
     if(btnMas) btnMas.onclick=()=>{state.page++;renderResults(results,cols);};
   }else btnMas?.classList.add('hidden');
 
-  $$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
-    const id=decodeURIComponent(el.getAttribute('data-id')||'');
-    let item=id?results.find(r=>(r[cols.colId]||'')===id):null;
-    if(!item) item=results[0];
-    showDetail(item,cols);
-    updateFeatureCard(item);
-  }));
+$$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
+  const id=decodeURIComponent(el.getAttribute('data-id')||'');
+  let item=id?results.find(r=>(r[cols.colId]||'')===id):null;
+  if(!item) item=results[0];
+  showDetail(item,cols);
+  updateFeatureCard(item);
+}));
+
+setTimeout(() => {
+  renderMiniMaps(slice);
+}, 100);
+
 }
 
 function setKPIs(total,ok,down){
