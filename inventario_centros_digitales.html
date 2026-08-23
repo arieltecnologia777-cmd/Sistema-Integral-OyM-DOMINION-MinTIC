@@ -1133,10 +1133,24 @@ function refreshKPIs(results, cols){
 
   setKPIs(results.length, online, offline);
 
-  document.getElementById('kpiP3').textContent = p3;
+document.getElementById('kpiP3').textContent = p3;
 document.getElementById('kpiParcial').textContent = parcial;
 document.getElementById('kpiPQR').textContent = pqr;
 document.getElementById('kpiVelocidad').textContent = velocidad;
+
+const total = results.length || 1;
+
+document.getElementById('pctP3').textContent =
+((p3 / total) * 100).toFixed(1) + '%';
+
+document.getElementById('pctParcial').textContent =
+((parcial / total) * 100).toFixed(1) + '%';
+
+document.getElementById('pctPQR').textContent =
+((pqr / total) * 100).toFixed(1) + '%';
+
+document.getElementById('pctVelocidad').textContent =
+((velocidad / total) * 100).toFixed(1) + '%';
 }
 
 /* ===== Drawer & detalle ===== */
