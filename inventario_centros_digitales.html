@@ -484,18 +484,26 @@
   left:16px;
   top:16px;
 
-  width:14px;
-  height:14px;
+  width:16px;
+  height:16px;
 
   border-radius:50%;
 
-  background:currentColor;
+  background:
+    radial-gradient(
+      circle at 70% 30%,
+      rgba(255,255,255,.9) 0%,
+      rgba(255,255,255,.4) 15%,
+      transparent 25%
+    ),
+    currentColor;
 
   box-shadow:
     0 0 10px currentColor,
-    0 0 20px currentColor;
+    0 0 20px currentColor,
+    0 0 35px currentColor;
 
-  z-index:2;
+  z-index:3;
 }
    .kpi-online{
   border-color:rgba(44,245,160,.25);
