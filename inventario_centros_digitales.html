@@ -48,6 +48,11 @@
     .topbar{height:82px;display:flex;align-items:center;justify-content:space-between;gap:22px;position:relative;z-index:5}
     .brand{display:flex;align-items:center;gap:13px;min-width:250px}
     .brand .logo{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 12px 35px rgba(93,89,255,.38);border:1px solid rgba(255,255,255,.24)}
+    .brand .logo img{
+  width:70%;
+  height:70%;
+  object-fit:contain;
+}
     .brand .logo svg{color:white}
     .titles h1{font-size:18px;line-height:1.05;margin:0;font-weight:850;letter-spacing:-.5px}
     .titles p{margin:4px 0 0;color:var(--muted);font-size:11px;letter-spacing:.8px;text-transform:uppercase}
@@ -659,7 +664,9 @@
     <div class="wrap">
       <header class="topbar">
         <div class="brand">
-          <div class="logo" title="Campus Digital"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 7.2v8.4l8 4.4 8-4.4V7.2L12 3Z" stroke="currentColor" stroke-width="1.5"/><path d="M8 9.3 12 7l4 2.3v4.8l-4 2.3-4-2.3V9.3Z" fill="currentColor" opacity=".65"/><circle cx="12" cy="12" r="1.8" fill="white"/></svg></div>
+<div class="logo" title="Dominion">
+  dominion_logo.png="Dominion">
+</div>
           <div class="titles"><h1>HOJA DE VIDA CENTROS DIGITALES</h1><p>Tablero interactivo</p></div>
         </div>
         <nav class="nav"><a href="#explorar">Explorar</a><a href="#aprender">Aprender</a><a href="#conectar">Conectar</a><a href="#comunidad">Comunidad</a><a href="#recursos">Recursos</a></nav>
