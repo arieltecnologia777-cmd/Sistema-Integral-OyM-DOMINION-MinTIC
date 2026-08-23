@@ -946,6 +946,17 @@ function renderMiniMaps(items){
       document.getElementById(`mini-map-${index}`);
 
     if(!container) return;
+    container.addEventListener('click', e => {
+  e.stopPropagation();
+});
+
+container.addEventListener('mousedown', e => {
+  e.stopPropagation();
+});
+
+container.addEventListener('dblclick', e => {
+  e.stopPropagation();
+});
 
     const map = L.map(container,{
   zoomControl:true,
