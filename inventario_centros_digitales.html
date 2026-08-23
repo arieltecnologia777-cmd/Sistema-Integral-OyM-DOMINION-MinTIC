@@ -452,13 +452,16 @@ function updateFeatureMap(item){
   const departamento=colDep ? item[colDep] : '';
   const locationBadge=document.getElementById('featureMapLocation');
 
-  if(locationBadge){
-    locationBadge.innerHTML=`<span>●</span><span>${escapeHtml(municipio)}${municipio&&departamento?', ':''}${escapeHtml(departamento)}</span>`;
-  }
-
-  setTimeout(()=>featureMap && featureMap.invalidateSize(),100);
+if(locationBadge){
+  locationBadge.innerHTML=`<span>●</span><span>${escapeHtml(municipio)}${municipio&&departamento?', ':''}${escapeHtml(departamento)}</span>`;
 }
 
+setTimeout(() => {
+  if(featureMap){
+    featureMap.invalidateSize(true);
+  }
+}, 500);
+}
 function updateFeatureCard(item){
   if(!item) return;
   const sample=state.items[0]||{};
