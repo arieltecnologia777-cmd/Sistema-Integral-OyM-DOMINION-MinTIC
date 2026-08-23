@@ -1133,29 +1133,6 @@ function refreshKPIs(results, cols){
 
   setKPIs(results.length, online, offline);
 
-  const total = results.length || 1;
-
-document.getElementById('pctTotal').textContent =
-'100%';
-
-document.getElementById('pctOnline').textContent =
-Math.round((online / total) * 100) + '%';
-
-document.getElementById('pctOffline').textContent =
-Math.round((offline / total) * 100) + '%';
-
-document.getElementById('pctP3').textContent =
-Math.round((p3 / total) * 100) + '%';
-
-document.getElementById('pctParcial').textContent =
-Math.round((parcial / total) * 100) + '%';
-
-document.getElementById('pctPQR').textContent =
-Math.round((pqr / total) * 100) + '%';
-
-document.getElementById('pctVelocidad').textContent =
-Math.round((velocidad / total) * 100) + '%';
-
   document.getElementById('kpiP3').textContent = p3;
 document.getElementById('kpiParcial').textContent = parcial;
 document.getElementById('kpiPQR').textContent = pqr;
