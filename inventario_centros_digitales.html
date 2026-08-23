@@ -366,6 +366,31 @@
   background:rgba(255,150,50,.9);
 }
 
+.card-location{
+  margin-top:-6px;
+  color:#9db7ff;
+  font-size:15px;
+  font-weight:500;
+}
+
+.card-connectivity{
+  margin-top:10px;
+  font-size:16px;
+  font-weight:600;
+}
+
+.card-connectivity.ok{
+  color:#2cf5a0;
+}
+
+.card-connectivity.down{
+  color:#ff5c5c;
+}
+
+.card-connectivity.warn{
+  color:#ffb347;
+}
+
 .mini-map{
   width:100%;
   height:100%;
@@ -916,12 +941,28 @@ function renderResults(results,cols){
 </div>
 
   <h3>${escapeHtml(nombre)}</h3>
-      <div class="meta" style="margin-bottom:10px">
-        ${id?`<span class="badge">ID: ${escapeHtml(id)}</span>`:''}
-        ${mun?`<span class="badge">${escapeHtml(mun)}</span>`:''}
-        ${dep?`<span class="badge">${escapeHtml(dep)}</span>`:''}
-        ${ope?`<span class="badge">Operador: ${escapeHtml(ope)}</span>`:''}
-      </div>
+     <div class="card-location">
+  ID: ${escapeHtml(id)}
+  ${mun || dep ? ` • ${escapeHtml(mun)}${mun && dep ? ', ' : ''}${escapeHtml(dep)}` : ''}
+</div>
+
+<div class="card-connectivity ${estClass}">
+  ${
+    estClass === 'ok'
+      ? '📶 Conectividad óptima'
+      : estClass === 'down'
+        ? '📵 Sin conexión'
+        : /parcial/i.test(est)
+          ? '📡 Parcialmente operativo'
+          : /velocidad/i.test(est)
+            ? '⚡ Velocidad baja'
+            : /p3/i.test(est)
+              ? '🟣 Incidente P3'
+              : /pqr/i.test(est)
+                ? '🟠 PQR'
+                : '📶 Estado no identificado'
+  }
+</div>
       <div class="statusbar"></div>
     </article>`;
   }).join('');
