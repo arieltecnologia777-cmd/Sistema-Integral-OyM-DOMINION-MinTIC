@@ -438,7 +438,7 @@
   flex:1;
   min-width:120px;
 
-  padding:12px 14px;
+  padding:26px 14px 14px 14px;
 
   border-radius:20px;
 
@@ -475,6 +475,27 @@
   filter:blur(28px);
 
   pointer-events:none;
+}
+    .kpi:after{
+  content:"";
+
+  position:absolute;
+
+  left:16px;
+  top:16px;
+
+  width:14px;
+  height:14px;
+
+  border-radius:50%;
+
+  background:currentColor;
+
+  box-shadow:
+    0 0 10px currentColor,
+    0 0 20px currentColor;
+
+  z-index:2;
 }
    .kpi-online{
   border-color:rgba(44,245,160,.25);
