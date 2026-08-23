@@ -47,7 +47,15 @@
     .hero:before{content:"";position:absolute;width:850px;height:850px;right:-220px;top:80px;border-radius:50%;background:radial-gradient(circle,rgba(50,220,255,.13),rgba(141,68,255,.08) 42%,transparent 70%);filter:blur(10px)}
     .topbar{height:82px;display:flex;align-items:center;justify-content:space-between;gap:22px;position:relative;z-index:5}
     .brand{display:flex;align-items:center;gap:13px;min-width:250px}
-    .brand .logo{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 12px 35px rgba(93,89,255,.38);border:1px solid rgba(255,255,255,.24)}
+    .brand .logo{
+  width:50px;
+  height:50px;
+  display:grid;
+  place-items:center;
+  background:transparent;
+  box-shadow:none;
+  border:none;
+}
     .brand .logo img{
   width:70%;
   height:70%;
@@ -665,7 +673,7 @@
       <header class="topbar">
         <div class="brand">
 <div class="logo" title="Dominion">
-  dominion_logo.png="Dominion">
+  dominion_logo.png
 </div>
           <div class="titles"><h1>HOJA DE VIDA CENTROS DIGITALES</h1><p>Tablero interactivo</p></div>
         </div>
