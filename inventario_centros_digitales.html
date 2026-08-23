@@ -930,13 +930,14 @@ function renderMiniMaps(items){
     if(!container) return;
 
     const map = L.map(container,{
-      zoomControl:false,
-      attributionControl:false,
-      dragging:false,
-      scrollWheelZoom:false,
-      doubleClickZoom:false,
-      touchZoom:false
-    });
+  zoomControl:true,
+  attributionControl:false,
+  dragging:true,
+  scrollWheelZoom:true,
+  doubleClickZoom:true,
+  touchZoom:true
+});
+    map.zoomControl.setPosition('topright');
 
     L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
