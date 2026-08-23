@@ -1160,20 +1160,6 @@ Math.round((velocidad / total) * 100) + '%';
 document.getElementById('kpiParcial').textContent = parcial;
 document.getElementById('kpiPQR').textContent = pqr;
 document.getElementById('kpiVelocidad').textContent = velocidad;
-
-const total = results.length || 1;
-
-document.getElementById('pctP3').textContent =
-((p3 / total) * 100).toFixed(1).replace('.', ',') + '%';
-
-document.getElementById('pctParcial').textContent =
-((parcial / total) * 100).toFixed(1).replace('.', ',') + '%';
-
-document.getElementById('pctPQR').textContent =
-((pqr / total) * 100).toFixed(1).replace('.', ',') + '%';
-
-document.getElementById('pctVelocidad').textContent =
-((velocidad / total) * 100).toFixed(1).replace('.', ',') + '%';
 }
 
 /* ===== Drawer & detalle ===== */
