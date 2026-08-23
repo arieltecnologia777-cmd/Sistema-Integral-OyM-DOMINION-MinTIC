@@ -302,6 +302,46 @@
     .modal-backdrop{position:fixed;inset:0;background:rgba(3,5,20,.72);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(10px)}.modal{background:linear-gradient(145deg,#1b225f,#10143e);border:1px solid var(--line);border-radius:26px;padding:22px;width:min(620px,92vw);box-shadow:0 30px 100px rgba(0,0,0,.5)}.modal h2{margin:0}.modal p{color:var(--muted)}.modal .row{display:flex;gap:10px}.modal input{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;color:var(--text);outline:none;flex:1}.modal .actions{display:flex;justify-content:flex-end;margin-top:13px}
     footer{border-top:1px solid var(--line);padding:22px 0;background:rgba(0,0,0,.12)}.hidden{display:none!important}
     @keyframes rise{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.card-map-preview{
+  height:120px;
+
+  margin:-20px -20px 16px -20px;
+
+  border-radius:24px 24px 0 0;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(155,92,255,.25),
+      transparent 60%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(16,22,47,.95),
+      rgba(22,30,70,.95)
+    );
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+
+  position:relative;
+
+  overflow:hidden;
+}
+    .card-map-preview::after{
+  content:"📍";
+
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  transform:translate(-50%,-50%);
+
+  font-size:26px;
+
+  filter:drop-shadow(0 0 10px #9b5cff);
+}
+    
     @media(max-width:1100px){.nav{display:none}.hero-layout{grid-template-columns:1fr}.hero-copy{padding:20px 0 0}.hero-stage{min-height:650px}.toolbar{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.feature-card{right:0}.community-card{left:0}}
     @media(max-width:700px){.wrap{width:min(100% - 24px,1420px)}.hero{min-height:auto}.topbar{height:auto;padding:15px 0}.search-mini{display:none}.hero-copy h2{font-size:48px;letter-spacing:-2.5px}.hero-stage{min-height:540px;transform:scale(.88);transform-origin:top center;margin-bottom:-60px}.map-card{height:520px}.toolbar{margin-top:0;grid-template-columns:1fr}.grid{grid-template-columns:1fr}.section-head{padding-top:40px}.kpis{display:grid;grid-template-columns:repeat(2,1fr)}.feature-card{width:330px;max-width:90vw}.feature-map{height:165px}}
   </style>
@@ -826,8 +866,11 @@ function renderResults(results,cols){
     const estClass=/ok|online|activo|operativo|operativa|en servicio|funciona/i.test(est)?'ok':/baja|inactivo|offline|caido|caído|fuera|no operativo/i.test(est)?'down':est?'warn':'';
     const hue=(i*37)%360;
     return `<article class="card" data-id="${encodeURIComponent(id)}" title="Ver detalle">
-      <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
-      <h3>${escapeHtml(nombre)}</h3>
+  <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
+
+  <div class="card-map-preview"></div>
+
+  <h3>${escapeHtml(nombre)}</h3>
       <div class="meta" style="margin-bottom:10px">
         ${id?`<span class="badge">ID: ${escapeHtml(id)}</span>`:''}
         ${mun?`<span class="badge">${escapeHtml(mun)}</span>`:''}
