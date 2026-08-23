@@ -325,25 +325,50 @@
 
   margin:-20px -20px 16px -20px;
 
-  border-radius:24px 24px 0 0;
+  border-radius:18px;
 
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(155,92,255,.25),
-      transparent 60%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(16,22,47,.95),
-      rgba(22,30,70,.95)
-    );
-
-  border-bottom:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
 
   position:relative;
 
   overflow:hidden;
+}
+
+.map-state{
+  position:absolute;
+
+  top:10px;
+  left:10px;
+
+  z-index:500;
+
+  padding:6px 12px;
+
+  border-radius:999px;
+
+  font-size:12px;
+  font-weight:700;
+
+  color:#fff;
+
+  backdrop-filter:blur(12px);
+}
+
+.map-state.ok{
+  background:rgba(18,190,110,.9);
+}
+
+.map-state.down{
+  background:rgba(255,70,70,.9);
+}
+
+.map-state.warn{
+  background:rgba(255,150,50,.9);
+}
+
+.mini-map{
+  width:100%;
+  height:100%;
 }
     .mini-map{
   width:100%;
@@ -880,8 +905,14 @@ function renderResults(results,cols){
     return `<article class="card" data-id="${encodeURIComponent(id)}" title="Ver detalle">
   <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
 
-  <div class="card-map-preview">
+<div class="card-map-preview">
+
+  <div class="map-state ${estClass}">
+    ${escapeHtml(est)}
+  </div>
+
   <div class="mini-map" id="mini-map-${i}"></div>
+
 </div>
 
   <h3>${escapeHtml(nombre)}</h3>
