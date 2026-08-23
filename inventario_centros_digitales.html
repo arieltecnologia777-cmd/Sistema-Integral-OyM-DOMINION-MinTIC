@@ -147,6 +147,24 @@
     .feature-map .leaflet-container{background:#111936;font-family:inherit}
     .feature-map .leaflet-control-zoom{border:none!important;box-shadow:none!important}
     .feature-map .leaflet-control-zoom a{width:28px!important;height:28px!important;line-height:28px!important;background:rgba(10,15,42,.82)!important;color:#fff!important;border:1px solid rgba(255,255,255,.14)!important}
+    .mini-map .leaflet-control-zoom{
+  border:none!important;
+  box-shadow:none!important;
+}
+
+.mini-map .leaflet-control-zoom a{
+  width:28px!important;
+  height:28px!important;
+  line-height:28px!important;
+
+  background:rgba(10,15,42,.82)!important;
+
+  color:#fff!important;
+
+  border:1px solid rgba(255,255,255,.14)!important;
+
+  backdrop-filter:blur(10px);
+}
     .feature-map .leaflet-control-attribution{background:rgba(5,8,24,.65)!important;color:rgba(255,255,255,.5)!important;font-size:8px!important}
     .feature-map .leaflet-control-attribution a{color:rgba(255,255,255,.65)!important}
     .custom-center-marker{background:none!important;border:none!important}
@@ -931,7 +949,7 @@ function renderMiniMaps(items){
 
     const map = L.map(container,{
   zoomControl:true,
-  attributionControl:false,
+attributionControl:true,
   dragging:true,
   scrollWheelZoom:true,
   doubleClickZoom:true,
