@@ -1090,8 +1090,8 @@ function setKPIs(total, ok, down){
   $('#kpiOk').textContent = ok.toLocaleString('es-CO');
   $('#kpiDown').textContent = down.toLocaleString('es-CO');
 
-  const pctOk = total ? Math.round((ok/total)*100) : 0;
-  const pctDown = total ? Math.round((down/total)*100) : 0;
+  const pctOk = total ? ((ok/total)*100).toFixed(1) : '0.0';
+const pctDown = total ? ((down/total)*100).toFixed(1) : '0.0';
 
   document.getElementById('pctTotal').textContent = '100%';
   document.getElementById('pctOnline').textContent = pctOk + '%';
@@ -1157,9 +1157,23 @@ document.getElementById('pctVelocidad').textContent =
 Math.round((velocidad / total) * 100) + '%';
 
   document.getElementById('kpiP3').textContent = p3;
-  document.getElementById('kpiParcial').textContent = parcial;
-  document.getElementById('kpiPQR').textContent = pqr;
-  document.getElementById('kpiVelocidad').textContent = velocidad;
+document.getElementById('kpiParcial').textContent = parcial;
+document.getElementById('kpiPQR').textContent = pqr;
+document.getElementById('kpiVelocidad').textContent = velocidad;
+
+const total = results.length || 1;
+
+document.getElementById('pctP3').textContent =
+((p3 / total) * 100).toFixed(1).replace('.', ',') + '%';
+
+document.getElementById('pctParcial').textContent =
+((parcial / total) * 100).toFixed(1).replace('.', ',') + '%';
+
+document.getElementById('pctPQR').textContent =
+((pqr / total) * 100).toFixed(1).replace('.', ',') + '%';
+
+document.getElementById('pctVelocidad').textContent =
+((velocidad / total) * 100).toFixed(1).replace('.', ',') + '%';
 }
 
 /* ===== Drawer & detalle ===== */
