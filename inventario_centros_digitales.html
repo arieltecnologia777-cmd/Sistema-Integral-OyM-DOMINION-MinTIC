@@ -916,12 +916,10 @@ function searchById(){
 }
 
 /* ===== Tema & filtros ===== */
-{document.documentElement.setAttribute('data-theme',state.theme);const btn=$('#btnTheme');if(btn)btn.textContent='Tema: '+(state.theme==='dark'?'Oscuro':'Claro')}
-{state.theme=state.theme==='dark'?'light':'dark';localStorage.setItem('hv_theme',state.theme);applyTheme()}
 
 function init(){
   const yrEl=document.getElementById('year'); if(yrEl)yrEl.textContent=new Date().getFullYear();
-  safeOn('btnIngresar','click',openModal); safeOn('heroSearch','click',openModal);
+  safeOn('btnIngresar','click',openModal); 
   safeOn('btnRefrescar','click',()=>{state.forceRefresh=true;loadData()});
   safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
 
