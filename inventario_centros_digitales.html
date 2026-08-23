@@ -455,14 +455,22 @@ function updateFeatureMap(item){
   }
 
   const sample=state.items[0]||{};
-  const colMun=guessKey(sample,state.keys.mun.map(toKey));
-  const colDep=guessKey(sample,state.keys.depto.map(toKey));
-  const municipio=colMun ? item[colMun] : '';
-  const departamento=colDep ? item[colDep] : '';
+  const colCentroPoblado=
+  guessKey(sample,state.keys.centroPoblado.map(toKey));
+
+const colDep=
+  guessKey(sample,state.keys.depto.map(toKey));
+
+const centroPoblado=
+  colCentroPoblado ? item[colCentroPoblado] : '';
+
+const departamento=
+  colDep ? item[colDep] : '';
   const locationBadge=document.getElementById('featureMapLocation');
 
 if(locationBadge){
-  locationBadge.innerHTML=`<span>●</span><span>${escapeHtml(municipio)}${municipio&&departamento?', ':''}${escapeHtml(departamento)}</span>`;
+  locationBadge.innerHTML =
+`<span>●</span><span>${escapeHtml(centroPoblado)}${centroPoblado && departamento ? ', ' : ''}${escapeHtml(departamento)}</span>`;
 }
 
 setTimeout(() => {
