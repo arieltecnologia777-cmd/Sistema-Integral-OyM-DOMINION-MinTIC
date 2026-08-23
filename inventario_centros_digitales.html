@@ -1089,11 +1089,13 @@ function setKPIs(total, ok, down){
   $('#kpiTotal').textContent = total.toLocaleString('es-CO');
   $('#kpiOk').textContent = ok.toLocaleString('es-CO');
   $('#kpiDown').textContent = down.toLocaleString('es-CO');
+
   const pctOk = total ? Math.round((ok/total)*100) : 0;
   const pctDown = total ? Math.round((down/total)*100) : 0;
-  $('#barTotal').style.width = '100%';
-  $('#barOk').style.width = pctOk+'%';
-  $('#barDown').style.width = pctDown+'%';
+
+  document.getElementById('pctTotal').textContent = '100%';
+  document.getElementById('pctOnline').textContent = pctOk + '%';
+  document.getElementById('pctOffline').textContent = pctDown + '%';
 }
 function refreshKPIs(results, cols){
   let online = 0;
