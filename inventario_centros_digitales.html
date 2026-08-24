@@ -1061,7 +1061,14 @@ const id=colId ? item[colId] : '';
 const centroPoblado=
   colCentroPoblado ? item[colCentroPoblado] : '';
 const departamento=colDep ? item[colDep] : '';
-const estado=colEst ? item[colEst] : '';
+const estado =
+  (item['Offline'] || '').trim() ? 'Offline' :
+  (item['P3'] || '').trim() ? 'P3' :
+  (item['PQR'] || '').trim() ? 'PQR' :
+  (item['Parcial'] || '').trim() ? 'Parcial' :
+  (item['Velocidad'] || '').trim() ? 'Velocidad' :
+  (item['Online'] || '').trim() ? 'Online' :
+  '';
 
 const titleEl = document.getElementById('featureTitle');
 
