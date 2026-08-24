@@ -129,15 +129,19 @@
     [data-theme="light"] .glass-card{background:rgba(255,255,255,.76)}
 
     /* ===== TARJETA DESTACADA + MINIMAPA REAL ===== */
-   .feature-card{
+    .feature-card{
   position:absolute;
   right:-40px;
   top:20px;
-  width:338px;
+
+  width:360px;
+
   padding:18px;
+
   z-index:10;
 
-  transform:none;
+  transform:scale(.94);
+  transform-origin:top right;
 }
     .feature-title{font-size:14px;font-weight:800;margin-bottom:14px}
     .feature-map{height:180px;border-radius:18px;overflow:hidden;position:relative;margin-bottom:14px;border:1px solid rgba(255,255,255,.14);background:#10162f;box-shadow:inset 0 0 30px rgba(37,230,255,.08),0 12px 30px rgba(0,0,0,.25)}
@@ -260,44 +264,8 @@
   border:1px solid rgba(15,23,42,.08);
   box-shadow:0 8px 24px rgba(15,23,42,.06);
 }
-   .info{
-  display:flex;
-  flex-direction:column;
-  gap:6px
-}
-
-.info label{
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  color:var(--muted)
-}
-
-.info input{
-  width:100%;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:11px 12px;
-  color:var(--text);
-  outline:none
-}
-
-.info select{
-  width:100%;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:11px 12px;
-  color:var(--text);
-  outline:none;
-}
-
-.info select option{
-  background:#141a48;
-  color:#ffffff;
-}
-
+    .info{display:flex;flex-direction:column;gap:6px}.info label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}.info input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:11px 12px;color:var(--text);outline:none}
+    .chips{display:none}
     .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:58px 0 20px}.section-head h2{margin:0;font-size:30px;letter-spacing:-1px}.section-head p{margin:6px 0 0;color:var(--muted);font-size:14px}.summary{color:var(--muted);font-size:13px}
     .kpis{
   display:flex;
@@ -552,8 +520,6 @@
     
     @media(max-width:1100px){.nav{display:none}.hero-layout{grid-template-columns:1fr}.hero-copy{padding:20px 0 0}.hero-stage{min-height:650px}.toolbar{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.feature-card{right:0}.community-card{left:0}}
     @media(max-width:700px){.wrap{width:min(100% - 24px,1420px)}.hero{min-height:auto}.topbar{height:auto;padding:15px 0}.search-mini{display:none}.hero-copy h2{font-size:48px;letter-spacing:-2.5px}.hero-stage{min-height:540px;transform:scale(.88);transform-origin:top center;margin-bottom:-60px}.map-card{height:520px}.toolbar{margin-top:0;grid-template-columns:1fr}.grid{grid-template-columns:1fr}.section-head{padding-top:40px}.kpis{display:grid;grid-template-columns:repeat(2,1fr)}.feature-card{width:330px;max-width:90vw}.feature-map{height:165px}}
- 
-  
   </style>
 </head>
 <body>
@@ -651,41 +617,17 @@
         <div class="kpi" style="color:#ffd029"><h4>VELOCIDAD</h4><div id="kpiVelocidad" class="val">0</div><div id="pctVelocidad" class="kpi-pct">0%</div></div>
       </div>
 
-      
+      <div class="toolbar" id="toolbar-specific">
+        <div class="info"><label>Departamento</label><input id="filterDep" placeholder="Todos"></div>
+        <div class="info"><label>Municipio</label><input id="filterMun" placeholder="Todos"></div>
+        <div class="info"><label>Institución Educativa</label><input id="filterIE" placeholder="Todas"></div>
+        <div class="info"><label>Estado</label><input id="filterEstado" placeholder="Todos"></div>
+        <div class="info"><label>Buscar</label><input id="filterSearch" placeholder="Buscar por nombre o ID..."></div>
+      </div>
     </div>
   </section>
 
   <main class="wrap">
-    <div class="toolbar" id="toolbar-specific">
-        <div class="info">
-  <label>Departamento</label>
-  <select id="filterDep">
-    <option value="">Todos</option>
-  </select>
-</div>
-
-<div class="info">
-  <label>Municipio</label>
-  <select id="filterMun">
-    <option value="">Todos</option>
-  </select>
-</div>
-
-<div class="info">
-  <label>Institución Educativa</label>
-  <select id="filterIE">
-    <option value="">Todas</option>
-  </select>
-</div>
-
-<div class="info">
-  <label>Estado</label>
-  <select id="filterEstado">
-    <option value="">Todos</option>
-  </select>
-</div>
-        <div class="info"><label>Buscar</label><input id="filterSearch" placeholder="Buscar por nombre o ID..."></div>
-      </div>
     <div id="grid" class="grid" aria-live="polite"></div>
     <div style="display:flex;justify-content:center;margin:0 0 60px"><button id="btnMas" class="btn btn-secondary hidden">Mostrar más</button></div>
   </main>
@@ -835,11 +777,8 @@ if(fuente){
     state.raw=items; state.headers=headers; state.headerMap=headerMap;
     state.items=items.map(o=>{const oo={}; headers.forEach(h=>oo[h]=(o[h]??'').toString().trim()); return oo;});
 
-   state.page=0;
-
-fillFilters();
-
-applyFilters();
+    state.page=0;
+    applyFilters();
 
    /* Centro destacado = mayor DIAS_SIN_INCIDENTES */
 if(state.items.length){
@@ -870,18 +809,11 @@ if(state.items.length){
   );
 }
   }catch(err){
-
-  if(resumen){
-    resumen.innerHTML =
-      `<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err && err.message) || err}`;
+    resumen.innerHTML=`<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err&&err.message)||err}`;
+    $('#grid').innerHTML=''; setKPIs(0,0,0);
   }
-
-  $('#grid').innerHTML = '';
-
-  setKPIs(0,0,0);
 }
 
-  }
 /* ===== MINIMAPA REAL ===== */
 function getCoordinate(item, keyCandidates){
   const sample=state.items[0]||{};
@@ -1033,42 +965,7 @@ function escapeHtml(value){
 }
 
 /* ===== Render / filtros / KPIs ===== */
-function fillFilters(){
-
-  const sample = state.items[0] || {};
-
-  const colDep = guessKey(sample,state.keys.depto.map(toKey));
-  const colMun = guessKey(sample,state.keys.mun.map(toKey));
-  const colIE = guessKey(sample,state.keys.ie.map(toKey));
-  const colEst = guessKey(sample,state.keys.estado.map(toKey));
-
-  const load = (id,col,label)=>{
-
-    const el = document.getElementById(id);
-
-    if(!el || !col) return;
-
-    const values = [...new Set(
-      state.items
-        .map(r => (r[col] || '').trim())
-        .filter(Boolean)
-    )].sort();
-
-    el.innerHTML =
-      `<option value="">${label}</option>` +
-      values.map(v =>
-        `<option value="${v}">${v}</option>`
-      ).join('');
-  };
-
-  load('filterDep',colDep,'Todos');
-  load('filterMun',colMun,'Todos');
-  load('filterIE',colIE,'Todas');
-  load('filterEstado',colEst,'Todos');
-}
-
 function applyFilters(){
-
   const sample=state.items[0]||{};
   const colId=guessKey(sample,state.keys.id.map(toKey));
   const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
@@ -1132,35 +1029,14 @@ if(results.length){
 }
 
 function renderResults(results,cols){
-
-  const grid = $('#grid');
-  const resumen = $('#resumen');
-
+  const grid=$('#grid'); const resumen=$('#resumen');
   if(!results.length){
-
-    if(resumen){
-      resumen.textContent =
-        'Sin resultados. Ajusta los filtros o busca por ID/CD.';
-    }
-
-    grid.innerHTML = '';
-
-    $('#btnMas')?.classList.add('hidden');
-
-    return;
+    resumen.textContent='Sin resultados. Ajusta los filtros o busca por ID/CD.';
+    grid.innerHTML=''; $('#btnMas')?.classList.add('hidden'); return;
   }
-
-  if(resumen){
-    resumen.textContent =
-      `${results.length.toLocaleString('es-CO')} resultados`;
-  }
-
-  const end = Math.min(
-    results.length,
-    (state.page + 1) * state.pageSize
-  );
-
-  const slice = results.slice(0,end);
+  if(resumen) resumen.textContent=`${results.length.toLocaleString('es-CO')} resultados`;
+  const end=Math.min(results.length,(state.page+1)*state.pageSize);
+  const slice=results.slice(0,end);
 
   grid.innerHTML=slice.map((o,i)=>{
     const nombre=o[cols.colNombre]||'(sin nombre)';
@@ -1388,12 +1264,7 @@ function init(){
   safeOn('btnRefrescar','click',()=>{state.forceRefresh=true;loadData()});
   safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
 
-  safeOn('filterDep','change',applyFilters);
-safeOn('filterMun','change',applyFilters);
-safeOn('filterIE','change',applyFilters);
-safeOn('filterEstado','change',applyFilters);
-
-safeOn('filterSearch','input',applyFilters);
+  ['filterDep','filterMun','filterIE','filterEstado','filterSearch'].forEach(id=>safeOn(id,'input',()=>applyFilters()));
 
   $$('.drawer .tab').forEach(btn=>btn.addEventListener('click',()=>activateTab(btn.dataset.tab)));
 
