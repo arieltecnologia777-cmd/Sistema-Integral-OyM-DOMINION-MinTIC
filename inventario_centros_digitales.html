@@ -1162,8 +1162,10 @@ if(results.length){
   }
 
   updateFeatureCard(
-    destacado || results[0]
-  );
+  destacado || results[0],
+  true
+);
+
 }
 }
 
@@ -1269,7 +1271,7 @@ $$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
   let item=id?results.find(r=>(r[cols.colId]||'')===id):null;
   if(!item) item=results[0];
   showDetail(item,cols);
-  updateFeatureCard(item);
+  updateFeatureCard(item,false);
 }));
 
 setTimeout(() => {
