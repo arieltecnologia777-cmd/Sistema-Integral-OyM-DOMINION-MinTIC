@@ -901,6 +901,8 @@ if(fuente){
     const headerMap={}; headers.forEach(h=>headerMap[toKey(h)]=h);
     state.raw=items; state.headers=headers; state.headerMap=headerMap;
     state.items=items.map(o=>{const oo={}; headers.forEach(h=>oo[h]=(o[h]??'').toString().trim()); return oo;});
+    console.log('Registros cargados:', state.items.length);
+    console.log('Primer registro:', state.items[0]);
 
    state.page=0;
 
