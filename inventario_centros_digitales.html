@@ -886,7 +886,7 @@ if(fuente){
     if(resumen) resumen.textContent='Cargando datos…';
     const {text:txt, used} = await fetchWithFallbacks(url);
     console.debug('Dataset cargado vía:', used);
-    console.log('Columnas detectadas:', headers);
+   
 
     let items=[], headers=[];
     if((srcParam||DATA_URL).toLowerCase().endsWith('.json') || txt.trim().startsWith('[')){
@@ -898,6 +898,7 @@ if(fuente){
       headers=h; items=rows;
     }
 
+    console.log('Columnas detectadas:', headers);
     const headerMap={}; headers.forEach(h=>headerMap[toKey(h)]=h);
     state.raw=items; state.headers=headers; state.headerMap=headerMap;
     state.items=items.map(o=>{const oo={}; headers.forEach(h=>oo[h]=(o[h]??'').toString().trim()); return oo;});
