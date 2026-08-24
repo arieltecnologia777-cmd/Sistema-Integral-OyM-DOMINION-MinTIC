@@ -1020,7 +1020,7 @@ if(titleEl){
   }else{
 
     titleEl.textContent =
-      'CENTRO DIGITAL SELECCIONADO';
+      '🔎 CENTRO DIGITAL SELECCIONADO';
 
   }
 
@@ -1161,9 +1161,12 @@ if(results.length){
 
   }
 
-  updateFeatureCard(
+  const isEstadoFilter =
+  ($('#filterEstado')?.value || '').trim() !== '';
+
+updateFeatureCard(
   destacado || results[0],
-  true
+  !isEstadoFilter
 );
 
 }
