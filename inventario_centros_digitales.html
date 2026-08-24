@@ -999,7 +999,13 @@ function renderResults(results,cols){
   grid.innerHTML=slice.map((o,i)=>{
     const nombre=o[cols.colNombre]||'(sin nombre)';
     const id=o[cols.colId]||''; const dep=o[cols.colDep]||''; const mun=o[cols.colMun]||''; const ope=o[cols.colOpe]||''; const est=o[cols.colEst]||'';
-    const estClass=/ok|online|activo|operativo|operativa|en servicio|funciona/i.test(est)?'ok':/baja|inactivo|offline|caido|caído|fuera|no operativo/i.test(est)?'down':est?'warn':'';
+    const estClass =
+/p3/i.test(est) ? 'p3' :
+/pqr/i.test(est) ? 'pqr' :
+/velocidad/i.test(est) ? 'velocidad' :
+/ok|online|activo|operativo|operativa|en servicio|funciona/i.test(est) ? 'ok' :
+/baja|inactivo|offline|caido|caído|fuera|no operativo/i.test(est) ? 'down' :
+est ? 'warn' : '';
     const hue=(i*37)%360;
     return `<article class="card" data-id="${encodeURIComponent(id)}" title="Ver detalle">
   <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
