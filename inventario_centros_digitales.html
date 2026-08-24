@@ -886,6 +886,7 @@ if(fuente){
     if(resumen) resumen.textContent='Cargando datos…';
     const {text:txt, used} = await fetchWithFallbacks(url);
     console.debug('Dataset cargado vía:', used);
+    console.log('Columnas detectadas:', headers);
 
     let items=[], headers=[];
     if((srcParam||DATA_URL).toLowerCase().endsWith('.json') || txt.trim().startsWith('[')){
@@ -1184,7 +1185,7 @@ function applyFilters(){
   state.lastFilter={q,dep,mun,ie,estado};
   state.page=0;
   renderResults(results,{colId,colNombre,colDep,colMun,colOpe,colEst});
-  refreshKPIs(results,{colEst});
+  refreshKPIs(results);
 
   /* Centro destacado = mayor DIAS_SIN_INCIDENTES del filtro */
 if(results.length){
@@ -1421,12 +1422,35 @@ function setKPIs(total,ok,down){
   $('#pctTotal').textContent='100%'; $('#pctOnline').textContent=pctOk+'%'; $('#pctOffline').textContent=pctDown+'%';
 }
 
-function refreshKPIs(results,cols){
+function refreshKPIs(results){
   let online=0,offline=0,p3=0,parcial=0,pqr=0,velocidad=0;
+    const sample = results[0] || {};
+
+  const colOffline = guessKey(sample,['offline']);
+  const colP3 = guessKey(sample,['p3']);
+  const colParcial = guessKey(sample,['parcial']);
+  const colPQR = guessKey(sample,['pqr']);
+  const colVelocidad = guessKey(sample,['velocidad']);
+  const colOnline = guessKey(sample,['online']);
   results.forEach(o=>{
-    const est=(o[cols.colEst]||'').toString().trim().toLowerCase();
-    if(est==='online') online++; else if(est==='offline') offline++; else if(est==='p3') p3++; else if(est==='parcial') parcial++; else if(est==='pqr') pqr++; else if(est==='velocidad') velocidad++;
-  });
+
+  if((o[colOffline] || '').toString().trim() !== '') offline++;
+
+  if((o[colP3] || '').toString().trim() !== '') p3++;
+
+  if((o[colParcial] || '').toString().trim() !== '') parcial++;
+
+  if((o[colPQR] || '').toString().trim() !== '') pqr++;
+
+  if((o[colVelocidad] || '').toString().trim() !== '') velocidad++;
+
+  if((o[colOnline] || '').toString().trim() !== '') online++;
+
+});
+  if(!results.length){
+  setKPIs(0,0,0);
+  return;
+}
   setKPIs(results.length,online,offline);
   $('#kpiP3').textContent=p3; $('#kpiParcial').textContent=parcial; $('#kpiPQR').textContent=pqr; $('#kpiVelocidad').textContent=velocidad;
   const total=results.length||1;
@@ -1477,7 +1501,7 @@ function searchById(){
   if(!target){alert('No se encontró un Centro con ese ID/Código.');return}
   closeModal();
   const cols={colId,colNombre:guessKey(sample,state.keys.nombre.map(toKey)),colDep:guessKey(sample,state.keys.depto.map(toKey)),colMun:guessKey(sample,state.keys.mun.map(toKey)),colOpe:guessKey(sample,state.keys.operador.map(toKey)),colEst:guessKey(sample,state.keys.estado.map(toKey))};
-  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results,{colEst:cols.colEst}); updateFeatureCard(target,false); showDetail(target,cols); activateTab('datos');
+  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results); updateFeatureCard(target,false); showDetail(target,cols); activateTab('datos');
 }
 
 /* ===== Tema & filtros ===== */
