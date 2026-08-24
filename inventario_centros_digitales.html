@@ -3,7 +3,7 @@
 <head>
   <script>
     (function(){
-      try{
+      try{@media (min-width:769px){
         if(!sessionStorage.getItem('auth_ok')) window.location.replace('login.html');
       }catch(e){ window.location.replace('login.html'); }
     })();
@@ -674,27 +674,7 @@
 
 }
 
-    @media (min-width:769px){
-
-  .hero-stage{
-    position:relative;
-  }
-
-  .feature-card{
-    position:absolute;
-
-    top:95px;
-    right:60px;
-
-    width:360px;
-
-    transform:scale(.94);
-    transform-origin:top right;
-
-    z-index:20;
-  }
-
-}
+  
   </style>
 </head>
 <body>
