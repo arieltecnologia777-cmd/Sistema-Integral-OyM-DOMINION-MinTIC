@@ -624,7 +624,6 @@
 
   .hero-copy{
     width:100%;
-    max-width:100%;
     margin-top:0;
     padding-top:20px;
     text-align:center;
@@ -637,41 +636,37 @@
   .hero-stage{
     width:100%;
     min-height:auto;
-
-    transform:scale(.60);
-    transform-origin:top center;
-
-    margin-top:-120px;
-    margin-bottom:-250px;
   }
 
   .map-card{
+    transform:scale(.60);
+    transform-origin:top center;
+
     width:850px;
-    height:720px;
+    height:430px;
+
+    margin:0 auto;
   }
 
   .feature-card{
-
     position:relative;
+
+    width:100%;
+    max-width:none;
 
     right:auto;
     left:auto;
     top:auto;
 
-    width:95%;
-
     transform:none;
 
-    margin:380px auto 0 auto;
-
-    z-index:30;
+    margin-top:20px;
   }
 
   .kpis{
     margin-top:20px;
 
     display:grid;
-
     grid-template-columns:1fr 1fr;
 
     gap:12px;
@@ -736,7 +731,11 @@
             <div class="marker marker-antioquia"></div>
             <div class="marker marker-sai"></div>
 
-            <!-- Centro destacado: ahora es dinámico y usa latitud/longitud reales -->
+           
+          </div>
+        </div>
+      </div>
+ <!-- Centro destacado: ahora es dinámico y usa latitud/longitud reales -->
             <div class="glass-card feature-card">
               <div class="feature-title" id="featureTitle">
   🟢 CD CON MAYOR ESTABILIDAD OPERATIVA
@@ -772,10 +771,6 @@
 
               <button class="btn btn-secondary" id="featureDetailBtn">Ver hoja de vida →</button>
             </div>
-          </div>
-        </div>
-      </div>
-
       <div class="kpis">
         <div class="kpi" style="color:#6aa9ff"><h4>TOTAL CENTROS</h4><div id="kpiTotal" class="val">—</div><div id="pctTotal" class="kpi-pct">100%</div></div>
         <div class="kpi" style="color:#2cf5a0"><h4>ONLINE</h4><div id="kpiOk" class="val">—</div><div id="pctOnline" class="kpi-pct">0%</div></div>
