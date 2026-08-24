@@ -1192,7 +1192,39 @@ const colPQR = guessKey(sample,['pqr']);
     if(dep && !normalize(o[colDep]||'').includes(dep)) return false;
     if(mun && !normalize(o[colMun]||'').includes(mun)) return false;
     if(ie && !normalize(o[colIE]||o[colNombre]||'').includes(ie)) return false;
-    if(estado && !normalize(o[colEst]||'').includes(estado)) return false;
+    if(estado){
+
+  if(
+    estado === 'online' &&
+    (o[colOnline] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'offline' &&
+    (o[colOffline] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'parcial' &&
+    (o[colParcial] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'velocidad' &&
+    (o[colVelocidad] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'p3' &&
+    (o[colP3] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'pqr' &&
+    (o[colPQR] || '').toString().trim() === ''
+  ) return false;
+
+}
     if(q){
       const hay=[o[colId],o[colNombre],o[colMun],o[colDep],o[colOpe],o[colIE]].filter(Boolean).some(v=>normalize(v).includes(q));
       if(!hay) return false;
