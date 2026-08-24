@@ -1174,7 +1174,12 @@ function applyFilters(){
   const colDep=guessKey(sample,state.keys.depto.map(toKey));
   const colMun=guessKey(sample,state.keys.mun.map(toKey));
   const colOpe=guessKey(sample,state.keys.operador.map(toKey));
-  const colEst=guessKey(sample,state.keys.estado.map(toKey));
+  const colOnline = guessKey(sample,['online']);
+const colOffline = guessKey(sample,['offline']);
+const colParcial = guessKey(sample,['parcial']);
+const colVelocidad = guessKey(sample,['velocidad']);
+const colP3 = guessKey(sample,['p3']);
+const colPQR = guessKey(sample,['pqr']);
   const colIE=guessKey(sample,state.keys.ie.map(toKey));
 
   const dep=normalize($('#filterDep')?.value||'');
