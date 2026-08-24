@@ -685,9 +685,122 @@
   }
 
 }
+
+    .mobile-menu-btn,
+.mobile-sidebar,
+.mobile-overlay{
+  display:none;
+}
+
+@media (max-width:768px){
+
+  .mobile-menu-btn{
+    display:flex;
+
+    position:fixed;
+    top:18px;
+    right:18px;
+
+    width:52px;
+    height:52px;
+
+    align-items:center;
+    justify-content:center;
+
+    border:none;
+    border-radius:18px;
+
+    font-size:26px;
+    font-weight:700;
+
+    color:#fff;
+
+    background:rgba(21,27,74,.35);
+
+    backdrop-filter:blur(30px);
+    -webkit-backdrop-filter:blur(30px);
+
+    border:1px solid rgba(255,255,255,.12);
+
+    box-shadow:
+      0 0 25px rgba(37,230,255,.12),
+      0 0 40px rgba(155,92,255,.08);
+
+    z-index:3000;
+  }
+
+  .mobile-overlay{
+    display:block;
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(3,8,28,.25);
+
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s;
+
+    z-index:2998;
+  }
+
+  .mobile-overlay.open{
+    opacity:1;
+    visibility:visible;
+  }
+
+  .mobile-sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    position:fixed;
+    top:0;
+    right:-280px;
+
+    width:260px;
+    height:100vh;
+
+    padding:90px 18px 20px;
+
+    background:rgba(10,15,48,.35);
+
+  
+    
   </style>
 </head>
 <body>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">
+  ☰
+</button>
+
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
+<aside class="mobile-sidebar" id="mobileSidebar">
+
+  #inicio🏠 Inicio</a>
+
+  #toolbar-specific
+    🔍 Explorar
+  </a>
+
+  ">
+    📚 Aprender
+  </a>
+
+  #conectar
+
+  #comunidad>
+
+  #recursos
+    📦 Recursos
+  </a>
+
+</aside>
   <section class="hero" id="inicio">
     <div class="wrap">
       <header class="topbar">
@@ -1671,6 +1784,36 @@ safeOn('filterSearch','input',applyFilters);
   loadData().catch(err=>console.error(err));
 }
 
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileSidebar = document.getElementById('mobileSidebar');
+const mobileOverlay = document.getElementById('mobileOverlay');
+
+mobileMenuBtn?.addEventListener('click', () => {
+
+  mobileSidebar.classList.toggle('open');
+  mobileOverlay.classList.toggle('open');
+
+});
+
+mobileOverlay?.addEventListener('click', () => {
+
+  mobileSidebar.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+
+});
+
+document
+  .querySelectorAll('.mobile-sidebar a')
+  .forEach(link => {
+
+    link.addEventListener('click', () => {
+
+      mobileSidebar.classList.remove('open');
+      mobileOverlay.classList.remove('open');
+
+    });
+
+  });
 window.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
