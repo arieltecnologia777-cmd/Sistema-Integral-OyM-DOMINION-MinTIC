@@ -611,6 +611,10 @@
 
     @media (max-width:768px){
 
+  .hero{
+    min-height:auto;
+  }
+
   .hero-layout{
     display:flex;
     flex-direction:column;
@@ -633,17 +637,37 @@
   .hero-stage{
     width:100%;
     min-height:auto;
+    position:relative;
+    transform:none;
+    margin-top:20px;
   }
 
   .map-card{
+    position:relative;
     width:100%;
-    height:auto;
+    height:500px;
+  }
+
+  .feature-card{
+    position:relative;
+
+    right:auto;
+    top:auto;
+
+    width:100%;
+    max-width:none;
+
+    transform:none;
+
+    margin-top:20px;
   }
 
   .kpis{
     margin-top:20px;
+
     display:grid;
     grid-template-columns:1fr 1fr;
+
     gap:12px;
   }
 
