@@ -2,11 +2,25 @@
 <html lang="es" data-theme="dark">
 <head>
   <script>
-    (function(){
-      try{@media (min-width:769px){
-        if(!sessionStorage.getItem('auth_ok')) window.location.replace('login.html');
-      }catch(e){ window.location.replace('login.html'); }
-    })();
+    (function () {
+
+  try {
+
+    if (
+      window.innerWidth >= 769 &&
+      !sessionStorage.getItem('auth_ok')
+    ) {
+      window.location.replace('login.html');
+    }
+
+  } catch (e) {
+
+    window.location.replace('login.html');
+
+  }
+
+})();
+
   </script>
 
   <meta charset="utf-8" />
@@ -753,7 +767,7 @@
     visibility:visible;
   }
 
-  .mobile-sidebar{
+ .mobile-sidebar{
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -769,8 +783,41 @@
 
     background:rgba(10,15,48,.35);
 
+    backdrop-filter:blur(40px);
+    -webkit-backdrop-filter:blur(40px);
+
+    border-left:1px solid rgba(255,255,255,.10);
+
+    transition:.3s ease;
+
+    z-index:2999;
+}
+
+.mobile-sidebar.open{
+    right:0;
+}
+
+.mobile-sidebar a{
+    display:flex;
+    align-items:center;
+
+    min-height:48px;
+
+    padding:0 16px;
+
+    border-radius:14px;
+
+    color:#fff;
+
+    font-size:15px;
+    font-weight:600;
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+}
+}
   
-    
   </style>
 </head>
 <body>
@@ -782,23 +829,17 @@
 
 <aside class="mobile-sidebar" id="mobileSidebar">
 
-  #inicio🏠 Inicio</a>
+  inicio">🏠 Inicio</a>
 
-  #toolbar-specific
-    🔍 Explorar
-  </a>
+  ">🔍 Explorar</a>
 
-  ">
-    📚 Aprender
-  </a>
+  ">📚 Aprender</a>
 
-  #conectar
+  ">🤝 Conectar</a>
 
-  #comunidad>
+  ">🌎 Comunidad</a>
 
-  #recursos
-    📦 Recursos
-  </a>
+  #recursos📁 Recursos</a>
 
 </aside>
   <section class="hero" id="inicio">
