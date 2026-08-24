@@ -638,11 +638,11 @@
     width:100%;
     min-height:auto;
 
-    transform:scale(.65);
+    transform:scale(.60);
     transform-origin:top center;
 
-    margin-top:-80px;
-    margin-bottom:-180px;
+    margin-top:-120px;
+    margin-bottom:-250px;
   }
 
   .map-card{
@@ -651,21 +651,27 @@
   }
 
   .feature-card{
-    position:absolute;
 
-    right:-40px;
-    top:20px;
+    position:relative;
 
-    width:360px;
+    right:auto;
+    left:auto;
+    top:auto;
 
-    transform:scale(.94);
-    transform-origin:top right;
+    width:95%;
+
+    transform:none;
+
+    margin:380px auto 0 auto;
+
+    z-index:30;
   }
 
   .kpis{
     margin-top:20px;
 
     display:grid;
+
     grid-template-columns:1fr 1fr;
 
     gap:12px;
