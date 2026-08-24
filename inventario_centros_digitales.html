@@ -1174,6 +1174,8 @@ function applyFilters(){
   const colDep=guessKey(sample,state.keys.depto.map(toKey));
   const colMun=guessKey(sample,state.keys.mun.map(toKey));
   const colOpe=guessKey(sample,state.keys.operador.map(toKey));
+  const colEst =
+  guessKey(sample,state.keys.estado.map(toKey));
   const colOnline = guessKey(sample,['online']);
 const colOffline = guessKey(sample,['offline']);
 const colParcial = guessKey(sample,['parcial']);
