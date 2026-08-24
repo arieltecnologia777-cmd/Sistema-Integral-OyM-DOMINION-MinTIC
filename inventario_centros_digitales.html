@@ -553,6 +553,44 @@
   display:none;
 }
 
+    .excel-access{
+  margin-top:40px;
+}
+
+.excel-access a{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+
+  text-decoration:none;
+  color:#fff;
+
+  transition:.25s transform;
+}
+
+.excel-access a:hover{
+  transform:translateY(-4px);
+}
+
+.excel-access img{
+  width:64px;
+  height:64px;
+
+  border-radius:14px;
+
+  background:#fff;
+  padding:8px;
+
+  box-shadow:
+    0 0 20px rgba(0,255,120,.25),
+    0 8px 25px rgba(0,0,0,.25);
+}
+
+.excel-access span{
+  font-size:13px;
+  font-weight:700;
+}
     
     @media(max-width:1100px){.nav{display:none}.hero-layout{grid-template-columns:1fr}.hero-copy{padding:20px 0 0}.hero-stage{min-height:650px}.toolbar{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.feature-card{right:0}.community-card{left:0}}
     @media(max-width:700px){.wrap{width:min(100% - 24px,1420px)}.hero{min-height:auto}.topbar{height:auto;padding:15px 0}.search-mini{display:none}.hero-copy h2{font-size:48px;letter-spacing:-2.5px}.hero-stage{min-height:540px;transform:scale(.88);transform-origin:top center;margin-bottom:-60px}.map-card{height:520px}.toolbar{margin-top:0;grid-template-columns:1fr}.grid{grid-template-columns:1fr}.section-head{padding-top:40px}.kpis{display:grid;grid-template-columns:repeat(2,1fr)}.feature-card{width:330px;max-width:90vw}.feature-map{height:165px}}
@@ -589,6 +627,16 @@
           <h2>Bienvenido <span class="gradient-text"><br></span></h2>
           <p>Consulta en tiempo real el estado operativo de los Centros Digitales, revisa eventos históricos, indicadores de disponibilidad, niveles de servicio, incidentes y la hoja de vida completa de cada sitio.</p>
           <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID <span>→</span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button></div>
+          <div class="excel-access">
+  <a
+    href="https://arieltecnologia777-cmd.github.io/Exporte-backlog/exporte_backlog.html"
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Exportar informe">
+
+    <img src="https://cdn-icons-png.flaticon.com/512/732/732220<span>Exportar informe</span>
+  </a>
+</div>
         </div>
 
         <div class="hero-stage">
