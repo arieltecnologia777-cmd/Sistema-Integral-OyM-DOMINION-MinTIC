@@ -648,12 +648,13 @@
     width:850px;
     height:720px;
 
-    transform:scale(.76);
+    transform:scale(.80);
     transform-origin:top center;
 
-    left:190px;
+    left:209px;
     top:80px;
-}
+  }
+
   .colombia{
     position:absolute;
     top:-50px;
@@ -669,11 +670,18 @@
 
   .kpis{
     margin-top:20px;
-
     display:grid;
     grid-template-columns:1fr 1fr;
-
     gap:12px;
+  }
+
+}
+    @media (max-width:390px){
+
+  .map-card{
+    transform:scale(.74);
+    left:180px;
+    top:80px;
   }
 
 }
