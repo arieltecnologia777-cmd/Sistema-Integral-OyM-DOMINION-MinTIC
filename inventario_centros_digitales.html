@@ -588,6 +588,26 @@
   transform:scale(1.08);
 }
 
+    #excel-link{
+  margin-top:35px;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+
+.excel-caption{
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  letter-spacing:.3px;
+  text-align:center;
+  transition:.2s;
+}
+
+#excel-link:hover .excel-caption{
+  color:var(--cyan);
+}
     
   </style>
 </head>
@@ -611,11 +631,13 @@
           <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID <span>→</span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button></div>
           <div id="excel-link">
   <a href="https://arieltecnologia777-cmd.github.io/Exporte-backlog/exporte_backlog.html" target="_blank">
-    <img src="excel.png" alt="Exportar informe">
-
+    <img src="excel.png" alt="Exportar backlog">
   </a>
+
+  <div class="excel-caption">
+    Exportar Backlog
+  </div>
 </div>
-        </div>
 
         <div class="hero-stage">
           <div class="map-glow"></div>
