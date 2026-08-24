@@ -612,7 +612,8 @@
     @media (max-width:768px){
 
   .hero-layout{
-    grid-template-columns:1fr;
+    display:flex;
+    flex-direction:column;
     gap:20px;
     min-height:auto;
   }
@@ -630,7 +631,13 @@
   }
 
   .hero-stage{
-    display:none;
+    width:100%;
+    min-height:auto;
+  }
+
+  .map-card{
+    width:100%;
+    height:auto;
   }
 
 }
