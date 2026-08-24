@@ -264,8 +264,38 @@
   border:1px solid rgba(15,23,42,.08);
   box-shadow:0 8px 24px rgba(15,23,42,.06);
 }
-    .info{display:flex;flex-direction:column;gap:6px}.info label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}.info input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:11px 12px;color:var(--text);outline:none}
-    .chips{display:none}
+   .info{
+  display:flex;
+  flex-direction:column;
+  gap:6px
+}
+
+.info label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--muted)
+}
+
+.info input{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 12px;
+  color:var(--text);
+  outline:none
+}
+
+.info select{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 12px;
+  color:var(--text);
+  outline:none;
+}
     .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:58px 0 20px}.section-head h2{margin:0;font-size:30px;letter-spacing:-1px}.section-head p{margin:6px 0 0;color:var(--muted);font-size:14px}.summary{color:var(--muted);font-size:13px}
     .kpis{
   display:flex;
@@ -623,10 +653,33 @@
 
   <main class="wrap">
     <div class="toolbar" id="toolbar-specific">
-        <div class="info"><label>Departamento</label><input id="filterDep" placeholder="Todos"></div>
-        <div class="info"><label>Municipio</label><input id="filterMun" placeholder="Todos"></div>
-        <div class="info"><label>Institución Educativa</label><input id="filterIE" placeholder="Todas"></div>
-        <div class="info"><label>Estado</label><input id="filterEstado" placeholder="Todos"></div>
+        <div class="info">
+  <label>Departamento</label>
+  <select id="filterDep">
+    <option value="">Todos</option>
+  </select>
+</div>
+
+<div class="info">
+  <label>Municipio</label>
+  <select id="filterMun">
+    <option value="">Todos</option>
+  </select>
+</div>
+
+<div class="info">
+  <label>Institución Educativa</label>
+  <select id="filterIE">
+    <option value="">Todas</option>
+  </select>
+</div>
+
+<div class="info">
+  <label>Estado</label>
+  <select id="filterEstado">
+    <option value="">Todos</option>
+  </select>
+</div>
         <div class="info"><label>Buscar</label><input id="filterSearch" placeholder="Buscar por nombre o ID..."></div>
       </div>
     <div id="grid" class="grid" aria-live="polite"></div>
@@ -966,7 +1019,42 @@ function escapeHtml(value){
 }
 
 /* ===== Render / filtros / KPIs ===== */
+function fillFilters(){
+
+  const sample = state.items[0] || {};
+
+  const colDep = guessKey(sample,state.keys.depto.map(toKey));
+  const colMun = guessKey(sample,state.keys.mun.map(toKey));
+  const colIE = guessKey(sample,state.keys.ie.map(toKey));
+  const colEst = guessKey(sample,state.keys.estado.map(toKey));
+
+  const load = (id,col,label)=>{
+
+    const el = document.getElementById(id);
+
+    if(!el || !col) return;
+
+    const values = [...new Set(
+      state.items
+        .map(r => (r[col] || '').trim())
+        .filter(Boolean)
+    )].sort();
+
+    el.innerHTML =
+      `<option value="">${label}</option>` +
+      values.map(v =>
+        `<option value="${v}">${v}</option>`
+      ).join('');
+  };
+
+  load('filterDep',colDep,'Todos');
+  load('filterMun',colMun,'Todos');
+  load('filterIE',colIE,'Todas');
+  load('filterEstado',colEst,'Todos');
+}
+
 function applyFilters(){
+
   const sample=state.items[0]||{};
   const colId=guessKey(sample,state.keys.id.map(toKey));
   const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
@@ -1032,7 +1120,14 @@ if(results.length){
 function renderResults(results,cols){
   const grid=$('#grid'); const resumen=$('#resumen');
   if(!results.length){
+  if(resumen){
     resumen.textContent='Sin resultados. Ajusta los filtros o busca por ID/CD.';
+  }
+
+  grid.innerHTML='';
+  $('#btnMas')?.classList.add('hidden');
+  return;
+}
     grid.innerHTML=''; $('#btnMas')?.classList.add('hidden'); return;
   }
   if(resumen) resumen.textContent=`${results.length.toLocaleString('es-CO')} resultados`;
@@ -1265,7 +1360,12 @@ function init(){
   safeOn('btnRefrescar','click',()=>{state.forceRefresh=true;loadData()});
   safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
 
-  ['filterDep','filterMun','filterIE','filterEstado','filterSearch'].forEach(id=>safeOn(id,'input',()=>applyFilters()));
+  safeOn('filterDep','change',applyFilters);
+safeOn('filterMun','change',applyFilters);
+safeOn('filterIE','change',applyFilters);
+safeOn('filterEstado','change',applyFilters);
+
+safeOn('filterSearch','input',applyFilters);
 
   $$('.drawer .tab').forEach(btn=>btn.addEventListener('click',()=>activateTab(btn.dataset.tab)));
 
