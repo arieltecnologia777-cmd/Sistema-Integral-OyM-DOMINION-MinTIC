@@ -588,7 +588,6 @@
   </section>
 
   <main class="wrap">
-    <div class="section-head" id="conectar"><div><h2>La red, en movimiento</h2><p>Descubre el estado de conectividad de los Centros Digitales.</p></div><div class="summary" id="resumen">Cargando datos…</div><div id="fuente" class="hidden"></div></div>
     <div id="grid" class="grid" aria-live="polite"></div>
     <div style="display:flex;justify-content:center;margin:0 0 60px"><button id="btnMas" class="btn btn-secondary hidden">Mostrar más</button></div>
   </main>
@@ -712,12 +711,15 @@ async function loadData(){
   const srcParam = new URLSearchParams(location.search).get('src');
   const url = srcParam || SHEET_CSV_URL;
   const resumen = $('#resumen');
-  const fuente = $('#fuente');
+const fuente = $('#fuente');
+
+if(fuente){
   fuente.textContent = 'Fuente: ' + (srcParam || DATA_URL);
   fuente.classList.remove('hidden');
+}
 
   try{
-    resumen.textContent='Cargando datos…';
+    if(resumen) resumen.textContent='Cargando datos…';
     const {text:txt, used} = await fetchWithFallbacks(url);
     console.debug('Dataset cargado vía:', used);
 
@@ -992,7 +994,7 @@ function renderResults(results,cols){
     resumen.textContent='Sin resultados. Ajusta los filtros o busca por ID/CD.';
     grid.innerHTML=''; $('#btnMas')?.classList.add('hidden'); return;
   }
-  resumen.textContent=`${results.length.toLocaleString('es-CO')} resultados`;
+  if(resumen) resumen.textContent=`${results.length.toLocaleString('es-CO')} resultados`;
   const end=Math.min(results.length,(state.page+1)*state.pageSize);
   const slice=results.slice(0,end);
 
