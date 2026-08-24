@@ -368,9 +368,39 @@
 
 .card-location{
   margin-top:-6px;
-  color:#9db7ff;
   font-size:15px;
   font-weight:500;
+}
+
+.card-id{
+  color:#42b9ff;
+}
+
+.card-sep{
+  color:#7985b7;
+  margin:0 6px;
+}
+
+.card-place{
+  color:#c8d2ef;
+}
+
+.card-connectivity{
+  margin-top:10px;
+  font-size:16px;
+  font-weight:600;
+}
+
+.card-connectivity.ok{
+  color:#2cf5a0;
+}
+
+.card-connectivity.down{
+  color:#ff5c5c;
+}
+
+.card-connectivity.warn{
+  color:#ffb347;
 }
 
 .card-connectivity{
@@ -942,8 +972,17 @@ function renderResults(results,cols){
 
   <h3>${escapeHtml(nombre)}</h3>
      <div class="card-location">
-  ID: ${escapeHtml(id)}
-  ${mun || dep ? ` • ${escapeHtml(mun)}${mun && dep ? ', ' : ''}${escapeHtml(dep)}` : ''}
+  <span class="card-id">
+    ID: ${escapeHtml(id)}
+  </span>
+
+  ${mun || dep ? `
+    <span class="card-sep">•</span>
+
+    <span class="card-place">
+      ${escapeHtml(mun)}${mun && dep ? ', ' : ''}${escapeHtml(dep)}
+    </span>
+  ` : ''}
 </div>
 
 <div class="card-connectivity ${estClass}">
