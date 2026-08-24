@@ -831,8 +831,11 @@ if(fuente){
     state.raw=items; state.headers=headers; state.headerMap=headerMap;
     state.items=items.map(o=>{const oo={}; headers.forEach(h=>oo[h]=(o[h]??'').toString().trim()); return oo;});
 
-    state.page=0;
-    applyFilters();
+   state.page=0;
+
+fillFilters();
+
+applyFilters();
 
    /* Centro destacado = mayor DIAS_SIN_INCIDENTES */
 if(state.items.length){
@@ -863,9 +866,15 @@ if(state.items.length){
   );
 }
   }catch(err){
-    resumen.innerHTML=`<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err&&err.message)||err}`;
-    $('#grid').innerHTML=''; setKPIs(0,0,0);
+
+  if(resumen){
+    resumen.innerHTML =
+      `<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err && err.message) || err}`;
   }
+
+  $('#grid').innerHTML = '';
+
+  setKPIs(0,0,0);
 }
 
 /* ===== MINIMAPA REAL ===== */
@@ -1118,21 +1127,35 @@ if(results.length){
 }
 
 function renderResults(results,cols){
-  const grid=$('#grid'); const resumen=$('#resumen');
+
+  const grid = $('#grid');
+  const resumen = $('#resumen');
+
   if(!results.length){
-  if(resumen){
-    resumen.textContent='Sin resultados. Ajusta los filtros o busca por ID/CD.';
+
+    if(resumen){
+      resumen.textContent =
+        'Sin resultados. Ajusta los filtros o busca por ID/CD.';
+    }
+
+    grid.innerHTML = '';
+
+    $('#btnMas')?.classList.add('hidden');
+
+    return;
   }
 
-  grid.innerHTML='';
-  $('#btnMas')?.classList.add('hidden');
-  return;
-}
-    grid.innerHTML=''; $('#btnMas')?.classList.add('hidden'); return;
+  if(resumen){
+    resumen.textContent =
+      `${results.length.toLocaleString('es-CO')} resultados`;
   }
-  if(resumen) resumen.textContent=`${results.length.toLocaleString('es-CO')} resultados`;
-  const end=Math.min(results.length,(state.page+1)*state.pageSize);
-  const slice=results.slice(0,end);
+
+  const end = Math.min(
+    results.length,
+    (state.page + 1) * state.pageSize
+  );
+
+  const slice = results.slice(0,end);
 
   grid.innerHTML=slice.map((o,i)=>{
     const nombre=o[cols.colNombre]||'(sin nombre)';
