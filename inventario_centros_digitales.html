@@ -1307,7 +1307,14 @@ function renderResults(results,cols){
 
   grid.innerHTML=slice.map((o,i)=>{
     const nombre=o[cols.colNombre]||'(sin nombre)';
-    const id=o[cols.colId]||''; const dep=o[cols.colDep]||''; const mun=o[cols.colMun]||''; const ope=o[cols.colOpe]||''; const est=o[cols.colEst]||'';
+    const id=o[cols.colId]||''; const dep=o[cols.colDep]||''; const mun=o[cols.colMun]||''; const ope=o[cols.colOpe]||''; const est =
+  (o['Offline'] || '').trim() ? 'Offline' :
+  (o['P3'] || '').trim() ? 'P3' :
+  (o['PQR'] || '').trim() ? 'PQR' :
+  (o['Parcial'] || '').trim() ? 'Parcial' :
+  (o['Velocidad'] || '').trim() ? 'Velocidad' :
+  (o['Online'] || '').trim() ? 'Online' :
+  '';
     const estClass =
 /p3/i.test(est) ? 'p3' :
 /pqr/i.test(est) ? 'pqr' :
