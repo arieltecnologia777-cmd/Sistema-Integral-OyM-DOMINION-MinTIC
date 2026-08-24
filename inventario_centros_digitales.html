@@ -1413,7 +1413,7 @@ function searchById(){
   if(!target){alert('No se encontró un Centro con ese ID/Código.');return}
   closeModal();
   const cols={colId,colNombre:guessKey(sample,state.keys.nombre.map(toKey)),colDep:guessKey(sample,state.keys.depto.map(toKey)),colMun:guessKey(sample,state.keys.mun.map(toKey)),colOpe:guessKey(sample,state.keys.operador.map(toKey)),colEst:guessKey(sample,state.keys.estado.map(toKey))};
-  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results,{colEst:cols.colEst}); updateFeatureCard(target); showDetail(target,cols); activateTab('datos');
+  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results,{colEst:cols.colEst}); updateFeatureCard(target,false); showDetail(target,cols); activateTab('datos');
 }
 
 /* ===== Tema & filtros ===== */
