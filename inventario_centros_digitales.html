@@ -624,6 +624,7 @@
 
   .hero-copy{
     width:100%;
+    max-width:100%;
     margin-top:0;
     padding-top:20px;
     text-align:center;
@@ -639,28 +640,19 @@
   }
 
   .map-card{
-    transform:scale(.60);
-    transform-origin:top center;
-
+    transform:none;
     width:850px;
-    height:430px;
-
+    height:720px;
     margin:0 auto;
   }
 
   .feature-card{
-    position:relative;
+    top:330px !important;
+    right:180px !important;
 
-    width:100%;
-    max-width:none;
+    transform:scale(.80);
 
-    right:auto;
-    left:auto;
-    top:auto;
-
-    transform:none;
-
-    margin-top:20px;
+    transform-origin:top center;
   }
 
   .kpis{
