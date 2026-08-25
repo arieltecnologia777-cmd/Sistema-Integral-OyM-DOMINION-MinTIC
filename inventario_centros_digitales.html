@@ -742,9 +742,9 @@
 }
 
 .mobile-menu-btn.menu-open{
-    top:16px;
-    left:200px;
-    opacity:1;
+    top:16px !important;
+    left:200px !important;
+    opacity:1 !important;
 }
 
 .mobile-menu-btn:hover,
@@ -1844,6 +1844,15 @@ safeOn('filterSearch','input',applyFilters);
 const mobileSidebar = document.getElementById('mobileSidebar');
 const mobileOverlay = document.getElementById('mobileOverlay');
 
+  function cerrarMenuMovil() {
+
+  mobileSidebar.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+  mobileMenuBtn.classList.remove('menu-open');
+  mobileMenuBtn.textContent = '☰';
+
+}
+  
 mobileMenuBtn?.addEventListener('click', () => {
 
   mobileSidebar.classList.toggle('open');
@@ -1857,25 +1866,19 @@ mobileMenuBtn?.addEventListener('click', () => {
 
 });
 
-mobileOverlay?.addEventListener('click', () => {
-
-  mobileSidebar.classList.remove('open');
-  mobileOverlay.classList.remove('open');
-  mobileMenuBtn.classList.remove('menu-open');
-
-});
+mobileOverlay?.addEventListener(
+  'click',
+  cerrarMenuMovil
+);
 
 document
   .querySelectorAll('.mobile-sidebar a')
   .forEach(link => {
 
-    link.addEventListener('click', () => {
-
-  mobileSidebar.classList.remove('open');
-  mobileOverlay.classList.remove('open');
-  mobileMenuBtn.classList.remove('menu-open');
-
-});
+  link.addEventListener(
+  'click',
+  cerrarMenuMovil
+);
   });
 window.addEventListener('DOMContentLoaded',init);
 </script>
