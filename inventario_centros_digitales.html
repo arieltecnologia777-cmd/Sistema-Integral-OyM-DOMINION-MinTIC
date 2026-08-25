@@ -709,6 +709,8 @@
 @media (max-width:768px){
 
  .mobile-menu-btn{
+    display:flex;
+
     position:fixed;
     top:18px;
     left:18px;
@@ -739,7 +741,7 @@
       0 0 40px rgba(155,92,255,.08);
 
     z-index:3000;
-  }
+}
 
   .mobile-overlay{
     display:block;
@@ -766,6 +768,10 @@
   }
 
  .mobile-sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
     position:fixed;
     top:0;
     left:-280px;
@@ -780,7 +786,7 @@
     backdrop-filter:blur(40px);
     -webkit-backdrop-filter:blur(40px);
 
-   border-right:1px solid rgba(255,255,255,.10);
+    border-right:1px solid rgba(255,255,255,.10);
 
     transition:.3s ease;
 
