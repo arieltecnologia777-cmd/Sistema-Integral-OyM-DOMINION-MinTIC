@@ -116,7 +116,13 @@
     .hero-copy h2{font-size:clamp(28px,3vw,48px);line-height:.95;letter-spacing:-2px;margin:22px 0 20px;font-weight:900}
     .gradient-text{background:linear-gradient(100deg,#fff 0%,#a77cff 34%,#34e8ff 68%,#ff8acb 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
     .hero-copy p{font-size:17px;line-height:1.6;color:var(--muted);max-width:365px;margin:0 0 26px}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .hero-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
     .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800;color:white;background:linear-gradient(100deg,#7656ff,#25cfff);box-shadow:0 14px 34px rgba(79,103,255,.28);transition:.2s transform,.2s filter}.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
     .btn-secondary{background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:none;color:var(--text)}
     .hero-stage{position:relative;min-height:680px;display:flex;align-items:center;justify-content:flex-start;overflow:visible}
@@ -588,8 +594,13 @@
   image-rendering:auto;
 }
 #excel-link{
-  margin-top:35px;
   width:56px;
+  margin-top:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
 }
 
 #excel-link img{
@@ -880,8 +891,7 @@
           <div class="eyebrow"><i></i>Centro de Monitoreo de Centros Digitales</div>
           <h2>Bienvenido <span class="gradient-text"><br></span></h2>
           <p>Consulta en tiempo real el estado operativo de los Centros Digitales, revisa eventos históricos, indicadores de disponibilidad, niveles de servicio, incidentes y la hoja de vida completa de cada sitio.</p>
-          <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID <span>→</span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button></div>
-          <div id="excel-link">
+          <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID <span>→</span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button><div id="excel-link">
   <a href="https://arieltecnologia777-cmd.github.io/Exporte-backlog/exporte_backlog.html" target="_blank">
     <img src="excel.png" alt="Exportar informe">
 
@@ -889,6 +899,8 @@
             <div class="excel-caption">
   Exportar Backlog
 </div>
+</div>
+          
 </div>
         </div>
 
