@@ -97,7 +97,7 @@
     [data-theme="light"] .search-mini{background:rgba(255,255,255,.76)}
     .search-mini kbd{margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 7px;font-size:10px}
     .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffb14a,#ff5ccf);font-size:22px;border:2px solid rgba(255,255,255,.2)}
-    .hero-layout{
+   .hero-layout{
   display:grid;
   grid-template-columns:520px 1fr;
   gap:40px;
@@ -116,7 +116,13 @@
     .hero-copy h2{font-size:clamp(28px,3vw,48px);line-height:.95;letter-spacing:-2px;margin:22px 0 20px;font-weight:900}
     .gradient-text{background:linear-gradient(100deg,#fff 0%,#a77cff 34%,#34e8ff 68%,#ff8acb 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
     .hero-copy p{font-size:17px;line-height:1.6;color:var(--muted);max-width:365px;margin:0 0 26px}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .hero-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
     .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800;color:white;background:linear-gradient(100deg,#7656ff,#25cfff);box-shadow:0 14px 34px rgba(79,103,255,.28);transition:.2s transform,.2s filter}.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
     .btn-secondary{background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:none;color:var(--text)}
     .hero-stage{position:relative;min-height:680px;display:flex;align-items:center;justify-content:flex-start;overflow:visible}
@@ -588,13 +594,22 @@
   image-rendering:auto;
 }
 #excel-link{
-  margin-top:35px;
   width:56px;
+  margin-top:0;
+
+  position:relative;
+  top:-6px;
+  left:22px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
 }
 
 #excel-link img{
-  width:56px;
-  height:56px;
+  width:46px;
+  height:46px;
   cursor:pointer;
   transition:.2s;
 }
@@ -602,17 +617,11 @@
 
 .excel-caption{
   margin-top:-5px;
-  font-size:13px;
+  font-size:12px;
   font-weight:600;
   color:#ffffff;
   text-align:center;
   white-space:nowrap;
-}
-
-#excel-link{
-  margin-top:35px;
-  width:56px;
-  transition:.2s;
 }
 
 #excel-link:hover{
@@ -637,19 +646,24 @@
   }
 
   .hero-copy{
-    width:100%;
-    margin-top:0;
-    padding-top:20px;
-    text-align:center;
-  }
+  width:100%;
+  margin-top:-40px;
+  padding-top:0;
+  text-align:center;
+}
 
+      .hero-stage{
+  flex-direction:column;
+  align-items:center;
+}
   .eyebrow{
     display:inline-flex;
   }
 
   .hero-stage{
-    min-height:620px;
+    min-height:1200px;
     overflow:hidden;
+}
 
     display:flex;
     justify-content:center;
@@ -678,16 +692,55 @@
     height:650px;
   }
 
-  .feature-card{
-    display:none !important;
-  }
+.feature-card{
+  display:block !important;
 
+  position:absolute;
+
+  top:760px;
+
+  left:50%;
+
+  transform:translateX(-50%) translateX(-270px);
+
+  width:92%;
+  max-width:380px;
+
+  z-index:50;
+}
   .kpis{
-    margin-top:20px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
+  margin-top:-30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+      .kpi{
+  min-width:0;
+  padding:4px 8px 6px;
+  border-radius:14px;
+}
+
+.kpi h4{
+  font-size:11px;
+  margin-left:22px;
+}
+
+.kpi .val{
+  font-size:15px;
+  margin-left:22px;
+}
+
+.kpi-pct{
+  font-size:10px;
+  margin-left:22px;
+}
+
+.kpi:after{
+  width:12px;
+  height:12px;
+  left:10px;
+  top:10px;
+}
 
 }
     @media (max-width:390px){
@@ -706,138 +759,128 @@
   display:none;
 }
 
+.mobile-menu-btn,
+.mobile-sidebar,
+.mobile-overlay{
+  display:none;
+}
+
 .mobile-menu-btn{
-    display:flex;
+  position:fixed;
+  top:84px;
+  left:16px;
 
-    position:fixed;
+  width:38px;
+  height:38px;
 
-    top:80px;
-    left:16px;
+  align-items:center;
+  justify-content:center;
 
-    width:44px;
-    height:44px;
+  border:1px solid rgba(255,255,255,.30);
+  border-radius:12px;
 
+  font-size:20px;
+  font-weight:700;
 
-    align-items:center;
-    justify-content:center;
+  color:#fff;
 
-    border:1px solid rgba(255,255,255,.30);
+  background:rgba(20,25,70,.55);
 
-    border-radius:14px;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
 
-    font-size:24px;
-    font-weight:700;
-
-    color:#fff;
-  text-shadow:
-  0 0 6px rgba(255,255,255,.8),
-  0 0 12px rgba(255,255,255,.4);
-
-    background:rgba(20,25,70,.55);
-
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-
-    opacity:.90;
-  box-shadow:
-  0 0 12px rgba(255,255,255,.12),
-  0 0 25px rgba(37,230,255,.15);
-
-    transition:.25s;
-
-    z-index:3000;
+  z-index:3000;
 }
 
 .mobile-menu-btn.menu-open{
-    top:16px !important;
-    left:200px !important;
-    opacity:1 !important;
+  top:16px !important;
+  left:200px !important;
 }
 
-.mobile-menu-btn:hover,
-.mobile-menu-btn:active{
-    opacity:1;
-    transform:scale(1.05);
+.mobile-overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(3,8,28,.25);
+
+  backdrop-filter:blur(4px);
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:.3s;
+
+  z-index:2998;
 }
 
-  .mobile-menu-btn:hover,
-.mobile-menu-btn:active{
-    opacity:1;
-    transform:scale(1.05);
+.mobile-overlay.open{
+  opacity:1;
+  visibility:visible;
 }
-  .mobile-overlay{
-    display:block;
 
-    position:fixed;
-    inset:0;
+.mobile-sidebar{
+  flex-direction:column;
+  gap:10px;
 
-    background:rgba(3,8,28,.25);
+  position:fixed;
 
-    backdrop-filter:blur(4px);
-    -webkit-backdrop-filter:blur(4px);
+  top:0;
+  left:-280px;
 
-    opacity:0;
-    visibility:hidden;
+  width:260px;
+  height:100vh;
 
-    transition:.3s;
+  padding:90px 18px 20px;
 
-    z-index:2998;
-  }
+  background:rgba(10,15,48,.35);
 
-  .mobile-overlay.open{
-    opacity:1;
-    visibility:visible;
-  }
+  backdrop-filter:blur(40px);
 
- .mobile-sidebar{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+  border-right:1px solid rgba(255,255,255,.10);
 
-    position:fixed;
-    top:0;
-    left:-280px;
+  transition:.3s ease;
 
-    width:260px;
-    height:100vh;
-
-    padding:90px 18px 20px;
-
-    background:rgba(10,15,48,.35);
-
-    backdrop-filter:blur(40px);
-    -webkit-backdrop-filter:blur(40px);
-
-    border-right:1px solid rgba(255,255,255,.10);
-
-    transition:.3s ease;
-
-    z-index:2999;
+  z-index:2999;
 }
 
 .mobile-sidebar.open{
-    left:0;
+  left:0;
 }
 
 .mobile-sidebar a{
-    display:flex;
-    align-items:center;
+  display:flex;
+  align-items:center;
 
-    min-height:48px;
+  min-height:48px;
 
-    padding:0 16px;
+  padding:0 16px;
 
-    border-radius:14px;
+  border-radius:14px;
 
-    color:#fff;
+  color:#fff;
 
-    font-size:15px;
-    font-weight:600;
+  font-size:15px;
+  font-weight:600;
 
-    background:rgba(255,255,255,.05);
+  background:rgba(255,255,255,.05);
 
-    border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
 }
+
+@media (max-width:768px){
+
+  .mobile-menu-btn{
+    display:flex;
+  }
+
+  .mobile-sidebar{
+    display:flex;
+  }
+
+  .mobile-overlay{
+    display:block;
+  }
+
 }
   
   </style>
@@ -880,8 +923,7 @@
           <div class="eyebrow"><i></i>Centro de Monitoreo de Centros Digitales</div>
           <h2>Bienvenido <span class="gradient-text"><br></span></h2>
           <p>Consulta en tiempo real el estado operativo de los Centros Digitales, revisa eventos históricos, indicadores de disponibilidad, niveles de servicio, incidentes y la hoja de vida completa de cada sitio.</p>
-          <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID <span>→</span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button></div>
-          <div id="excel-link">
+          <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID<span></span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button><div id="excel-link">
   <a href="https://arieltecnologia777-cmd.github.io/Exporte-backlog/exporte_backlog.html" target="_blank">
     <img src="excel.png" alt="Exportar informe">
 
@@ -889,6 +931,8 @@
             <div class="excel-caption">
   Exportar Backlog
 </div>
+</div>
+          
 </div>
         </div>
 
