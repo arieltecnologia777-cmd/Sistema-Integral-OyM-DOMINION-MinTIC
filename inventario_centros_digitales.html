@@ -1838,6 +1838,7 @@ mobileMenuBtn?.addEventListener('click', () => {
 
   mobileSidebar.classList.toggle('open');
   mobileOverlay.classList.toggle('open');
+  mobileMenuBtn.classList.toggle('menu-open');
 
 });
 
@@ -1845,6 +1846,7 @@ mobileOverlay?.addEventListener('click', () => {
 
   mobileSidebar.classList.remove('open');
   mobileOverlay.classList.remove('open');
+  mobileMenuBtn.classList.remove('menu-open');
 
 });
 
@@ -1854,11 +1856,11 @@ document
 
     link.addEventListener('click', () => {
 
-      mobileSidebar.classList.remove('open');
-      mobileOverlay.classList.remove('open');
+  mobileSidebar.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+  mobileMenuBtn.classList.remove('menu-open');
 
-    });
-
+});
   });
 window.addEventListener('DOMContentLoaded',init);
 </script>
