@@ -1307,14 +1307,6 @@ function updateFeatureMap(item){
     attribution: 'Tiles © Esri'
   }
 ).addTo(featureMap);
-
-    L.tileLayer(
-  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-  {
-    maxZoom: 19,
-    opacity: 1
-  }
-).addTo(featureMap);
   }
 
   featureMap.setView([lat,lon],13,{animate:true});
@@ -1771,15 +1763,6 @@ attributionControl:false,
         maxZoom:19
       }
     ).addTo(map);
-
-    L.tileLayer(
-  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-  {
-    maxZoom:19,
-    opacity:1
-  }
-).addTo(map);
-
 
     map.setView([lat,lon],17);
 
