@@ -708,12 +708,10 @@
 
 @media (max-width:768px){
 
-  .mobile-menu-btn{
-    display:flex;
-
+ .mobile-menu-btn{
     position:fixed;
     top:18px;
-    right:18px;
+    left:18px;
 
     width:52px;
     height:52px;
@@ -768,13 +766,9 @@
   }
 
  .mobile-sidebar{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-
     position:fixed;
     top:0;
-    right:-280px;
+    left:-280px;
 
     width:260px;
     height:100vh;
@@ -786,7 +780,7 @@
     backdrop-filter:blur(40px);
     -webkit-backdrop-filter:blur(40px);
 
-    border-left:1px solid rgba(255,255,255,.10);
+   border-right:1px solid rgba(255,255,255,.10);
 
     transition:.3s ease;
 
@@ -794,7 +788,7 @@
 }
 
 .mobile-sidebar.open{
-    right:0;
+    left:0;
 }
 
 .mobile-sidebar a{
@@ -829,17 +823,17 @@
 
 <aside class="mobile-sidebar" id="mobileSidebar">
 
-  inicio">🏠 Inicio</a>
+  <a href="#inicio">🏠 Inicio</a>
 
-  ">🔍 Explorar</a>
+  <a href="#toolbar-specific">🔍 Explorar</a>
 
-  ">📚 Aprender</a>
+  <a href="#aprender">📚 Aprender</a>
 
-  ">🤝 Conectar</a>
+  <a href="#conectar">🤝 Conectar</a>
 
-  ">🌎 Comunidad</a>
+  <a href="#comunidad">🌎 Comunidad</a>
 
-  #recursos📁 Recursos</a>
+  <a href="#recursos">📁 Recursos</a>
 
 </aside>
   <section class="hero" id="inicio">
