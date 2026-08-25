@@ -1301,10 +1301,9 @@ function updateFeatureMap(item){
     L.control.zoom({position:'topright'}).addTo(featureMap);
 
     L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
   {
-    maxZoom: 19,
-    attribution: 'Tiles © Esri'
+    maxZoom: 20
   }
 ).addTo(featureMap);
   }
@@ -1758,11 +1757,11 @@ attributionControl:false,
     map.zoomControl.setPosition('topright');
 
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom:19
-      }
-    ).addTo(map);
+  'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+  {
+    maxZoom:20
+  }
+).addTo(map);
 
     map.setView([lat,lon],17);
 
