@@ -1764,6 +1764,15 @@ attributionControl:false,
       }
     ).addTo(map);
 
+    L.tileLayer(
+  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom:19,
+    opacity:1
+  }
+).addTo(map);
+
+
     map.setView([lat,lon],17);
 
     const miniMarkerIcon = L.divIcon({
