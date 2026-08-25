@@ -692,11 +692,38 @@
   }
 
   .kpis{
-    margin-top:20px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
+  margin-top:-30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+      .kpi{
+  min-width:0;
+  padding:4px 8px 6px;
+  border-radius:14px;
+}
+
+.kpi h4{
+  font-size:11px;
+  margin-left:22px;
+}
+
+.kpi .val{
+  font-size:15px;
+  margin-left:22px;
+}
+
+.kpi-pct{
+  font-size:10px;
+  margin-left:22px;
+}
+
+.kpi:after{
+  width:12px;
+  height:12px;
+  left:10px;
+  top:10px;
+}
 
 }
     @media (max-width:390px){
