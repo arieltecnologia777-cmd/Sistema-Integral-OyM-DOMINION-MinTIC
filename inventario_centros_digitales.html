@@ -1240,6 +1240,49 @@ console.log('Headers:', headers);
 console.log('Items originales:', items.length);
 
 fillFilters();
+    updateMunicipios();
+
+    function updateMunicipios(){
+
+  const dep = normalize(
+    document.getElementById('filterDep')?.value || ''
+  );
+
+  const sample = state.items[0] || {};
+
+  const colDep =
+    guessKey(sample,state.keys.depto.map(toKey));
+
+  const colMun =
+    guessKey(sample,state.keys.mun.map(toKey));
+
+  const munSelect =
+    document.getElementById('filterMun');
+
+  if(!munSelect || !colMun) return;
+
+  let data = state.items;
+
+  if(dep){
+
+    data = data.filter(r =>
+      normalize(r[colDep] || '') === dep
+    );
+
+  }
+
+  const municipios = [...new Set(
+    data
+      .map(r => (r[colMun] || '').trim())
+      .filter(Boolean)
+  )].sort();
+
+  munSelect.innerHTML =
+    '<option value="">Todos</option>' +
+    municipios.map(m =>
+      `<option value="${m}">${m}</option>`
+    ).join('');
+}
 
 applyFilters();
 
@@ -2006,7 +2049,13 @@ function init(){
   safeOn('btnRefrescar','click',()=>{state.forceRefresh=true;loadData()});
   safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
 
-  safeOn('filterDep','change',applyFilters);
+  safeOn('filterDep','change',() => {
+
+  updateMunicipios();
+
+  applyFilters();
+
+});
 safeOn('filterMun','change',applyFilters);
 safeOn('filterIE','change',applyFilters);
 safeOn('filterEstado','change',applyFilters);
