@@ -1465,20 +1465,26 @@ if(
   };
 }
 
-  const detailBtn=$('#featureDetailBtn');
-  if(detailBtn){
-    detailBtn.onclick=()=>{
-      const cols={
-        colId:guessKey(sample,state.keys.id.map(toKey)),
-        colNombre,
-        colDep,
-        colMun,
-        colOpe:guessKey(sample,state.keys.operador.map(toKey)),
-        colEst
-      };
-      showDetail(item,cols);
+  const detailBtn = document.getElementById('featureDetailBtn');
+
+if(detailBtn){
+
+  detailBtn.onclick = () => {
+
+    const cols = {
+      colId: guessKey(sample,state.keys.id.map(toKey)),
+      colNombre,
+      colDep,
+      colMun: guessKey(sample,state.keys.mun.map(toKey)),
+      colOpe: guessKey(sample,state.keys.operador.map(toKey)),
+      colEst
     };
-  }
+
+    showDetail(item, cols);
+
+  };
+
+}
 }
 
 function escapeHtml(value){
