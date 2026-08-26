@@ -2,25 +2,11 @@
 <html lang="es" data-theme="dark">
 <head>
   <script>
-    (function () {
-
-  try {
-
-    if (
-      window.innerWidth >= 769 &&
-      !sessionStorage.getItem('auth_ok')
-    ) {
-      window.location.replace('login.html');
-    }
-
-  } catch (e) {
-
-    window.location.replace('login.html');
-
-  }
-
-})();
-
+    (function(){
+      try{
+        if(!sessionStorage.getItem('auth_ok')) window.location.replace('login.html');
+      }catch(e){ window.location.replace('login.html'); }
+    })();
   </script>
 
   <meta charset="utf-8" />
@@ -29,8 +15,8 @@
   <meta name="description" content="Hoja de vida Centros Digitales">
 
   <!-- Leaflet: mapa real basado en OpenStreetMap/CARTO -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3fH9P2w8QJxL3JrK5m0W1bF1x1M0=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <style>
     :root{
@@ -39,20 +25,11 @@
       --cyan:#25e6ff; --violet:#9b5cff; --pink:#ff4fd8; --orange:#ffae42; --green:#45e0a1; --red:#ff5c7a;
       --shadow:0 24px 70px rgba(0,0,0,.34); --radius:24px;
     }
-  [data-theme="light"]{
-  --bg:#eef2f8;
-  --bg2:#dde5f3;
-
-  --surface:rgba(255,255,255,.92);
-  --surface-2:#ffffff;
-
-  --text:#0f172a;
-  --muted:#64748b;
-
-  --line:rgba(15,23,42,.10);
-
-  --shadow:0 18px 40px rgba(15,23,42,.08);
-}
+    [data-theme="light"]{
+      --bg:#f5f7ff; --bg2:#e9edff; --surface:rgba(255,255,255,.76); --surface-2:rgba(255,255,255,.9);
+      --text:#11162f; --muted:#5f6886; --line:rgba(31,42,85,.13);
+      --shadow:0 20px 55px rgba(42,53,110,.14);
+    }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden}
@@ -65,20 +42,8 @@
     button,input{font:inherit}
     button{cursor:pointer}
     .wrap{width:min(1420px,calc(100% - 44px));margin:auto}
-   .hero{
-  position:relative;
-  min-height:810px;
-  overflow:hidden;
-  background:linear-gradient(180deg,rgba(8,11,37,.86),rgba(8,11,37,.35) 72%,var(--bg));
-}
-    [data-theme="light"] .hero{
-  background:linear-gradient(
-    180deg,
-    #e6ecf7,
-    #edf2fa 60%,
-    #f3f6fb 100%
-  );
-}
+    .hero{position:relative;min-height:850px;overflow:hidden;background:linear-gradient(180deg,rgba(8,11,37,.86),rgba(8,11,37,.35) 72%,var(--bg));border-bottom:1px solid var(--line)}
+    [data-theme="light"] .hero{background:linear-gradient(180deg,rgba(233,237,255,.9),rgba(245,247,255,.5) 72%,var(--bg))}
     .hero:before{content:"";position:absolute;width:850px;height:850px;right:-220px;top:80px;border-radius:50%;background:radial-gradient(circle,rgba(50,220,255,.13),rgba(141,68,255,.08) 42%,transparent 70%);filter:blur(10px)}
     .topbar{height:82px;display:flex;align-items:center;justify-content:space-between;gap:22px;position:relative;z-index:5}
     .brand{display:flex;align-items:center;gap:13px;min-width:250px}
@@ -90,39 +55,19 @@
     .nav{display:flex;gap:28px;align-items:center;font-size:14px;color:#dbe0fa}
     [data-theme="light"] .nav{color:#343b5b}
     .nav a{opacity:.82;position:relative;padding:10px 0}.nav a:hover{opacity:1}.nav a:first-child:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:3px;border-radius:5px;background:linear-gradient(90deg,var(--cyan),var(--violet))}
-    .top-actions{
-  display:none;
-}
+    .top-actions{display:flex;align-items:center;gap:10px}
     .search-mini{width:310px;height:46px;border:1px solid rgba(118,137,255,.42);background:rgba(13,18,57,.58);backdrop-filter:blur(18px);border-radius:16px;display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--muted);box-shadow:0 12px 35px rgba(0,0,0,.18)}
     [data-theme="light"] .search-mini{background:rgba(255,255,255,.76)}
     .search-mini kbd{margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 7px;font-size:10px}
     .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffb14a,#ff5ccf);font-size:22px;border:2px solid rgba(255,255,255,.2)}
-   .hero-layout{
-  display:grid;
-  grid-template-columns:520px 1fr;
-  gap:40px;
-  align-items:center;
-  min-height:700px;
-  padding:45px 0 30px;
-}
-    .hero-copy{
-  position:relative;
-  z-index:3;
-  padding-bottom:0;
-  margin-top:-270px;
-}
+    .hero-layout{display:grid;grid-template-columns:520px 1fr;gap:40px;align-items:center;min-height:760px;padding:45px 0 80px}
+    .hero-copy{position:relative;z-index:3;padding-bottom:40px;margin-top:-150px}
     .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid rgba(141,112,255,.38);background:rgba(98,75,255,.11);font-size:12px;color:#dfe5ff;backdrop-filter:blur(12px)}
     .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
     .hero-copy h2{font-size:clamp(28px,3vw,48px);line-height:.95;letter-spacing:-2px;margin:22px 0 20px;font-weight:900}
     .gradient-text{background:linear-gradient(100deg,#fff 0%,#a77cff 34%,#34e8ff 68%,#ff8acb 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
     .hero-copy p{font-size:17px;line-height:1.6;color:var(--muted);max-width:365px;margin:0 0 26px}
-    .hero-actions{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
     .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800;color:white;background:linear-gradient(100deg,#7656ff,#25cfff);box-shadow:0 14px 34px rgba(79,103,255,.28);transition:.2s transform,.2s filter}.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
     .btn-secondary{background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:none;color:var(--text)}
     .hero-stage{position:relative;min-height:680px;display:flex;align-items:center;justify-content:flex-start;overflow:visible}
@@ -154,20 +99,7 @@
     [data-theme="light"] .glass-card{background:rgba(255,255,255,.76)}
 
     /* ===== TARJETA DESTACADA + MINIMAPA REAL ===== */
-    .feature-card{
-  position:absolute;
-  right:-40px;
-  top:20px;
-
-  width:360px;
-
-  padding:18px;
-
-  z-index:10;
-
-  transform:scale(.94);
-  transform-origin:top right;
-}
+    .feature-card{position:absolute;right:-40px;top:40px;width:360px;padding:20px;z-index:10}
     .feature-title{font-size:14px;font-weight:800;margin-bottom:14px}
     .feature-map{height:180px;border-radius:18px;overflow:hidden;position:relative;margin-bottom:14px;border:1px solid rgba(255,255,255,.14);background:#10162f;box-shadow:inset 0 0 30px rgba(37,230,255,.08),0 12px 30px rgba(0,0,0,.25)}
     #featureMap{width:100%;height:100%}
@@ -177,24 +109,6 @@
     .feature-map .leaflet-container{background:#111936;font-family:inherit}
     .feature-map .leaflet-control-zoom{border:none!important;box-shadow:none!important}
     .feature-map .leaflet-control-zoom a{width:28px!important;height:28px!important;line-height:28px!important;background:rgba(10,15,42,.82)!important;color:#fff!important;border:1px solid rgba(255,255,255,.14)!important}
-    .mini-map .leaflet-control-zoom{
-  border:none!important;
-  box-shadow:none!important;
-}
-
-.mini-map .leaflet-control-zoom a{
-  width:28px!important;
-  height:28px!important;
-  line-height:28px!important;
-
-  background:rgba(10,15,42,.82)!important;
-
-  color:#fff!important;
-
-  border:1px solid rgba(255,255,255,.14)!important;
-
-  backdrop-filter:blur(10px);
-}
     .feature-map .leaflet-control-attribution{background:rgba(5,8,24,.65)!important;color:rgba(255,255,255,.5)!important;font-size:8px!important}
     .feature-map .leaflet-control-attribution a{color:rgba(255,255,255,.65)!important}
     .custom-center-marker{background:none!important;border:none!important}
@@ -204,746 +118,55 @@
     @keyframes centerPulse{0%{transform:scale(.75);opacity:.45}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
     .feature-card h3{margin:10px 0 4px;font-size:22px}.feature-card p{margin:0;color:var(--muted);font-size:13px}
     .feature-status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(69,224,161,.15);color:#45e0a1;font-weight:700}
-    #featureDetailBtn{
-  width:100%;
+    .route-actions{display:flex;gap:8px;margin-top:12px}
+    .route-actions .btn{flex:1;min-width:0}
+    .route-info{display:none;margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(37,230,255,.08);border:1px solid rgba(37,230,255,.16);font-size:11px;color:var(--muted);line-height:1.45}
+    .route-info.visible{display:block}
+    .route-info strong{color:var(--text)}
+    .route-origin-marker,.route-destination-marker{background:none!important;border:none!important}
+    .route-pin{width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 12px rgba(0,0,0,.55)}
+    .route-origin-pin{background:#25e6ff;box-shadow:0 0 0 5px rgba(37,230,255,.22),0 0 18px #25e6ff}
+    .route-destination-pin{background:#9b5cff;box-shadow:0 0 0 5px rgba(155,92,255,.22),0 0 18px #9b5cff}
+    .feature-metrics{display:flex;justify-content:space-between;gap:16px;margin:18px 0}.feature-metrics strong{display:block;font-size:28px;line-height:1}.feature-metrics span{display:block;margin-top:4px;font-size:11px;color:var(--muted)}.metric{flex:1}
 
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:14px 18px;
-
-  border-radius:14px;
-
-  font-weight:700;
-}
-    .feature-metrics{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  align-items:center;
-  margin:16px 0;
-}
-
-.feature-metrics strong{
-  display:block;
-  font-size:18px;
-  font-weight:800;
-  line-height:1.1;
-}
-
-.feature-metrics span{
-  display:block;
-  margin-top:4px;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:500;
-}
-
-.metric{
-  position:relative;
-  text-align:center;
-}
-
-.metric:first-child::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  right:0;
-  transform:translateY(-50%);
-
-  width:1px;
-  height:42px;
-
-  background:rgba(255,255,255,.12);
-}
-
-    .toolbar{
-  margin-top:30px;
-  margin-bottom:40px;
-
-  position:relative;
-  z-index:8;
-
-  padding:17px;
-
-  border:1px solid var(--line);
-
-  border-radius:26px;
-
-  background:rgba(17,22,64,.68);
-
-  backdrop-filter:blur(22px);
-
-  box-shadow:var(--shadow);
-
-  display:grid;
-
-  gap:12px;
-
-  grid-template-columns:repeat(5,1fr);
-}
-
+    .toolbar{margin-top:30px;position:relative;z-index:8;padding:17px;border:1px solid var(--line);border-radius:26px;background:rgba(17,22,64,.68);backdrop-filter:blur(22px);box-shadow:var(--shadow);display:grid;gap:12px;grid-template-columns:repeat(5,1fr)}
     [data-theme="light"] .toolbar{background:rgba(255,255,255,.82)}
-    [data-theme="light"] .kpi{
-  background:#ffffff;
-  border:1px solid rgba(15,23,42,.08);
-  box-shadow:0 8px 24px rgba(15,23,42,.06);
-}
-   .info{
-  display:flex;
-  flex-direction:column;
-  gap:6px
-}
-
-.info label{
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  color:var(--muted)
-}
-
-.info input{
-  width:100%;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:11px 12px;
-  color:var(--text);
-  outline:none
-}
-
-.info select{
-  width:100%;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:11px 12px;
-  color:var(--text);
-  outline:none;
-}
-
-.info select option{
-  background:#141a48;
-  color:#ffffff;
-}
-
+    .info{display:flex;flex-direction:column;gap:6px}.info label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}.info input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:11px 12px;color:var(--text);outline:none}
+    .chips{display:none}
     .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:58px 0 20px}.section-head h2{margin:0;font-size:30px;letter-spacing:-1px}.section-head p{margin:6px 0 0;color:var(--muted);font-size:14px}.summary{color:var(--muted);font-size:13px}
-    .kpis{
-  display:flex;
-  gap:18px;
-  flex-wrap:nowrap;
-
-  margin-top:-200px;
-
-  padding-bottom:32px;
-
-  border-bottom:1px solid var(--line);
-}
-    .kpi{
-  flex:1;
-  min-width:120px;
-
-  padding:6px 14px 8px;
-
-  border-radius:18px;
-
-  border:1px solid rgba(57,233,255,.25);
-
-  background:rgba(8,12,35,.02);
-
-  backdrop-filter:blur(30px);
-  -webkit-backdrop-filter:blur(30px);
-
-  box-shadow:
-    0 0 25px rgba(57,233,255,.08),
-    inset 0 0 20px rgba(57,233,255,.03);
-
-  position:relative;
-  overflow:hidden;
-}
-    .kpi:before{
-  content:"";
-  position:absolute;
-
-  width:140px;
-  height:140px;
-
-  left:-35px;
-  top:-35px;
-
-  border-radius:50%;
-
-  background:currentColor;
-
-  opacity:.18;
-
-  filter:blur(32px);
-
-  pointer-events:none;
-}
-    .kpi:after{
-  content:"";
-  position:absolute;
-
-  left:16px;
-  top:15px;
-
-  width:18px;
-  height:18px;
-
-  border-radius:50%;
-
-  background:currentColor;
-
-  box-shadow:
-    0 0 10px currentColor,
-    0 0 22px currentColor;
-
-  z-index:3;
-}
+    .kpis{display:flex;gap:18px;flex-wrap:nowrap;margin-top:-260px}
+    .kpi{flex:1;min-width:120px;padding:8px 14px 12px;border-radius:20px;border:1px solid rgba(57,233,255,.25);background:rgba(8,12,35,.02);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);box-shadow:0 0 25px rgba(57,233,255,.08),inset 0 0 20px rgba(57,233,255,.03);position:relative;overflow:hidden}
+    .kpi:before{content:"";position:absolute;width:90px;height:90px;left:-20px;top:-20px;border-radius:50%;background:currentColor;opacity:.22;filter:blur(20px);pointer-events:none}
+    .kpi:after{content:"";position:absolute;left:16px;top:15px;width:18px;height:18px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor,0 0 18px currentColor;z-index:3}
     .kpi-online{border-color:rgba(44,245,160,.25);box-shadow:0 0 30px rgba(44,245,160,.12),inset 0 0 30px rgba(44,245,160,.05)}
-    .kpi h4{margin:0;margin-left:30px;margin-top:5px;color:currentColor;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;line-height:18px}.kpi .val{
-  font-size:22px;
-  font-weight:900;
-  margin-top:3px;
-  margin-left:28px;
-  line-height:1;
-}.kpi-pct{
-  margin-top:2px;
-  margin-left:30px;
-  font-size:13px;
-  font-weight:600;
-  color:currentColor;
-  opacity:.85;
-}.kpi .bar{display:none}
-    .grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);padding-bottom:70px}.card{min-height:190px;background:linear-gradient(145deg,rgba(25,30,82,.72),rgba(14,18,54,.72));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 18px 45px rgba(0,0,0,.15);cursor:pointer;position:relative;overflow:hidden;transition:.25s transform,.25s border-color,.25s box-shadow;animation:rise .35s ease both}.card:hover{transform:translateY(-6px);border-color:rgba(71,220,255,.4);box-shadow:0 25px 55px rgba(21,65,160,.22)}.card h3{font-size:18px;margin:0 0 15px}.meta{display:flex;flex-wrap:wrap;gap:7px;color:var(--muted);font-size:11px}.badge{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:6px 9px;border-radius:999px;color:#dce5ff}.state{font-weight:800}.state.ok{color:var(--green)}.state.warn{color:var(--orange)}.state.down{color:var(--red)}.statusbar{
-  display:none;
-}
-    .drawer{position:fixed;right:20px;bottom:20px;width:min(560px,92vw);max-height:84vh;overflow:auto;background:rgba(18,23,65,.94);border:1px solid var(--line);border-radius:26px;box-shadow:0 30px 100px rgba(0,0,0,.45);backdrop-filter:blur(24px);display:none;z-index:40}.drawer header{position:sticky;top:0;background:rgba(18,23,65,.92);padding:18px;z-index:2}.drawer .tabs{display:flex;gap:8px;margin-top:12px}.drawer .tab{background:rgba(255,255,255,.05);border:1px solid var(--line);padding:8px 12px;border-radius:11px;color:var(--text)}.drawer .tab.active{background:linear-gradient(90deg,rgba(118,86,255,.45),rgba(37,207,255,.22))}.drawer .content{padding:18px}.kv{display:grid;grid-template-columns:1fr 1.2fr;gap:11px}.kv .k{color:var(--muted);font-size:12px}.kv .v{font-size:14px}.drawer .close{position:absolute;right:14px;top:14px}
+    .kpi h4{margin:0;margin-left:30px;margin-top:5px;color:currentColor;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;line-height:18px}.kpi .val{font-size:26px;font-weight:900;margin-top:8px;margin-left:28px;line-height:1}.kpi-pct{margin-top:8px;margin-left:30px;font-size:16px;font-weight:600;color:currentColor;opacity:.85}.kpi .bar{display:none}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);padding-bottom:70px}.card{min-height:190px;background:linear-gradient(145deg,rgba(25,30,82,.72),rgba(14,18,54,.72));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 18px 45px rgba(0,0,0,.15);cursor:pointer;position:relative;overflow:hidden;transition:.25s transform,.25s border-color,.25s box-shadow;animation:rise .35s ease both}.card:hover{transform:translateY(-6px);border-color:rgba(71,220,255,.4);box-shadow:0 25px 55px rgba(21,65,160,.22)}.card h3{font-size:18px;margin:0 0 15px}.meta{display:flex;flex-wrap:wrap;gap:7px;color:var(--muted);font-size:11px}.badge{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:6px 9px;border-radius:999px;color:#dce5ff}.state{font-weight:800}.state.ok{color:var(--green)}.state.warn{color:var(--orange)}.state.down{color:var(--red)}.statusbar{height:4px;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink));position:absolute;left:20px;right:20px;bottom:18px;opacity:.7}
+    .drawer{position:fixed;right:20px;bottom:20px;width:min(560px,92vw);max-height:84vh;overflow:auto;background:rgba(18,23,65,.94);border:1px solid var(--line);border-radius:26px;box-shadow:0 30px 100px rgba(0,0,0,.45);backdrop-filter:blur(24px);display:none;z-index:40}.drawer header{position:sticky;top:0;background:rgba(18,23,65,.92);padding:18px;border-bottom:1px solid var(--line);z-index:2}.drawer .tabs{display:flex;gap:8px;margin-top:12px}.drawer .tab{background:rgba(255,255,255,.05);border:1px solid var(--line);padding:8px 12px;border-radius:11px;color:var(--text)}.drawer .tab.active{background:linear-gradient(90deg,rgba(118,86,255,.45),rgba(37,207,255,.22))}.drawer .content{padding:18px}.kv{display:grid;grid-template-columns:1fr 1.2fr;gap:11px}.kv .k{color:var(--muted);font-size:12px}.kv .v{font-size:14px}.drawer .close{position:absolute;right:14px;top:14px}
     .modal-backdrop{position:fixed;inset:0;background:rgba(3,5,20,.72);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(10px)}.modal{background:linear-gradient(145deg,#1b225f,#10143e);border:1px solid var(--line);border-radius:26px;padding:22px;width:min(620px,92vw);box-shadow:0 30px 100px rgba(0,0,0,.5)}.modal h2{margin:0}.modal p{color:var(--muted)}.modal .row{display:flex;gap:10px}.modal input{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;color:var(--text);outline:none;flex:1}.modal .actions{display:flex;justify-content:flex-end;margin-top:13px}
     footer{border-top:1px solid var(--line);padding:22px 0;background:rgba(0,0,0,.12)}.hidden{display:none!important}
     @keyframes rise{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-.card-map-preview{
-  height:120px;
-
-  margin:0 0 16px 0;
-
-  border-radius:16px;
-
-  border:1px solid rgba(255,255,255,.10);
-
-  position:relative;
-
-  overflow:hidden;
-}
-
-.map-state{
-  position:absolute;
-
-  top:10px;
-  left:10px;
-
-  z-index:500;
-
-  padding:6px 12px;
-
-  border-radius:999px;
-
-  font-size:12px;
-  font-weight:700;
-
-  color:#fff;
-
-  backdrop-filter:blur(12px);
-}
-
-.map-state.ok{
-  background:#2cf5a0;
-
-  box-shadow:
-    0 0 12px rgba(44,245,160,.55),
-    0 0 24px rgba(44,245,160,.35),
-    0 0 40px rgba(44,245,160,.18);
-}
-
-.map-state.down{
-  background:#ff5c7a;
-
-  box-shadow:
-    0 0 12px rgba(255,92,122,.55),
-    0 0 24px rgba(255,92,122,.35),
-    0 0 40px rgba(255,92,122,.18);
-}
-
-.map-state.warn{
-  background:#ffb347;
-
-  box-shadow:
-    0 0 12px rgba(255,179,71,.55),
-    0 0 24px rgba(255,179,71,.35),
-    0 0 40px rgba(255,179,71,.18);
-}
-.map-state.p3{
-  background:#9a5cff;
-
-  box-shadow:
-    0 0 12px rgba(154,92,255,.55),
-    0 0 24px rgba(154,92,255,.35),
-    0 0 40px rgba(154,92,255,.18);
-}
-
-.map-state.pqr{
-  background:#3a8dff;
-
-  box-shadow:
-    0 0 12px rgba(58,141,255,.55),
-    0 0 24px rgba(58,141,255,.35),
-    0 0 40px rgba(58,141,255,.18);
-}
-
-.map-state.velocidad{
-  background:#ffd029;
-
-  color:#111;
-
-  box-shadow:
-    0 0 12px rgba(255,208,41,.55),
-    0 0 24px rgba(255,208,41,.35),
-    0 0 40px rgba(255,208,41,.18);
-}
-.card-location{
-  margin-top:-6px;
-  font-size:15px;
-  font-weight:500;
-}
-
-.card-id{
-  color:#42b9ff;
-}
-
-.card-sep{
-  color:#7985b7;
-  margin:0 6px;
-}
-
-.card-place{
-  color:#c8d2ef;
-}
-
-.card-connectivity{
-  margin-top:10px;
-  font-size:16px;
-  font-weight:600;
-}
-
-.card-connectivity.ok{
-  color:#2cf5a0;
-}
-
-.card-connectivity.down{
-  color:#ff5c5c;
-}
-
-.card-connectivity.warn{
-  color:#ffb347;
-}
-
-.card-connectivity{
-  margin-top:10px;
-  font-size:16px;
-  font-weight:600;
-}
-
-.card-connectivity.ok{
-  color:#2cf5a0;
-}
-
-.card-connectivity.down{
-  color:#ff5c5c;
-}
-
-.card-connectivity.warn{
-  color:#ffb347;
-}
-
-.mini-map{
-  width:100%;
-  height:100%;
-}
-    .mini-map{
-  width:100%;
-  height:100%;
-}
-    .card-map-preview::after{
-  display:none;
-}
-
-    
     @media(max-width:1100px){.nav{display:none}.hero-layout{grid-template-columns:1fr}.hero-copy{padding:20px 0 0}.hero-stage{min-height:650px}.toolbar{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.feature-card{right:0}.community-card{left:0}}
     @media(max-width:700px){.wrap{width:min(100% - 24px,1420px)}.hero{min-height:auto}.topbar{height:auto;padding:15px 0}.search-mini{display:none}.hero-copy h2{font-size:48px;letter-spacing:-2.5px}.hero-stage{min-height:540px;transform:scale(.88);transform-origin:top center;margin-bottom:-60px}.map-card{height:520px}.toolbar{margin-top:0;grid-template-columns:1fr}.grid{grid-template-columns:1fr}.section-head{padding-top:40px}.kpis{display:grid;grid-template-columns:repeat(2,1fr)}.feature-card{width:330px;max-width:90vw}.feature-map{height:165px}}
- .leaflet-tile{
-  outline:none !important;
-  border:none !important;
-}
-
-.leaflet-container img{
-  max-width:none !important;
-}
-
-.leaflet-pane img{
-  image-rendering:auto;
-}
-#excel-link{
-  width:56px;
-  margin-top:0;
-
-  position:relative;
-  top:-6px;
-  left:22px;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
-
-#excel-link img{
-  width:46px;
-  height:46px;
-  cursor:pointer;
-  transition:.2s;
-}
-
-
-.excel-caption{
-  margin-top:-5px;
-  font-size:12px;
-  font-weight:600;
-  color:#ffffff;
-  text-align:center;
-  white-space:nowrap;
-}
-
-#excel-link:hover{
-  transform:scale(1.08);
-}
-
-#excel-link:hover .excel-caption{
-  color:#25e6ff;
-}
-
-    @media (max-width:768px){
-
-  .hero{
-    min-height:auto;
-  }
-
-  .hero-layout{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-    min-height:auto;
-  }
-
-  .hero-copy{
-  width:100%;
-  margin-top:-40px;
-  padding-top:0;
-  text-align:center;
-}
-
-  .eyebrow{
-    display:inline-flex;
-  }
-
-  .hero-stage{
-    min-height:990px;
-    overflow:visible;
-
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-}
-
-  .map-card{
-    position:relative;
-
-    width:850px;
-    height:720px;
-
-    transform:scale(.89);
-    transform-origin:top center;
-
-    left:238px;
-    top:80px;
-  }
-
-  .colombia{
-    position:absolute;
-    top:-50px;
-    left:20%;
-    transform:translateX(-50%);
-    width:650px;
-    height:650px;
-  }
-
-  .feature-card{
-  display:block !important;
-
-  position:absolute;
-
-  top:530px;
-
-  left:19%;
-
-  transform:translateX(-50%);
-
-  width:92%;
-  max-width:480px;
-
-  z-index:50;
-}
-
-  .kpis{
-  margin-top:0px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-      .kpi{
-  min-width:0;
-  padding:4px 8px 6px;
-  border-radius:14px;
-}
-
-.kpi h4{
-  font-size:11px;
-  margin-left:22px;
-}
-
-.kpi .val{
-  font-size:15px;
-  margin-left:22px;
-}
-
-.kpi-pct{
-  font-size:10px;
-  margin-left:22px;
-}
-
-.kpi:after{
-  width:12px;
-  height:12px;
-  left:10px;
-  top:10px;
-}
-
-}
-   @media (max-width:390px){
-
-  .hero-stage{
-    min-height:870px;
-    overflow:visible;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-  }
-
-  .map-card{
-    transform:scale(.77);
-    left:207px;
-    top:80px;
-  }
-
-  .feature-card{
-    width:55%;
-    max-width:none;
-    left:19%;
-}
-
-}
-
-    .mobile-menu-btn,
-.mobile-sidebar,
-.mobile-overlay{
-  display:none;
-}
-
-.mobile-menu-btn,
-.mobile-sidebar,
-.mobile-overlay{
-  display:none;
-}
-
-.mobile-menu-btn{
-  position:fixed;
-  top:84px;
-  left:16px;
-
-  width:38px;
-  height:38px;
-
-  align-items:center;
-  justify-content:center;
-
-  border:1px solid rgba(255,255,255,.30);
-  border-radius:12px;
-
-  font-size:20px;
-  font-weight:700;
-
-  color:#fff;
-
-  background:rgba(20,25,70,.55);
-
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-
-  z-index:3000;
-}
-
-.mobile-menu-btn.menu-open{
-  top:16px !important;
-  left:200px !important;
-}
-
-.mobile-overlay{
-  position:fixed;
-  inset:0;
-
-  background:rgba(3,8,28,.25);
-
-  backdrop-filter:blur(4px);
-
-  opacity:0;
-  visibility:hidden;
-
-  transition:.3s;
-
-  z-index:2998;
-}
-
-.mobile-overlay.open{
-  opacity:1;
-  visibility:visible;
-}
-
-.mobile-sidebar{
-  flex-direction:column;
-  gap:10px;
-
-  position:fixed;
-
-  top:0;
-  left:-280px;
-
-  width:260px;
-  height:100vh;
-
-  padding:90px 18px 20px;
-
-  background:rgba(10,15,48,.35);
-
-  backdrop-filter:blur(40px);
-
-  border-right:1px solid rgba(255,255,255,.10);
-
-  transition:.3s ease;
-
-  z-index:2999;
-}
-
-.mobile-sidebar.open{
-  left:0;
-}
-
-.mobile-sidebar a{
-  display:flex;
-  align-items:center;
-
-  min-height:48px;
-
-  padding:0 16px;
-
-  border-radius:14px;
-
-  color:#fff;
-
-  font-size:15px;
-  font-weight:600;
-
-  background:rgba(255,255,255,.05);
-
-  border:1px solid rgba(255,255,255,.08);
-}
-
-@media (max-width:768px){
-
-  .mobile-menu-btn{
-    display:flex;
-  }
-
-  .mobile-sidebar{
-    display:flex;
-  }
-
-  .mobile-overlay{
-    display:block;
-  }
-
-}
-  
   </style>
 </head>
 <body>
-  <button class="mobile-menu-btn" id="mobileMenuBtn">
-  ☰
-</button>
-
-<div class="mobile-overlay" id="mobileOverlay"></div>
-
-<aside class="mobile-sidebar" id="mobileSidebar">
-
-  <a href="#inicio">🏠 Inicio</a>
-
-  <a href="#toolbar-specific">🔍 Explorar</a>
-
-  <a href="#aprender">📚 Aprender</a>
-
-  <a href="#conectar">🤝 Conectar</a>
-
-  <a href="#comunidad">🌎 Comunidad</a>
-
-  <a href="#recursos">📁 Recursos</a>
-
-</aside>
-  <section class="hero" id="inicio">
+  <section class="hero">
     <div class="wrap">
       <header class="topbar">
         <div class="brand">
           <div class="logo" title="Dominion"><img src="dominion_logo.png" alt="Dominion"></div>
           <div class="titles"><h1>HOJA DE VIDA CENTROS DIGITALES</h1><p>Tablero interactivo</p></div>
         </div>
-       <nav class="nav"><a href="#inicio">Inicio</a><a href="#toolbar-specific">Explorar</a><a href="#aprender">Aprender</a><a href="#conectar">Conectar</a><a href="#comunidad">Comunidad</a><a href="#recursos">Recursos</a></nav>
-        <div class="top-actions"></div>
+        <nav class="nav"><a href="#explorar">Explorar</a><a href="#aprender">Aprender</a><a href="#conectar">Conectar</a><a href="#comunidad">Comunidad</a><a href="#recursos">Recursos</a></nav>
+        <div class="top-actions"><button class="search-mini" id="heroSearch" aria-label="Buscar"><span>⌕</span><span>Buscar escuelas, cursos, recursos...</span><kbd>⌘ K</kbd></button><button class="avatar" aria-label="Perfil">👨🏻‍💻</button><button id="btnTheme" class="btn btn-secondary" style="padding:9px 12px">◐</button></div>
       </header>
 
-      <div class="hero-layout">
+      <div class="hero-layout" id="explorar">
         <div class="hero-copy">
           <div class="eyebrow"><i></i>Centro de Monitoreo de Centros Digitales</div>
           <h2>Bienvenido <span class="gradient-text"><br></span></h2>
           <p>Consulta en tiempo real el estado operativo de los Centros Digitales, revisa eventos históricos, indicadores de disponibilidad, niveles de servicio, incidentes y la hoja de vida completa de cada sitio.</p>
-          <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID<span></span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button><div id="excel-link">
-  <a href="https://arieltecnologia777-cmd.github.io/Exporte-backlog/exporte_backlog.html" target="_blank">
-    <img src="excel.png" alt="Exportar informe">
-
-  </a>
-            <div class="excel-caption">
-  Exportar Backlog
-</div>
-</div>
-          
-</div>
+          <div class="hero-actions"><button class="btn" id="btnIngresar">Explorar Centros <span>→</span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button></div>
         </div>
 
         <div class="hero-stage">
@@ -963,21 +186,19 @@
 
             <div class="route r1"></div><div class="route r2"></div><div class="route r3"></div><div class="route r4"></div><div class="route r5"></div>
 
-            <div class="node n2"><span>CESAR<br>546 CDs</span></div>
-            <div class="node n3"><span>LA GUAJIRA<br>489 CDs</span></div>
-            <div class="node n4"><span>ANTIOQUIA<br>379 CDs</span></div>
+            <div class="node n2"><span>CESAR<br>540 CDs</span></div>
+            <div class="node n3"><span>LA GUAJIRA<br>487 CDs</span></div>
+            <div class="node n4"><span>ANTIOQUIA<br>374 CDs</span></div>
             <div class="node n5"><span>SAI<br>21 CDs</span></div>
 
             <div class="marker marker-guajira"></div>
             <div class="marker marker-cesar"></div>
             <div class="marker marker-antioquia"></div>
             <div class="marker marker-sai"></div>
-<!-- Centro destacado: ahora es dinámico y usa latitud/longitud reales -->
-            <div class="glass-card feature-card">
-              <div class="feature-title" id="featureTitle">
-  🟢 CD CON MAYOR ESTABILIDAD OPERATIVA
-</div>
 
+            <!-- Centro destacado: ahora es dinámico y usa latitud/longitud reales -->
+            <div class="glass-card feature-card">
+              <div class="feature-title">⭐ Centro destacado</div>
 
               <div class="feature-map">
                 <div id="featureMap"></div>
@@ -985,13 +206,6 @@
                   <span>●</span><span>Ubicación del centro</span>
                 </div>
               </div>
-
-              <div id="featureId" style="
-  color:inherit;
-  font-size:16px;
-  font-weight:800;
-  margin-bottom:6px;
-"></div>
 
               <h3 id="featureName">Centro destacado</h3>
               <p id="featureLocation">Ubicación</p>
@@ -1003,17 +217,20 @@
 
               <div class="feature-metrics">
                 <div class="metric"><strong id="featureIncidents">—</strong><span>días sin incidentes</span></div>
-                <div class="metric"><strong id="featureConnectivity">—</strong><span>última visita</span></div>
+                <div class="metric"><strong id="featureConnectivity">—</strong><span>conectividad</span></div>
               </div>
 
-              <button class="btn btn-secondary" id="featureDetailBtn">Ver hoja de vida →</button>
+              <div class="route-actions">
+                <button class="btn btn-secondary" id="featureRouteBtn">📍 Cómo llegar</button>
+                <button class="btn btn-secondary" id="featureDetailBtn">Ver hoja de vida →</button>
+              </div>
+              <div class="route-info" id="featureRouteInfo"></div>
             </div>
-
-           
           </div>
         </div>
       </div>
-       <div class="kpis">
+
+      <div class="kpis">
         <div class="kpi" style="color:#6aa9ff"><h4>TOTAL CENTROS</h4><div id="kpiTotal" class="val">—</div><div id="pctTotal" class="kpi-pct">100%</div></div>
         <div class="kpi" style="color:#2cf5a0"><h4>ONLINE</h4><div id="kpiOk" class="val">—</div><div id="pctOnline" class="kpi-pct">0%</div></div>
         <div class="kpi" style="color:#ff4d6d"><h4>OFFLINE</h4><div id="kpiDown" class="val">—</div><div id="pctOffline" class="kpi-pct">0%</div></div>
@@ -1023,47 +240,24 @@
         <div class="kpi" style="color:#ffd029"><h4>VELOCIDAD</h4><div id="kpiVelocidad" class="val">0</div><div id="pctVelocidad" class="kpi-pct">0%</div></div>
       </div>
 
-      
+      <div class="toolbar" id="toolbar-specific">
+        <div class="info"><label>Departamento</label><input id="filterDep" placeholder="Todos"></div>
+        <div class="info"><label>Municipio</label><input id="filterMun" placeholder="Todos"></div>
+        <div class="info"><label>Institución Educativa</label><input id="filterIE" placeholder="Todas"></div>
+        <div class="info"><label>Estado</label><input id="filterEstado" placeholder="Todos"></div>
+        <div class="info"><label>Buscar</label><input id="filterSearch" placeholder="Buscar por nombre o ID..."></div>
+      </div>
     </div>
   </section>
 
   <main class="wrap">
-    <div class="toolbar" id="toolbar-specific">
-        <div class="info">
-  <label>Departamento</label>
-  <select id="filterDep">
-    <option value="">Todos</option>
-  </select>
-</div>
-
-<div class="info">
-  <label>Municipio</label>
-  <select id="filterMun">
-    <option value="">Todos</option>
-  </select>
-</div>
-
-<div class="info">
-  <label>Institución Educativa</label>
-  <select id="filterIE">
-    <option value="">Todas</option>
-  </select>
-</div>
-
-<div class="info">
-  <label>Estado</label>
-  <select id="filterEstado">
-    <option value="">Todos</option>
-  </select>
-</div>
-        <div class="info"><label>Buscar</label><input id="filterSearch" placeholder="Buscar por nombre o ID..."></div>
-      </div>
+    <div class="section-head" id="conectar"><div><h2>La red, en movimiento</h2><p>Descubre el estado de conectividad de los Centros Digitales.</p></div><div class="summary" id="resumen">Cargando datos…</div><div id="fuente" class="hidden"></div></div>
     <div id="grid" class="grid" aria-live="polite"></div>
     <div style="display:flex;justify-content:center;margin:0 0 60px"><button id="btnMas" class="btn btn-secondary hidden">Mostrar más</button></div>
   </main>
 
   <aside class="drawer" id="drawer" aria-live="polite">
-    <header><h3 id="drawer-title">Detalle del Centro</h3><div class="tabs"><button class="tab active" data-tab="resumen">Resumen</button><button class="tab" data-tab="datos">Detalle completo</button></div><button class="btn btn-secondary close" id="btnCloseDrawer">Cerrar</button></header>
+    <header><h3 id="drawer-title">Detalle del Centro</h3><div class="tabs"><button class="tab active" data-tab="resumen">Resumen</button><button class="tab" data-tab="datos">Datos</button></div><button class="btn btn-secondary close" id="btnCloseDrawer">Cerrar</button></header>
     <div class="content" id="tab-resumen"><div class="kv" id="kv-resumen"></div></div>
     <div class="content hidden" id="tab-datos"><div class="kv" id="kv-datos"></div></div>
   </aside>
@@ -1072,7 +266,7 @@
     <div class="modal"><header><h2 id="modal-title">Encuentra un Centro Digital</h2><p>Busca por ID o código del Centro Digital.</p></header><div class="row"><input id="inpId" placeholder="Ej. CD1234"><button class="btn" id="btnBuscarId">Buscar</button></div><div class="actions"><button class="btn btn-secondary" id="btnCancelar">Cancelar</button></div></div>
   </div>
 
-  <footer><div class="wrap" style="font-size:12px;color:var(--muted)"><p>Panel Digital Interactivo · Centros Digitales · <span id="year"></span></p></div></footer>
+  <footer><div class="wrap" style="font-size:12px;color:var(--muted)"><p>Campus Digital Interactivo · Centros Digitales · <span id="year"></span></p></div></footer>
 
 <script>
 /* ========= CONFIG ========= */
@@ -1090,7 +284,7 @@ const DATA_URL = SHEET_CSV_URL;
 const state = {
   raw: [], items: [], headers: [], headerMap: {},
   page: 0, pageSize: 30, lastFilter: null,
-  theme: 'dark',
+  theme: (localStorage.getItem('hv_theme') || 'dark'),
   keys: {
     id: ['id','cd','codigo','codigo_centro','centro_id','centroid','id_centro','codigo_cd'],
     nombre: ['nombre','centro','sede','institucion','razon_social'],
@@ -1102,32 +296,22 @@ const state = {
     sedeDet: ['sede','nombre_sede','sede_ie'],
     proyecto: ['proyecto','programa','contrato','proyecto_cd'],
 
-centroPoblado: [
-  'centro_poblado',
-  'centro poblado',
-  'cp',
-  'vereda'
-],
-
     /* NUEVO: coordenadas reales */
     latitud: ['latitud','latitude','lat','coord_lat','coordenada_latitud','y'],
     longitud: ['longitud','longitude','lon','lng','long','coord_lon','coord_longitud','coordenada_longitud','x'],
 
     /* NUEVO: métricas de la tarjeta destacada */
     diasIncidentes: ['dias_sin_incidentes','dias_incidentes','dias_sin_incidencias','incidentes_dias'],
-    conectividad: ['conectividad','porcentaje_conectividad','pct_conectividad','disponibilidad'],
-
-ultimaVisita: [
-  'ultima_visita',
-  'última_visita',
-  'ultima visita',
-  'última visita'
-]
+    conectividad: ['conectividad','porcentaje_conectividad','pct_conectividad','disponibilidad']
   }
 };
 
 let featureMap = null;
 let featureMarker = null;
+let featureRouteLayer = null;
+let featureRouteOriginMarker = null;
+let featureRouteDestinationMarker = null;
+let currentFeatureItem = null;
 
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
@@ -1181,18 +365,14 @@ async function loadData(){
   const srcParam = new URLSearchParams(location.search).get('src');
   const url = srcParam || SHEET_CSV_URL;
   const resumen = $('#resumen');
-const fuente = $('#fuente');
-
-if(fuente){
+  const fuente = $('#fuente');
   fuente.textContent = 'Fuente: ' + (srcParam || DATA_URL);
   fuente.classList.remove('hidden');
-}
 
   try{
-    if(resumen) resumen.textContent='Cargando datos…';
+    resumen.textContent='Cargando datos…';
     const {text:txt, used} = await fetchWithFallbacks(url);
     console.debug('Dataset cargado vía:', used);
-   
 
     let items=[], headers=[];
     if((srcParam||DATA_URL).toLowerCase().endsWith('.json') || txt.trim().startsWith('[')){
@@ -1204,63 +384,23 @@ if(fuente){
       headers=h; items=rows;
     }
 
-    console.log('Columnas detectadas:', headers);
     const headerMap={}; headers.forEach(h=>headerMap[toKey(h)]=h);
     state.raw=items; state.headers=headers; state.headerMap=headerMap;
     state.items=items.map(o=>{const oo={}; headers.forEach(h=>oo[h]=(o[h]??'').toString().trim()); return oo;});
-    console.log('Registros cargados:', state.items.length);
-    console.log('Primer registro:', state.items[0]);
 
-   state.page=0;
-console.log('Headers:', headers);
-console.log('Items originales:', items.length);
+    state.page=0;
+    applyFilters();
 
-fillFilters();
-
-applyFilters();
-
-   /* Centro destacado = mayor DIAS_SIN_INCIDENTES */
-if(state.items.length){
-
-  const colInc =
-    guessKey(
-      state.items[0],
-      state.keys.diasIncidentes.map(toKey)
-    );
-
-  let destacado = null;
-
-  if(colInc){
-
-    destacado = state.items
-      .filter(item => {
-        const v = Number(item[colInc]);
-        return Number.isFinite(v) && v > 0;
-      })
-      .sort((a,b) =>
-        Number(b[colInc]) - Number(a[colInc])
-      )[0];
-
-  }
-
-  updateFeatureCard(
-  destacado || state.items[0],
-  true
-);
-}
+    /* Centro destacado = primer centro del dataset */
+    if(state.items.length){
+      updateFeatureCard(state.items[0]);
+    }
   }catch(err){
-
-  if(resumen){
-    resumen.innerHTML =
-      `<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err && err.message) || err}`;
+    resumen.innerHTML=`<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err&&err.message)||err}`;
+    $('#grid').innerHTML=''; setKPIs(0,0,0);
   }
-
-  $('#grid').innerHTML = '';
-
-  setKPIs(0,0,0);
 }
 
-  }
 /* ===== MINIMAPA REAL ===== */
 function getCoordinate(item, keyCandidates){
   const sample=state.items[0]||{};
@@ -1300,21 +440,11 @@ function updateFeatureMap(item){
 
     L.control.zoom({position:'topright'}).addTo(featureMap);
 
-    L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  {
-    maxZoom: 19,
-    attribution: 'Tiles © Esri'
-  }
-).addTo(featureMap);
-
-    L.tileLayer(
-  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-  {
-    maxZoom: 19,
-    opacity: 1
-  }
-).addTo(featureMap);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+      maxZoom:19,
+      attribution:'&copy; OpenStreetMap &copy; CARTO',
+      subdomains:'abcd'
+    }).addTo(featureMap);
   }
 
   featureMap.setView([lat,lon],13,{animate:true});
@@ -1333,80 +463,135 @@ function updateFeatureMap(item){
   }
 
   const sample=state.items[0]||{};
-  const colCentroPoblado=
-  guessKey(sample,state.keys.centroPoblado.map(toKey));
-
-const colDep=
-  guessKey(sample,state.keys.depto.map(toKey));
-
-const centroPoblado=
-  colCentroPoblado ? item[colCentroPoblado] : '';
-
-const departamento=
-  colDep ? item[colDep] : '';
+  const colMun=guessKey(sample,state.keys.mun.map(toKey));
+  const colDep=guessKey(sample,state.keys.depto.map(toKey));
+  const municipio=colMun ? item[colMun] : '';
+  const departamento=colDep ? item[colDep] : '';
   const locationBadge=document.getElementById('featureMapLocation');
 
-if(locationBadge){
-  locationBadge.innerHTML =
-`<span>●</span><span>${escapeHtml(centroPoblado)}${centroPoblado && departamento ? ', ' : ''}${escapeHtml(departamento)}</span>`;
+  if(locationBadge){
+    locationBadge.innerHTML=`<span>●</span><span>${escapeHtml(municipio)}${municipio&&departamento?', ':''}${escapeHtml(departamento)}</span>`;
+  }
+
+  setTimeout(()=>featureMap && featureMap.invalidateSize(),100);
 }
 
-setTimeout(() => {
-  if(featureMap){
-    featureMap.invalidateSize(true);
-  }
-}, 500);
+/* ===== RUTA A → B: ubicación actual del usuario hasta el Centro Digital ===== */
+function clearFeatureRoute(){
+  if(!featureMap) return;
+  if(featureRouteLayer){ featureMap.removeLayer(featureRouteLayer); featureRouteLayer=null; }
+  if(featureRouteOriginMarker){ featureMap.removeLayer(featureRouteOriginMarker); featureRouteOriginMarker=null; }
+  if(featureRouteDestinationMarker){ featureMap.removeLayer(featureRouteDestinationMarker); featureRouteDestinationMarker=null; }
+  const info=$('#featureRouteInfo');
+  if(info){ info.classList.remove('visible'); info.innerHTML=''; }
 }
-function updateFeatureCard(item, isFeatured = false){
+
+function formatDistance(meters){
+  if(!Number.isFinite(meters)) return '—';
+  return meters >= 1000 ? `${(meters/1000).toFixed(1).replace('.',',')} km` : `${Math.round(meters)} m`;
+}
+
+function formatDuration(seconds){
+  if(!Number.isFinite(seconds)) return '—';
+  const mins=Math.round(seconds/60);
+  if(mins < 60) return `${mins} min`;
+  const h=Math.floor(mins/60), m=mins%60;
+  return `${h} h${m ? ` ${m} min` : ''}`;
+}
+
+function createRoutePin(type){
+  const cls=type==='origin'?'route-origin-pin':'route-destination-pin';
+  return L.divIcon({className:type==='origin'?'route-origin-marker':'route-destination-marker',html:`<div class="route-pin ${cls}"></div>`,iconSize:[18,18],iconAnchor:[9,9]});
+}
+
+async function drawRouteToFeature(){
+  const btn=$('#featureRouteBtn');
+  const info=$('#featureRouteInfo');
+  if(!currentFeatureItem){ return; }
+
+  const latResult=getCoordinate(currentFeatureItem,state.keys.latitud);
+  const lonResult=getCoordinate(currentFeatureItem,state.keys.longitud);
+  const destLat=latResult.value, destLon=lonResult.value;
+  if(destLat===null || destLon===null || Math.abs(destLat)>90 || Math.abs(destLon)>180){
+    if(info){ info.innerHTML='Este centro no tiene coordenadas válidas para calcular la ruta.'; info.classList.add('visible'); }
+    return;
+  }
+
+  if(!navigator.geolocation){
+    if(info){ info.innerHTML='Tu navegador no permite obtener la ubicación actual.'; info.classList.add('visible'); }
+    return;
+  }
+
+  const originalText=btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled=true; btn.innerHTML='⌛ Calculando…'; }
+  if(info){ info.innerHTML='Solicitando tu ubicación…'; info.classList.add('visible'); }
+
+  try{
+    const position=await new Promise((resolve,reject)=>{
+      navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+    });
+
+    const originLat=position.coords.latitude;
+    const originLon=position.coords.longitude;
+    const routeUrl=`https://router.project-osrm.org/route/v1/driving/${originLon},${originLat};${destLon},${destLat}?overview=full&geometries=geojson`;
+    const response=await fetch(routeUrl,{headers:{'Accept':'application/json'}});
+    if(!response.ok) throw new Error(`No fue posible consultar el servicio de rutas (${response.status}).`);
+    const data=await response.json();
+    if(data.code!=='Ok' || !data.routes || !data.routes.length) throw new Error('No se encontró una ruta en carretera entre tu ubicación y el centro.');
+
+    const route=data.routes[0];
+    clearFeatureRoute();
+
+    featureRouteLayer=L.geoJSON(route.geometry,{
+      style:{color:'#25e6ff',weight:5,opacity:.92,lineCap:'round',lineJoin:'round'}
+    }).addTo(featureMap);
+
+    featureRouteOriginMarker=L.marker([originLat,originLon],{icon:createRoutePin('origin'),zIndexOffset:1000})
+      .bindTooltip('Punto A · Tu ubicación',{direction:'top',offset:[0,-8]})
+      .addTo(featureMap);
+
+    featureRouteDestinationMarker=L.marker([destLat,destLon],{icon:createRoutePin('destination'),zIndexOffset:1001})
+      .bindTooltip('Punto B · Centro Digital',{direction:'top',offset:[0,-8]})
+      .addTo(featureMap);
+
+    featureMap.fitBounds(featureRouteLayer.getBounds(),{padding:[28,28],maxZoom:15,animate:true});
+
+    const distance=formatDistance(route.distance);
+    const duration=formatDuration(route.duration);
+    if(info){
+      info.innerHTML=`<strong>Ruta desde tu ubicación</strong><br>🛣️ ${distance} · ⏱️ aprox. ${duration}`;
+      info.classList.add('visible');
+    }
+  }catch(err){
+    let message=err && err.message ? err.message : 'No se pudo calcular la ruta.';
+    if(err && (err.code===1 || err.code===2 || err.code===3)){
+      message=err.code===1 ? 'Debes permitir el acceso a tu ubicación para calcular la ruta.' : 'No fue posible obtener tu ubicación. Verifica el GPS o la conexión.';
+    }
+    if(info){ info.innerHTML=escapeHtml(message); info.classList.add('visible'); }
+  }finally{
+    if(btn){ btn.disabled=false; btn.innerHTML=originalText; }
+  }
+}
+
+function updateFeatureCard(item){
   if(!item) return;
+  currentFeatureItem=item;
+  clearFeatureRoute();
   const sample=state.items[0]||{};
   const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
   const colDep=guessKey(sample,state.keys.depto.map(toKey));
-  const colCentroPoblado=
-  guessKey(sample,state.keys.centroPoblado.map(toKey));
+  const colMun=guessKey(sample,state.keys.mun.map(toKey));
   const colEst=guessKey(sample,state.keys.estado.map(toKey));
-  const colId=guessKey(sample,state.keys.id.map(toKey));
   const colInc=guessKey(sample,state.keys.diasIncidentes.map(toKey));
-  const colVisita=
-  guessKey(sample,state.keys.ultimaVisita.map(toKey));
+  const colConn=guessKey(sample,state.keys.conectividad.map(toKey));
 
   const nombre=colNombre ? item[colNombre] : 'Centro destacado';
-const id=colId ? item[colId] : '';
-const centroPoblado=
-  colCentroPoblado ? item[colCentroPoblado] : '';
-const departamento=colDep ? item[colDep] : '';
-const estado =
-  (item['Offline'] || '').trim() ? 'Offline' :
-  (item['P3'] || '').trim() ? 'P3' :
-  (item['PQR'] || '').trim() ? 'PQR' :
-  (item['Parcial'] || '').trim() ? 'Parcial' :
-  (item['Velocidad'] || '').trim() ? 'Velocidad' :
-  (item['Online'] || '').trim() ? 'Online' :
-  '';
+  const municipio=colMun ? item[colMun] : '';
+  const departamento=colDep ? item[colDep] : '';
+  const estado=colEst ? item[colEst] : '';
 
-const titleEl = document.getElementById('featureTitle');
-
-if(titleEl){
-
-  if(isFeatured){
-
-    titleEl.textContent =
-      '🟢 CD CON MAYOR ESTABILIDAD OPERATIVA';
-
-  }else{
-
-    titleEl.textContent =
-      '🔎 CENTRO DIGITAL SELECCIONADO';
-
-  }
-
-}  
-
-  $('#featureId').textContent = id ? `ID${id}` : '';
   $('#featureName').textContent=nombre||'Centro destacado';
-  $('#featureLocation').textContent =
-`${centroPoblado}${centroPoblado && departamento ? ', ' : ''}${departamento}`
-|| 'Ubicación';
+  $('#featureLocation').textContent=`${municipio}${municipio&&departamento?', ':''}${departamento}` || 'Ubicación';
 
   const online=/online|activo|operativo|en servicio|funciona/i.test(estado);
   const statusColor=online?'#45e0a1':'#ff5c7a';
@@ -1417,10 +602,9 @@ if(titleEl){
   statusEl.innerHTML=`<span style="width:8px;height:8px;display:inline-block;border-radius:50%;background:${statusColor};box-shadow:0 0 10px ${statusColor}"></span>${escapeHtml(estado||'Sin estado')}`;
 
   $('#featureIncidents').textContent=colInc ? (item[colInc]||'—') : '—';
-  const ultimaVisita =
-  colVisita ? (item[colVisita] || 'Sin visita') : 'Sin visita';
-
-$('#featureConnectivity').textContent = ultimaVisita;
+  let connectivity=colConn ? (item[colConn]||'—') : '—';
+  if(connectivity!=='—' && !String(connectivity).includes('%')) connectivity += '%';
+  $('#featureConnectivity').textContent=connectivity;
 
   updateFeatureMap(item);
 
@@ -1445,64 +629,14 @@ function escapeHtml(value){
 }
 
 /* ===== Render / filtros / KPIs ===== */
-function fillFilters(){
-
-  const sample = state.items[0] || {};
-
-  const colDep = guessKey(sample,state.keys.depto.map(toKey));
-  const colMun = guessKey(sample,state.keys.mun.map(toKey));
-  const colIE = guessKey(sample,state.keys.ie.map(toKey));
-  const colEst = guessKey(sample,state.keys.estado.map(toKey));
-
-  const load = (id,col,label)=>{
-
-    const el = document.getElementById(id);
-
-    if(!el || !col) return;
-
-    const values = [...new Set(
-      state.items
-        .map(r => (r[col] || '').trim())
-        .filter(Boolean)
-    )].sort();
-
-    el.innerHTML =
-      `<option value="">${label}</option>` +
-      values.map(v =>
-        `<option value="${v}">${v}</option>`
-      ).join('');
-  };
-
-  load('filterDep',colDep,'Todos');
-  load('filterMun',colMun,'Todos');
-  load('filterIE',colIE,'Todas');
-  document.getElementById('filterEstado').innerHTML = `
-<option value="">Todos</option>
-<option value="Online">Online</option>
-<option value="Offline">Offline</option>
-<option value="Parcial">Parcial</option>
-<option value="Velocidad">Velocidad</option>
-<option value="P3">P3</option>
-<option value="PQR">PQR</option>
-`;
-}
-
 function applyFilters(){
-
   const sample=state.items[0]||{};
   const colId=guessKey(sample,state.keys.id.map(toKey));
   const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
   const colDep=guessKey(sample,state.keys.depto.map(toKey));
   const colMun=guessKey(sample,state.keys.mun.map(toKey));
   const colOpe=guessKey(sample,state.keys.operador.map(toKey));
-  const colEst =
-  guessKey(sample,state.keys.estado.map(toKey));
-  const colOnline = guessKey(sample,['online']);
-const colOffline = guessKey(sample,['offline']);
-const colParcial = guessKey(sample,['parcial']);
-const colVelocidad = guessKey(sample,['velocidad']);
-const colP3 = guessKey(sample,['p3']);
-const colPQR = guessKey(sample,['pqr']);
+  const colEst=guessKey(sample,state.keys.estado.map(toKey));
   const colIE=guessKey(sample,state.keys.ie.map(toKey));
 
   const dep=normalize($('#filterDep')?.value||'');
@@ -1515,39 +649,7 @@ const colPQR = guessKey(sample,['pqr']);
     if(dep && !normalize(o[colDep]||'').includes(dep)) return false;
     if(mun && !normalize(o[colMun]||'').includes(mun)) return false;
     if(ie && !normalize(o[colIE]||o[colNombre]||'').includes(ie)) return false;
-    if(estado){
-
-  if(
-    estado === 'online' &&
-    (o[colOnline] || '').toString().trim() === ''
-  ) return false;
-
-  if(
-    estado === 'offline' &&
-    (o[colOffline] || '').toString().trim() === ''
-  ) return false;
-
-  if(
-    estado === 'parcial' &&
-    (o[colParcial] || '').toString().trim() === ''
-  ) return false;
-
-  if(
-    estado === 'velocidad' &&
-    (o[colVelocidad] || '').toString().trim() === ''
-  ) return false;
-
-  if(
-    estado === 'p3' &&
-    (o[colP3] || '').toString().trim() === ''
-  ) return false;
-
-  if(
-    estado === 'pqr' &&
-    (o[colPQR] || '').toString().trim() === ''
-  ) return false;
-
-}
+    if(estado && !normalize(o[colEst]||'').includes(estado)) return false;
     if(q){
       const hay=[o[colId],o[colNombre],o[colMun],o[colDep],o[colOpe],o[colIE]].filter(Boolean).some(v=>normalize(v).includes(q));
       if(!hay) return false;
@@ -1558,137 +660,37 @@ const colPQR = guessKey(sample,['pqr']);
   state.lastFilter={q,dep,mun,ie,estado};
   state.page=0;
   renderResults(results,{colId,colNombre,colDep,colMun,colOpe,colEst});
-  refreshKPIs(results);
+  refreshKPIs(results,{colEst});
 
-  /* Centro destacado = mayor DIAS_SIN_INCIDENTES del filtro */
-if(results.length){
-
-  const colInc =
-    guessKey(
-      results[0],
-      state.keys.diasIncidentes.map(toKey)
-    );
-
-  let destacado = null;
-
-  if(colInc){
-
-    destacado = results
-      .filter(item => {
-        const v = Number(item[colInc]);
-        return Number.isFinite(v) && v > 0;
-      })
-      .sort((a,b) =>
-        Number(b[colInc]) - Number(a[colInc])
-      )[0];
-
-  }
-
-  const isEstadoFilter =
-  ($('#filterEstado')?.value || '').trim() !== '';
-
-updateFeatureCard(
-  destacado || results[0],
-  !isEstadoFilter
-);
-
-}
+  /* El centro destacado acompaña los filtros. */
+  if(results.length) updateFeatureCard(results[0]);
 }
 
 function renderResults(results,cols){
-
-  const grid = $('#grid');
-  const resumen = $('#resumen');
-
+  const grid=$('#grid'); const resumen=$('#resumen');
   if(!results.length){
-
-    if(resumen){
-      resumen.textContent =
-        'Sin resultados. Ajusta los filtros o busca por ID/CD.';
-    }
-
-    grid.innerHTML = '';
-
-    $('#btnMas')?.classList.add('hidden');
-
-    return;
+    resumen.textContent='Sin resultados. Ajusta los filtros o busca por ID/CD.';
+    grid.innerHTML=''; $('#btnMas')?.classList.add('hidden'); return;
   }
-
-  if(resumen){
-    resumen.textContent =
-      `${results.length.toLocaleString('es-CO')} resultados`;
-  }
-
-  const end = Math.min(
-    results.length,
-    (state.page + 1) * state.pageSize
-  );
-
-  const slice = results.slice(0,end);
+  resumen.textContent=`${results.length.toLocaleString('es-CO')} resultados`;
+  const end=Math.min(results.length,(state.page+1)*state.pageSize);
+  const slice=results.slice(0,end);
 
   grid.innerHTML=slice.map((o,i)=>{
     const nombre=o[cols.colNombre]||'(sin nombre)';
-    const id=o[cols.colId]||''; const dep=o[cols.colDep]||''; const mun=o[cols.colMun]||''; const ope=o[cols.colOpe]||''; const est =
-  (o['Offline'] || '').trim() ? 'Offline' :
-  (o['P3'] || '').trim() ? 'P3' :
-  (o['PQR'] || '').trim() ? 'PQR' :
-  (o['Parcial'] || '').trim() ? 'Parcial' :
-  (o['Velocidad'] || '').trim() ? 'Velocidad' :
-  (o['Online'] || '').trim() ? 'Online' :
-  '';
-    const estClass =
-/p3/i.test(est) ? 'p3' :
-/pqr/i.test(est) ? 'pqr' :
-/velocidad/i.test(est) ? 'velocidad' :
-/ok|online|activo|operativo|operativa|en servicio|funciona/i.test(est) ? 'ok' :
-/baja|inactivo|offline|caido|caído|fuera|no operativo/i.test(est) ? 'down' :
-est ? 'warn' : '';
+    const id=o[cols.colId]||''; const dep=o[cols.colDep]||''; const mun=o[cols.colMun]||''; const ope=o[cols.colOpe]||''; const est=o[cols.colEst]||'';
+    const estClass=/ok|online|activo|operativo|operativa|en servicio|funciona/i.test(est)?'ok':/baja|inactivo|offline|caido|caído|fuera|no operativo/i.test(est)?'down':est?'warn':'';
     const hue=(i*37)%360;
     return `<article class="card" data-id="${encodeURIComponent(id)}" title="Ver detalle">
-  <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
-
-<div class="card-map-preview">
-
-  <div class="map-state ${estClass}">
-    ${escapeHtml(est)}
-  </div>
-
-  <div class="mini-map" id="mini-map-${i}"></div>
-
-</div>
-
-  <h3>${escapeHtml(nombre)}</h3>
-     <div class="card-location">
-  <span class="card-id">
-    ID: ${escapeHtml(id)}
-  </span>
-
-  ${mun || dep ? `
-    <span class="card-sep">•</span>
-
-    <span class="card-place">
-      ${escapeHtml(mun)}${mun && dep ? ', ' : ''}${escapeHtml(dep)}
-    </span>
-  ` : ''}
-</div>
-
-<div class="card-connectivity ${estClass}">
-  ${
-    estClass === 'ok'
-      ? '📶 Conectividad óptima'
-      : estClass === 'down'
-        ? '📵 Sin conexión'
-        : /parcial/i.test(est)
-          ? '📡 Parcialmente operativo'
-          : /velocidad/i.test(est)
-            ? '⚡ Velocidad baja'
-            : /p3/i.test(est)
-              ? '🟣 Incidente P3'
-              : /pqr/i.test(est)
-                ? '🟠 PQR'
-                : '📶 Estado no identificado'
-  }
-</div>
+      <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
+      <h3>${escapeHtml(nombre)}</h3>
+      <div class="meta" style="margin-bottom:10px">
+        ${id?`<span class="badge">ID: ${escapeHtml(id)}</span>`:''}
+        ${mun?`<span class="badge">${escapeHtml(mun)}</span>`:''}
+        ${dep?`<span class="badge">${escapeHtml(dep)}</span>`:''}
+        ${ope?`<span class="badge">Operador: ${escapeHtml(ope)}</span>`:''}
+        ${est?`<span class="badge state ${estClass}">${escapeHtml(est)}</span>`:''}
+      </div>
       <div class="statusbar"></div>
     </article>`;
   }).join('');
@@ -1699,107 +701,13 @@ est ? 'warn' : '';
     if(btnMas) btnMas.onclick=()=>{state.page++;renderResults(results,cols);};
   }else btnMas?.classList.add('hidden');
 
-$$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
-  const id=decodeURIComponent(el.getAttribute('data-id')||'');
-  let item=id?results.find(r=>(r[cols.colId]||'')===id):null;
-  if(!item) item=results[0];
-  showDetail(item,cols);
-  updateFeatureCard(item,false);
-}));
-
-setTimeout(() => {
-  renderMiniMaps(slice);
-}, 100);
-
-}
-
-function renderMiniMaps(items){
-
-  const sample = state.items[0] || {};
-
-  const colLat = guessKey(
-    sample,
-    state.keys.latitud.map(toKey)
-  );
-
-  const colLon = guessKey(
-    sample,
-    state.keys.longitud.map(toKey)
-  );
-
-  items.forEach((item,index)=>{
-
-    const lat = parseFloat(
-      String(item[colLat] || '').replace(',','.')
-    );
-
-    const lon = parseFloat(
-      String(item[colLon] || '').replace(',','.')
-    );
-
-    if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-
-    const container =
-      document.getElementById(`mini-map-${index}`);
-
-    if(!container) return;
-    container.addEventListener('click', e => {
-  e.stopPropagation();
-});
-
-container.addEventListener('mousedown', e => {
-  e.stopPropagation();
-});
-
-container.addEventListener('dblclick', e => {
-  e.stopPropagation();
-});
-
-    const map = L.map(container,{
-  zoomControl:true,
-attributionControl:false,
-  dragging:true,
-  scrollWheelZoom:false,
-  doubleClickZoom:true,
-  touchZoom:true
-});
-    map.zoomControl.setPosition('topright');
-
-    L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  {
-    maxZoom:19
-  }
-).addTo(map);
-
-L.tileLayer(
-  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-  {
-    maxZoom:19,
-    opacity:1
-  }
-).addTo(map);
-    
-
-    map.setView([lat,lon],17);
-
-    const miniMarkerIcon = L.divIcon({
-  className:'custom-center-marker',
-  html:`
-    <div class="center-marker">
-      <div class="center-marker-pulse"></div>
-      <div class="center-marker-dot"></div>
-    </div>
-  `,
-  iconSize:[40,40],
-  iconAnchor:[20,20]
-});
-
-L.marker([lat,lon],{
-  icon:miniMarkerIcon
-}).addTo(map);
-
-  });
+  $$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
+    const id=decodeURIComponent(el.getAttribute('data-id')||'');
+    let item=id?results.find(r=>(r[cols.colId]||'')===id):null;
+    if(!item) item=results[0];
+    showDetail(item,cols);
+    updateFeatureCard(item);
+  }));
 }
 
 function setKPIs(total,ok,down){
@@ -1811,35 +719,12 @@ function setKPIs(total,ok,down){
   $('#pctTotal').textContent='100%'; $('#pctOnline').textContent=pctOk+'%'; $('#pctOffline').textContent=pctDown+'%';
 }
 
-function refreshKPIs(results){
+function refreshKPIs(results,cols){
   let online=0,offline=0,p3=0,parcial=0,pqr=0,velocidad=0;
-    const sample = results[0] || {};
-
-  const colOffline = guessKey(sample,['offline']);
-  const colP3 = guessKey(sample,['p3']);
-  const colParcial = guessKey(sample,['parcial']);
-  const colPQR = guessKey(sample,['pqr']);
-  const colVelocidad = guessKey(sample,['velocidad']);
-  const colOnline = guessKey(sample,['online']);
   results.forEach(o=>{
-
-  if((o[colOffline] || '').toString().trim() !== '') offline++;
-
-  if((o[colP3] || '').toString().trim() !== '') p3++;
-
-  if((o[colParcial] || '').toString().trim() !== '') parcial++;
-
-  if((o[colPQR] || '').toString().trim() !== '') pqr++;
-
-  if((o[colVelocidad] || '').toString().trim() !== '') velocidad++;
-
-  if((o[colOnline] || '').toString().trim() !== '') online++;
-
-});
-  if(!results.length){
-  setKPIs(0,0,0);
-  return;
-}
+    const est=(o[cols.colEst]||'').toString().trim().toLowerCase();
+    if(est==='online') online++; else if(est==='offline') offline++; else if(est==='p3') p3++; else if(est==='parcial') parcial++; else if(est==='pqr') pqr++; else if(est==='velocidad') velocidad++;
+  });
   setKPIs(results.length,online,offline);
   $('#kpiP3').textContent=p3; $('#kpiParcial').textContent=parcial; $('#kpiPQR').textContent=pqr; $('#kpiVelocidad').textContent=velocidad;
   const total=results.length||1;
@@ -1890,23 +775,21 @@ function searchById(){
   if(!target){alert('No se encontró un Centro con ese ID/Código.');return}
   closeModal();
   const cols={colId,colNombre:guessKey(sample,state.keys.nombre.map(toKey)),colDep:guessKey(sample,state.keys.depto.map(toKey)),colMun:guessKey(sample,state.keys.mun.map(toKey)),colOpe:guessKey(sample,state.keys.operador.map(toKey)),colEst:guessKey(sample,state.keys.estado.map(toKey))};
-  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results); updateFeatureCard(target,false); showDetail(target,cols); activateTab('datos');
+  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results,{colEst:cols.colEst}); updateFeatureCard(target); showDetail(target,cols); activateTab('datos');
 }
 
 /* ===== Tema & filtros ===== */
+function applyTheme(){document.documentElement.setAttribute('data-theme',state.theme);const btn=$('#btnTheme');if(btn)btn.textContent='Tema: '+(state.theme==='dark'?'Oscuro':'Claro')}
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';localStorage.setItem('hv_theme',state.theme);applyTheme()}
 
 function init(){
   const yrEl=document.getElementById('year'); if(yrEl)yrEl.textContent=new Date().getFullYear();
-  safeOn('btnIngresar','click',openModal); 
+  safeOn('btnIngresar','click',openModal); safeOn('heroSearch','click',openModal);
   safeOn('btnRefrescar','click',()=>{state.forceRefresh=true;loadData()});
-  safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
+  safeOn('btnTheme','click',toggleTheme); safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
+  safeOn('featureRouteBtn','click',drawRouteToFeature);
 
-  safeOn('filterDep','change',applyFilters);
-safeOn('filterMun','change',applyFilters);
-safeOn('filterIE','change',applyFilters);
-safeOn('filterEstado','change',applyFilters);
-
-safeOn('filterSearch','input',applyFilters);
+  ['filterDep','filterMun','filterIE','filterEstado','filterSearch'].forEach(id=>safeOn(id,'input',()=>applyFilters()));
 
   $$('.drawer .tab').forEach(btn=>btn.addEventListener('click',()=>activateTab(btn.dataset.tab)));
 
@@ -1914,50 +797,10 @@ safeOn('filterSearch','input',applyFilters);
   if(backdrop)backdrop.addEventListener('click',e=>{if(e.target&&e.target.id==='backdrop')closeModal()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetail()}});
 
-  
+  applyTheme();
   loadData().catch(err=>console.error(err));
 }
 
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const mobileSidebar = document.getElementById('mobileSidebar');
-const mobileOverlay = document.getElementById('mobileOverlay');
-
-  function cerrarMenuMovil() {
-
-  mobileSidebar.classList.remove('open');
-  mobileOverlay.classList.remove('open');
-  mobileMenuBtn.classList.remove('menu-open');
-  mobileMenuBtn.textContent = '☰';
-
-}
-  
-mobileMenuBtn?.addEventListener('click', () => {
-
-  mobileSidebar.classList.toggle('open');
-  mobileOverlay.classList.toggle('open');
-  mobileMenuBtn.classList.toggle('menu-open');
-
-  mobileMenuBtn.textContent =
-    mobileSidebar.classList.contains('open')
-      ? '✕'
-      : '☰';
-
-});
-
-mobileOverlay?.addEventListener(
-  'click',
-  cerrarMenuMovil
-);
-
-document
-  .querySelectorAll('.mobile-sidebar a')
-  .forEach(link => {
-
-  link.addEventListener(
-  'click',
-  cerrarMenuMovil
-);
-  });
 window.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
