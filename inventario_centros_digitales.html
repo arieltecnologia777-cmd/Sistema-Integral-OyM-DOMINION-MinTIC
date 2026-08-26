@@ -1243,6 +1243,50 @@ fillFilters();
 
     function updateMunicipios(){
 
+  const dep = normalize(
+    document.getElementById('filterDep')?.value || ''
+  );
+
+  const sample = state.items[0] || {};
+
+  const colDep =
+    guessKey(sample,state.keys.depto.map(toKey));
+
+  const colMun =
+    guessKey(sample,state.keys.mun.map(toKey));
+
+  const munSelect =
+    document.getElementById('filterMun');
+
+  if(!munSelect || !colMun) return;
+
+  let data = state.items;
+
+  if(dep){
+
+    data = data.filter(r =>
+      normalize(r[colDep] || '') === dep
+    );
+
+  }
+
+  const municipios = [
+    ...new Set(
+      data
+        .map(r => (r[colMun] || '').trim())
+        .filter(Boolean)
+    )
+  ].sort();
+
+  munSelect.innerHTML =
+    '<option value="">Todos</option>' +
+    municipios
+      .map(m => `<option value="${m}">${m}</option>`)
+      .join('');
+
+}
+    function updateMunicipios(){
+
   const dep =
     normalize(
       document.getElementById('filterDep')?.value || ''
