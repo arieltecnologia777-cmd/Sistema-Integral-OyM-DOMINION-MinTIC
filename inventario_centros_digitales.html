@@ -1240,6 +1240,50 @@ console.log('Headers:', headers);
 console.log('Items originales:', items.length);
 
 fillFilters();
+
+    function updateMunicipios(){
+
+  const dep =
+    normalize(
+      document.getElementById('filterDep')?.value || ''
+    );
+
+  const sample = state.items[0] || {};
+
+  const colDep =
+    guessKey(sample,state.keys.depto.map(toKey));
+
+  const colMun =
+    guessKey(sample,state.keys.mun.map(toKey));
+
+  const munSelect =
+    document.getElementById('filterMun');
+
+  if(!munSelect || !colMun) return;
+
+  let data = state.items;
+
+  if(dep){
+
+    data = data.filter(r =>
+      normalize(r[colDep] || '') === dep
+    );
+
+  }
+
+  const municipios = [...new Set(
+    data
+      .map(r => (r[colMun] || '').trim())
+      .filter(Boolean)
+  )].sort();
+
+  munSelect.innerHTML =
+    '<option value="">Todos</option>' +
+    municipios.map(m =>
+      `<option value="${m}">${m}</option>`
+    ).join('');
+
+}
     updateMunicipios();
 
     function updateMunicipios(){
@@ -1645,6 +1689,13 @@ const colPQR = guessKey(sample,['pqr']);
     return true;
   });
 
+  console.log(
+  'Departamento:',
+  dep,
+  'Resultados:',
+  results.length
+);
+  
   state.lastFilter={q,dep,mun,ie,estado};
   state.page=0;
   renderResults(results,{colId,colNombre,colDep,colMun,colOpe,colEst});
