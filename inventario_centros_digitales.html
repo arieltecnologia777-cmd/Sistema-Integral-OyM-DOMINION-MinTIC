@@ -1664,8 +1664,13 @@ const id=o[cols.colId]||'';
 const dep=o[cols.colDep]||'';
 const mun=o[cols.colMun]||'';
 
-const lat = o[colLat] || '';
-const lon = o[colLon] || ''; const ope=o[cols.colOpe]||''; const est =
+const lat = String(o[colLat] || '')
+  .trim()
+  .replace(',', '.');
+
+const lon = String(o[colLon] || '')
+  .trim()
+  .replace(',', '.'); const ope=o[cols.colOpe]||''; const est =
   (o['Offline'] || '').trim() ? 'Offline' :
   (o['P3'] || '').trim() ? 'P3' :
   (o['PQR'] || '').trim() ? 'PQR' :
