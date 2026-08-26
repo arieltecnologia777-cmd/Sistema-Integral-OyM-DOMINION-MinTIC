@@ -1007,6 +1007,9 @@
               </div>
 
               <button class="btn btn-secondary" id="featureDetailBtn">Ver hoja de vida →</button>
+              <button class="btn" id="featureRouteBtn">
+  🧭 Cómo llegar
+</button>
             </div>
 
            
@@ -1423,6 +1426,23 @@ if(titleEl){
 $('#featureConnectivity').textContent = ultimaVisita;
 
   updateFeatureMap(item);
+  const latResult = getCoordinate(item, state.keys.latitud);
+const lonResult = getCoordinate(item, state.keys.longitud);
+
+const routeBtn = document.getElementById('featureRouteBtn');
+
+if(
+  routeBtn &&
+  latResult.value !== null &&
+  lonResult.value !== null
+){
+  routeBtn.onclick = () => {
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${latResult.value},${lonResult.value}`,
+      '_blank'
+    );
+  };
+}
 
   const detailBtn=$('#featureDetailBtn');
   if(detailBtn){
@@ -1600,6 +1620,18 @@ function renderResults(results,cols){
   const grid = $('#grid');
   const resumen = $('#resumen');
 
+  const sample = state.items[0] || {};
+
+const colLat = guessKey(
+  sample,
+  state.keys.latitud.map(toKey)
+);
+
+const colLon = guessKey(
+  sample,
+  state.keys.longitud.map(toKey)
+);
+
   if(!results.length){
 
     if(resumen){
@@ -1628,7 +1660,12 @@ function renderResults(results,cols){
 
   grid.innerHTML=slice.map((o,i)=>{
     const nombre=o[cols.colNombre]||'(sin nombre)';
-    const id=o[cols.colId]||''; const dep=o[cols.colDep]||''; const mun=o[cols.colMun]||''; const ope=o[cols.colOpe]||''; const est =
+const id=o[cols.colId]||'';
+const dep=o[cols.colDep]||'';
+const mun=o[cols.colMun]||'';
+
+const lat = o[colLat] || '';
+const lon = o[colLon] || ''; const ope=o[cols.colOpe]||''; const est =
   (o['Offline'] || '').trim() ? 'Offline' :
   (o['P3'] || '').trim() ? 'P3' :
   (o['PQR'] || '').trim() ? 'PQR' :
@@ -1673,6 +1710,15 @@ est ? 'warn' : '';
 </div>
 
 <div class="card-connectivity ${estClass}">
+<div style="margin-top:14px;">
+  <button
+    class="btn btn-secondary route-btn"
+    data-lat="${item[colLat] || ''}"
+    data-lon="${item[colLon] || ''}"
+  >
+    🧭 Cómo llegar
+  </button>
+</div>
   ${
     estClass === 'ok'
       ? '📶 Conectividad óptima'
@@ -1688,6 +1734,18 @@ est ? 'warn' : '';
                 ? '🟠 PQR'
                 : '📶 Estado no identificado'
   }
+</div>
+
+<div style="margin-top:14px">
+
+  <button
+    class="btn btn-secondary route-btn"
+    data-lat="${lat}"
+    data-lon="${lon}"
+  >
+    🧭 Cómo llegar
+  </button>
+
 </div>
       <div class="statusbar"></div>
     </article>`;
@@ -1706,6 +1764,30 @@ $$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
   showDetail(item,cols);
   updateFeatureCard(item,false);
 }));
+
+  document
+  .querySelectorAll('.route-btn')
+  .forEach(btn => {
+
+    btn.addEventListener('click', e => {
+
+      e.stopPropagation();
+
+      const lat = btn.dataset.lat;
+      const lon = btn.dataset.lon;
+
+      if(!lat || !lon){
+        return;
+      }
+
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`,
+        '_blank'
+      );
+
+    });
+
+});
 
 setTimeout(() => {
   renderMiniMaps(slice);
