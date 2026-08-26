@@ -1773,9 +1773,10 @@ attributionControl:false,
 ).addTo(map);
 
 L.tileLayer(
-  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
   {
-    opacity:0.35
+    maxZoom:19,
+    opacity:1
   }
 ).addTo(map);
     
