@@ -205,11 +205,9 @@
     .feature-card h3{margin:10px 0 4px;font-size:22px}.feature-card p{margin:0;color:var(--muted);font-size:13px}
     .feature-status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(69,224,161,.15);color:#45e0a1;font-weight:700}
     #featureDetailBtn{
-  width:100%;
-
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content:center;
 
   padding:14px 18px;
 
@@ -224,6 +222,15 @@
   margin:16px 0;
 }
 
+    .feature-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.feature-actions button{
+  flex:1;
+}
 .feature-metrics strong{
   display:block;
   font-size:18px;
@@ -1006,10 +1013,23 @@
                 <div class="metric"><strong id="featureConnectivity">—</strong><span>última visita</span></div>
               </div>
 
-              <button class="btn btn-secondary" id="featureDetailBtn">Ver hoja de vida →</button>
-              <button class="btn" id="featureRouteBtn">
-  🧭 Cómo llegar
-</button>
+              <div class="feature-actions">
+
+  <button
+    class="btn btn-secondary"
+    id="featureDetailBtn"
+  >
+    Ver hoja de vida →
+  </button>
+
+  <button
+    class="btn"
+    id="featureRouteBtn"
+  >
+    🧭 Cómo llegar
+  </button>
+
+</div>
             </div>
 
            
