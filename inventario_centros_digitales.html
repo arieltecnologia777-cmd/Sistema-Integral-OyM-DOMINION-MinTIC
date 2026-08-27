@@ -2331,7 +2331,7 @@ function detectFindingsIA(texto){
 
 }
 
-  function analizarObservacion(texto){
+  function analizarObservacion(texto,id){
 
   const scores =
     scoreCategoriesIA(texto);
@@ -2454,8 +2454,8 @@ function detectFindingsIA(texto){
     ">
 
       <h3 style="margin-top:0">
-        Resumen Ejecutivo
-      </h3>
+  Resumen Ejecutivo ${id ? `· ID ${id}` : ''}
+</h3>>
 
       <p>${resumen}</p>
 
@@ -2605,8 +2605,16 @@ function detectFindingsIA(texto){
 
   }
 
-  const resultado =
-    analizarObservacion(texto);
+  const sample = state.items[0] || {};
+
+const colId =
+  guessKey(sample,state.keys.id.map(toKey));
+
+const id =
+  colId ? (item[colId] || '') : '';
+
+const resultado =
+  analizarObservacion(texto,id);
 
   document.getElementById(
     'diagContent'
