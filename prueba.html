@@ -184,9 +184,17 @@ async function analizar(){
 
   const rows=parseCSV(text);
 
-  const registros=rows.filter(r=>
-    String(r[ID_COLUMN]||'').trim()===id
-  );
+  console.log('ID buscado:', id);
+
+console.log(
+  'Primeros IDs:',
+  rows.slice(0,20).map(r => r.ID)
+);
+
+const registros=rows.filter(r=>
+  String(r.ID || '').trim()===id
+);
+
 
   const observaciones=
     registros.map(r=>r[OBS_COLUMN])
