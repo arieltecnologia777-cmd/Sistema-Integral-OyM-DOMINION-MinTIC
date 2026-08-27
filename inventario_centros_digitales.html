@@ -2333,19 +2333,256 @@ function detectFindingsIA(texto){
 
   function analizarObservacion(texto){
 
+  const scores =
+    scoreCategoriesIA(texto);
+
+  const categorias =
+    Object.entries(scores)
+      .sort((a,b)=>b[1]-a[1]);
+
+  const categoriaPrincipal =
+    categorias[0]?.[0] || 'Sin clasificar';
+
+  const causaRaiz =
+    detectCauseIA(texto);
+
+  const hallazgos =
+    detectFindingsIA(texto);
+
+  let puntaje = 0;
+
+  if(hallazgos.includes('Hurto')) puntaje += 4;
+  if(hallazgos.includes('Sin energía')) puntaje += 3;
+  if(hallazgos.includes('Sin conectividad')) puntaje += 2;
+  if(hallazgos.includes('Sin acceso')) puntaje += 2;
+  if(hallazgos.includes('Equipo afectado')) puntaje += 1;
+
+  let severidad = 'Baja';
+
+  if(puntaje >= 6){
+    severidad = 'Crítica';
+  }else if(puntaje >= 4){
+    severidad = 'Alta';
+  }else if(puntaje >= 2){
+    severidad = 'Media';
+  }
+
+  let impacto =
+    'Se identifica una afectación operativa del Centro Digital.';
+
+  if(hallazgos.includes('Sin energía')){
+    impacto =
+      'La operación del Centro Digital se encuentra afectada por la ausencia de suministro eléctrico.';
+  }
+
+  if(hallazgos.includes('Sin conectividad')){
+    impacto =
+      'La operación del Centro Digital presenta indisponibilidad o degradación de conectividad.';
+  }
+
+  if(hallazgos.includes('Sin acceso')){
+    impacto =
+      'No fue posible ejecutar actividades normales debido a restricciones de acceso.';
+  }
+
+  const t = normalizeIA(texto);
+
+  const detalles = [];
+
+  if(t.includes('acometida')){
+    detalles.push(
+      'Se identifica afectación sobre la acometida eléctrica.'
+    );
+  }
+
+  if(
+    t.includes('hurto') ||
+    t.includes('robo') ||
+    t.includes('hurtada')
+  ){
+    detalles.push(
+      'Se evidencian indicios de hurto de infraestructura.'
+    );
+  }
+
+  if(t.includes('transformador')){
+    detalles.push(
+      'Se identifica afectación asociada al transformador eléctrico.'
+    );
+  }
+
+  if(
+    t.includes('vacaciones') ||
+    t.includes('receso')
+  ){
+    detalles.push(
+      'La institución se encuentra en periodo de receso académico.'
+    );
+  }
+
+  if(
+    t.includes('cerrada') ||
+    t.includes('sede cerrada')
+  ){
+    detalles.push(
+      'La sede no se encontraba disponible durante la visita.'
+    );
+  }
+
+  let resumen =
+    'Se identifica una situación operativa que requiere seguimiento.';
+
+  if(severidad === 'Alta'){
+    resumen =
+      'Se identifica una afectación de alto impacto sobre la operación.';
+  }
+
+  if(severidad === 'Crítica'){
+    resumen =
+      'Se identifica una afectación crítica del servicio.';
+  }
+
   return `
+
+  <div style="display:flex;flex-direction:column;gap:18px;">
+
     <div style="
       padding:18px;
       border-radius:14px;
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.10);
     ">
-      <h3>Reporte IA</h3>
+
+      <h3 style="margin-top:0">
+        Resumen Ejecutivo
+      </h3>
+
+      <p>${resumen}</p>
 
       <p>
-        ${texto}
+        <strong>Categoría principal:</strong>
+        ${categoriaPrincipal}
       </p>
+
+      <p>
+        <strong>Causa raíz identificada:</strong>
+        ${causaRaiz}
+      </p>
+
+      <p>
+        <strong>Impacto:</strong>
+        ${impacto}
+      </p>
+
+      ${
+        detalles.length
+        ? `
+        <strong>Hallazgos relevantes:</strong>
+
+        <ul>
+          ${detalles.map(x=>`<li>${x}</li>`).join('')}
+        </ul>
+        `
+        : ''
+      }
+
     </div>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    ">
+
+      <div style="
+        padding:14px;
+        border-radius:12px;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+      ">
+        <small>OBSERVACIONES</small>
+        <h2>1</h2>
+      </div>
+
+      <div style="
+        padding:14px;
+        border-radius:12px;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+      ">
+        <small>CATEGORÍA</small>
+        <h2>${categoriaPrincipal}</h2>
+      </div>
+
+      <div style="
+        padding:14px;
+        border-radius:12px;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+      ">
+        <small>SEVERIDAD</small>
+        <h2>${severidad}</h2>
+      </div>
+
+    </div>
+
+    <div style="
+      padding:18px;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+    ">
+
+      <h3 style="margin-top:0">
+        Hallazgos detectados
+      </h3>
+
+      ${
+        hallazgos.length
+        ? hallazgos.map(h=>`
+          <div style="
+            margin-bottom:8px;
+            padding:10px;
+            border-radius:10px;
+            background:rgba(255,255,255,.04);
+          ">
+            ✓ ${h}
+          </div>
+        `).join('')
+        : '<div>No se detectaron hallazgos específicos.</div>'
+      }
+
+    </div>
+
+    <div style="
+      padding:18px;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+    ">
+
+      <h3 style="margin-top:0">
+        Categorías detectadas
+      </h3>
+
+      ${
+        categorias.map(c=>`
+          <span style="
+            display:inline-block;
+            margin:4px;
+            padding:8px 12px;
+            border-radius:999px;
+            background:rgba(37,207,255,.12);
+          ">
+            ${c[0]} · ${c[1]}
+          </span>
+        `).join('')
+      }
+
+    </div>
+
+  </div>
+
   `;
 
 }
