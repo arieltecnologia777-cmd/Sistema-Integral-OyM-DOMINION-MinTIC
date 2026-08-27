@@ -2082,27 +2082,160 @@ $('#tab-datos').classList.add('hidden');
 }
 function analizarObservacion(texto){
 
+  const t = (texto || '').toLowerCase();
+
+  let categoria = 'General';
+  let causa = 'Por determinar';
+  let severidad = 'Media';
+  let impacto = 'Afectación operativa identificada.';
+
+  const hallazgos = [];
+
+  if(
+    /energia|eléctr|electr|acometida|transformador|breaker|voltaje|sin luz|sin energia/i.test(t)
+  ){
+    categoria = '⚡ Energía';
+    hallazgos.push('Sin energía');
+  }
+
+  if(
+    /hurto|robo|vandalismo|vandálico/i.test(t)
+  ){
+    causa = 'Hurto de acometida';
+    hallazgos.push('Hurto');
+  }
+
+  if(
+    /infraestructura|cableado|poste|red electrica|red eléctrica|tablero/i.test(t)
+  ){
+    hallazgos.push('Infraestructura');
+  }
+
+  if(
+    /sin servicio|fuera de servicio|offline|caido|caído|sin conectividad/i.test(t)
+  ){
+    impacto = 'Centro sin disponibilidad del servicio.';
+    severidad = 'Crítica';
+  }
+
+  if(
+    /sin energia|sin energía|hurto de acometida/i.test(t)
+  ){
+    impacto = 'Centro sin suministro eléctrico.';
+    severidad = 'Crítica';
+  }
+
+  if(
+    hallazgos.length === 0
+  ){
+    hallazgos.push('Sin hallazgos clasificados');
+  }
+
+  const resumen =
+    severidad === 'Crítica'
+      ? 'Se identifica una afectación crítica del servicio.'
+      : 'Se identifica una novedad operativa que requiere seguimiento.';
+
   return `
-    <div style="
-      padding:14px;
-      border-radius:12px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-    ">
 
-      <h3 style="margin-top:0">
-        Reporte IA
-      </h3>
+    <div style="display:flex;flex-direction:column;gap:16px">
 
-      <p>
-        ${texto}
-      </p>
+      <div style="
+        padding:16px;
+        border-radius:14px;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+      ">
+        <h3 style="margin:0 0 12px 0">
+          Resumen Ejecutivo
+        </h3>
+
+        <p style="margin:0 0 16px 0">
+          ${resumen}
+        </p>
+
+        <p>
+          <strong>Categoría principal:</strong>
+          ${categoria}
+        </p>
+
+        <p>
+          <strong>Causa raíz identificada:</strong>
+          ${causa}
+        </p>
+
+        <p>
+          <strong>Impacto:</strong>
+          ${impacto}
+        </p>
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+      ">
+
+        <div style="
+          padding:14px;
+          border-radius:12px;
+          background:rgba(255,255,255,.05);
+          border:1px solid rgba(255,255,255,.10);
+        ">
+          <div style="
+            color:#9fb2cf;
+            font-size:12px;
+            margin-bottom:6px;
+          ">
+            CATEGORÍA
+          </div>
+
+          <strong>${categoria}</strong>
+        </div>
+
+        <div style="
+          padding:14px;
+          border-radius:12px;
+          background:rgba(255,255,255,.05);
+          border:1px solid rgba(255,255,255,.10);
+        ">
+          <div style="
+            color:#9fb2cf;
+            font-size:12px;
+            margin-bottom:6px;
+          ">
+            SEVERIDAD
+          </div>
+
+          <strong>${severidad}</strong>
+        </div>
+
+      </div>
+
+      <div style="
+        padding:16px;
+        border-radius:14px;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+      ">
+
+        <h3 style="margin-top:0">
+          Hallazgos detectados
+        </h3>
+
+        <ul style="margin-bottom:0">
+          ${hallazgos.map(
+            h => `<li>${h}</li>`
+          ).join('')}
+        </ul>
+
+      </div>
 
     </div>
+
   `;
 
-}
-  
+}  
   function renderDiagnostico(item){
 
   const texto =
