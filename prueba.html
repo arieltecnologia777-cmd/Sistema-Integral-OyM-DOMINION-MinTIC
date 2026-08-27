@@ -182,6 +182,9 @@ async function analizar(){
 
   const text=await response.text();
 
+  console.log(text.includes('30508'));
+console.log(text.substring(text.indexOf('30508'), text.indexOf('30508') + 1000));
+
   const rows=parseCSV(text);
   const fila30508 = rows.find(r => String(r.ID).trim() === '30508');
   console.log(
