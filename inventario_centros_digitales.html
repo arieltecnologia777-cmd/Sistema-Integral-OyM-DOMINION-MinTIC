@@ -1,331 +1,2254 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="es" data-theme="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Análisis de Observaciones</title>
+  <script>
+    (function () {
 
-<style>
-body{
-  font-family:Segoe UI,Arial,sans-serif;
-  background:#0f172a;
-  color:#fff;
-  margin:0;
-  padding:30px;
+  try {
+
+    if (
+      window.innerWidth >= 769 &&
+      !sessionStorage.getItem('auth_ok')
+    ) {
+      window.location.replace('login.html');
+    }
+
+  } catch (e) {
+
+    window.location.replace('login.html');
+
+  }
+
+})();
+
+  </script>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hoja de vida Centros Digitales</title>
+  <meta name="description" content="Hoja de vida Centros Digitales">
+
+  <!-- Leaflet: mapa real basado en OpenStreetMap/CARTO -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root{
+      --bg:#080b25; --bg2:#101448; --surface:rgba(22,27,72,.62); --surface-2:rgba(30,36,92,.72);
+      --text:#f7f8ff; --muted:#aeb7da; --line:rgba(255,255,255,.13);
+      --cyan:#25e6ff; --violet:#9b5cff; --pink:#ff4fd8; --orange:#ffae42; --green:#45e0a1; --red:#ff5c7a;
+      --shadow:0 24px 70px rgba(0,0,0,.34); --radius:24px;
+    }
+  [data-theme="light"]{
+  --bg:#eef2f8;
+  --bg2:#dde5f3;
+
+  --surface:rgba(255,255,255,.92);
+  --surface-2:#ffffff;
+
+  --text:#0f172a;
+  --muted:#64748b;
+
+  --line:rgba(15,23,42,.10);
+
+  --shadow:0 18px 40px rgba(15,23,42,.08);
+}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;background:
+      radial-gradient(700px 500px at 8% 8%, rgba(91,67,255,.25), transparent 70%),
+      radial-gradient(600px 420px at 90% 10%, rgba(0,220,255,.17), transparent 70%),
+      radial-gradient(700px 500px at 55% 80%, rgba(255,65,210,.10), transparent 70%)}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.16;background-image:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 78%)}
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .wrap{width:min(1420px,calc(100% - 44px));margin:auto}
+   .hero{
+  position:relative;
+  min-height:810px;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(8,11,37,.86),rgba(8,11,37,.35) 72%,var(--bg));
+}
+    [data-theme="light"] .hero{
+  background:linear-gradient(
+    180deg,
+    #e6ecf7,
+    #edf2fa 60%,
+    #f3f6fb 100%
+  );
+}
+    .hero:before{content:"";position:absolute;width:850px;height:850px;right:-220px;top:80px;border-radius:50%;background:radial-gradient(circle,rgba(50,220,255,.13),rgba(141,68,255,.08) 42%,transparent 70%);filter:blur(10px)}
+    .topbar{height:82px;display:flex;align-items:center;justify-content:space-between;gap:22px;position:relative;z-index:5}
+    .brand{display:flex;align-items:center;gap:13px;min-width:250px}
+    .brand .logo{width:110px;height:50px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:4px;padding:3px 6px;border:none;box-shadow:none}
+    .brand .logo img{width:100%;height:100%;object-fit:contain}
+    .brand .logo svg{color:white}
+    .titles h1{font-size:18px;line-height:1.05;margin:0;font-weight:850;letter-spacing:-.5px}
+    .titles p{margin:4px 0 0;color:var(--muted);font-size:11px;letter-spacing:.8px;text-transform:uppercase}
+    .nav{display:flex;gap:28px;align-items:center;font-size:14px;color:#dbe0fa}
+    [data-theme="light"] .nav{color:#343b5b}
+    .nav a{opacity:.82;position:relative;padding:10px 0}.nav a:hover{opacity:1}.nav a:first-child:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:3px;border-radius:5px;background:linear-gradient(90deg,var(--cyan),var(--violet))}
+    .top-actions{
+  display:none;
+}
+    .search-mini{width:310px;height:46px;border:1px solid rgba(118,137,255,.42);background:rgba(13,18,57,.58);backdrop-filter:blur(18px);border-radius:16px;display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--muted);box-shadow:0 12px 35px rgba(0,0,0,.18)}
+    [data-theme="light"] .search-mini{background:rgba(255,255,255,.76)}
+    .search-mini kbd{margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 7px;font-size:10px}
+    .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffb14a,#ff5ccf);font-size:22px;border:2px solid rgba(255,255,255,.2)}
+   .hero-layout{
+  display:grid;
+  grid-template-columns:520px 1fr;
+  gap:40px;
+  align-items:center;
+  min-height:700px;
+  padding:45px 0 30px;
+}
+    .hero-copy{
+  position:relative;
+  z-index:3;
+  padding-bottom:0;
+  margin-top:-270px;
+}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid rgba(141,112,255,.38);background:rgba(98,75,255,.11);font-size:12px;color:#dfe5ff;backdrop-filter:blur(12px)}
+    .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+    .hero-copy h2{font-size:clamp(28px,3vw,48px);line-height:.95;letter-spacing:-2px;margin:22px 0 20px;font-weight:900}
+    .gradient-text{background:linear-gradient(100deg,#fff 0%,#a77cff 34%,#34e8ff 68%,#ff8acb 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-copy p{font-size:17px;line-height:1.6;color:var(--muted);max-width:365px;margin:0 0 26px}
+    .hero-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
 }
 
-.card{
-  background:#1e293b;
+    .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800;color:white;background:linear-gradient(100deg,#7656ff,#25cfff);box-shadow:0 14px 34px rgba(79,103,255,.28);transition:.2s transform,.2s filter}.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .btn-secondary{background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:none;color:var(--text)}
+    .hero-stage{position:relative;min-height:680px;display:flex;align-items:center;justify-content:flex-start;overflow:visible}
+    .map-glow{position:absolute;width:760px;height:520px;border-radius:50%;background:radial-gradient(ellipse,rgba(37,230,255,.16),rgba(155,92,255,.13) 45%,transparent 70%);filter:blur(14px)}
+    .map-card{position:relative;width:850px;height:720px;transform:none;filter:drop-shadow(0 40px 60px rgba(0,0,0,.35))}
+    .colombia{position:absolute;top:-50px;left:20%;transform:translateX(-50%);width:650px;height:650px;display:flex;align-items:center;justify-content:center}
+    .colombia-img{width:100%;height:100%;object-fit:contain;opacity:.96;filter:drop-shadow(0 0 12px rgba(37,230,255,.55)) drop-shadow(0 0 35px rgba(37,230,255,.35))}
+    .colombia-overlay{display:none}
+    .route{display:none}
+    .r1{width:250px;left:290px;top:250px;transform:rotate(-16deg)}.r2{width:290px;left:290px;top:250px;transform:rotate(28deg)}.r3{width:220px;left:315px;top:285px;transform:rotate(82deg)}.r4{width:245px;left:300px;top:285px;transform:rotate(145deg)}.r5{width:180px;left:395px;top:330px;transform:rotate(-145deg)}
+    .node{position:absolute;width:0;height:0;background:transparent;box-shadow:none;z-index:1}.node:after{display:none}
+    .node span{position:absolute;min-width:120px;padding:8px 12px;border-radius:14px;font-size:11px;font-weight:700;line-height:1.35;color:#fff;background:rgba(4,8,20,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.2);white-space:normal;left:110px;top:-10px}
+    .n1{left:245px;top:190px}.n2{left:420px;top:235px}.n3{left:620px;top:120px}.n4{left:325px;top:335px}.n5{left:500px;top:360px}.n6{left:215px;top:355px}.n7{left:390px;top:420px}
+    .n3 span{left:-310px;top:-125px}.n2 span{left:-170px;top:-130px}.n4 span{left:-445px;top:-140px}.n5 span{left:-470px;top:-410px}
+    .n4 span{border-color:#30ff8a;box-shadow:0 0 8px #30ff8a,0 0 18px rgba(48,255,138,.6)}
+    .n2 span{border-color:#d86cff;box-shadow:0 0 8px #d86cff,0 0 18px rgba(216,108,255,.6)}
+    .n3 span{border-color:#39e9ff;box-shadow:0 0 8px #39e9ff,0 0 18px rgba(57,233,255,.6)}
+    .n5 span{border-color:#ff9f40;box-shadow:0 0 8px #ff9f40,0 0 18px rgba(255,159,64,.6)}
+    .marker{position:absolute;width:16px;height:16px;border-radius:50%;z-index:30}.marker::before{content:"";position:absolute;left:-12px;top:-12px;width:40px;height:40px;border-radius:50%;border:2px solid currentColor;opacity:.35}.marker::after{content:"";position:absolute;left:-28px;top:-28px;width:78px;height:78px;border-radius:50%;background:currentColor;opacity:.15;filter:blur(15px)}
+    .marker-guajira{left:195px;top:15px;color:#39e9ff;background:#39e9ff;box-shadow:0 0 10px #39e9ff,0 0 25px #39e9ff,0 0 50px rgba(57,233,255,.8)}
+    .marker-cesar{left:140px;top:90px;color:#d86cff;background:#d86cff;box-shadow:0 0 10px #d86cff,0 0 25px #d86cff,0 0 50px rgba(216,108,255,.8)}
+    .marker-antioquia{left:80px;top:190px;color:#30ff8a;background:#30ff8a;box-shadow:0 0 10px #30ff8a,0 0 25px #30ff8a,0 0 50px rgba(48,255,138,.8)}
+    .marker-sai{left:12px;top:22px;color:#ff9f40;background:#ff9f40;box-shadow:0 0 10px #ff9f40,0 0 25px #ff9f40,0 0 50px rgba(255,159,64,.8)}
+    .connections{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:15}
+    .path-antioquia,.path-sai,.path-guajira,.path-cesar{fill:none;stroke-width:2;opacity:.55}.path-antioquia{stroke:#30ff8a;filter:drop-shadow(0 0 8px #30ff8a)}.path-sai{stroke:#ff9f40;filter:drop-shadow(0 0 8px #ff9f40)}.path-guajira{stroke:#39e9ff;filter:drop-shadow(0 0 8px #39e9ff)}.path-cesar{stroke:#d86cff;filter:drop-shadow(0 0 8px #d86cff)}
+    .satellite{position:absolute;right:24px;top:35px;font-size:64px;filter:drop-shadow(0 0 18px rgba(37,230,255,.65));animation:float 5s ease-in-out infinite}
+    @keyframes float{50%{transform:translateY(-10px) rotate(2deg)}}
+    .glass-card{position:absolute;background:linear-gradient(145deg,rgba(31,37,91,.78),rgba(25,27,72,.46));border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(20px);box-shadow:var(--shadow);border-radius:24px;z-index:5}
+    [data-theme="light"] .glass-card{background:rgba(255,255,255,.76)}
+
+    /* ===== TARJETA DESTACADA + MINIMAPA REAL ===== */
+    .feature-card{
+  position:absolute;
+  right:-40px;
+  top:20px;
+
+  width:400px;
+
+  padding:18px;
+
+  z-index:10;
+
+  transform:scale(.94);
+  transform-origin:top right;
+}
+    .feature-title{font-size:14px;font-weight:800;margin-bottom:14px}
+    .feature-map{height:180px;border-radius:18px;overflow:hidden;position:relative;margin-bottom:14px;border:1px solid rgba(255,255,255,.14);background:#10162f;box-shadow:inset 0 0 30px rgba(37,230,255,.08),0 12px 30px rgba(0,0,0,.25)}
+    #featureMap{width:100%;height:100%}
+    .feature-map:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(5,9,28,.04),rgba(5,9,28,.24));z-index:400}
+    .map-location-badge{position:absolute;left:12px;bottom:12px;z-index:500;display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:10px;background:rgba(7,11,30,.82);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);color:#dce5ff;font-size:10px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+    .map-location-badge span:first-child{color:#45e0a1;text-shadow:0 0 10px #45e0a1}
+    .feature-map .leaflet-container{background:#111936;font-family:inherit}
+    .feature-map .leaflet-control-zoom{border:none!important;box-shadow:none!important}
+    .feature-map .leaflet-control-zoom a{width:28px!important;height:28px!important;line-height:28px!important;background:rgba(10,15,42,.82)!important;color:#fff!important;border:1px solid rgba(255,255,255,.14)!important}
+    .mini-map .leaflet-control-zoom{
+  border:none!important;
+  box-shadow:none!important;
+}
+
+.mini-map .leaflet-control-zoom a{
+  width:28px!important;
+  height:28px!important;
+  line-height:28px!important;
+
+  background:rgba(10,15,42,.82)!important;
+
+  color:#fff!important;
+
+  border:1px solid rgba(255,255,255,.14)!important;
+
+  backdrop-filter:blur(10px);
+}
+    .feature-map .leaflet-control-attribution{background:rgba(5,8,24,.65)!important;color:rgba(255,255,255,.5)!important;font-size:8px!important}
+    .feature-map .leaflet-control-attribution a{color:rgba(255,255,255,.65)!important}
+    .custom-center-marker{background:none!important;border:none!important}
+    .center-marker{position:relative;width:40px;height:40px}
+    .center-marker-pulse{position:absolute;left:3px;top:3px;width:34px;height:34px;border-radius:50%;background:#9b5cff;opacity:.28;animation:centerPulse 2s infinite;box-shadow:0 0 20px #9b5cff,0 0 40px rgba(155,92,255,.8)}
+    .center-marker-dot{position:absolute;left:13px;top:13px;width:14px;height:14px;border-radius:50%;background:#fff;border:4px solid #9b5cff;box-shadow:0 0 8px #fff,0 0 20px #9b5cff,0 0 35px #9b5cff}
+    @keyframes centerPulse{0%{transform:scale(.75);opacity:.45}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
+    .feature-card h3{margin:10px 0 4px;font-size:22px}.feature-card p{margin:0;color:var(--muted);font-size:13px}
+    .feature-status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(69,224,161,.15);color:#45e0a1;font-weight:700}
+    #featureDetailBtn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:14px 18px;
+
+  border-radius:14px;
+
+  font-weight:700;
+}
+    .feature-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  margin:16px 0;
+}
+
+    .feature-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.feature-actions button{
+  flex:1;
+}
+.feature-metrics strong{
+  display:block;
+  font-size:18px;
+  font-weight:800;
+  line-height:1.1;
+}
+
+.feature-metrics span{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:500;
+}
+
+.metric{
+  position:relative;
+  text-align:center;
+}
+
+.metric:first-child::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  right:0;
+  transform:translateY(-50%);
+
+  width:1px;
+  height:42px;
+
+  background:rgba(255,255,255,.12);
+}
+
+    .toolbar{
+  margin-top:30px;
+  margin-bottom:40px;
+
+  position:relative;
+  z-index:8;
+
+  padding:17px;
+
+  border:1px solid var(--line);
+
+  border-radius:26px;
+
+  background:rgba(17,22,64,.68);
+
+  backdrop-filter:blur(22px);
+
+  box-shadow:var(--shadow);
+
+  display:grid;
+
+  gap:12px;
+
+  grid-template-columns:repeat(5,1fr);
+}
+
+    [data-theme="light"] .toolbar{background:rgba(255,255,255,.82)}
+    [data-theme="light"] .kpi{
+  background:#ffffff;
+  border:1px solid rgba(15,23,42,.08);
+  box-shadow:0 8px 24px rgba(15,23,42,.06);
+}
+   .info{
+  display:flex;
+  flex-direction:column;
+  gap:6px
+}
+
+.info label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--muted)
+}
+
+.info input{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 12px;
+  color:var(--text);
+  outline:none
+}
+
+.info select{
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 12px;
+  color:var(--text);
+  outline:none;
+}
+
+.info select option{
+  background:#141a48;
+  color:#ffffff;
+}
+
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:58px 0 20px}.section-head h2{margin:0;font-size:30px;letter-spacing:-1px}.section-head p{margin:6px 0 0;color:var(--muted);font-size:14px}.summary{color:var(--muted);font-size:13px}
+    .kpis{
+  display:flex;
+  gap:18px;
+  flex-wrap:nowrap;
+
+  margin-top:-200px;
+
+  padding-bottom:32px;
+
+  border-bottom:1px solid var(--line);
+}
+    .kpi{
+  flex:1;
+  min-width:120px;
+
+  padding:6px 14px 8px;
+
+  border-radius:18px;
+
+  border:1px solid rgba(57,233,255,.25);
+
+  background:rgba(8,12,35,.02);
+
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
+
+  box-shadow:
+    0 0 25px rgba(57,233,255,.08),
+    inset 0 0 20px rgba(57,233,255,.03);
+
+  position:relative;
+  overflow:hidden;
+}
+    .kpi:before{
+  content:"";
+  position:absolute;
+
+  width:140px;
+  height:140px;
+
+  left:-35px;
+  top:-35px;
+
+  border-radius:50%;
+
+  background:currentColor;
+
+  opacity:.18;
+
+  filter:blur(32px);
+
+  pointer-events:none;
+}
+    .kpi:after{
+  content:"";
+  position:absolute;
+
+  left:16px;
+  top:15px;
+
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  background:currentColor;
+
+  box-shadow:
+    0 0 10px currentColor,
+    0 0 22px currentColor;
+
+  z-index:3;
+}
+    .kpi-online{border-color:rgba(44,245,160,.25);box-shadow:0 0 30px rgba(44,245,160,.12),inset 0 0 30px rgba(44,245,160,.05)}
+    .kpi h4{margin:0;margin-left:30px;margin-top:5px;color:currentColor;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;line-height:18px}.kpi .val{
+  font-size:22px;
+  font-weight:900;
+  margin-top:3px;
+  margin-left:28px;
+  line-height:1;
+}.kpi-pct{
+  margin-top:2px;
+  margin-left:30px;
+  font-size:13px;
+  font-weight:600;
+  color:currentColor;
+  opacity:.85;
+}.kpi .bar{display:none}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);padding-bottom:70px}.card{min-height:190px;background:linear-gradient(145deg,rgba(25,30,82,.72),rgba(14,18,54,.72));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 18px 45px rgba(0,0,0,.15);cursor:pointer;position:relative;overflow:hidden;transition:.25s transform,.25s border-color,.25s box-shadow;animation:rise .35s ease both}.card:hover{transform:translateY(-6px);border-color:rgba(71,220,255,.4);box-shadow:0 25px 55px rgba(21,65,160,.22)}.card h3{font-size:18px;margin:0 0 15px}.meta{display:flex;flex-wrap:wrap;gap:7px;color:var(--muted);font-size:11px}.badge{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:6px 9px;border-radius:999px;color:#dce5ff}.state{font-weight:800}.state.ok{color:var(--green)}.state.warn{color:var(--orange)}.state.down{color:var(--red)}.statusbar{
+  display:none;
+}
+    .drawer{position:fixed;right:20px;bottom:20px;width:min(560px,92vw);max-height:84vh;overflow:auto;background:rgba(18,23,65,.94);border:1px solid var(--line);border-radius:26px;box-shadow:0 30px 100px rgba(0,0,0,.45);backdrop-filter:blur(24px);display:none;z-index:40}.drawer header{position:sticky;top:0;background:rgba(18,23,65,.92);padding:18px;z-index:2}.drawer .tabs{display:flex;gap:8px;margin-top:12px}.drawer .tab{background:rgba(255,255,255,.05);border:1px solid var(--line);padding:8px 12px;border-radius:11px;color:var(--text)}.drawer .tab.active{background:linear-gradient(90deg,rgba(118,86,255,.45),rgba(37,207,255,.22))}.drawer .content{padding:18px}.kv{display:grid;grid-template-columns:1fr 1.2fr;gap:11px}.kv .k{color:var(--muted);font-size:12px}.kv .v{font-size:14px}.drawer .close{position:absolute;right:14px;top:14px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(3,5,20,.72);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(10px)}.modal{background:linear-gradient(145deg,#1b225f,#10143e);border:1px solid var(--line);border-radius:26px;padding:22px;width:min(620px,92vw);box-shadow:0 30px 100px rgba(0,0,0,.5)}.modal h2{margin:0}.modal p{color:var(--muted)}.modal .row{display:flex;gap:10px}.modal input{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;color:var(--text);outline:none;flex:1}.modal .actions{display:flex;justify-content:flex-end;margin-top:13px}
+    footer{border-top:1px solid var(--line);padding:22px 0;background:rgba(0,0,0,.12)}.hidden{display:none!important}
+    @keyframes rise{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.card-map-preview{
+  height:120px;
+
+  margin:0 0 16px 0;
+
   border-radius:16px;
-  padding:20px;
-  margin-bottom:20px;
+
+  border:1px solid rgba(255,255,255,.10);
+
+  position:relative;
+
+  overflow:hidden;
 }
 
-input{
-  width:300px;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-}
+.map-state{
+  position:absolute;
 
-button{
-  padding:12px 20px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  background:#22c55e;
-  color:white;
-  font-weight:bold;
-}
+  top:10px;
+  left:10px;
 
-h1,h2{
-  margin-top:0;
-}
+  z-index:500;
 
-.badge{
-  display:inline-block;
-  padding:8px 12px;
+  padding:6px 12px;
+
   border-radius:999px;
-  background:#334155;
-  margin:5px;
+
+  font-size:12px;
+  font-weight:700;
+
+  color:#fff;
+
+  backdrop-filter:blur(12px);
 }
 
-#summary{
-  line-height:1.8;
+.map-state.ok{
+  background:#2cf5a0;
+
+  box-shadow:
+    0 0 12px rgba(44,245,160,.55),
+    0 0 24px rgba(44,245,160,.35),
+    0 0 40px rgba(44,245,160,.18);
 }
 
-.obs{
-  padding:10px;
-  border-bottom:1px solid #334155;
+.map-state.down{
+  background:#ff5c7a;
+
+  box-shadow:
+    0 0 12px rgba(255,92,122,.55),
+    0 0 24px rgba(255,92,122,.35),
+    0 0 40px rgba(255,92,122,.18);
 }
-</style>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+.map-state.warn{
+  background:#ffb347;
+
+  box-shadow:
+    0 0 12px rgba(255,179,71,.55),
+    0 0 24px rgba(255,179,71,.35),
+    0 0 40px rgba(255,179,71,.18);
+}
+.map-state.p3{
+  background:#9a5cff;
+
+  box-shadow:
+    0 0 12px rgba(154,92,255,.55),
+    0 0 24px rgba(154,92,255,.35),
+    0 0 40px rgba(154,92,255,.18);
+}
+
+.map-state.pqr{
+  background:#3a8dff;
+
+  box-shadow:
+    0 0 12px rgba(58,141,255,.55),
+    0 0 24px rgba(58,141,255,.35),
+    0 0 40px rgba(58,141,255,.18);
+}
+
+.map-state.velocidad{
+  background:#ffd029;
+
+  color:#111;
+
+  box-shadow:
+    0 0 12px rgba(255,208,41,.55),
+    0 0 24px rgba(255,208,41,.35),
+    0 0 40px rgba(255,208,41,.18);
+}
+.card-location{
+  margin-top:-6px;
+  font-size:15px;
+  font-weight:500;
+}
+
+.card-id{
+  color:#42b9ff;
+}
+
+.card-sep{
+  color:#7985b7;
+  margin:0 6px;
+}
+
+.card-place{
+  color:#c8d2ef;
+}
+
+.card-connectivity{
+  margin-top:10px;
+  font-size:16px;
+  font-weight:600;
+}
+
+.card-connectivity.ok{
+  color:#2cf5a0;
+}
+
+.card-connectivity.down{
+  color:#ff5c5c;
+}
+
+.card-connectivity.warn{
+  color:#ffb347;
+}
+
+.card-connectivity{
+  margin-top:10px;
+  font-size:16px;
+  font-weight:600;
+}
+
+.card-connectivity.ok{
+  color:#2cf5a0;
+}
+
+.card-connectivity.down{
+  color:#ff5c5c;
+}
+
+.card-connectivity.warn{
+  color:#ffb347;
+}
+
+.mini-map{
+  width:100%;
+  height:100%;
+}
+    .mini-map{
+  width:100%;
+  height:100%;
+}
+    .card-map-preview::after{
+  display:none;
+}
+
+    
+    @media(max-width:1100px){.nav{display:none}.hero-layout{grid-template-columns:1fr}.hero-copy{padding:20px 0 0}.hero-stage{min-height:650px}.toolbar{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.feature-card{right:0}.community-card{left:0}}
+    @media(max-width:700px){.wrap{width:min(100% - 24px,1420px)}.hero{min-height:auto}.topbar{height:auto;padding:15px 0}.search-mini{display:none}.hero-copy h2{font-size:48px;letter-spacing:-2.5px}.hero-stage{min-height:540px;transform:scale(.88);transform-origin:top center;margin-bottom:-60px}.map-card{height:520px}.toolbar{margin-top:0;grid-template-columns:1fr}.grid{grid-template-columns:1fr}.section-head{padding-top:40px}.kpis{display:grid;grid-template-columns:repeat(2,1fr)}.feature-card{width:330px;max-width:90vw}.feature-map{height:165px}}
+ .leaflet-tile{
+  outline:none !important;
+  border:none !important;
+}
+
+.leaflet-container img{
+  max-width:none !important;
+}
+
+.leaflet-pane img{
+  image-rendering:auto;
+}
+#excel-link{
+  width:56px;
+  margin-top:0;
+
+  position:relative;
+  top:-6px;
+  left:22px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+#excel-link img{
+  width:46px;
+  height:46px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+
+.excel-caption{
+  margin-top:-5px;
+  font-size:12px;
+  font-weight:600;
+  color:#ffffff;
+  text-align:center;
+  white-space:nowrap;
+}
+
+#excel-link:hover{
+  transform:scale(1.08);
+}
+
+#excel-link:hover .excel-caption{
+  color:#25e6ff;
+}
+
+    @media (max-width:768px){
+
+  .hero{
+    min-height:auto;
+  }
+
+  .hero-layout{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    min-height:auto;
+  }
+
+  .hero-copy{
+  width:100%;
+  margin-top:-40px;
+  padding-top:0;
+  text-align:center;
+}
+
+  .eyebrow{
+    display:inline-flex;
+  }
+
+  .hero-stage{
+    min-height:990px;
+    overflow:visible;
+
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+}
+
+  .map-card{
+    position:relative;
+
+    width:850px;
+    height:720px;
+
+    transform:scale(.89);
+    transform-origin:top center;
+
+    left:238px;
+    top:80px;
+  }
+
+  .colombia{
+    position:absolute;
+    top:-50px;
+    left:20%;
+    transform:translateX(-50%);
+    width:650px;
+    height:650px;
+  }
+
+  .feature-card{
+  display:block !important;
+
+  position:absolute;
+
+  top:580px;
+
+  left:19%;
+
+  transform:translateX(-50%);
+
+  width:92%;
+  max-width:480px;
+
+  z-index:50;
+}
+
+  .kpis{
+  margin-top:0px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+      .kpi{
+  min-width:0;
+  padding:4px 8px 6px;
+  border-radius:14px;
+}
+
+.kpi h4{
+  font-size:11px;
+  margin-left:22px;
+}
+
+.kpi .val{
+  font-size:15px;
+  margin-left:22px;
+}
+
+.kpi-pct{
+  font-size:10px;
+  margin-left:22px;
+}
+
+.kpi:after{
+  width:12px;
+  height:12px;
+  left:10px;
+  top:10px;
+}
+
+}
+   @media (max-width:390px){
+
+  .hero-stage{
+    min-height:870px;
+    overflow:visible;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+
+  .map-card{
+    transform:scale(.77);
+    left:207px;
+    top:80px;
+  }
+
+  .feature-card{
+    width:55%;
+    max-width:none;
+    left:19%;
+    top:600px;
+}
+
+}
+
+    .mobile-menu-btn,
+.mobile-sidebar,
+.mobile-overlay{
+  display:none;
+}
+
+.mobile-menu-btn,
+.mobile-sidebar,
+.mobile-overlay{
+  display:none;
+}
+
+.mobile-menu-btn{
+  position:fixed;
+  top:84px;
+  left:16px;
+
+  width:38px;
+  height:38px;
+
+  align-items:center;
+  justify-content:center;
+
+  border:1px solid rgba(255,255,255,.30);
+  border-radius:12px;
+
+  font-size:20px;
+  font-weight:700;
+
+  color:#fff;
+
+  background:rgba(20,25,70,.55);
+
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+
+  z-index:3000;
+}
+
+.mobile-menu-btn.menu-open{
+  top:16px !important;
+  left:200px !important;
+}
+
+.mobile-overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(3,8,28,.25);
+
+  backdrop-filter:blur(4px);
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:.3s;
+
+  z-index:2998;
+}
+
+.mobile-overlay.open{
+  opacity:1;
+  visibility:visible;
+}
+
+.mobile-sidebar{
+  flex-direction:column;
+  gap:10px;
+
+  position:fixed;
+
+  top:0;
+  left:-280px;
+
+  width:260px;
+  height:100vh;
+
+  padding:90px 18px 20px;
+
+  background:rgba(10,15,48,.35);
+
+  backdrop-filter:blur(40px);
+
+  border-right:1px solid rgba(255,255,255,.10);
+
+  transition:.3s ease;
+
+  z-index:2999;
+}
+
+.mobile-sidebar.open{
+  left:0;
+}
+
+.mobile-sidebar a{
+  display:flex;
+  align-items:center;
+
+  min-height:48px;
+
+  padding:0 16px;
+
+  border-radius:14px;
+
+  color:#fff;
+
+  font-size:15px;
+  font-weight:600;
+
+  background:rgba(255,255,255,.05);
+
+  border:1px solid rgba(255,255,255,.08);
+}
+
+@media (max-width:768px){
+
+  .mobile-menu-btn{
+    display:flex;
+  }
+
+  .mobile-sidebar{
+    display:flex;
+  }
+
+  .mobile-overlay{
+    display:block;
+  }
+
+}
+  
+  </style>
 </head>
-
 <body>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">
+  ☰
+</button>
 
-<h1>📊 Analizador de Observaciones</h1>
+<div class="mobile-overlay" id="mobileOverlay"></div>
 
-<div class="card">
-<input id="txtId" placeholder="Ingrese ID">
-<button onclick="analizar()">Analizar</button>
+<aside class="mobile-sidebar" id="mobileSidebar">
+
+  <a href="#inicio">🏠 Inicio</a>
+
+  <a href="#toolbar-specific">🔍 Explorar</a>
+
+  <a href="#aprender">📚 Aprender</a>
+
+  <a href="#conectar">🤝 Conectar</a>
+
+  <a href="#comunidad">🌎 Comunidad</a>
+
+  <a href="#recursos">📁 Recursos</a>
+
+</aside>
+  <section class="hero" id="inicio">
+    <div class="wrap">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" title="Dominion"><img src="dominion_logo.png" alt="Dominion"></div>
+          <div class="titles"><h1>HOJA DE VIDA CENTROS DIGITALES</h1><p>Tablero interactivo</p></div>
+        </div>
+       <nav class="nav"><a href="#inicio">Inicio</a><a href="#toolbar-specific">Explorar</a><a href="#aprender">Aprender</a><a href="#conectar">Conectar</a><a href="#comunidad">Comunidad</a><a href="#recursos">Recursos</a></nav>
+        <div class="top-actions"></div>
+      </header>
+
+      <div class="hero-layout">
+        <div class="hero-copy">
+          <div class="eyebrow"><i></i>Centro de Monitoreo de Centros Digitales</div>
+          <h2>Bienvenido <span class="gradient-text"><br></span></h2>
+          <p>Consulta en tiempo real el estado operativo de los Centros Digitales, revisa eventos históricos, indicadores de disponibilidad, niveles de servicio, incidentes, tipo de facturacion, ruta de llegada al CD y la hoja de vida completa de cada sitio.</p>
+          <div class="hero-actions"><button class="btn" id="btnIngresar">Buscar ID<span></span></button><button class="btn btn-secondary" id="btnRefrescar">Actualizar red</button><div id="excel-link">
+  <a href="https://arieltecnologia777-cmd.github.io/Exporte-backlog/exporte_backlog.html" target="_blank">
+    <img src="excel.png" alt="Exportar informe">
+
+  </a>
+            <div class="excel-caption">
+  Exportar Backlog
+</div>
+</div>
+          
+</div>
+        </div>
+
+        <div class="hero-stage">
+          <div class="map-glow"></div>
+          <div class="map-card">
+            <div class="colombia">
+              <img src="colombia.png" alt="Mapa de Colombia" class="colombia-img">
+              <div class="colombia-overlay"></div>
+            </div>
+
+            <svg class="connections" viewBox="0 0 850 720">
+              <path class="path-antioquia" d="M92 198 Q -150 250 -500 255" />
+              <path class="path-sai" d="M27 27 Q 80 -20 100 -10" />
+              <path class="path-guajira" d="M205 25 Q 280 0 310 10" />
+              <path class="path-cesar" d="M145 95 Q 200 160 250 140" />
+            </svg>
+
+            <div class="route r1"></div><div class="route r2"></div><div class="route r3"></div><div class="route r4"></div><div class="route r5"></div>
+
+            <div class="node n2"><span>CESAR<br>545 CDs</span></div>
+            <div class="node n3"><span>LA GUAJIRA<br>490 CDs</span></div>
+            <div class="node n4"><span>ANTIOQUIA<br>379 CDs</span></div>
+            <div class="node n5"><span>SAI<br>21 CDs</span></div>
+
+            <div class="marker marker-guajira"></div>
+            <div class="marker marker-cesar"></div>
+            <div class="marker marker-antioquia"></div>
+            <div class="marker marker-sai"></div>
+<!-- Centro destacado: ahora es dinámico y usa latitud/longitud reales -->
+            <div class="glass-card feature-card">
+              <div class="feature-title" id="featureTitle">
+  🟢 CD CON MAYOR ESTABILIDAD OPERATIVA
 </div>
 
-<div class="card">
-<h2>Resumen Ejecutivo</h2>
-<div id="summary">Ingrese un ID</div>
+
+              <div class="feature-map">
+                <div id="featureMap"></div>
+                <div class="map-location-badge" id="featureMapLocation">
+                  <span>●</span><span>Ubicación del centro</span>
+                </div>
+              </div>
+
+              <div id="featureId" style="
+  color:inherit;
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:6px;
+"></div>
+
+              <h3 id="featureName">Centro destacado</h3>
+              <p id="featureLocation">Ubicación</p>
+
+              <div class="feature-status" id="featureStatus">
+                <span style="width:8px;height:8px;display:inline-block;border-radius:50%;background:#45e0a1;box-shadow:0 0 10px #45e0a1"></span>
+                Online
+              </div>
+
+              <div class="feature-metrics">
+                <div class="metric"><strong id="featureIncidents">—</strong><span>días sin incidentes</span></div>
+                <div class="metric"><strong id="featureConnectivity">—</strong><span>última visita</span></div>
+              </div>
+
+              <div class="feature-actions">
+
+  <button
+    class="btn btn-secondary"
+    id="featureDetailBtn"
+  >
+    Ver hoja de vida →
+  </button>
+
+  <button
+    class="btn"
+    id="featureRouteBtn"
+  >
+    🧭 Cómo llegar
+  </button>
+
+</div>
+            </div>
+
+           
+          </div>
+        </div>
+      </div>
+       <div class="kpis">
+        <div class="kpi" style="color:#6aa9ff"><h4>TOTAL CENTROS</h4><div id="kpiTotal" class="val">—</div><div id="pctTotal" class="kpi-pct">100%</div></div>
+        <div class="kpi" style="color:#2cf5a0"><h4>ONLINE</h4><div id="kpiOk" class="val">—</div><div id="pctOnline" class="kpi-pct">0%</div></div>
+        <div class="kpi" style="color:#ff4d6d"><h4>OFFLINE</h4><div id="kpiDown" class="val">—</div><div id="pctOffline" class="kpi-pct">0%</div></div>
+        <div class="kpi" style="color:#9a5cff"><h4>P3</h4><div id="kpiP3" class="val">0</div><div id="pctP3" class="kpi-pct">0%</div></div>
+        <div class="kpi" style="color:#ff9b2f"><h4>PARCIAL</h4><div id="kpiParcial" class="val">0</div><div id="pctParcial" class="kpi-pct">0%</div></div>
+        <div class="kpi" style="color:#3a8dff"><h4>PQR</h4><div id="kpiPQR" class="val">0</div><div id="pctPQR" class="kpi-pct">0%</div></div>
+        <div class="kpi" style="color:#ffd029"><h4>VELOCIDAD</h4><div id="kpiVelocidad" class="val">0</div><div id="pctVelocidad" class="kpi-pct">0%</div></div>
+      </div>
+
+      
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div class="toolbar" id="toolbar-specific">
+        <div class="info">
+  <label>Departamento</label>
+  <select id="filterDep">
+    <option value="">Todos</option>
+  </select>
 </div>
 
-<div class="card">
-<h2>Categorías Detectadas</h2>
-<div id="categories"></div>
+<div class="info">
+  <label>Municipio</label>
+  <select id="filterMun">
+    <option value="">Todos</option>
+  </select>
 </div>
 
-<div class="card">
-<h2>Observaciones Encontradas</h2>
-<div id="obsList"></div>
+<div class="info">
+  <label>Institución Educativa</label>
+  <select id="filterIE">
+    <option value="">Todas</option>
+  </select>
 </div>
+
+<div class="info">
+  <label>Estado</label>
+  <select id="filterEstado">
+    <option value="">Todos</option>
+  </select>
+</div>
+        <div class="info"><label>Buscar</label><input id="filterSearch" placeholder="Buscar por nombre o ID..."></div>
+      </div>
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div style="display:flex;justify-content:center;margin:0 0 60px"><button id="btnMas" class="btn btn-secondary hidden">Mostrar más</button></div>
+  </main>
+
+  <aside class="drawer" id="drawer" aria-live="polite">
+    <header>
+  <h3 id="drawer-title">Detalle del Centro</h3>
+
+  <div class="tabs">
+
+    <button
+      class="tab active"
+      data-tab="resumen"
+    >
+      Resumen
+    </button>
+
+    <button
+      class="tab"
+      data-tab="reporteia"
+    >
+      Reporte IA
+    </button>
+
+    <button
+      class="tab"
+      data-tab="datos"
+    >
+      Detalle completo
+    </button>
+
+  </div>
+
+  <button
+    class="btn btn-secondary close"
+    id="btnCloseDrawer"
+  >
+    Cerrar
+  </button>
+
+</header>
+    <div class="content" id="tab-resumen"><div class="kv" id="kv-resumen"></div></div>
+    <div class="content hidden" id="tab-reporteia">
+
+  <div id="diagContent">
+
+    Analizando...
+
+  </div>
+
+</div>
+    <div class="content hidden" id="tab-datos"><div class="kv" id="kv-datos"></div></div>
+  </aside>
+
+  <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal"><header><h2 id="modal-title">Encuentra un Centro Digital</h2><p>Busca por ID o código del Centro Digital.</p></header><div class="row"><input id="inpId" placeholder="Ej. CD1234"><button class="btn" id="btnBuscarId">Buscar</button></div><div class="actions"><button class="btn btn-secondary" id="btnCancelar">Cancelar</button></div></div>
+  </div>
+
+  <footer><div class="wrap" style="font-size:12px;color:var(--muted)"><p>Panel Digital Interactivo · Centros Digitales · <span id="year"></span></p></div></footer>
 
 <script>
+/* ========= CONFIG ========= */
+const SHEET_CSV_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaTszHaU4PLm00tAvMRpAUnz1C8xzrcLi-CYSNbqkVGpX-BNKMIJiyuJIqoY5CAdEjMFmqHj-sgNAb/pub?gid=0&single=true&output=csv';
 
-const CSV_URL =
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaTszHaU4PLm00tAvMRpAUnz1C8xzrcLi-CYSNbqkVGpX-BNKMIJiyuJIqoY5CAdEjMFmqHj-sgNAb/pub?gid=0&single=true&output=csv';
+const CORS_PROXIES = [
+  (u)=> `https://cors.isomorphic-git.org/${u}`,
+  (u)=> `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  (u)=> `https://thingproxy.freeboard.io/fetch/${u}`
+];
 
-const ID_COLUMN = 'ID';
-const OBS_COLUMN = 'Observaciones';
+const DATA_URL = SHEET_CSV_URL;
 
-const categorias = {
+const state = {
+  raw: [], items: [], headers: [], headerMap: {},
+  page: 0, pageSize: 30, lastFilter: null,
+  theme: 'dark',
+  keys: {
+    id: ['id','cd','codigo','codigo_centro','centro_id','centroid','id_centro','codigo_cd'],
+    nombre: ['nombre','centro','sede','institucion','razon_social'],
+    depto: ['departamento','depto','dpto'],
+    mun: ['municipio','mpio','ciudad','localidad'],
+    operador: ['operador','operadora','proveedor'],
+    estado: ['estado','estatus','situacion'],
+    ie: ['ie','institucion_educativa','institución_educativa','institucion','razon_social','nombre_ie'],
+    sedeDet: ['sede','nombre_sede','sede_ie'],
+    proyecto: ['proyecto','programa','contrato','proyecto_cd'],
 
-  Energia: [
-    'energia',
-    'electrica',
-    'electrico',
-    'transformador',
-    'acometida',
-    'breaker',
-    'breakers',
-    'poste',
-    'fluido',
-    'apagon',
-    'sin luz',
-    'sin energia',
-    'hurtada',
-    'hurto'
-  ],
+centroPoblado: [
+  'centro_poblado',
+  'centro poblado',
+  'cp',
+  'vereda'
+],
 
-  Conectividad: [
-    'internet',
-    'enlace',
-    'conexion',
-    'latencia',
-    'fibra',
-    'senal',
-    'señal',
-    'navegacion',
-    'navegación',
-    'red'
-  ],
+    /* NUEVO: coordenadas reales */
+    latitud: ['latitud','latitude','lat','coord_lat','coordenada_latitud','y'],
+    longitud: ['longitud','longitude','lon','lng','long','coord_lon','coord_longitud','coordenada_longitud','x'],
 
-  Equipos: [
-    'router',
-    'switch',
-    'radio',
-    'antena',
-    'ups',
-    'equipo'
-  ],
+    /* NUEVO: métricas de la tarjeta destacada */
+    diasIncidentes: ['dias_sin_incidentes','dias_incidentes','dias_sin_incidencias','incidentes_dias'],
+    conectividad: ['conectividad','porcentaje_conectividad','pct_conectividad','disponibilidad'],
 
-  Acceso: [
-    'cerrada',
-    'cerrado',
-    'receso',
-    'vacaciones',
-    'sin acceso',
-    'no fue posible ingresar',
-    'no se permite el ingreso'
-  ],
-
-  Seguridad: [
-    'hurto',
-    'hurtada',
-    'robo',
-    'vandalismo',
-    'vandalizada'
-  ],
-
-  Administrativo: [
-    'pqr',
-    'peticion',
-    'queja',
-    'reclamo'
-  ]
-
+ultimaVisita: [
+  'ultima_visita',
+  'última_visita',
+  'ultima visita',
+  'última visita'
+]
+  }
 };
-function normalize(text){
 
-  return String(text || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'');
+let featureMap = null;
+let featureMarker = null;
 
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const normalize = s => (s ?? '').toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const toKey = s => normalize(s).replace(/[^\w]+/g,'_').replace(/^_+|_+$/g,'');
+function safeOn(id, ev, fn){ const el=document.getElementById(id); if(el) el.addEventListener(ev, fn); }
+function guessKey(obj, cands){
+  for(const k of Object.keys(obj)){ if(cands.includes(toKey(k))) return k; }
+  for(const cand of cands){ for(const k of Object.keys(obj)){ if(toKey(k)===cand) return k; } }
+  return null;
+}
+
+/* ===== CSV parser robusto ===== */
+function parseCSV(text){
+  const rows=[]; let row=[]; let cur=''; let inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(c=='"'){
+      if(inQuotes && text[i+1]=='"'){ cur+='"'; i++; }
+      else inQuotes=!inQuotes;
+    }else if(c==',' && !inQuotes){ row.push(cur); cur=''; }
+    else if((c=='\n'||c=='\r') && !inQuotes){
+      if(cur.length||row.length){ row.push(cur); rows.push(row); }
+      cur=''; row=[]; if(c=='\r'&&text[i+1]=='\n') i++;
+    }else{ cur+=c; }
+  }
+  if(cur.length||row.length){ row.push(cur); rows.push(row); }
+  const headers = rows.shift()?.map(h => (h??'').toString().trim()) ?? [];
+  const objs = rows.filter(r => r.some(v => (v??'').toString().trim()!==''))
+    .map(r => { const o={}; headers.forEach((h,idx)=>o[h]=(r[idx]??'').toString()); return o; });
+  return { headers, rows: objs };
+}
+
+/* ===== Fetch con reintentos ===== */
+async function fetchWithFallbacks(url){
+  const tries = [url, ...CORS_PROXIES.map(f => f(url))];
+  let lastErr = null;
+  for(const candidate of tries){
+    try{
+      const res = await fetch(candidate, {cache:'no-store'});
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const txt = await res.text();
+      if(!txt || !txt.trim()) throw new Error('Respuesta vacía');
+      return {text:txt, used:candidate};
+    }catch(err){ lastErr=err; }
+  }
+  throw lastErr || new Error('No se pudo obtener el CSV.');
+}
+
+async function loadData(){
+  const srcParam = new URLSearchParams(location.search).get('src');
+  const url = srcParam || SHEET_CSV_URL;
+  const resumen = $('#resumen');
+const fuente = $('#fuente');
+
+if(fuente){
+  fuente.textContent = 'Fuente: ' + (srcParam || DATA_URL);
+  fuente.classList.remove('hidden');
+}
+
+  try{
+    if(resumen) resumen.textContent='Cargando datos…';
+    const {text:txt, used} = await fetchWithFallbacks(url);
+    console.debug('Dataset cargado vía:', used);
+   
+
+    let items=[], headers=[];
+    if((srcParam||DATA_URL).toLowerCase().endsWith('.json') || txt.trim().startsWith('[')){
+      const arr=JSON.parse(txt);
+      if(!Array.isArray(arr)) throw new Error('El JSON debe ser un arreglo de objetos.');
+      items=arr; headers=Object.keys(arr[0]||{});
+    }else{
+      const {headers:h, rows}=parseCSV(txt);
+      headers=h; items=rows;
+    }
+
+    console.log('Columnas detectadas:', headers);
+    const headerMap={}; headers.forEach(h=>headerMap[toKey(h)]=h);
+    state.raw=items; state.headers=headers; state.headerMap=headerMap;
+    state.items=items.map(o=>{const oo={}; headers.forEach(h=>oo[h]=(o[h]??'').toString().trim()); return oo;});
+    console.log('Registros cargados:', state.items.length);
+    console.log('Primer registro:', state.items[0]);
+
+   state.page=0;
+console.log('Headers:', headers);
+console.log('Items originales:', items.length);
+
+fillFilters();
+
+updateMunicipios();
+
+applyFilters();
+
+   /* Centro destacado = mayor DIAS_SIN_INCIDENTES */
+if(state.items.length){
+
+  const colInc =
+    guessKey(
+      state.items[0],
+      state.keys.diasIncidentes.map(toKey)
+    );
+
+  let destacado = null;
+
+  if(colInc){
+
+    destacado = state.items
+      .filter(item => {
+        const v = Number(item[colInc]);
+        return Number.isFinite(v) && v > 0;
+      })
+      .sort((a,b) =>
+        Number(b[colInc]) - Number(a[colInc])
+      )[0];
+
+  }
+
+  updateFeatureCard(
+  destacado || state.items[0],
+  true
+);
+}
+  }catch(err){
+
+  if(resumen){
+    resumen.innerHTML =
+      `<span style="color:var(--red)">No se pudo cargar el dataset:</span><br>${(err && err.message) || err}`;
+  }
+
+  $('#grid').innerHTML = '';
+
+  setKPIs(0,0,0);
+}
+
+  }
+/* ===== MINIMAPA REAL ===== */
+function getCoordinate(item, keyCandidates){
+  const sample=state.items[0]||{};
+  const key=guessKey(sample,keyCandidates.map(toKey));
+  if(!key) return {key:null,value:null};
+
+  const value=parseFloat(String(item[key]??'').trim().replace(',', '.'));
+  return {key,value:Number.isFinite(value)?value:null};
+}
+
+function updateFeatureMap(item){
+  const mapElement=document.getElementById('featureMap');
+  if(!mapElement || !item) return;
+
+  const latResult=getCoordinate(item,state.keys.latitud);
+  const lonResult=getCoordinate(item,state.keys.longitud);
+  const lat=latResult.value;
+  const lon=lonResult.value;
+
+  if(lat===null || lon===null || Math.abs(lat)>90 || Math.abs(lon)>180){
+    mapElement.innerHTML=`<div style="height:100%;display:grid;place-items:center;color:rgba(255,255,255,.58);font-size:11px;text-align:center;padding:20px">Coordenadas no disponibles para este centro</div>`;
+    if(featureMap){ featureMap.remove(); featureMap=null; featureMarker=null; }
+    return;
+  }
+
+  /* Crear mapa una sola vez */
+  if(!featureMap){
+    mapElement.innerHTML='';
+    featureMap=L.map('featureMap',{
+      zoomControl:false,
+      attributionControl:true,
+      dragging:true,
+      scrollWheelZoom:false,
+      doubleClickZoom:true,
+      touchZoom:true
+    });
+
+    L.control.zoom({position:'topright'}).addTo(featureMap);
+
+    L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom: 19,
+    attribution: 'Tiles © Esri'
+  }
+).addTo(featureMap);
+
+    L.tileLayer(
+  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom: 19,
+    opacity: 1
+  }
+).addTo(featureMap);
+  }
+
+  featureMap.setView([lat,lon],13,{animate:true});
+
+  const markerIcon=L.divIcon({
+    className:'custom-center-marker',
+    html:`<div class="center-marker"><div class="center-marker-pulse"></div><div class="center-marker-dot"></div></div>`,
+    iconSize:[40,40],
+    iconAnchor:[20,20]
+  });
+
+  if(featureMarker){
+    featureMarker.setLatLng([lat,lon]);
+  }else{
+    featureMarker=L.marker([lat,lon],{icon:markerIcon}).addTo(featureMap);
+  }
+
+  const sample=state.items[0]||{};
+  const colCentroPoblado=
+  guessKey(sample,state.keys.centroPoblado.map(toKey));
+
+const colDep=
+  guessKey(sample,state.keys.depto.map(toKey));
+
+const centroPoblado=
+  colCentroPoblado ? item[colCentroPoblado] : '';
+
+const departamento=
+  colDep ? item[colDep] : '';
+  const locationBadge=document.getElementById('featureMapLocation');
+
+if(locationBadge){
+  locationBadge.innerHTML =
+`<span>●</span><span>${escapeHtml(centroPoblado)}${centroPoblado && departamento ? ', ' : ''}${escapeHtml(departamento)}</span>`;
+}
+
+setTimeout(() => {
+  if(featureMap){
+    featureMap.invalidateSize(true);
+  }
+}, 500);
+}
+function updateFeatureCard(item, isFeatured = false){
+  if(!item) return;
+  const sample=state.items[0]||{};
+  const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
+  const colDep=guessKey(sample,state.keys.depto.map(toKey));
+  const colCentroPoblado=
+  guessKey(sample,state.keys.centroPoblado.map(toKey));
+  const colEst=guessKey(sample,state.keys.estado.map(toKey));
+  const colId=guessKey(sample,state.keys.id.map(toKey));
+  const colInc=guessKey(sample,state.keys.diasIncidentes.map(toKey));
+  const colVisita=
+  guessKey(sample,state.keys.ultimaVisita.map(toKey));
+
+  const nombre=colNombre ? item[colNombre] : 'Centro destacado';
+const id=colId ? item[colId] : '';
+const centroPoblado=
+  colCentroPoblado ? item[colCentroPoblado] : '';
+const departamento=colDep ? item[colDep] : '';
+const estado =
+  (item['Offline'] || '').trim() ? 'Offline' :
+  (item['P3'] || '').trim() ? 'P3' :
+  (item['PQR'] || '').trim() ? 'PQR' :
+  (item['Parcial'] || '').trim() ? 'Parcial' :
+  (item['Velocidad'] || '').trim() ? 'Velocidad' :
+  (item['Online'] || '').trim() ? 'Online' :
+  '';
+
+const titleEl = document.getElementById('featureTitle');
+
+if(titleEl){
+
+  if(isFeatured){
+
+    titleEl.textContent =
+      '🟢 CD CON MAYOR ESTABILIDAD OPERATIVA';
+
+  }else{
+
+    titleEl.textContent =
+      '🔎 CENTRO DIGITAL SELECCIONADO';
+
+  }
+
+}  
+
+  $('#featureId').textContent = id ? `ID${id}` : '';
+  $('#featureName').textContent=nombre||'Centro destacado';
+  $('#featureLocation').textContent =
+`${centroPoblado}${centroPoblado && departamento ? ', ' : ''}${departamento}`
+|| 'Ubicación';
+
+  const online=/online|activo|operativo|en servicio|funciona/i.test(estado);
+  const statusColor=online?'#45e0a1':'#ff5c7a';
+  const statusBg=online?'rgba(69,224,161,.12)':'rgba(255,92,122,.12)';
+  const statusEl=$('#featureStatus');
+  statusEl.style.color=statusColor;
+  statusEl.style.background=statusBg;
+  statusEl.innerHTML=`<span style="width:8px;height:8px;display:inline-block;border-radius:50%;background:${statusColor};box-shadow:0 0 10px ${statusColor}"></span>${escapeHtml(estado||'Sin estado')}`;
+
+  $('#featureIncidents').textContent=colInc ? (item[colInc]||'—') : '—';
+  const ultimaVisita =
+  colVisita ? (item[colVisita] || 'Sin visita') : 'Sin visita';
+
+$('#featureConnectivity').textContent = ultimaVisita;
+
+  updateFeatureMap(item);
+  const latResult = getCoordinate(item, state.keys.latitud);
+const lonResult = getCoordinate(item, state.keys.longitud);
+
+const routeBtn = document.getElementById('featureRouteBtn');
+
+if(
+  routeBtn &&
+  latResult.value !== null &&
+  lonResult.value !== null
+){
+  routeBtn.onclick = () => {
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${latResult.value},${lonResult.value}`,
+      '_blank'
+    );
+  };
+}
+
+  const detailBtn = document.getElementById('featureDetailBtn');
+
+if(detailBtn){
+
+  detailBtn.onclick = () => {
+
+    const cols = {
+      colId: guessKey(sample,state.keys.id.map(toKey)),
+      colNombre,
+      colDep,
+      colMun: guessKey(sample,state.keys.mun.map(toKey)),
+      colOpe: guessKey(sample,state.keys.operador.map(toKey)),
+      colEst
+    };
+
+    showDetail(item, cols);
+
+  };
+
+}
+}
+
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+/* ===== Render / filtros / KPIs ===== */
+function fillFilters(){
+
+  const sample = state.items[0] || {};
+
+  const colDep = guessKey(sample,state.keys.depto.map(toKey));
+  const colMun = guessKey(sample,state.keys.mun.map(toKey));
+  const colIE = guessKey(sample,state.keys.ie.map(toKey));
+  const colEst = guessKey(sample,state.keys.estado.map(toKey));
+
+  const load = (id,col,label)=>{
+
+    const el = document.getElementById(id);
+
+    if(!el || !col) return;
+
+    const values = [...new Set(
+      state.items
+        .map(r => (r[col] || '').trim())
+        .filter(Boolean)
+    )].sort();
+
+    el.innerHTML =
+      `<option value="">${label}</option>` +
+      values.map(v =>
+        `<option value="${v}">${v}</option>`
+      ).join('');
+  };
+
+  load('filterDep',colDep,'Todos');
+load('filterIE',colIE,'Todas');
+  document.getElementById('filterEstado').innerHTML = `
+<option value="">Todos</option>
+<option value="Online">Online</option>
+<option value="Offline">Offline</option>
+<option value="Parcial">Parcial</option>
+<option value="Velocidad">Velocidad</option>
+<option value="P3">P3</option>
+<option value="PQR">PQR</option>
+`;
 }
 
 
+  function updateMunicipios(){
 
-async function analizar(){
+  const dep = normalize(
+    document.getElementById('filterDep')?.value || ''
+  );
 
-  const id=document.getElementById('txtId').value.trim();
+  const sample = state.items[0] || {};
 
-  if(!id) return;
+  const colDep =
+    guessKey(sample,state.keys.depto.map(toKey));
 
-  const response=await fetch(CSV_URL);
+  const colMun =
+    guessKey(sample,state.keys.mun.map(toKey));
 
-  const text=await response.text();
+  const munSelect =
+    document.getElementById('filterMun');
 
-  console.log(text.includes('30508'));
-console.log(text.substring(text.indexOf('30508'), text.indexOf('30508') + 1000));
+  if(!munSelect || !colMun) return;
 
-  const rows = Papa.parse(text,{
-  header:true,
-  skipEmptyLines:true
-}).data;
-  const fila30508 = rows.find(r => String(r.ID).trim() === '30508');
+  let data = state.items;
+
+  if(dep){
+
+    data = data.filter(r =>
+      normalize(r[colDep] || '') === dep
+    );
+
+  }
+
+  const municipios = [
+    ...new Set(
+      data
+        .map(r => (r[colMun] || '').trim())
+        .filter(Boolean)
+    )
+  ].sort();
+
+  munSelect.innerHTML =
+    '<option value="">Todos</option>' +
+    municipios.map(m =>
+      `<option value="${m}">${m}</option>`
+    ).join('');
+
+}
+  
+function applyFilters(){
+
+  const sample=state.items[0]||{};
+  const colId=guessKey(sample,state.keys.id.map(toKey));
+  const colNombre=guessKey(sample,state.keys.nombre.map(toKey));
+  const colDep=guessKey(sample,state.keys.depto.map(toKey));
+  const colMun=guessKey(sample,state.keys.mun.map(toKey));
+  const colOpe=guessKey(sample,state.keys.operador.map(toKey));
+  const colEst =
+  guessKey(sample,state.keys.estado.map(toKey));
+  const colOnline = guessKey(sample,['online']);
+const colOffline = guessKey(sample,['offline']);
+const colParcial = guessKey(sample,['parcial']);
+const colVelocidad = guessKey(sample,['velocidad']);
+const colP3 = guessKey(sample,['p3']);
+const colPQR = guessKey(sample,['pqr']);
+  const colIE=guessKey(sample,state.keys.ie.map(toKey));
+
+  const dep=normalize($('#filterDep')?.value||'');
+  const mun=normalize($('#filterMun')?.value||'');
+  const ie=normalize($('#filterIE')?.value||'');
+  const estado=normalize($('#filterEstado')?.value||'');
+  const q=normalize($('#filterSearch')?.value||'');
+
+  const results=state.items.filter(o=>{
+    if(dep && !normalize(o[colDep]||'').includes(dep)) return false;
+    if(mun && !normalize(o[colMun]||'').includes(mun)) return false;
+    if(ie && !normalize(o[colIE]||o[colNombre]||'').includes(ie)) return false;
+    if(estado){
+
+  if(
+    estado === 'online' &&
+    (o[colOnline] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'offline' &&
+    (o[colOffline] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'parcial' &&
+    (o[colParcial] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'velocidad' &&
+    (o[colVelocidad] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'p3' &&
+    (o[colP3] || '').toString().trim() === ''
+  ) return false;
+
+  if(
+    estado === 'pqr' &&
+    (o[colPQR] || '').toString().trim() === ''
+  ) return false;
+
+}
+    if(q){
+      const hay=[o[colId],o[colNombre],o[colMun],o[colDep],o[colOpe],o[colIE]].filter(Boolean).some(v=>normalize(v).includes(q));
+      if(!hay) return false;
+    }
+    return true;
+  });
+
   console.log(
-  'OBS REAL:',
-  fila30508['Observaciones\r']
+  'Departamento:',
+  dep,
+  'Resultados:',
+  results.length
+);
+  
+  state.lastFilter={q,dep,mun,ie,estado};
+  state.page=0;
+  renderResults(results,{colId,colNombre,colDep,colMun,colOpe,colEst});
+  refreshKPIs(results);
+
+  /* Centro destacado = mayor DIAS_SIN_INCIDENTES del filtro */
+if(results.length){
+
+  const colInc =
+    guessKey(
+      results[0],
+      state.keys.diasIncidentes.map(toKey)
+    );
+
+  let destacado = null;
+
+  if(colInc){
+
+    destacado = results
+      .filter(item => {
+        const v = Number(item[colInc]);
+        return Number.isFinite(v) && v > 0;
+      })
+      .sort((a,b) =>
+        Number(b[colInc]) - Number(a[colInc])
+      )[0];
+
+  }
+
+  const isEstadoFilter =
+  ($('#filterEstado')?.value || '').trim() !== '';
+
+updateFeatureCard(
+  destacado || results[0],
+  !isEstadoFilter
 );
 
-console.log('30508:', fila30508);
-console.log(Object.keys(fila30508));
+}
+}
 
-  console.log(rows[0]);
+function renderResults(results,cols){
 
-  console.log('ID buscado:', id);
+  const grid = $('#grid');
+  const resumen = $('#resumen');
 
-console.log(
-  'Primeros IDs:',
-  rows.slice(0,20).map(r => r.ID)
+  const sample = state.items[0] || {};
+
+const colLat = guessKey(
+  sample,
+  state.keys.latitud.map(toKey)
 );
 
-const registros=rows.filter(r=>
-  String(r.ID || '').trim()===id
+const colLon = guessKey(
+  sample,
+  state.keys.longitud.map(toKey)
 );
 
+  if(!results.length){
 
-  const observaciones=
-    registros.map(r=>r[OBS_COLUMN])
-    .filter(Boolean);
+    if(resumen){
+      resumen.textContent =
+        'Sin resultados. Ajusta los filtros o busca por ID/CD.';
+    }
 
-  if(!observaciones.length){
+    grid.innerHTML = '';
 
-    document.getElementById('summary').innerHTML=
-      'No se encontraron observaciones';
+    $('#btnMas')?.classList.add('hidden');
+
+    return;
+  }
+
+  if(resumen){
+    resumen.textContent =
+      `${results.length.toLocaleString('es-CO')} resultados`;
+  }
+
+  const end = Math.min(
+    results.length,
+    (state.page + 1) * state.pageSize
+  );
+
+  const slice = results.slice(0,end);
+
+  grid.innerHTML=slice.map((o,i)=>{
+    const nombre=o[cols.colNombre]||'(sin nombre)';
+const id=o[cols.colId]||'';
+const dep=o[cols.colDep]||'';
+const mun=o[cols.colMun]||'';
+
+const lat = String(o[colLat] || '')
+  .trim()
+  .replace(',', '.');
+
+const lon = String(o[colLon] || '')
+  .trim()
+  .replace(',', '.'); const ope=o[cols.colOpe]||''; const est =
+  (o['Offline'] || '').trim() ? 'Offline' :
+  (o['P3'] || '').trim() ? 'P3' :
+  (o['PQR'] || '').trim() ? 'PQR' :
+  (o['Parcial'] || '').trim() ? 'Parcial' :
+  (o['Velocidad'] || '').trim() ? 'Velocidad' :
+  (o['Online'] || '').trim() ? 'Online' :
+  '';
+    const estClass =
+/p3/i.test(est) ? 'p3' :
+/pqr/i.test(est) ? 'pqr' :
+/velocidad/i.test(est) ? 'velocidad' :
+/ok|online|activo|operativo|operativa|en servicio|funciona/i.test(est) ? 'ok' :
+/baja|inactivo|offline|caido|caído|fuera|no operativo/i.test(est) ? 'down' :
+est ? 'warn' : '';
+    const hue=(i*37)%360;
+    return `<article class="card" data-id="${encodeURIComponent(id)}" title="Ver detalle">
+  <div style="position:absolute;inset:0;pointer-events:none;opacity:.08;background:radial-gradient(120px 60px at 80% -10%,hsl(${hue} 90% 60% / .9),transparent 70%);"></div>
+
+<div class="card-map-preview">
+
+  <div class="map-state ${estClass}">
+    ${escapeHtml(est)}
+  </div>
+
+  <div class="mini-map" id="mini-map-${i}"></div>
+
+</div>
+
+  <h3>${escapeHtml(nombre)}</h3>
+     <div class="card-location">
+  <span class="card-id">
+    ID: ${escapeHtml(id)}
+  </span>
+
+  ${mun || dep ? `
+    <span class="card-sep">•</span>
+
+    <span class="card-place">
+      ${escapeHtml(mun)}${mun && dep ? ', ' : ''}${escapeHtml(dep)}
+    </span>
+  ` : ''}
+</div>
+
+<div class="card-connectivity ${estClass}">
+  ${
+    estClass === 'ok'
+      ? '📶 Conectividad óptima'
+      : estClass === 'down'
+        ? '📵 Sin conexión'
+        : /parcial/i.test(est)
+          ? '📡 Parcialmente operativo'
+          : /velocidad/i.test(est)
+            ? '⚡ Velocidad baja'
+            : /p3/i.test(est)
+              ? '🟣 Incidente P3'
+              : /pqr/i.test(est)
+                ? '🟠 PQR'
+                : '📶 Estado no identificado'
+  }
+</div>
+
+<div style="margin-top:14px">
+
+  <button
+    class="btn btn-secondary route-btn"
+    data-lat="${lat}"
+    data-lon="${lon}"
+  >
+    🧭 Cómo llegar
+  </button>
+
+</div>
+      <div class="statusbar"></div>
+    </article>`;
+  }).join('');
+
+  const btnMas=$('#btnMas');
+  if(end<results.length){
+    btnMas?.classList.remove('hidden');
+    if(btnMas) btnMas.onclick=()=>{state.page++;renderResults(results,cols);};
+  }else btnMas?.classList.add('hidden');
+
+$$('#grid .card').forEach(el=>el.addEventListener('click',()=>{
+  const id=decodeURIComponent(el.getAttribute('data-id')||'');
+  let item=id?results.find(r=>(r[cols.colId]||'')===id):null;
+  if(!item) item=results[0];
+  showDetail(item,cols);
+  updateFeatureCard(item,false);
+}));
+
+  document
+  .querySelectorAll('.route-btn')
+  .forEach(btn => {
+
+    btn.addEventListener('click', e => {
+
+      e.stopPropagation();
+
+      const lat = btn.dataset.lat;
+      const lon = btn.dataset.lon;
+
+      if(!lat || !lon){
+        return;
+      }
+
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`,
+        '_blank'
+      );
+
+    });
+
+});
+
+setTimeout(() => {
+  renderMiniMaps(slice);
+}, 100);
+
+}
+
+function renderMiniMaps(items){
+
+  const sample = state.items[0] || {};
+
+  const colLat = guessKey(
+    sample,
+    state.keys.latitud.map(toKey)
+  );
+
+  const colLon = guessKey(
+    sample,
+    state.keys.longitud.map(toKey)
+  );
+
+  items.forEach((item,index)=>{
+
+    const lat = parseFloat(
+      String(item[colLat] || '').replace(',','.')
+    );
+
+    const lon = parseFloat(
+      String(item[colLon] || '').replace(',','.')
+    );
+
+    if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+    const container =
+      document.getElementById(`mini-map-${index}`);
+
+    if(!container) return;
+    container.addEventListener('click', e => {
+  e.stopPropagation();
+});
+
+container.addEventListener('mousedown', e => {
+  e.stopPropagation();
+});
+
+container.addEventListener('dblclick', e => {
+  e.stopPropagation();
+});
+
+    const map = L.map(container,{
+  zoomControl:true,
+attributionControl:false,
+  dragging:true,
+  scrollWheelZoom:false,
+  doubleClickZoom:true,
+  touchZoom:true
+});
+    map.zoomControl.setPosition('topright');
+
+    L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom:19
+  }
+).addTo(map);
+
+L.tileLayer(
+  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom:19,
+    opacity:1
+  }
+).addTo(map);
+    
+
+    map.setView([lat,lon],17);
+
+    const miniMarkerIcon = L.divIcon({
+  className:'custom-center-marker',
+  html:`
+    <div class="center-marker">
+      <div class="center-marker-pulse"></div>
+      <div class="center-marker-dot"></div>
+    </div>
+  `,
+  iconSize:[40,40],
+  iconAnchor:[20,20]
+});
+
+L.marker([lat,lon],{
+  icon:miniMarkerIcon
+}).addTo(map);
+
+  });
+}
+
+function setKPIs(total,ok,down){
+  $('#kpiTotal').textContent=total.toLocaleString('es-CO');
+  $('#kpiOk').textContent=ok.toLocaleString('es-CO');
+  $('#kpiDown').textContent=down.toLocaleString('es-CO');
+  const pctOk=total?((ok/total)*100).toFixed(1):'0.0';
+  const pctDown=total?((down/total)*100).toFixed(1):'0.0';
+  $('#pctTotal').textContent='100%'; $('#pctOnline').textContent=pctOk+'%'; $('#pctOffline').textContent=pctDown+'%';
+}
+
+function refreshKPIs(results){
+  let online=0,offline=0,p3=0,parcial=0,pqr=0,velocidad=0;
+    const sample = results[0] || {};
+
+  const colOffline = guessKey(sample,['offline']);
+  const colP3 = guessKey(sample,['p3']);
+  const colParcial = guessKey(sample,['parcial']);
+  const colPQR = guessKey(sample,['pqr']);
+  const colVelocidad = guessKey(sample,['velocidad']);
+  const colOnline = guessKey(sample,['online']);
+  results.forEach(o=>{
+
+  if((o[colOffline] || '').toString().trim() !== '') offline++;
+
+  if((o[colP3] || '').toString().trim() !== '') p3++;
+
+  if((o[colParcial] || '').toString().trim() !== '') parcial++;
+
+  if((o[colPQR] || '').toString().trim() !== '') pqr++;
+
+  if((o[colVelocidad] || '').toString().trim() !== '') velocidad++;
+
+  if((o[colOnline] || '').toString().trim() !== '') online++;
+
+});
+  if(!results.length){
+  setKPIs(0,0,0);
+  return;
+}
+  setKPIs(results.length,online,offline);
+  $('#kpiP3').textContent=p3; $('#kpiParcial').textContent=parcial; $('#kpiPQR').textContent=pqr; $('#kpiVelocidad').textContent=velocidad;
+  const total=results.length||1;
+  $('#pctP3').textContent=((p3/total)*100).toFixed(1)+'%';
+  $('#pctParcial').textContent=((parcial/total)*100).toFixed(1)+'%';
+  $('#pctPQR').textContent=((pqr/total)*100).toFixed(1)+'%';
+  $('#pctVelocidad').textContent=((velocidad/total)*100).toFixed(1)+'%';
+}
+
+/* ===== Drawer ===== */
+function showDetail(item,cols){
+  if(!item) return;
+  const drawer=$('#drawer');
+  $('#drawer-title').textContent=item[cols.colNombre]||'Detalle del Centro';
+  const kvResumen=$('#kv-resumen'); const kvDatos=$('#kv-datos');
+  kvResumen.innerHTML=''; kvDatos.innerHTML='';
+
+  [['ID / Código',cols.colId],['Nombre',cols.colNombre],['Departamento',cols.colDep],['Municipio',cols.colMun],['Operador',cols.colOpe],['Estado',cols.colEst]].forEach(([label,key])=>{
+    if(!key) return; const v=item[key];
+    if(v!=null && v.toString().trim()!=='') kvResumen.insertAdjacentHTML('beforeend',`<div class="k">${escapeHtml(label)}</div><div class="v">${escapeHtml(v)}</div>`);
+  });
+
+  state.headers.forEach(h=>{
+    const v=item[h];
+    if(v!==undefined && (v??'').toString().trim()!=='') kvDatos.insertAdjacentHTML('beforeend',`<div class="k">${escapeHtml(h)}</div><div class="v">${escapeHtml(v)}</div>`);
+  });
+
+  $$('.drawer .tab').forEach(btn=>btn.classList.remove('active'));
+  document.querySelector('.drawer .tab[data-tab="resumen"]').classList.add('active');
+$('#tab-resumen').classList.remove('hidden');
+
+$('#tab-reporteia').classList.add('hidden');
+
+$('#tab-datos').classList.add('hidden');
+  renderDiagnostico(item);
+  drawer.style.display='block';
+}
+function analizarObservacion(texto){
+
+  return `
+    <div style="
+      padding:14px;
+      border-radius:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+    ">
+
+      <h3 style="margin-top:0">
+        Reporte IA
+      </h3>
+
+      <p>
+        ${texto}
+      </p>
+
+    </div>
+  `;
+
+}
+  
+  function renderDiagnostico(item){
+
+  const texto =
+    item['Observaciones'] ||
+    item['OBSERVACIONES'] ||
+    '';
+
+  if(!texto){
+
+    document.getElementById(
+      'diagContent'
+    ).innerHTML =
+      'No existen observaciones para analizar.';
 
     return;
 
   }
 
-  const contador={};
+  const resultado =
+    analizarObservacion(texto);
 
-  observaciones.forEach(obs=>{
+  document.getElementById(
+    'diagContent'
+  ).innerHTML = resultado;
 
-    const texto=normalize(obs);
+}
+function closeDetail(){ $('#drawer').style.display='none'; }
+function activateTab(tabName){
 
-    Object.keys(categorias).forEach(cat=>{
+  const btn =
+    document.querySelector(
+      `.drawer .tab[data-tab="${tabName}"]`
+    );
 
-      categorias[cat].forEach(key=>{
+  if(!btn) return;
 
-        if(texto.includes(key)){
+  $$('.drawer .tab')
+    .forEach(b => b.classList.remove('active'));
 
-          contador[cat]=(contador[cat]||0)+1;
+  btn.classList.add('active');
 
-        }
+  $('#tab-resumen')
+    .classList.toggle(
+      'hidden',
+      tabName !== 'resumen'
+    );
 
-      });
+  $('#tab-reporteia')
+    .classList.toggle(
+      'hidden',
+      tabName !== 'reporteia'
+    );
 
-    });
+  $('#tab-datos')
+    .classList.toggle(
+      'hidden',
+      tabName !== 'datos'
+    );
 
+}
+/* ===== Modal buscar por ID ===== */
+function openModal(){const bd=$('#backdrop');if(bd){bd.style.display='flex';setTimeout(()=>$('#inpId')?.focus(),60)}}
+function closeModal(){const bd=$('#backdrop');if(bd)bd.style.display='none';const inp=$('#inpId');if(inp)inp.value=''}
+function searchById(){
+  const val=($('#inpId')?.value||'').trim(); if(!val) return;
+  const sample=state.items[0]||{}; const colId=guessKey(sample,state.keys.id.map(toKey));
+  if(!colId){alert('No se detectó columna de ID/Código en el dataset.');return}
+  const target=state.items.find(o=>normalize(o[colId])===normalize(val));
+  if(!target){alert('No se encontró un Centro con ese ID/Código.');return}
+  closeModal();
+  const cols={colId,colNombre:guessKey(sample,state.keys.nombre.map(toKey)),colDep:guessKey(sample,state.keys.depto.map(toKey)),colMun:guessKey(sample,state.keys.mun.map(toKey)),colOpe:guessKey(sample,state.keys.operador.map(toKey)),colEst:guessKey(sample,state.keys.estado.map(toKey))};
+  const results=[target]; state.page=0; renderResults(results,cols); refreshKPIs(results); updateFeatureCard(target,false); showDetail(target,cols); activateTab('datos');
+}
+
+/* ===== Tema & filtros ===== */
+
+function init(){
+  const yrEl=document.getElementById('year'); if(yrEl)yrEl.textContent=new Date().getFullYear();
+  safeOn('btnIngresar','click',openModal); 
+  safeOn('btnRefrescar','click',()=>{state.forceRefresh=true;loadData()});
+  safeOn('btnBuscarId','click',searchById); safeOn('btnCancelar','click',closeModal); safeOn('btnCloseDrawer','click',closeDetail);
+
+  safeOn('filterDep','change',() => {
+
+  updateMunicipios();
+
+  applyFilters();
+
+});
+safeOn('filterMun','change',applyFilters);
+safeOn('filterIE','change',applyFilters);
+safeOn('filterEstado','change',applyFilters);
+
+safeOn('filterSearch','input',applyFilters);
+
+  $$('.drawer .tab').forEach(btn=>btn.addEventListener('click',()=>activateTab(btn.dataset.tab)));
+
+  const backdrop=document.getElementById('backdrop');
+  if(backdrop)backdrop.addEventListener('click',e=>{if(e.target&&e.target.id==='backdrop')closeModal()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetail()}});
+
+  
+  loadData().catch(err=>console.error(err));
+}
+
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileSidebar = document.getElementById('mobileSidebar');
+const mobileOverlay = document.getElementById('mobileOverlay');
+
+  function cerrarMenuMovil() {
+
+  mobileSidebar.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+  mobileMenuBtn.classList.remove('menu-open');
+  mobileMenuBtn.textContent = '☰';
+
+}
+  
+mobileMenuBtn?.addEventListener('click', () => {
+
+  mobileSidebar.classList.toggle('open');
+  mobileOverlay.classList.toggle('open');
+  mobileMenuBtn.classList.toggle('menu-open');
+
+  mobileMenuBtn.textContent =
+    mobileSidebar.classList.contains('open')
+      ? '✕'
+      : '☰';
+
+});
+
+mobileOverlay?.addEventListener(
+  'click',
+  cerrarMenuMovil
+);
+
+document
+  .querySelectorAll('.mobile-sidebar a')
+  .forEach(link => {
+
+  link.addEventListener(
+  'click',
+  cerrarMenuMovil
+);
   });
-
-  let top='Sin clasificar';
-  let severidad = 'Baja';
-
-if(
-  contador.Energia ||
-  contador.Seguridad
-){
-  severidad = 'Alta';
-}
-
-if(
-  contador.Seguridad &&
-  contador.Energia
-){
-  severidad = 'Crítica';
-}
-
-  if(Object.keys(contador).length){
-
-    top=Object.entries(contador)
-      .sort((a,b)=>b[1]-a[1])[0][0];
-
-  }
-
-  document.getElementById('summary').innerHTML=
-`
-<b>Observaciones analizadas:</b>
-${observaciones.length}
-
-<br><br>
-
-<b>Categoría principal:</b>
-${top}
-
-<br><br>
-
-<b>Severidad:</b>
-${severidad}
-
-<br><br>
-
-<b>Hallazgo principal:</b>
-
-${
-top === 'Energia'
-? 'Se identifican afectaciones relacionadas con suministro eléctrico o infraestructura energética.'
-:
-top === 'Conectividad'
-? 'Se identifican problemas asociados con conectividad y acceso a red.'
-:
-top === 'Equipos'
-? 'Se identifican incidentes relacionados con equipos tecnológicos.'
-:
-top === 'Acceso'
-? 'Se identifican limitaciones de acceso a la sede o institución.'
-:
-top === 'Seguridad'
-? 'Se identifican eventos relacionados con hurto o afectaciones de seguridad.'
-:
-'No fue posible determinar una causa predominante.'
-}
-`;
-
-  document.getElementById('categories').innerHTML=
-    Object.entries(contador)
-      .sort((a,b)=>b[1]-a[1])
-      .map(x=>
-        `<span class="badge">${x[0]} (${x[1]})</span>`
-      )
-      .join('');
-
-  document.getElementById('obsList').innerHTML=
-    observaciones
-      .map(o=>`<div class="obs">${o}</div>`)
-      .join('');
-}
-
+window.addEventListener('DOMContentLoaded',init);
 </script>
-
 </body>
 </html>
-
