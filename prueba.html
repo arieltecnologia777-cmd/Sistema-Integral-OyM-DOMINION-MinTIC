@@ -183,6 +183,7 @@ async function analizar(){
   const text=await response.text();
 
   const rows=parseCSV(text);
+  console.log(rows[0]);
 
   console.log('ID buscado:', id);
 
