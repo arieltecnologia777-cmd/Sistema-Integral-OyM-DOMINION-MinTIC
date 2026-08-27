@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Análisis de Observaciones</title>
+
+<style>
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:#0f172a;
+  color:#fff;
+  margin:0;
+  padding:30px;
+}
+
+.card{
+  background:#1e293b;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+input{
+  width:300px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+}
+
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+}
+
+h1,h2{
+  margin-top:0;
+}
+
+.badge{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#334155;
+  margin:5px;
+}
+
+#summary{
+  line-height:1.8;
+}
+
+.obs{
+  padding:10px;
+  border-bottom:1px solid #334155;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Analizador de Observaciones</h1>
+
+<div class="card">
+<input id="txtId" placeholder="Ingrese ID">
+<button onclick="analizar()">Analizar</button>
+</div>
+
+<div class="card">
+<h2>Resumen Ejecutivo</h2>
+<div id="summary">Ingrese un ID</div>
+</div>
+
+<div class="card">
+<h2>Categorías Detectadas</h2>
+<div id="categories"></div>
+</div>
+
+<div class="card">
+<h2>Observaciones Encontradas</h2>
+<div id="obsList"></div>
+</div>
+
+<script>
+
+const CSV_URL =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaTszHaU4PLm00tAvMRpAUnz1C8xzrcLi-CYSNbqkVGpX-BNKMIJiyuJIqoY5CAdEjMFmqHj-sgNAb/pub?gid=0&single=true&output=csv';
+
+const ID_COLUMN = 'ID';
+const OBS_COLUMN = 'OBSERVACIONES';
+
+const categorias = {
+
+  Energia:[
+    'energia',
+    'electrica',
+    'electrico',
+    'transformador',
+    'fluido',
+    'apagon',
+    'sin luz'
+  ],
+
+  Conectividad:[
+    'internet',
+    'enlace',
+    'conexion',
+    'latencia',
+    'fibra',
+    'senal',
+    'señal'
+  ],
+
+  Equipos:[
+    'router',
+    'switch',
+    'radio',
+    'antena',
+    'equipo'
+  ],
+
+  PQR:[
+    'pqr',
+    'peticion',
+    'queja',
+    'reclamo'
+  ],
+
+  Infraestructura:[
+    'poste',
+    'cable',
+    'obra',
+    'gabinete'
+  ]
+
+};
+
+function normalize(text){
+
+  return String(text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'');
+
+}
+
+function parseCSV(text){
+
+  const rows=text.trim().split('\n');
+
+  const headers=rows[0]
+    .split(',')
+    .map(x=>x.replace(/"/g,''));
+
+  return rows.slice(1).map(r=>{
+
+    const cols=r.split(',');
+
+    const obj={};
+
+    headers.forEach((h,i)=>{
+      obj[h]=cols[i] || '';
+    });
+
+    return obj;
+
+  });
+
+}
+
+async function analizar(){
+
+  const id=document.getElementById('txtId').value.trim();
+
+  if(!id) return;
+
+  const response=await fetch(CSV_URL);
+
+  const text=await response.text();
+
+  const rows=parseCSV(text);
+
+  const registros=rows.filter(r=>
+    String(r[ID_COLUMN]||'').trim()===id
+  );
+
+  const observaciones=
+    registros.map(r=>r[OBS_COLUMN])
+    .filter(Boolean);
+
+  if(!observaciones.length){
+
+    document.getElementById('summary').innerHTML=
+      'No se encontraron observaciones';
+
+    return;
+
+  }
+
+  const contador={};
+
+  observaciones.forEach(obs=>{
+
+    const texto=normalize(obs);
+
+    Object.keys(categorias).forEach(cat=>{
+
+      categorias[cat].forEach(key=>{
+
+        if(texto.includes(key)){
+
+          contador[cat]=(contador[cat]||0)+1;
+
+        }
+
+      });
+
+    });
+
+  });
+
+  let top='Sin clasificar';
+
+  if(Object.keys(contador).length){
+
+    top=Object.entries(contador)
+      .sort((a,b)=>b[1]-a[1])[0][0];
+
+  }
+
+  document.getElementById('summary').innerHTML=
+  `
+  Se analizaron <b>${observaciones.length}</b> observaciones.<br><br>
+
+  La categoría predominante es
+  <b>${top}</b>.
+  `;
+
+  document.getElementById('categories').innerHTML=
+    Object.entries(contador)
+      .sort((a,b)=>b[1]-a[1])
+      .map(x=>
+        `<span class="badge">${x[0]} (${x[1]})</span>`
+      )
+      .join('');
+
+  document.getElementById('obsList').innerHTML=
+    observaciones
+      .map(o=>`<div class="obs">${o}</div>`)
+      .join('');
+}
+
+</script>
+
+</body>
+</html>
