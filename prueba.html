@@ -3,70 +3,329 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Motor de Análisis Operativo</title>
+<title>Análisis de Observaciones</title>
+
 <style>
-:root{--bg:#0b1220;--card:#111c2e;--card2:#162338;--text:#f8fafc;--muted:#94a3b8;--line:#26364e;--accent:#38bdf8;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--purple:#a78bfa}
-*{box-sizing:border-box}body{font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#08111f,#0f172a 55%,#111827);color:var(--text);margin:0;padding:28px;min-height:100vh}.wrap{max-width:1180px;margin:auto}.header{margin-bottom:22px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.header h1{margin:6px 0;font-size:30px}.header p{margin:0;color:var(--muted)}.card{background:rgba(17,28,46,.94);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}.search{display:flex;gap:10px;flex-wrap:wrap}.search input{flex:1;min-width:230px;padding:13px 15px;border-radius:11px;border:1px solid var(--line);background:#0b1423;color:#fff;font-size:15px}.search button{padding:13px 20px;border:0;border-radius:11px;background:var(--accent);color:#062033;font-weight:800;cursor:pointer}.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}.summary{font-size:17px;line-height:1.7}.summary strong{color:#fff}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:var(--card2);border-radius:13px;padding:14px}.metric small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:800;letter-spacing:.06em}.metric b{display:block;margin-top:5px;font-size:23px}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.section-title h2{margin:0;font-size:17px}.pill{padding:6px 10px;border-radius:999px;background:#20324c;color:#cbd5e1;font-size:12px;font-weight:800}.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{padding:9px 12px;border-radius:999px;background:#20324c;border:1px solid #30445f;font-weight:700;font-size:13px}.badge.primary{background:rgba(56,189,248,.13);border-color:rgba(56,189,248,.4);color:#7dd3fc}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.insight{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px}.insight .label{font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:800;letter-spacing:.08em}.insight .value{font-size:18px;font-weight:800;margin-top:5px}.impact{margin-top:7px;color:#cbd5e1;line-height:1.5}.severity{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:900;font-size:12px;margin-top:8px}.sev-baja{background:rgba(34,197,94,.15);color:#86efac}.sev-media{background:rgba(245,158,11,.15);color:#fcd34d}.sev-alta{background:rgba(239,68,68,.15);color:#fca5a5}.sev-critica{background:rgba(167,139,250,.18);color:#ddd6fe}.findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.finding{padding:12px 14px;border:1px solid var(--line);background:var(--card2);border-radius:12px}.finding:before{content:'✓';color:var(--green);font-weight:900;margin-right:8px}.obs{padding:13px 0;border-bottom:1px solid var(--line);color:#cbd5e1;line-height:1.55}.obs:last-child{border-bottom:0}.empty{color:var(--muted);padding:8px 0}.history{margin-top:18px}.history-item{padding:12px 14px;background:var(--card2);border-radius:11px;margin-top:8px}.history-item b{color:#e2e8f0}.note{font-size:12px;color:var(--muted);margin-top:8px}@media(max-width:800px){.grid,.two{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.header h1{font-size:25px}}
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:#0f172a;
+  color:#fff;
+  margin:0;
+  padding:30px;
+}
+
+.card{
+  background:#1e293b;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+input{
+  width:300px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+}
+
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+}
+
+h1,h2{
+  margin-top:0;
+}
+
+.badge{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#334155;
+  margin:5px;
+}
+
+#summary{
+  line-height:1.8;
+}
+
+.obs{
+  padding:10px;
+  border-bottom:1px solid #334155;
+}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
+
 <body>
-<div class="wrap">
-<div class="header"><div class="eyebrow">Motor semántico operativo</div><h1>📊 Análisis inteligente de observaciones</h1><p>Clasificación, causa raíz, impacto y severidad mediante reglas y pesos.</p></div>
-<div class="card search"><input id="txtId" placeholder="Ingrese ID del Centro Digital" onkeydown="if(event.key==='Enter') analizar()"><button onclick="analizar()">Analizar observaciones</button></div>
-<div class="grid">
-<div class="card"><div class="section-title"><h2>Resumen Ejecutivo</h2><span class="pill" id="status">Esperando ID</span></div><div id="summary" class="summary">Ingrese un ID para iniciar el análisis.</div></div>
-<div class="card"><div class="section-title"><h2>Indicadores</h2></div><div class="metrics"><div class="metric"><small>Observaciones</small><b id="mObs">—</b></div><div class="metric"><small>Categoría</small><b id="mCat">—</b></div><div class="metric"><small>Severidad</small><b id="mSev">—</b></div></div></div>
+
+<h1>📊 Analizador de Observaciones</h1>
+
+<div class="card">
+<input id="txtId" placeholder="Ingrese ID">
+<button onclick="analizar()">Analizar</button>
 </div>
-<div class="card"><div class="section-title"><h2>Diagnóstico operativo</h2></div><div class="two"><div class="insight"><div class="label">Categoría principal</div><div id="mainCat" class="value">—</div></div><div class="insight"><div class="label">Subcategoría / causa raíz</div><div id="rootCause" class="value">—</div></div><div class="insight"><div class="label">Impacto</div><div id="impact" class="impact">—</div></div><div class="insight"><div class="label">Severidad</div><div id="severity"></div></div></div></div>
-<div class="card"><div class="section-title"><h2>Hallazgos detectados</h2><span class="pill" id="findingCount">0</span></div><div id="findings" class="findings"><div class="empty">Los hallazgos aparecerán aquí.</div></div></div>
-<div class="card"><div class="section-title"><h2>Categorías detectadas</h2></div><div id="categories" class="badges"></div></div>
-<div class="card"><div class="section-title"><h2>Observaciones analizadas</h2><span class="pill" id="obsCount">0</span></div><div id="obsList"><div class="empty">Sin datos.</div></div></div>
-<div id="historyCard" class="card history" style="display:none"><div class="section-title"><h2>Análisis histórico</h2></div><div id="history"></div></div>
+
+<div class="card">
+<h2>Resumen Ejecutivo</h2>
+<div id="summary">Ingrese un ID</div>
 </div>
+
+<div class="card">
+<h2>Categorías Detectadas</h2>
+<div id="categories"></div>
+</div>
+
+<div class="card">
+<h2>Observaciones Encontradas</h2>
+<div id="obsList"></div>
+</div>
+
 <script>
-const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vRaTszHaU4PLm00tAvMRpAUnz1C8xzrcLi-CYSNbqkVGpX-BNKMIJiyuJIqoY5CAdEjMFmqHj-sgNAb/pub?gid=0&single=true&output=csv';
-const ID_COLUMN='ID', OBS_COLUMN='Observaciones';
-const categorias={
-  '⚡ Energía':['energia','eléctrica','electrica','eléctrico','electrico','transformador','fluido','apagón','apagon','sin luz','sin energia','sin energía','acometida','breaker','breakers','caja electrica','caja eléctrica'],
-  '📡 Conectividad':['internet','enlace','conexion','conexión','latencia','fibra','señal','senal','sin servicio','sin conectividad','caido','caído','enlace caido','radio'],
-  '🔧 Equipos':['router','switch','radio','antena','equipo','modem','módem','modulo','módulo','fuente','reinicio'],
-  '🏫 Acceso a sede':['acceso','sede cerrada','llave','candado','sin acceso','no se puede ingresar','ingreso','portería','porteria'],
-  '🚨 Seguridad':['hurto','robado','robo','vandalismo','vandalizado','seguridad','intrusión','intrusion','daño intencional','amenaza'],
-  '🏗️ Infraestructura':['poste','cable','obra','gabinete','acometida','cableado','techo','pared','puerta','cerradura','infraestructura'],
-  '📋 Administrativo':['pqr','petición','peticion','queja','reclamo','permiso','documentación','documentacion','administrativo','acta']
+
+const CSV_URL =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaTszHaU4PLm00tAvMRpAUnz1C8xzrcLi-CYSNbqkVGpX-BNKMIJiyuJIqoY5CAdEjMFmqHj-sgNAb/pub?gid=0&single=true&output=csv';
+
+const ID_COLUMN = 'ID';
+const OBS_COLUMN = 'Observaciones';
+
+const categorias = {
+
+  Energia: [
+    'energia',
+    'electrica',
+    'electrico',
+    'transformador',
+    'acometida',
+    'breaker',
+    'breakers',
+    'poste',
+    'fluido',
+    'apagon',
+    'sin luz',
+    'sin energia',
+    'hurtada',
+    'hurto'
+  ],
+
+  Conectividad: [
+    'internet',
+    'enlace',
+    'conexion',
+    'latencia',
+    'fibra',
+    'senal',
+    'señal',
+    'navegacion',
+    'navegación',
+    'red'
+  ],
+
+  Equipos: [
+    'router',
+    'switch',
+    'radio',
+    'antena',
+    'ups',
+    'equipo'
+  ],
+
+  Acceso: [
+    'cerrada',
+    'cerrado',
+    'receso',
+    'vacaciones',
+    'sin acceso',
+    'no fue posible ingresar',
+    'no se permite el ingreso'
+  ],
+
+  Seguridad: [
+    'hurto',
+    'hurtada',
+    'robo',
+    'vandalismo',
+    'vandalizada'
+  ],
+
+  Administrativo: [
+    'pqr',
+    'peticion',
+    'queja',
+    'reclamo'
+  ]
+
 };
-const causas={
-  'Hurto de acometida':['acometida','hurtada','hurtado','robo de acometida','robaron la acometida'],
-  'Hurto de cableado':['cable','cableado','cable hurtado','cable robado'],
-  'Falla de transformador':['transformador','transformador dañado','transformador averiado'],
-  'Falla eléctrica':['falla electrica','falla eléctrica','corto','cortocircuito','breaker','breaker disparado'],
-  'Falla de conectividad':['internet','enlace','sin señal','sin senal','latencia','sin conectividad'],
-  'Falla de equipo':['router','switch','antena','radio','modem','módem','equipo apagado','equipo dañado','equipo averiado'],
-  'Falta de acceso a sede':['sin acceso','sede cerrada','no se puede ingresar','llave','candado'],
-  'Vandalismo / daño intencional':['vandalismo','vandalizado','daño intencional'],
-  'PQR / gestión administrativa':['pqr','peticion','petición','queja','reclamo','permiso','administrativo']
-};
-const hallazgos={
-  'Hurto':['hurto','hurtada','hurtado','robo','robado'],
-  'Sin energía':['sin energia','sin energía','sin luz','apagón','apagon','no hay energia','no hay energía','sin suministro'],
-  'Infraestructura':['acometida','poste','cable','cableado','transformador','gabinete','infraestructura'],
-  'Sin conectividad':['sin internet','sin señal','sin senal','sin conectividad','sin servicio','enlace caido','enlace caído'],
-  'Equipo afectado':['router','switch','radio','antena','modem','módem','equipo dañado','equipo apagado'],
-  'Sin acceso':['sin acceso','no se puede ingresar','sede cerrada','llave','candado'],
-  'PQR / administrativo':['pqr','peticion','petición','queja','reclamo','permiso']
-};
-function normalize(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
-function matches(text,arr){return arr.some(k=>text.includes(normalize(k)));}
-function esc(t){return String(t).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function scoreCategories(observaciones){const scores={};observaciones.forEach(o=>{const t=normalize(o);for(const [cat,keys] of Object.entries(categorias)){let hits=0;keys.forEach(k=>{if(t.includes(normalize(k)))hits++});if(hits)scores[cat]=(scores[cat]||0)+Math.min(hits,3);}});return scores;}
-function detectCause(text){const t=normalize(text);let best={name:'No determinada',score:0};for(const [name,keys] of Object.entries(causas)){let s=0;keys.forEach(k=>{if(t.includes(normalize(k)))s++});if(s>best.score)best={name,score:s};}return best.name;}
-function detectFindings(observaciones){const t=normalize(observaciones.join(' '));return Object.keys(hallazgos).filter(h=>matches(t,hallazgos[h]));}
-function severity(findings,cat,cause){let s=0;const t=normalize(findings.join(' ')+' '+cat+' '+cause);if(t.includes('hurto')||t.includes('robo')||t.includes('vandalismo'))s+=4;if(t.includes('sin energia')||t.includes('sin suministro'))s+=3;if(t.includes('sin acceso'))s+=2;if(t.includes('sin conectividad'))s+=2;if(t.includes('equipo afectado'))s+=1;if(s>=6)return ['Crítica','sev-critica'];if(s>=4)return ['Alta','sev-alta'];if(s>=2)return ['Media','sev-media'];return ['Baja','sev-baja'];}
-function buildSummary(obs,cat,cause,findings,sev){const energy=matches(normalize(obs.join(' ')),['sin energia','sin luz','no hay energia','acometida','transformador']);let impact='Afectación operativa del Centro Digital.';if(energy)impact='Centro sin suministro eléctrico, con afectación de la operación.';if(findings.includes('Sin conectividad'))impact='Centro con afectación del servicio de conectividad.';if(findings.includes('Sin acceso'))impact='No es posible acceder normalmente a la sede.';let lead=sev[0]==='Crítica'?'Se identifica una afectación crítica del servicio':sev[0]==='Alta'?'Se identifica una afectación alta del servicio':'Se identifica una afectación del servicio';return `${lead} asociada a <strong>${esc(cause.toLowerCase())}</strong>.<br><br>${esc(impact)}`;}
-async function analizar(){const id=document.getElementById('txtId').value.trim();if(!id)return;document.getElementById('status').textContent='Analizando…';try{const response=await fetch(CSV_URL);if(!response.ok)throw new Error('No fue posible cargar el CSV');const text=await response.text();const rows=Papa.parse(text,{header:true,skipEmptyLines:true}).data;const registros=rows.filter(r=>String(r[ID_COLUMN]||'').trim()===id);const observaciones=registros.map(r=>r[OBS_COLUMN]||r['Observaciones\r']||r['Observación']||r['Observacion']).filter(Boolean).map(String);if(!observaciones.length){reset('No se encontraron observaciones para este ID.');return;}const scores=scoreCategories(observaciones);const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);const top=sorted[0]?.[0]||'Sin clasificar';const cause=detectCause(observaciones.join(' '));const findings=detectFindings(observaciones);const sev=severity(findings,top,cause);render({observaciones,sorted,top,cause,findings,sev});document.getElementById('status').textContent='Análisis completado';}catch(e){console.error(e);document.getElementById('status').textContent='Error';document.getElementById('summary').innerHTML='No fue posible consultar los datos. Revisa que la hoja esté publicada y accesible.';}}
-function render(d){document.getElementById('mObs').textContent=d.observaciones.length;document.getElementById('mCat').textContent=d.top.replace(/^\S+\s/,'');document.getElementById('mSev').textContent=d.sev[0];document.getElementById('mainCat').textContent=d.top;document.getElementById('rootCause').textContent=d.cause;document.getElementById('impact').textContent=d.findings.includes('Sin energía')?'Centro sin suministro eléctrico.':d.findings.includes('Sin conectividad')?'Centro con afectación de conectividad.':'Afectación operativa identificada en las observaciones.';document.getElementById('severity').innerHTML=`<span class="severity ${d.sev[1]}">${d.sev[0]}</span>`;document.getElementById('summary').innerHTML=buildSummary(d.observaciones,d.top,d.cause,d.findings,d.sev);document.getElementById('categories').innerHTML=d.sorted.map((x,i)=>`<span class="badge ${i===0?'primary':''}">${esc(x[0])} · ${x[1]}</span>`).join('');document.getElementById('findings').innerHTML=d.findings.length?d.findings.map(x=>`<div class="finding">${esc(x)}</div>`).join(''):'<div class="empty">No se detectaron hallazgos específicos.</div>';document.getElementById('findingCount').textContent=d.findings.length;document.getElementById('obsCount').textContent=d.observaciones.length;document.getElementById('obsList').innerHTML=d.observaciones.map(o=>`<div class="obs">${esc(o)}</div>`).join('');}
-function reset(msg){document.getElementById('status').textContent='Sin resultados';document.getElementById('summary').textContent=msg;document.getElementById('mObs').textContent='—';document.getElementById('mCat').textContent='—';document.getElementById('mSev').textContent='—';document.getElementById('mainCat').textContent='—';document.getElementById('rootCause').textContent='—';document.getElementById('impact').textContent='—';document.getElementById('severity').innerHTML='';document.getElementById('categories').innerHTML='';document.getElementById('findings').innerHTML='<div class="empty">No hay hallazgos.</div>';document.getElementById('obsList').innerHTML='<div class="empty">Sin datos.</div>';document.getElementById('findingCount').textContent='0';document.getElementById('obsCount').textContent='0';}
+function normalize(text){
+
+  return String(text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'');
+
+}
+
+
+
+async function analizar(){
+
+  const id=document.getElementById('txtId').value.trim();
+
+  if(!id) return;
+
+  const response=await fetch(CSV_URL);
+
+  const text=await response.text();
+
+  console.log(text.includes('30508'));
+console.log(text.substring(text.indexOf('30508'), text.indexOf('30508') + 1000));
+
+  const rows = Papa.parse(text,{
+  header:true,
+  skipEmptyLines:true
+}).data;
+  const fila30508 = rows.find(r => String(r.ID).trim() === '30508');
+  console.log(
+  'OBS REAL:',
+  fila30508['Observaciones\r']
+);
+
+console.log('30508:', fila30508);
+console.log(Object.keys(fila30508));
+
+  console.log(rows[0]);
+
+  console.log('ID buscado:', id);
+
+console.log(
+  'Primeros IDs:',
+  rows.slice(0,20).map(r => r.ID)
+);
+
+const registros=rows.filter(r=>
+  String(r.ID || '').trim()===id
+);
+
+
+  const observaciones=
+    registros.map(r=>r[OBS_COLUMN])
+    .filter(Boolean);
+
+  if(!observaciones.length){
+
+    document.getElementById('summary').innerHTML=
+      'No se encontraron observaciones';
+
+    return;
+
+  }
+
+  const contador={};
+
+  observaciones.forEach(obs=>{
+
+    const texto=normalize(obs);
+
+    Object.keys(categorias).forEach(cat=>{
+
+      categorias[cat].forEach(key=>{
+
+        if(texto.includes(key)){
+
+          contador[cat]=(contador[cat]||0)+1;
+
+        }
+
+      });
+
+    });
+
+  });
+
+  let top='Sin clasificar';
+  let severidad = 'Baja';
+
+if(
+  contador.Energia ||
+  contador.Seguridad
+){
+  severidad = 'Alta';
+}
+
+if(
+  contador.Seguridad &&
+  contador.Energia
+){
+  severidad = 'Crítica';
+}
+
+  if(Object.keys(contador).length){
+
+    top=Object.entries(contador)
+      .sort((a,b)=>b[1]-a[1])[0][0];
+
+  }
+
+  document.getElementById('summary').innerHTML=
+`
+<b>Observaciones analizadas:</b>
+${observaciones.length}
+
+<br><br>
+
+<b>Categoría principal:</b>
+${top}
+
+<br><br>
+
+<b>Severidad:</b>
+${severidad}
+
+<br><br>
+
+<b>Hallazgo principal:</b>
+
+${
+top === 'Energia'
+? 'Se identifican afectaciones relacionadas con suministro eléctrico o infraestructura energética.'
+:
+top === 'Conectividad'
+? 'Se identifican problemas asociados con conectividad y acceso a red.'
+:
+top === 'Equipos'
+? 'Se identifican incidentes relacionados con equipos tecnológicos.'
+:
+top === 'Acceso'
+? 'Se identifican limitaciones de acceso a la sede o institución.'
+:
+top === 'Seguridad'
+? 'Se identifican eventos relacionados con hurto o afectaciones de seguridad.'
+:
+'No fue posible determinar una causa predominante.'
+}
+`;
+
+  document.getElementById('categories').innerHTML=
+    Object.entries(contador)
+      .sort((a,b)=>b[1]-a[1])
+      .map(x=>
+        `<span class="badge">${x[0]} (${x[1]})</span>`
+      )
+      .join('');
+
+  document.getElementById('obsList').innerHTML=
+    observaciones
+      .map(o=>`<div class="obs">${o}</div>`)
+      .join('');
+}
+
 </script>
+
 </body>
 </html>
+
