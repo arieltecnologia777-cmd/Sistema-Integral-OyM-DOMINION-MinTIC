@@ -2689,17 +2689,114 @@ if(
   hallazgos.length === 0
 ){
   resumen =
-    'No se identifican observaciones relacionadas o estas son insuficientes para calcular novedades. Por favor seleccione la opción "Datos Generales" para ampliar los detalles. Si no encuentra observaciones, contacte al supervisor de zona para ampliarlas.';
+    'No se identifican observaciones relacionadas o estas son insuficientes para calcular novedades. Por favor seleccione la opción "Datos Generales" para ampliar los detalles.';
 }
 
-if(severidad === 'Alta'){
+else if(
+  hallazgos.includes('Daño UPS') &&
+  hallazgos.includes('Variación eléctrica') &&
+  hallazgos.includes('Centro operativo')
+){
   resumen =
-    'Se identifica una afectación de alto impacto sobre la operación.';
+    'Durante actividades de seguimiento se identificó afectación en el sistema UPS asociada a variaciones de energía en la zona. El Centro Digital permanece operativo mientras se gestiona el reemplazo del equipo afectado.';
+}
+
+else if(
+  hallazgos.includes('Hurto') &&
+  hallazgos.includes('Infraestructura')
+){
+  resumen =
+    'Se evidencian afectaciones sobre infraestructura crítica asociadas a eventos de hurto reportados en la sede, impactando parcialmente la operación del Centro Digital.';
+}
+
+else if(
+  hallazgos.includes('Sin energía')
+){
+  resumen =
+    'Se registra indisponibilidad del servicio debido a afectaciones relacionadas con el suministro eléctrico de la sede.';
+}
+
+else if(
+  hallazgos.includes('Sin conectividad')
+){
+  resumen =
+    'La conectividad del Centro Digital presenta afectaciones que limitan la disponibilidad normal de los servicios.';
+}
+
+else if(
+  hallazgos.includes('Sin acceso')
+){
+  resumen =
+    'No fue posible desarrollar completamente las actividades programadas debido a restricciones de acceso en la sede.';
+}
+
+else if(
+  hallazgos.includes('Orden público')
+){
+  resumen =
+    'Las actividades operativas presentan restricciones derivadas de condiciones de orden público reportadas en la zona.';
+}
+
+else if(
+  hallazgos.includes('Bloqueo vial')
+){
+  resumen =
+    'La ejecución de actividades se encuentra afectada por limitaciones de movilidad y acceso a la ubicación del Centro Digital.';
+}
+
+else if(
+  hallazgos.includes('Derrumbe')
+){
+  resumen =
+    'Las condiciones geográficas y el estado de las vías generan restricciones para el acceso y atención del Centro Digital.';
+}
+
+else if(
+  hallazgos.includes('Inundación')
+){
+  resumen =
+    'Se evidencian afectaciones asociadas a eventos climáticos que impactan las condiciones normales de operación o acceso.';
+}
+
+else if(
+  hallazgos.includes('Ausencia de personal')
+){
+  resumen =
+    'No fue posible completar las actividades previstas debido a la ausencia de personal responsable durante la visita.';
+}
+
+else if(
+  hallazgos.includes('Monitoreo preventivo') &&
+  hallazgos.includes('Centro operativo')
+){
+  resumen =
+    'Durante las actividades de seguimiento y monitoreo se validó la correcta operación del Centro Digital sin evidenciar fallas críticas del servicio.';
+}
+
+else if(
+  hallazgos.includes('Daño UPS')
+){
+  resumen =
+    'Se identificó una afectación en el sistema de respaldo eléctrico que requiere gestión para garantizar la continuidad operativa.';
+}
+
+else if(
+  hallazgos.includes('Equipo quemado')
+){
+  resumen =
+    'Se identifican equipos afectados por eventos eléctricos o daños físicos que requieren intervención técnica.';
+}
+
+else if(
+  hallazgos.includes('Sin observaciones')
+){
+  resumen =
+    'No se cuenta con información observacional suficiente para determinar la situación operativa del Centro Digital.';
 }
 
 if(severidad === 'Crítica'){
   resumen =
-    'Se identifica una afectación crítica del servicio.';
+    'Se identifica una afectación crítica que compromete la continuidad operativa del Centro Digital.';
 }
 
   return `
