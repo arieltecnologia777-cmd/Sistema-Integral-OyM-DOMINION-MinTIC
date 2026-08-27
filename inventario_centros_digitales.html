@@ -2080,26 +2080,254 @@ $('#tab-datos').classList.add('hidden');
   renderDiagnostico(item);
   drawer.style.display='block';
 }
-function analizarObservacion(texto){
+const categoriasIA = {
 
-  return `
-    <div style="
-      padding:14px;
-      border-radius:12px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-    ">
+  '⚡ Energía':[
+    'energia','eléctrica','electrica','eléctrico','electrico',
+    'transformador','fluido','apagón','apagon',
+    'sin luz','sin energia','sin energía',
+    'acometida','breaker','breakers'
+  ],
 
-      <h3 style="margin-top:0">
-        Reporte IA
-      </h3>
+  '📡 Conectividad':[
+    'internet','enlace','conexion','conexión',
+    'latencia','fibra','señal','senal',
+    'sin servicio','sin conectividad',
+    'caido','caído'
+  ],
 
-      <p>
-        ${texto}
-      </p>
+  '🔧 Equipos':[
+    'router','switch','radio','antena',
+    'equipo','modem','módem'
+  ],
 
-    </div>
-  `;
+  '🏫 Acceso a sede':[
+    'acceso','sede cerrada',
+    'llave','candado',
+    'sin acceso',
+    'no se puede ingresar'
+  ],
+
+  '🚨 Seguridad':[
+    'hurto',
+    'robado',
+    'robo',
+    'vandalismo',
+    'vandalizado'
+  ],
+
+  '🏗️ Infraestructura':[
+    'poste',
+    'cable',
+    'cableado',
+    'acometida',
+    'gabinete',
+    'infraestructura'
+  ],
+
+  '📋 Administrativo':[
+    'pqr',
+    'peticion',
+    'petición',
+    'queja',
+    'reclamo'
+  ]
+
+};
+
+const causasIA = {
+
+  'Hurto de acometida':[
+    'acometida',
+    'hurtada',
+    'hurtado',
+    'robo de acometida'
+  ],
+
+  'Hurto de cableado':[
+    'cable',
+    'cableado',
+    'cable hurtado',
+    'cable robado'
+  ],
+
+  'Falla eléctrica':[
+    'falla electrica',
+    'falla eléctrica',
+    'breaker',
+    'cortocircuito'
+  ],
+
+  'Falla de conectividad':[
+    'internet',
+    'enlace',
+    'sin señal',
+    'sin senal',
+    'sin conectividad'
+  ],
+
+  'Falla de equipo':[
+    'router',
+    'switch',
+    'radio',
+    'antena',
+    'modem',
+    'módem'
+  ],
+
+  'Falta de acceso a sede':[
+    'sin acceso',
+    'sede cerrada',
+    'no se puede ingresar'
+  ]
+
+};
+
+const hallazgosIA = {
+
+  'Hurto':[
+    'hurto',
+    'hurtada',
+    'hurtado',
+    'robo'
+  ],
+
+  'Sin energía':[
+    'sin energia',
+    'sin energía',
+    'sin luz',
+    'apagón',
+    'apagon'
+  ],
+
+  'Infraestructura':[
+    'acometida',
+    'poste',
+    'cable',
+    'transformador',
+    'gabinete'
+  ],
+
+  'Sin conectividad':[
+    'sin internet',
+    'sin conectividad',
+    'sin señal',
+    'sin senal'
+  ],
+
+  'Equipo afectado':[
+    'router',
+    'switch',
+    'radio',
+    'antena'
+  ],
+
+  'Sin acceso':[
+    'sin acceso',
+    'sede cerrada',
+    'candado'
+  ]
+
+};
+
+  function normalizeIA(t){
+
+  return String(t || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'');
+
+}
+
+function scoreCategoriesIA(texto){
+
+  const scores = {};
+
+  Object.entries(categoriasIA)
+    .forEach(([cat,keys])=>{
+
+      keys.forEach(k=>{
+
+        if(
+          normalizeIA(texto)
+            .includes(
+              normalizeIA(k)
+            )
+        ){
+          scores[cat] =
+            (scores[cat] || 0) + 1;
+        }
+
+      });
+
+    });
+
+  return scores;
+
+}
+
+function detectCauseIA(texto){
+
+  let mejor =
+    'No determinada';
+
+  let score = 0;
+
+  Object.entries(causasIA)
+    .forEach(([nombre,keys])=>{
+
+      let s = 0;
+
+      keys.forEach(k=>{
+
+        if(
+          normalizeIA(texto)
+            .includes(
+              normalizeIA(k)
+            )
+        ){
+           s++;
+        }
+
+      });
+
+      if(s > score){
+
+        score = s;
+        mejor = nombre;
+
+      }
+
+    });
+
+  return mejor;
+
+}
+
+function detectFindingsIA(texto){
+
+  const hallazgos = [];
+
+  Object.entries(hallazgosIA)
+    .forEach(([nombre,keys])=>{
+
+      const existe =
+        keys.some(k =>
+          normalizeIA(texto)
+            .includes(
+              normalizeIA(k)
+            )
+        );
+
+      if(existe){
+
+        hallazgos.push(nombre);
+
+      }
+
+    });
+
+  return hallazgos;
 
 }
   
