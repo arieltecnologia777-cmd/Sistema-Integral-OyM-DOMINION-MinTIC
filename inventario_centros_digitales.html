@@ -2349,6 +2349,10 @@ function detectFindingsIA(texto){
   const hallazgos =
     detectFindingsIA(texto);
 
+    const esSinObservaciones =
+  normalizeIA(texto).trim() === 'sin observacion' ||
+  normalizeIA(texto).trim() === 'sin observaciones';
+
   let puntaje = 0;
 
   if(hallazgos.includes('Hurto')) puntaje += 4;
@@ -2368,7 +2372,12 @@ function detectFindingsIA(texto){
   }
 
   let impacto =
-    'Se identifica una afectación operativa del Centro Digital.';
+  'Se identifica una afectación operativa del Centro Digital.';
+
+if(esSinObservaciones){
+  impacto =
+    'No se cuenta con información observacional suficiente para determinar el impacto operativo del Centro Digital.';
+}
 
   if(hallazgos.includes('Sin energía')){
     impacto =
