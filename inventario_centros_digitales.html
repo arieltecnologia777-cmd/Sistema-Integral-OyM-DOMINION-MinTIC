@@ -2439,17 +2439,25 @@ if(esSinObservaciones){
   }
 
   let resumen =
-    'No se indentifican observaciones relacionadas o estas son insuficientes para calcular novedades, por favor seleccione la opción "Datos generales" para ampliar los detalles, si no encuentra observaciones, por favor contactar al supervisor de zona para ampliarlas';
+  'Se identifica una situación operativa que requiere seguimiento.';
 
-  if(severidad === 'Alta'){
-    resumen =
-      'Se identifica una afectación de alto impacto sobre la operación.';
-  }
+if(
+  categoriaPrincipal === 'Sin clasificar' &&
+  hallazgos.length === 0
+){
+  resumen =
+    'No se identifican observaciones relacionadas o estas son insuficientes para calcular novedades. Por favor seleccione la opción "Datos Generales" para ampliar los detalles. Si no encuentra observaciones, contacte al supervisor de zona para ampliarlas.';
+}
 
-  if(severidad === 'Crítica'){
-    resumen =
-      'Se identifica una afectación crítica del servicio.';
-  }
+if(severidad === 'Alta'){
+  resumen =
+    'Se identifica una afectación de alto impacto sobre la operación.';
+}
+
+if(severidad === 'Crítica'){
+  resumen =
+    'Se identifica una afectación crítica del servicio.';
+}
 
   return `
 
