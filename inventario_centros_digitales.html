@@ -1124,7 +1124,7 @@
 
 </header>
     <div class="content" id="tab-resumen"><div class="kv" id="kv-resumen"></div></div>
-    <div class="content hidden" id="tab-diagnostico">
+    <div class="content hidden" id="tab-reporteia">
 
   <div id="diagContent">
 
@@ -2072,10 +2072,37 @@ function showDetail(item,cols){
 
   $$('.drawer .tab').forEach(btn=>btn.classList.remove('active'));
   document.querySelector('.drawer .tab[data-tab="resumen"]').classList.add('active');
-  $('#tab-resumen').classList.remove('hidden'); $('#tab-datos').classList.add('hidden');
+$('#tab-resumen').classList.remove('hidden');
+
+$('#tab-reporteia').classList.add('hidden');
+
+$('#tab-datos').classList.add('hidden');
   renderDiagnostico(item);
   drawer.style.display='block';
 }
+function analizarObservacion(texto){
+
+  return `
+    <div style="
+      padding:14px;
+      border-radius:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+    ">
+
+      <h3 style="margin-top:0">
+        Reporte IA
+      </h3>
+
+      <p>
+        ${texto}
+      </p>
+
+    </div>
+  `;
+
+}
+  
   function renderDiagnostico(item){
 
   const texto =
@@ -2104,11 +2131,38 @@ function showDetail(item,cols){
 }
 function closeDetail(){ $('#drawer').style.display='none'; }
 function activateTab(tabName){
-  const btn=document.querySelector(`.drawer .tab[data-tab="${tabName}"]`); if(!btn) return;
-  $$('.drawer .tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
-  $('#tab-resumen').classList.toggle('hidden',tabName!=='resumen'); $('#tab-datos').classList.toggle('hidden',tabName!=='datos');
-}
 
+  const btn =
+    document.querySelector(
+      `.drawer .tab[data-tab="${tabName}"]`
+    );
+
+  if(!btn) return;
+
+  $$('.drawer .tab')
+    .forEach(b => b.classList.remove('active'));
+
+  btn.classList.add('active');
+
+  $('#tab-resumen')
+    .classList.toggle(
+      'hidden',
+      tabName !== 'resumen'
+    );
+
+  $('#tab-reporteia')
+    .classList.toggle(
+      'hidden',
+      tabName !== 'reporteia'
+    );
+
+  $('#tab-datos')
+    .classList.toggle(
+      'hidden',
+      tabName !== 'datos'
+    );
+
+}
 /* ===== Modal buscar por ID ===== */
 function openModal(){const bd=$('#backdrop');if(bd){bd.style.display='flex';setTimeout(()=>$('#inpId')?.focus(),60)}}
 function closeModal(){const bd=$('#backdrop');if(bd)bd.style.display='none';const inp=$('#inpId');if(inp)inp.value=''}
