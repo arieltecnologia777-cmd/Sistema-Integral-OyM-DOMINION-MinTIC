@@ -2080,870 +2080,330 @@ $('#tab-datos').classList.add('hidden');
   renderDiagnostico(item);
   drawer.style.display='block';
 }
+/* =========================================================
+   MOTOR SEMÁNTICO OPERATIVO V2
+   Biblioteca ampliada a partir de Observaciones.txt.
+   No usa una API externa: combina diccionarios, patrones,
+   pesos, contexto causa->efecto y generación de lenguaje.
+   ========================================================= */
+
 const categoriasIA = {
-
-  '⚡ Energía':[
-    'energia','eléctrica','electrica','eléctrico','electrico',
-    'transformador','fluido','apagón','apagon',
-    'sin luz','sin energia','sin energía',
-    'acometida','breaker','breakers'
+  '⚡ Energía': [
+    'energia','eléctrica','electrica','eléctrico','electrico','fluido eléctrico','fluido electrico',
+    'apagón','apagon','sin luz','sin energia','sin energía','acometida','breaker','breakers',
+    'voltaje','tensión','tension','sobrevoltaje','sobretension','sobretensión','bajón','bajon',
+    'bajones de luz','variación eléctrica','variacion electrica','red comercial','corriente alterna',
+    'toma eléctrica','toma electrica','inversor','controlador','carga','descarga profunda','evento eléctrico',
+    'evento electrico','dps','spt','resistencia tierra','puesta a tierra'
   ],
-
-  '📡 Conectividad':[
-    'internet','enlace','conexion','conexión',
-    'latencia','fibra','señal','senal',
-    'sin servicio','sin conectividad',
-    'caido','caído'
+  '📡 Conectividad': [
+    'internet','enlace','conexion','conexión','conectividad','latencia','fibra','señal','senal',
+    'sin servicio','sin conectividad','caido','caído','caida','caída','navegación','navegacion',
+    'velocidad','degradación','degradacion','saturación','saturacion','apuntamiento','apuntado',
+    'línea de vista','linea de vista','bts','radio','satélite','satelital','módem','modem','portal cautivo',
+    'negocia a 1gb','gigabyte','1gb','sqf','pascor','cn maestro','cnmaestro','noc'
   ],
-
-  '🔧 Equipos':[
-    'router','switch','radio','antena',
-    'equipo','modem','módem'
+  '🔧 Equipos': [
+    'router','switch','radio','antena','equipo','modem','módem','mikrotik','microtik','micro tik',
+    'access point','access-point','ap ext','ap interno','ap exterior','ap interior','poe','ups',
+    'batería','bateria','controladora','inversor','jumper','od u','odu','gabinete','rack','fuente',
+    'puerto','tarjeta de red','firmware','script','serial','reconfiguración','reconfiguracion','reinicio físico',
+    'reinicio fisico','reset físico','reset fisico','reinstall','configuración','configuracion'
   ],
-
-  '🏫 Acceso a sede':[
-    'acceso','sede cerrada',
-    'llave','candado',
-    'sin acceso',
-    'no se puede ingresar'
+  '🏫 Acceso a sede': [
+    'acceso','sede cerrada','escuela cerrada','colegio cerrado','institucion cerrada','institución cerrada',
+    'llave','llaves','candado','puerta cerrada','sin acceso','no se puede ingresar','no fue posible ingresar',
+    'no hay atención','no hay atencion','sin atencion','sin atención','espera de atención','espera de atencion',
+    'docente','rector','profesor','personal responsable','garita'
   ],
-
-  '🚨 Seguridad':[
-    'hurto',
-    'robado',
-    'robo',
-    'vandalismo',
-    'vandalizado'
+  '🚨 Seguridad': [
+    'hurto','hurtada','hurtado','robo','robado','robada','vandalismo','vandalizado','vandalizada',
+    'manipulación de terceros','manipulacion de terceros','terceros','desvalijado','daño intencional'
   ],
-
-  '🏗️ Infraestructura':[
-    'poste',
-    'cable',
-    'cableado',
-    'acometida',
-    'gabinete',
-    'infraestructura'
+  '🏗️ Infraestructura': [
+    'poste','cable','cableado','acometida','gabinete','rack','pedestal','base de concreto','concreto',
+    'señalética','señaletica','sticker','stickers','tornillos','anclaje','oxidado','sulfatado','sulfatación',
+    'sulfatacion','maleza','vegetación','vegetacion','monopolo','mástil','mastil','estructura','torre',
+    'caja spt','caja del dps','tablero','puerto','conector','rj45','rg6','utp'
   ],
-
-  '📋 Administrativo':[
-    'pqr',
-    'peticion',
-    'petición',
-    'queja',
-    'reclamo'
+  '🛰️ Infraestructura satelital': [
+    'kit satelital','kid satelital','kit fotovoltaico','kid fotovoltaico','antena satelital','módem satelital',
+    'modem satelital','apuntamiento','desnivelada','nivelación','nivelacion','línea de vista','linea de vista',
+    'vegetación','vegetacion','jumper','odu','satélite','satelite','sqf'
+  ],
+  '🧰 Mantenimiento': [
+    'mantenimiento','mantenimiento preventivo','mantenimiento correctivo','limpieza','ajuste','revisión',
+    'revision','seguimiento','monitoreo','inspección','inspeccion','pruebas','actualización','actualizacion',
+    'evidencias','evidencia','validación','validacion','ponchado','reponchado','cambio de conectores',
+    'cambio de cableado','organización de cableado','organizacion de cableado'
+  ],
+  '📋 Administrativo': [
+    'pqr','petición','peticion','queja','reclamo','carta','traslado','cierre de ot','cierre de orden',
+    'oracle service','gestión','gestion','mesa de ayuda','noc integral','vo.bo','vobo','aprobado','aprobación','aprobacion'
+  ],
+  '🌧️ Condiciones externas': [
+    'lluvia','lluvias','tormenta','vendaval','tempestad','descarga atmosférica','descarga atmosferica',
+    'derrumbe','derrumbes','deslizamiento','inundación','inundacion','bloqueo vial','vía cerrada','via cerrada',
+    'vegetación','vegetacion','maleza'
   ]
-
 };
 
 const causasIA = {
-
-  'Hurto de acometida':[
-    'acometida',
-    'hurtada',
-    'hurtado',
-    'robo de acometida'
-  ],
-
-  'Hurto de cableado':[
-    'cable',
-    'cableado',
-    'cable hurtado',
-    'cable robado'
-  ],
-
-  'Falla eléctrica':[
-    'falla electrica',
-    'falla eléctrica',
-    'breaker',
-    'cortocircuito'
-  ],
-
-  'Falla de conectividad':[
-    'internet',
-    'enlace',
-    'sin señal',
-    'sin senal',
-    'sin conectividad'
-  ],
-
-  'Falla de equipo':[
-    'router',
-    'switch',
-    'radio',
-    'antena',
-    'modem',
-    'módem'
-  ],
-
-  'Falta de acceso a sede':[
-    'sin acceso',
-    'sede cerrada',
-    'no se puede ingresar'
-  ]
-
+  'Hurto de acometida': ['acometida hurtada','acometida fue hurtada','hurto de acometida','robo de acometida','acometida','poste'],
+  'Hurto de cableado': ['cable hurtado','cable robado','hurto de cable','robo de cable','cableado hurtado'],
+  'Daño por variación eléctrica': ['bajones de luz','bajon de luz','voltaje inestable','energia inestable','sobrevoltaje','sobretension','sobretensión','picos de energia','picos de energía','variacion electrica','variación eléctrica'],
+  'Daño por descarga atmosférica': ['descarga atmosférica','descarga atmosferica','rayo','descarga eléctrica','descarga electrica','quemado por descarga'],
+  'Cortocircuito / humedad': ['corto','cortocircuito','en corto','poe en corto','humedad'],
+  'Falla de UPS': ['ups dañada','ups danada','falla ups','daño ups','ups en daño','ups en corto','ups alarmada','ups bloqueada','ups no enciende','ups desconfigurada'],
+  'Falla de batería': ['bateria dañada','batería dañada','bateria en daño','batería en daño','batería inflada','bateria inflada','no toma carga','descarga profunda','batería en descarga'],
+  'Falla de controlador de carga': ['controladora dañada','controladora danada','controlador de carga','no manda carga','no manda carga a la bateria','no manda carga a la batería'],
+  'Falla de inversor': ['inversor bloqueado','inversor en falla','falla del inversor','reinicio físico del inversor'],
+  'Falla de AP': ['ap dañado','ap danado','ap caída','ap caida','ap apagada','ap offline','ap inoperativa','access point dañado','access point danado'],
+  'Falla de radio': ['radio quemado','radio dañado','radio danado','radio en daño','intermitencia en radio','cambio de radio','radio offline'],
+  'Falla de router / MikroTik': ['router dañado','router danado','mikrotik','microtik','puerto 5','puerto 3 dañado','puerto 3 danado','reinicio de mikrotik','reset de la mikrotik'],
+  'Falla de conectores': ['conector sulfatado','conectores sulfatados','conectores dañados','conectores danados','cambio de ponchado','reponchado','ponchado'],
+  'Falla de cableado': ['cableado deteriorado','cableado en mal estado','cableado en daño','cable utp deteriorado','cable utp','cambio de cableado','cableado ap exterior'],
+  'Falla de alimentación / POE': ['poe en corto','poe dañado','poe danado','fuente dañada','fuente danada','puerto poe'],
+  'Falla de enlace satelital': ['apuntamiento','desnivelada','desnivel de antena','linea de vista','línea de vista','vegetación obstruye','vegetacion obstruye','degradacion de velocidad'],
+  'Saturación en estación base': ['saturacion en la bts','saturación en la bts','bts saturada','salto anterior','incidencia por saturacion','incidencia por saturación'],
+  'Falta de acceso': ['sede cerrada','escuela cerrada','colegio cerrado','sin acceso','no se puede ingresar','no fue posible ingresar','no hay atencion','no hay atención','sin atencion','sin atención'],
+  'Receso escolar': ['receso escolar','receso académico','receso academico','vacaciones escolares','periodo de receso','periodo escolar'],
+  'Ausencia de responsable': ['docente ausente','rector ausente','sin responsable','no hay personal','personal ausente','no puede atender','no puede atenderme'],
+  'Restricción de movilidad': ['derrumbe','derrumbes','deslizamiento','bloqueo vial','via cerrada','vía cerrada','carretera cerrada','lluvia impide','lluvias impiden'],
+  'Vandalismo / daño físico': ['vandalismo','vandalizada','vandalizado','daño intencional','manipulacion de terceros','manipulación de terceros'],
+  'Deterioro de señalética': ['señaletica en mal estado','señalética en mal estado','señaletica deteriorada','señalética deteriorada','letrero ilegible','sticker desgastado','tornillos oxidado','pedestal enterrado'],
+  'Mantenimiento preventivo': ['mantenimiento preventivo','seguimiento y monitoreo','limpieza de equipos','limpieza general','ajuste y limpieza','pruebas preventivas'],
+  'Mantenimiento correctivo': ['mantenimiento correctivo','se realiza cambio','se reemplaza','se procede a cambiar','se reconfigura','se realiza reinicio'],
+  'Configuración / parametrización': ['configuracion de ups','configuración de ups','reconfiguracion','reconfiguración','configuracion del ap','configuración del ap','actualizacion de firmware','actualización de firmware'],
+  'Sin causa determinada': []
 };
 
 const hallazgosIA = {
-
-  'Hurto':[
-    'hurto',
-    'hurtada',
-    'hurtado',
-    'robo',
-    'robado',
-    'robada',
-    'vandalismo',
-    'vandalizado',
-    'desvalijado'
-  ],
-
-  'Sin energía':[
-    'sin energia',
-    'sin energía',
-    'sin luz',
-    'apagón',
-    'apagon',
-    'sin servicio electrico',
-    'servicio electrico suspendido',
-    'suspension electrica',
-    'falla electrica',
-    'falla eléctrica',
-    'daño electrico',
-    'daño eléctrico'
-  ],
-
-  'Variación eléctrica':[
-    'bajones de luz',
-    'bajon de luz',
-    'voltaje inestable',
-    'energia inestable',
-    'sobretension',
-    'sobre tension',
-    'picos de energia',
-    'variacion electrica'
-  ],
-
-  'Cortocircuito':[
-    'corto',
-    'cortocircuito',
-    'cortos electricos'
-  ],
-
-  'Infraestructura':[
-    'acometida',
-    'poste',
-    'cable',
-    'cableado',
-    'transformador',
-    'gabinete',
-    'breaker',
-    'tablero electrico',
-    'red electrica'
-  ],
-
-  'Sin conectividad':[
-    'sin internet',
-    'sin conectividad',
-    'sin señal',
-    'sin senal',
-    'internet caido',
-    'internet caído',
-    'enlace caido',
-    'enlace caído',
-    'caida de enlace',
-    'caída de enlace',
-    'no navega',
-    'intermitencia'
-  ],
-
-  'Equipo afectado':[
-    'router',
-    'switch',
-    'radio',
-    'antena',
-    'onu',
-    'modem',
-    'módem',
-    'ap',
-    'access point'
-  ],
-
-  'Daño UPS':[
-    'ups',
-    'cambiar ups',
-    'ups dañada',
-    'ups danada',
-    'falla ups',
-    'daño ups'
-  ],
-
-  'Equipo quemado':[
-    'quemado',
-    'quemada',
-    'se quemo',
-    'se quemó',
-    'se quemaron',
-    'equipo quemado'
-  ],
-
-  'Sin acceso':[
-    'sin acceso',
-    'sede cerrada',
-    'candado',
-    'no se puede ingresar',
-    'no fue posible ingresar',
-    'institucion cerrada',
-    'institución cerrada',
-    'colegio cerrado'
-  ],
-
-  'Ausencia de personal':[
-    'sin atencion',
-    'sin atención',
-    'sin docente',
-    'docente ausente',
-    'no habia personal',
-    'no había personal',
-    'rector ausente',
-    'sin responsable'
-  ],
-
-  'Receso académico':[
-    'vacaciones',
-    'receso',
-    'receso academico',
-    'receso académico',
-    'jornada institucional',
-    'semana santa'
-  ],
-
-  'Orden público':[
-    'paro armado',
-    'orden publico',
-    'orden público',
-    'hostigamiento',
-    'enfrentamientos',
-    'situacion de orden publico',
-    'situación de orden público'
-  ],
-
-  'Bloqueo vial':[
-    'bloqueo',
-    'vias cerradas',
-    'vías cerradas',
-    'cierre vial',
-    'manifestacion',
-    'manifestación',
-    'protesta'
-  ],
-
-  'Derrumbe':[
-    'derrumbe',
-    'deslizamiento',
-    'remocion en masa',
-    'remoción en masa',
-    'via obstaculizada',
-    'vía obstaculizada'
-  ],
-
-  'Inundación':[
-    'inundacion',
-    'inundación',
-    'creciente',
-    'desbordamiento',
-    'vias inundadas',
-    'vías inundadas'
-  ],
-
-  'Condiciones climáticas':[
-    'lluvias',
-    'fuertes lluvias',
-    'tormenta',
-    'vendaval',
-    'tempestad'
-  ],
-
-  'Monitoreo preventivo':[
-    'seguimiento',
-    'monitoreo',
-    'seguimiento y monitoreo',
-    'validacion',
-    'validación',
-    'pruebas autogestionadas'
-  ],
-
-  'Centro operativo':[
-    'operativo',
-    'dejando operativo',
-    'servicio operativo',
-    'centro operativo',
-    'servicio restablecido',
-    'funcionando correctamente'
-  ],
-
-  'Mantenimiento':[
-    'mantenimiento',
-    'correctivo',
-    'preventivo',
-    'revision',
-    'revisión',
-    'configuracion',
-    'configuración'
-  ],
-
-  'Pendiente de gestión':[
-    'pendiente',
-    'requiere cambio',
-    'requiere reemplazo',
-    'por gestionar',
-    'en espera',
-    'se solicita'
-  ],
-
-  'Sin observaciones':[
-    'sin observacion',
-    'sin observaciones'
-  ]
-
+  'Hurto': ['hurto','hurtada','hurtado','robo','robado','robada','desvalijado'],
+  'Sin energía': ['sin energia','sin energía','sin luz','apagón','apagon','sin servicio electrico','sin servicio eléctrico','falla electrica','falla eléctrica'],
+  'Variación eléctrica': ['bajones de luz','bajon de luz','voltaje inestable','energia inestable','sobrevoltaje','sobretension','sobretensión','picos de energia','picos de energía','variacion electrica','variación eléctrica'],
+  'Cortocircuito': ['corto','cortocircuito','en corto','poe en corto'],
+  'Descarga atmosférica': ['descarga atmosférica','descarga atmosferica','rayo','descarga electrica','descarga eléctrica'],
+  'Infraestructura': ['acometida','poste','cable','cableado','transformador','gabinete','pedestal','señaletica','señalética','breaker','tablero electrico','tablero eléctrico','monopolo','mastil','mástil'],
+  'Sin conectividad': ['sin internet','sin conectividad','sin señal','sin senal','internet caido','internet caído','enlace caido','enlace caído','caida de enlace','caída de enlace','no navega','caida total','caída total'],
+  'Caída parcial': ['caida parcial','caída parcial','afectacion parcial','afectación parcial','ap externo caido','ap ext caido','ap 3 caido','ap 2 caido'],
+  'Degradación de velocidad': ['degradacion de velocidad','degradación de velocidad','velocidad no cumple','prueba de velocidad no cumple','velocidad parcial','por debajo del rango','no pasa la prueba de velocidad'],
+  'Saturación de red': ['saturacion','saturación','bts saturada','incidencia por saturacion','incidencia por saturación'],
+  'Equipo afectado': ['router','switch','radio','antena','onu','modem','módem','ap','access point','mikrotik','microtik','poe'],
+  'Daño UPS': ['ups','ups dañada','ups danada','ups alarmada','ups bloqueada','ups en corto','ups no enciende'],
+  'Batería afectada': ['bateria','batería','bateria dañada','batería dañada','bateria inflada','batería inflada','no toma carga','descarga profunda'],
+  'Equipo quemado': ['quemado','quemada','se quemo','se quemó','se quemaron'],
+  'Conectores deteriorados': ['conector sulfatado','conectores sulfatados','sulfatado','sulfatada','reponchado','ponchado'],
+  'Cableado deteriorado': ['cableado deteriorado','cableado en mal estado','cable utp deteriorado','cambio de cableado','cableado utp'],
+  'Apuntamiento / línea de vista': ['apuntamiento','desnivelada','nivelacion','nivelación','linea de vista','línea de vista','vegetacion obstruye','vegetación obstruye'],
+  'Señalética deteriorada': ['señaletica en mal estado','señalética en mal estado','señaletica deteriorada','señalética deteriorada','letrero ilegible','sticker desgastado','tornillos oxidado','pedestal enterrado'],
+  'Sin acceso': ['sin acceso','sede cerrada','escuela cerrada','colegio cerrado','no se puede ingresar','no fue posible ingresar','no hay atencion','no hay atención','sin atencion','sin atención'],
+  'Receso escolar': ['receso','vacaciones escolares','receso escolar','receso academico','receso académico'],
+  'Ausencia de personal': ['sin docente','docente ausente','rector ausente','no habia personal','no había personal','sin responsable','no puede atender'],
+  'Manipulación de terceros': ['manipulacion de terceros','manipulación de terceros','terceros'],
+  'Derrumbe': ['derrumbe','derrumbes','deslizamiento','remocion en masa','remoción en masa','via obstaculizada','vía obstaculizada'],
+  'Inundación': ['inundacion','inundación','creciente','desbordamiento','vias inundadas','vías inundadas'],
+  'Condiciones climáticas': ['lluvias','lluvia','tormenta','vendaval','tempestad'],
+  'Monitoreo preventivo': ['seguimiento','monitoreo','mantenimiento preventivo','pruebas autogestionadas'],
+  'Mantenimiento': ['mantenimiento','correctivo','preventivo','revision','revisión','configuracion','configuración','limpieza'],
+  'Cambio de equipo': ['se cambia','se reemplaza','se instala','cambio de equipo','reemplazo'],
+  'Centro operativo': ['operativo','dejando operativo','servicio operativo','centro operativo','servicio restablecido','funcionando correctamente','todo ok','todo okay','pruebas exitosas','prueba de velocidad ok'],
+  'Pendiente de gestión': ['pendiente','requiere cambio','requiere reemplazo','por gestionar','en espera','se solicita','se requiere'],
+  'Sin observaciones': ['sin observacion','sin observaciones']
 };
 
-  function normalizeIA(t){
+function normalizeIA(t){
+  return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+}
 
-  return String(t || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'');
-
+function phraseHit(text, phrase){
+  const n=normalizeIA(text), p=normalizeIA(phrase);
+  if(!p) return false;
+  return n.includes(p);
 }
 
 function scoreCategoriesIA(texto){
-
-  const scores = {};
-
-  Object.entries(categoriasIA)
-    .forEach(([cat,keys])=>{
-
-      keys.forEach(k=>{
-
-        if(
-          normalizeIA(texto)
-            .includes(
-              normalizeIA(k)
-            )
-        ){
-          scores[cat] =
-            (scores[cat] || 0) + 1;
-        }
-
-      });
-
+  const n=normalizeIA(texto), scores={};
+  Object.entries(categoriasIA).forEach(([cat,keys])=>{
+    let s=0;
+    keys.forEach(k=>{
+      const p=normalizeIA(k);
+      if(p && n.includes(p)) s += p.includes(' ') ? 2 : 1;
     });
-
+    // Contextual boosts: these combinations are more diagnostic than isolated words.
+    if(cat==='⚡ Energía' && /sin energia|sin luz|bajones|sobrevolt|acometida/.test(n)) s+=3;
+    if(cat==='📡 Conectividad' && /caida|caido|sin internet|sin conectividad|velocidad|enlace/.test(n)) s+=3;
+    if(cat==='🔧 Equipos' && /ups|ap |router|mikrotik|radio|switch|modem/.test(n)) s+=2;
+    if(cat==='🏫 Acceso a sede' && /cerrad|llave|sin acceso|no puede ingresar|receso/.test(n)) s+=3;
+    if(cat==='🚨 Seguridad' && /hurto|robo|vandal|terceros/.test(n)) s+=4;
+    if(cat==='🛰️ Infraestructura satelital' && /satel|apuntamiento|linea de vista|odu|sqf/.test(n)) s+=3;
+    if(s) scores[cat]=s;
+  });
   return scores;
-
 }
 
 function detectCauseIA(texto){
-
-  let mejor =
-    'No determinada';
-
-  let score = 0;
-
-  Object.entries(causasIA)
-    .forEach(([nombre,keys])=>{
-
-      let s = 0;
-
-      keys.forEach(k=>{
-
-        if(
-          normalizeIA(texto)
-            .includes(
-              normalizeIA(k)
-            )
-        ){
-           s++;
-        }
-
-      });
-
-      if(s > score){
-
-        score = s;
-        mejor = nombre;
-
-      }
-
+  const n=normalizeIA(texto); let best='Sin causa determinada', bestScore=0;
+  Object.entries(causasIA).forEach(([name,keys])=>{
+    let s=0;
+    keys.forEach(k=>{
+      const p=normalizeIA(k);
+      if(p && n.includes(p)) s += p.includes(' ') ? 3 : 1;
     });
-
-  return mejor;
-
+    // Causal language gets extra weight.
+    if(/debido a|por culpa de|ocasionad|a causa de|se encuentra que|la falla es/.test(n) && s) s+=1;
+    if(s>bestScore){bestScore=s;best=name;}
+  });
+  return best;
 }
 
 function detectFindingsIA(texto){
-
-  const hallazgos = [];
-
-  Object.entries(hallazgosIA)
-    .forEach(([nombre,keys])=>{
-
-      const existe =
-        keys.some(k =>
-          normalizeIA(texto)
-            .includes(
-              normalizeIA(k)
-            )
-        );
-
-      if(existe){
-
-        hallazgos.push(nombre);
-
-      }
-
-    });
-
-  return hallazgos;
-
+  const n=normalizeIA(texto), found=[];
+  Object.entries(hallazgosIA).forEach(([name,keys])=>{
+    if(keys.some(k=>n.includes(normalizeIA(k)))) found.push(name);
+  });
+  return found;
 }
 
-  function analizarObservacion(texto,id){
+function detectStatusIA(texto,hallazgos){
+  const n=normalizeIA(texto);
+  const positivo=/operativo|operatividad|servicio restablecido|pruebas exitosas|todo ok|todo okay|velocidad ok|se normaliza|normalizado/.test(n);
+  const pendiente=/pendiente|requiere cambio|requiere reemplazo|se solicita|en espera|no cumple|por debajo del rango|novedad/.test(n);
+  const noAcceso=/cerrad|sin acceso|no se puede ingresar|no hay atencion|sin atencion|receso/.test(n);
+  if(noAcceso && !positivo) return 'No atendido';
+  if(pendiente && positivo) return 'Operativo con novedad';
+  if(pendiente && !positivo) return 'Pendiente';
+  if(positivo) return 'Operativo';
+  return hallazgos.length ? 'Requiere seguimiento' : 'Sin determinar';
+}
 
-  const scores =
-    scoreCategoriesIA(texto);
+function inferImpactIA(hallazgos,causa,status){
+  if(hallazgos.includes('Hurto') && hallazgos.includes('Sin energía')) return 'Interrupción del suministro eléctrico y afectación directa de la continuidad del Centro Digital.';
+  if(hallazgos.includes('Sin energía')) return 'Afectación de la continuidad operativa por indisponibilidad del suministro eléctrico.';
+  if(hallazgos.includes('Caída parcial')) return 'Afectación parcial de la conectividad, con disponibilidad limitada de los servicios de acceso.';
+  if(hallazgos.includes('Sin conectividad')) return 'Indisponibilidad del servicio de conectividad del Centro Digital.';
+  if(hallazgos.includes('Degradación de velocidad')) return 'El servicio permanece disponible, pero presenta degradación de desempeño frente a los parámetros esperados.';
+  if(hallazgos.includes('Sin acceso') || hallazgos.includes('Receso escolar')) return 'La atención técnica no pudo ejecutarse completamente por restricciones de acceso o disponibilidad de la sede.';
+  if(hallazgos.includes('Batería afectada') || hallazgos.includes('Daño UPS')) return status==='Operativo' ? 'El respaldo energético presenta una novedad que requiere seguimiento para preservar la continuidad del servicio.' : 'La afectación del sistema de respaldo energético puede comprometer la continuidad del servicio.';
+  if(hallazgos.includes('Equipo afectado')) return status==='Operativo' ? 'La falla del equipo fue intervenida y el servicio quedó restablecido.' : 'La afectación de un equipo de comunicaciones limita o interrumpe la prestación del servicio.';
+  if(hallazgos.includes('Apuntamiento / línea de vista')) return 'La calidad del enlace se ve condicionada por el apuntamiento o por obstrucciones en la línea de vista.';
+  if(hallazgos.includes('Señalética deteriorada')) return 'Se identifica deterioro de elementos de señalización física, sin evidencia necesaria de afectación al servicio de conectividad.';
+  if(hallazgos.includes('Derrumbe') || hallazgos.includes('Inundación')) return 'Las condiciones externas generan restricciones para el desplazamiento y/o la atención del Centro Digital.';
+  if(status==='Operativo') return 'Las actividades realizadas permiten mantener el Centro Digital operativo, sin novedades críticas que afecten el servicio.';
+  return 'Se identifica una condición operativa que requiere seguimiento técnico.';
+}
 
-  const categorias =
-    Object.entries(scores)
-      .sort((a,b)=>b[1]-a[1]);
+function calculateSeverityIA(hallazgos,causa,status){
+  let p=0;
+  const add=(name,v)=>{if(hallazgos.includes(name))p+=v;};
+  add('Hurto',5); add('Sin energía',5); add('Sin conectividad',4); add('Caída parcial',2); add('Degradación de velocidad',2);
+  add('Descarga atmosférica',4); add('Cortocircuito',4); add('Equipo quemado',3); add('Daño UPS',3); add('Batería afectada',2);
+  add('Manipulación de terceros',3); add('Derrumbe',3); add('Inundación',3); add('Sin acceso',2); add('Saturación de red',1);
+  if(/hurto|descarga atmosferica|cortocircuito/.test(normalizeIA(causa))) p+=2;
+  if(status==='Operativo') p=Math.max(0,p-1);
+  if(p>=8) return 'Crítica';
+  if(p>=5) return 'Alta';
+  if(p>=2) return 'Media';
+  return 'Baja';
+}
 
-  const categoriaPrincipal =
-    categorias[0]?.[0] || 'Sin clasificar';
+function buildExecutiveSummaryIA(texto,categoria,causa,hallazgos,severidad,status){
+  const n=normalizeIA(texto);
+  if(!hallazgos.length && !categoria) return 'No se identifica información suficiente para establecer una novedad operativa.';
 
-  const causaRaiz =
-    detectCauseIA(texto);
+  let lead='Durante la atención técnica';
+  if(/se llega|se realiza visita|visita/.test(n)) lead='Durante la visita técnica';
+  if(/mantenimiento preventivo|seguimiento|monitoreo/.test(n) && status==='Operativo') lead='Durante las actividades de mantenimiento y verificación';
 
-  const hallazgos =
-    detectFindingsIA(texto);
+  let body='se realizó la validación del Centro Digital';
+  if(hallazgos.includes('Hurto') && hallazgos.includes('Sin energía')) body='se identificó una afectación crítica del suministro eléctrico asociada al hurto de la acometida';
+  else if(hallazgos.includes('Sin energía')) body='se identificó una afectación del suministro eléctrico';
+  else if(hallazgos.includes('Caída parcial') && hallazgos.includes('Equipo afectado')) body='se identificó una afectación parcial de conectividad asociada a un equipo de comunicaciones fuera de servicio';
+  else if(hallazgos.includes('Degradación de velocidad')) body='se identificó una degradación del servicio de conectividad que afectaba las pruebas de velocidad';
+  else if(hallazgos.includes('Daño UPS') && hallazgos.includes('Variación eléctrica')) body='se identificó una novedad en el sistema UPS asociada a condiciones inestables del suministro eléctrico';
+  else if(hallazgos.includes('Batería afectada')) body='se identificó una condición anómala en el sistema de batería que requiere atención';
+  else if(hallazgos.includes('Apuntamiento / línea de vista')) body='se identificó una condición de apuntamiento o línea de vista que afectaba el desempeño del enlace';
+  else if(hallazgos.includes('Señalética deteriorada')) body='se identificó deterioro en la señalética de la sede y se ejecutaron labores de recuperación';
+  else if(hallazgos.includes('Sin acceso') || hallazgos.includes('Receso escolar')) body='no fue posible completar la atención debido a restricciones de acceso a la sede';
+  else if(hallazgos.includes('Centro operativo') && hallazgos.includes('Mantenimiento')) body='se ejecutó mantenimiento y verificación integral, sin evidenciar novedades críticas que afectaran el servicio';
 
-    const esSinObservaciones =
-  normalizeIA(texto).trim() === 'sin observacion' ||
-  normalizeIA(texto).trim() === 'sin observaciones';
+  let action='';
+  if(status==='Operativo') action='Las pruebas posteriores confirmaron la recuperación y operatividad del servicio.';
+  else if(status==='Operativo con novedad') action='El Centro Digital permanece operativo, aunque queda una novedad que requiere seguimiento.';
+  else if(status==='Pendiente') action='La condición identificada requiere gestión o intervención posterior para su normalización.';
+  else if(status==='No atendido') action='La atención deberá retomarse cuando se habilite el acceso o se cuente con acompañamiento en la sede.';
+  else action='La condición debe mantenerse bajo seguimiento técnico.';
 
-  let puntaje = 0;
-
-  if(hallazgos.includes('Hurto')) puntaje += 4;
-  if(hallazgos.includes('Sin energía')) puntaje += 3;
-  if(hallazgos.includes('Sin conectividad')) puntaje += 2;
-  if(hallazgos.includes('Sin acceso')) puntaje += 2;
-  if(hallazgos.includes('Equipo afectado')) puntaje += 1;
-
-  let severidad = 'Baja';
-
-  if(puntaje >= 6){
-    severidad = 'Crítica';
-  }else if(puntaje >= 4){
-    severidad = 'Alta';
-  }else if(puntaje >= 2){
-    severidad = 'Media';
+  if(causa!=='Sin causa determinada' && /hurto|ups|bateria|batería|descarga|ap|radio|router|conector|cableado|apuntamiento|saturacion|saturación|acceso|receso|señaletica|señalética/i.test(causa)){
+    action += ' Causa identificada: ' + causa.toLowerCase() + '.';
   }
-
-  let impacto =
-  'Se identifica una situación operativa que requiere seguimiento.';
-
-if(
-  hallazgos.includes('Daño UPS') &&
-  hallazgos.includes('Variación eléctrica')
-){
-  impacto =
-    'Se evidencia afectación en el sistema de respaldo eléctrico asociada a variaciones de energía registradas en la zona.';
+  return lead + ' ' + body + '. ' + action;
 }
 
-else if(
-  hallazgos.includes('Hurto') &&
-  hallazgos.includes('Infraestructura')
-){
-  impacto =
-    'La operación del Centro Digital presenta afectación derivada del hurto de infraestructura crítica.';
+function analyzeSemanticIA(texto,id){
+  const scores=scoreCategoriesIA(texto);
+  const categorias=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const categoriaPrincipal=categorias[0]?.[0] || 'Sin clasificar';
+  const causaRaiz=detectCauseIA(texto);
+  const hallazgos=detectFindingsIA(texto);
+  const status=detectStatusIA(texto,hallazgos);
+  const severidad=calculateSeverityIA(hallazgos,causaRaiz,status);
+  const impacto=inferImpactIA(hallazgos,causaRaiz,status);
+  const resumen=buildExecutiveSummaryIA(texto,categoriaPrincipal,causaRaiz,hallazgos,severidad,status);
+  const confianza=Math.min(99,Math.round(48 + Math.max(0,categorias[0]?.[1]||0)*7 + hallazgos.length*4));
+  return {scores,categorias,categoriaPrincipal,causaRaiz,hallazgos,status,severidad,impacto,resumen,confianza};
 }
 
-else if(
-  hallazgos.includes('Sin energía')
-){
-  impacto =
-    'La operación del Centro Digital se encuentra afectada por la ausencia de suministro eléctrico.';
-}
-
-else if(
-  hallazgos.includes('Sin conectividad')
-){
-  impacto =
-    'La operación del Centro Digital presenta indisponibilidad de los servicios de conectividad.';
-}
-
-else if(
-  hallazgos.includes('Sin acceso')
-){
-  impacto =
-    'No fue posible ejecutar actividades programadas debido a restricciones de acceso a la sede.';
-}
-
-else if(
-  hallazgos.includes('Derrumbe')
-){
-  impacto =
-    'Las condiciones de acceso se encuentran afectadas por eventos geológicos o derrumbes sobre las vías de acceso.';
-}
-
-else if(
-  hallazgos.includes('Inundación')
-){
-  impacto =
-    'Las condiciones de acceso u operación se encuentran afectadas por eventos de inundación reportados en la zona.';
-}
-
-else if(
-  hallazgos.includes('Orden público')
-){
-  impacto =
-    'Las actividades operativas presentan restricciones asociadas a condiciones de orden público en el área de influencia.';
-}
-
-else if(
-  hallazgos.includes('Bloqueo vial')
-){
-  impacto =
-    'Las actividades se encuentran limitadas debido a afectaciones de movilidad y acceso por bloqueos viales.';
-}
-
-else if(
-  hallazgos.includes('Ausencia de personal')
-){
-  impacto =
-    'No fue posible ejecutar completamente las actividades previstas debido a la ausencia de personal responsable en la sede.';
-}
-
-else if(
-  hallazgos.includes('Centro operativo') &&
-  hallazgos.includes('Monitoreo preventivo')
-){
-  impacto =
-    'Durante las actividades de seguimiento se validó la correcta operación del Centro Digital sin evidenciar fallas críticas del servicio.';
-}
-
-else if(
-  hallazgos.includes('Sin observaciones')
-){
-  impacto =
-    'No se cuenta con información observacional suficiente para determinar el impacto operativo del Centro Digital.';
-}
-  const t = normalizeIA(texto);
-
-  const detalles = [];
-
-  if(t.includes('acometida')){
-    detalles.push(
-      'Se identifica afectación sobre la acometida eléctrica.'
-    );
-  }
-
-  if(
-    t.includes('hurto') ||
-    t.includes('robo') ||
-    t.includes('hurtada')
-  ){
-    detalles.push(
-      'Se evidencian indicios de hurto de infraestructura.'
-    );
-  }
-
-  if(t.includes('transformador')){
-    detalles.push(
-      'Se identifica afectación asociada al transformador eléctrico.'
-    );
-  }
-
-  if(
-    t.includes('vacaciones') ||
-    t.includes('receso')
-  ){
-    detalles.push(
-      'La institución se encuentra en periodo de receso académico.'
-    );
-  }
-
-  if(
-    t.includes('cerrada') ||
-    t.includes('sede cerrada')
-  ){
-    detalles.push(
-      'La sede no se encontraba disponible durante la visita.'
-    );
-  }
-
-  let resumen =
-  'Se identifica una situación operativa que requiere seguimiento.';
-
-if(
-  categoriaPrincipal === 'Sin clasificar' &&
-  hallazgos.length === 0
-){
-  resumen =
-    'No se identifican observaciones relacionadas o estas son insuficientes para calcular novedades. Por favor seleccione la opción "Datos Generales" para ampliar los detalles.';
-}
-
-else if(
-  hallazgos.includes('Daño UPS') &&
-  hallazgos.includes('Variación eléctrica') &&
-  hallazgos.includes('Centro operativo')
-){
-  resumen =
-    'Durante actividades de seguimiento se identificó afectación en el sistema UPS asociada a variaciones de energía en la zona. El Centro Digital permanece operativo mientras se gestiona el reemplazo del equipo afectado.';
-}
-
-else if(
-  hallazgos.includes('Hurto') &&
-  hallazgos.includes('Infraestructura')
-){
-  resumen =
-    'Se evidencian afectaciones sobre infraestructura crítica asociadas a eventos de hurto reportados en la sede, impactando parcialmente la operación del Centro Digital.';
-}
-
-else if(
-  hallazgos.includes('Sin energía')
-){
-  resumen =
-    'Se registra indisponibilidad del servicio debido a afectaciones relacionadas con el suministro eléctrico de la sede.';
-}
-
-else if(
-  hallazgos.includes('Sin conectividad')
-){
-  resumen =
-    'La conectividad del Centro Digital presenta afectaciones que limitan la disponibilidad normal de los servicios.';
-}
-
-else if(
-  hallazgos.includes('Sin acceso')
-){
-  resumen =
-    'No fue posible desarrollar completamente las actividades programadas debido a restricciones de acceso en la sede.';
-}
-
-else if(
-  hallazgos.includes('Orden público')
-){
-  resumen =
-    'Las actividades operativas presentan restricciones derivadas de condiciones de orden público reportadas en la zona.';
-}
-
-else if(
-  hallazgos.includes('Bloqueo vial')
-){
-  resumen =
-    'La ejecución de actividades se encuentra afectada por limitaciones de movilidad y acceso a la ubicación del Centro Digital.';
-}
-
-else if(
-  hallazgos.includes('Derrumbe')
-){
-  resumen =
-    'Las condiciones geográficas y el estado de las vías generan restricciones para el acceso y atención del Centro Digital.';
-}
-
-else if(
-  hallazgos.includes('Inundación')
-){
-  resumen =
-    'Se evidencian afectaciones asociadas a eventos climáticos que impactan las condiciones normales de operación o acceso.';
-}
-
-else if(
-  hallazgos.includes('Ausencia de personal')
-){
-  resumen =
-    'No fue posible completar las actividades previstas debido a la ausencia de personal responsable durante la visita.';
-}
-
-else if(
-  hallazgos.includes('Monitoreo preventivo') &&
-  hallazgos.includes('Centro operativo')
-){
-  resumen =
-    'Durante las actividades de seguimiento y monitoreo se validó la correcta operación del Centro Digital sin evidenciar fallas críticas del servicio.';
-}
-
-else if(
-  hallazgos.includes('Daño UPS')
-){
-  resumen =
-    'Se identificó una afectación en el sistema de respaldo eléctrico que requiere gestión para garantizar la continuidad operativa.';
-}
-
-else if(
-  hallazgos.includes('Equipo quemado')
-){
-  resumen =
-    'Se identifican equipos afectados por eventos eléctricos o daños físicos que requieren intervención técnica.';
-}
-
-else if(
-  hallazgos.includes('Sin observaciones')
-){
-  resumen =
-    'No se cuenta con información observacional suficiente para determinar la situación operativa del Centro Digital.';
-}
-
-if(severidad === 'Crítica'){
-  resumen =
-    'Se identifica una afectación crítica que compromete la continuidad operativa del Centro Digital.';
-}
-
+function analizarObservacion(texto,id){
+  const a=analyzeSemanticIA(texto,id);
+  const {categoriaPrincipal,causaRaiz,hallazgos,severidad,impacto,resumen,status,confianza}=a;
+  const detalles=[];
+  const n=normalizeIA(texto);
+  if(/acometida/.test(n)) detalles.push('Se identifica afectación sobre la acometida eléctrica.');
+  if(/hurto|robo|hurtada/.test(n)) detalles.push('Se identifican indicios de hurto o pérdida de infraestructura.');
+  if(/transformador/.test(n)) detalles.push('Se identifica una condición asociada al transformador eléctrico.');
+  if(/receso|vacaciones escolares/.test(n)) detalles.push('La institución se encuentra en periodo de receso académico.');
+  if(/cerrad|sin acceso|no se puede ingresar/.test(n)) detalles.push('La sede no se encontraba disponible para completar la atención.');
+  if(/velocidad/.test(n)) detalles.push('Se realizaron o solicitaron pruebas de velocidad del servicio.');
+  if(/ups/.test(n)) detalles.push('Se realizó validación del sistema de respaldo UPS.');
+  if(/ap\b|access point/.test(n)) detalles.push('Se realizó validación sobre puntos de acceso de la red.');
+  if(/señaletica|señalética/.test(n)) detalles.push('Se verificó el estado de la señalética física de la sede.');
+  const sevClass = severidad==='Crítica' ? 'critical' : severidad==='Alta' ? 'high' : severidad==='Media' ? 'medium' : 'low';
+  const findingsHtml = hallazgos.length
+    ? hallazgos.slice(0,8).map(x=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);font-size:11px">✓ ${escapeHtml(x)}</span>`).join('')
+    : '<span style="color:var(--muted);font-size:12px">Sin hallazgos concluyentes</span>';
+  const detallesHtml = detalles.length
+    ? `<div style="display:grid;gap:8px">${detalles.slice(0,6).map(x=>`<div style="font-size:12px;color:var(--muted)">• ${escapeHtml(x)}</div>`).join('')}</div>`
+    : '';
+  const statusTone = status==='Operativo' ? 'var(--green)' : status==='Operativo con novedad' ? 'var(--orange)' : status==='Pendiente' ? 'var(--orange)' : status==='No atendido' ? 'var(--pink)' : 'var(--cyan)';
   return `
-
-  <div style="display:flex;flex-direction:column;gap:18px;">
-
-    <div style="
-      padding:18px;
-      border-radius:14px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-    ">
-
-      <h3 style="margin-top:0">
-  Resumen Ejecutivo ${id ? `· ID ${id}` : ''}
-</h3>>
-
-      <p>${resumen}</p>
-
-      <p>
-        <strong>Categoría principal:</strong>
-        ${categoriaPrincipal}
-      </p>
-
-      <p>
-        <strong>Causa raíz identificada:</strong>
-        ${causaRaiz}
-      </p>
-
-      <p>
-        <strong>Impacto:</strong>
-        ${impacto}
-      </p>
-
-      ${
-        detalles.length
-        ? `
-        <strong>Hallazgos relevantes:</strong>
-
-        <ul>
-          ${detalles.map(x=>`<li>${x}</li>`).join('')}
-        </ul>
-        `
-        : ''
-      }
-
-    </div>
-
-    <div style="
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-    ">
-
-      <div style="
-        padding:14px;
-        border-radius:12px;
-        background:rgba(255,255,255,.05);
-        border:1px solid rgba(255,255,255,.10);
-      ">
-        <small>OBSERVACIONES</small>
-        <h2>1</h2>
-      </div>
-
-      <div style="
-        padding:14px;
-        border-radius:12px;
-        background:rgba(255,255,255,.05);
-        border:1px solid rgba(255,255,255,.10);
-      ">
-        <small>CATEGORÍA</small>
-        <h2>${categoriaPrincipal}</h2>
-      </div>
-
-      <div style="
-        padding:14px;
-        border-radius:12px;
-        background:rgba(255,255,255,.05);
-        border:1px solid rgba(255,255,255,.10);
-      ">
-        <small>SEVERIDAD</small>
-        <h2>${severidad}</h2>
-      </div>
-
-    </div>
-
-    <div style="
-      padding:18px;
-      border-radius:14px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-    ">
-
-      <h3 style="margin-top:0">
-        Hallazgos detectados
-      </h3>
-
-      ${
-        hallazgos.length
-        ? hallazgos.map(h=>`
-          <div style="
-            margin-bottom:8px;
-            padding:10px;
-            border-radius:10px;
-            background:rgba(255,255,255,.04);
-          ">
-            ✓ ${h}
+    <div style="display:grid;gap:16px">
+      <div style="padding:18px;border-radius:16px;background:linear-gradient(145deg,rgba(37,230,255,.075),rgba(155,92,255,.075));border:1px solid rgba(255,255,255,.12)">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px">Análisis semántico</div>
+            <h3 style="margin:0;font-size:18px">Resumen Ejecutivo ${id ? `· ID ${escapeHtml(id)}` : ''}</h3>
           </div>
-        `).join('')
-        : '<div>No se detectaron hallazgos específicos.</div>'
-      }
+          <div style="padding:7px 11px;border-radius:999px;background:${statusTone};color:#081020;font-weight:900;font-size:11px">${escapeHtml(status)}</div>
+        </div>
+        <p style="margin:14px 0 0;line-height:1.65;font-size:14px">${escapeHtml(resumen)}</p>
+      </div>
 
-    </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+        <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Categoría principal</div><div style="font-weight:850;margin-top:6px">${escapeHtml(categoriaPrincipal)}</div></div>
+        <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Causa raíz</div><div style="font-weight:850;margin-top:6px">${escapeHtml(causaRaiz)}</div></div>
+        <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Impacto</div><div style="font-weight:700;margin-top:6px;line-height:1.45">${escapeHtml(impacto)}</div></div>
+        <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)"><div style="font-size:10px;color:var(--muted);text-transform:uppercase">Severidad</div><div style="font-weight:900;margin-top:6px" class="${sevClass}">${escapeHtml(severidad)}</div></div>
+      </div>
 
-    <div style="
-      padding:18px;
-      border-radius:14px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-    ">
-
-      <h3 style="margin-top:0">
-        Categorías detectadas
-      </h3>
-
-      ${
-        categorias.map(c=>`
-          <span style="
-            display:inline-block;
-            margin:4px;
-            padding:8px 12px;
-            border-radius:999px;
-            background:rgba(37,207,255,.12);
-          ">
-            ${c[0]} · ${c[1]}
-          </span>
-        `).join('')
-      }
-
-    </div>
-
-  </div>
-
-  `;
-
+      <div style="padding:15px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px"><strong>Hallazgos detectados</strong><span style="font-size:10px;color:var(--muted)">Confianza semántica ${confianza}%</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">${findingsHtml}</div>
+      </div>
+      ${detallesHtml ? `<div style="padding:15px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07)"><div style="font-weight:800;margin-bottom:10px">Evidencias interpretadas</div>${detallesHtml}</div>` : ''}
+    </div>`;
 }
-              
+
   function renderDiagnostico(item){
 
   const texto =
