@@ -1087,8 +1087,52 @@
   </main>
 
   <aside class="drawer" id="drawer" aria-live="polite">
-    <header><h3 id="drawer-title">Detalle del Centro</h3><div class="tabs"><button class="tab active" data-tab="resumen">Resumen</button><button class="tab" data-tab="datos">Detalle completo</button></div><button class="btn btn-secondary close" id="btnCloseDrawer">Cerrar</button></header>
+    <header>
+  <h3 id="drawer-title">Detalle del Centro</h3>
+
+  <div class="tabs">
+
+    <button
+      class="tab active"
+      data-tab="resumen"
+    >
+      Resumen
+    </button>
+
+    <button
+      class="tab"
+      data-tab="reporteia"
+    >
+      Reporte IA
+    </button>
+
+    <button
+      class="tab"
+      data-tab="datos"
+    >
+      Detalle completo
+    </button>
+
+  </div>
+
+  <button
+    class="btn btn-secondary close"
+    id="btnCloseDrawer"
+  >
+    Cerrar
+  </button>
+
+</header>
     <div class="content" id="tab-resumen"><div class="kv" id="kv-resumen"></div></div>
+    <div class="content hidden" id="tab-diagnostico">
+
+  <div id="diagContent">
+
+    Analizando...
+
+  </div>
+
+</div>
     <div class="content hidden" id="tab-datos"><div class="kv" id="kv-datos"></div></div>
   </aside>
 
@@ -2029,7 +2073,34 @@ function showDetail(item,cols){
   $$('.drawer .tab').forEach(btn=>btn.classList.remove('active'));
   document.querySelector('.drawer .tab[data-tab="resumen"]').classList.add('active');
   $('#tab-resumen').classList.remove('hidden'); $('#tab-datos').classList.add('hidden');
+  renderDiagnostico(item);
   drawer.style.display='block';
+}
+  function renderDiagnostico(item){
+
+  const texto =
+    item['Observaciones'] ||
+    item['OBSERVACIONES'] ||
+    '';
+
+  if(!texto){
+
+    document.getElementById(
+      'diagContent'
+    ).innerHTML =
+      'No existen observaciones para analizar.';
+
+    return;
+
+  }
+
+  const resultado =
+    analizarObservacion(texto);
+
+  document.getElementById(
+    'diagContent'
+  ).innerHTML = resultado;
+
 }
 function closeDetail(){ $('#drawer').style.display='none'; }
 function activateTab(tabName){
