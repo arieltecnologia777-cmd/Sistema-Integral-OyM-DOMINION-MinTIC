@@ -184,6 +184,10 @@ async function analizar(){
 
   const rows=parseCSV(text);
   const fila30508 = rows.find(r => String(r.ID).trim() === '30508');
+  console.log(
+  'OBS REAL:',
+  fila30508['Observaciones\r']
+);
 
 console.log('30508:', fila30508);
 console.log(Object.keys(fila30508));
