@@ -2549,28 +2549,94 @@ function detectFindingsIA(texto){
   }
 
   let impacto =
-  'Se identifica una afectación operativa del Centro Digital.';
+  'Se identifica una situación operativa que requiere seguimiento.';
 
-if(esSinObservaciones){
+if(
+  hallazgos.includes('Daño UPS') &&
+  hallazgos.includes('Variación eléctrica')
+){
+  impacto =
+    'Se evidencia afectación en el sistema de respaldo eléctrico asociada a variaciones de energía registradas en la zona.';
+}
+
+else if(
+  hallazgos.includes('Hurto') &&
+  hallazgos.includes('Infraestructura')
+){
+  impacto =
+    'La operación del Centro Digital presenta afectación derivada del hurto de infraestructura crítica.';
+}
+
+else if(
+  hallazgos.includes('Sin energía')
+){
+  impacto =
+    'La operación del Centro Digital se encuentra afectada por la ausencia de suministro eléctrico.';
+}
+
+else if(
+  hallazgos.includes('Sin conectividad')
+){
+  impacto =
+    'La operación del Centro Digital presenta indisponibilidad de los servicios de conectividad.';
+}
+
+else if(
+  hallazgos.includes('Sin acceso')
+){
+  impacto =
+    'No fue posible ejecutar actividades programadas debido a restricciones de acceso a la sede.';
+}
+
+else if(
+  hallazgos.includes('Derrumbe')
+){
+  impacto =
+    'Las condiciones de acceso se encuentran afectadas por eventos geológicos o derrumbes sobre las vías de acceso.';
+}
+
+else if(
+  hallazgos.includes('Inundación')
+){
+  impacto =
+    'Las condiciones de acceso u operación se encuentran afectadas por eventos de inundación reportados en la zona.';
+}
+
+else if(
+  hallazgos.includes('Orden público')
+){
+  impacto =
+    'Las actividades operativas presentan restricciones asociadas a condiciones de orden público en el área de influencia.';
+}
+
+else if(
+  hallazgos.includes('Bloqueo vial')
+){
+  impacto =
+    'Las actividades se encuentran limitadas debido a afectaciones de movilidad y acceso por bloqueos viales.';
+}
+
+else if(
+  hallazgos.includes('Ausencia de personal')
+){
+  impacto =
+    'No fue posible ejecutar completamente las actividades previstas debido a la ausencia de personal responsable en la sede.';
+}
+
+else if(
+  hallazgos.includes('Centro operativo') &&
+  hallazgos.includes('Monitoreo preventivo')
+){
+  impacto =
+    'Durante las actividades de seguimiento se validó la correcta operación del Centro Digital sin evidenciar fallas críticas del servicio.';
+}
+
+else if(
+  hallazgos.includes('Sin observaciones')
+){
   impacto =
     'No se cuenta con información observacional suficiente para determinar el impacto operativo del Centro Digital.';
 }
-
-  if(hallazgos.includes('Sin energía')){
-    impacto =
-      'La operación del Centro Digital se encuentra afectada por la ausencia de suministro eléctrico.';
-  }
-
-  if(hallazgos.includes('Sin conectividad')){
-    impacto =
-      'La operación del Centro Digital presenta indisponibilidad o degradación de conectividad.';
-  }
-
-  if(hallazgos.includes('Sin acceso')){
-    impacto =
-      'No fue posible ejecutar actividades normales debido a restricciones de acceso.';
-  }
-
   const t = normalizeIA(texto);
 
   const detalles = [];
