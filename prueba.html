@@ -59,6 +59,7 @@ h1,h2{
   border-bottom:1px solid #334155;
 }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 
 <body>
@@ -91,7 +92,7 @@ const CSV_URL =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaTszHaU4PLm00tAvMRpAUnz1C8xzrcLi-CYSNbqkVGpX-BNKMIJiyuJIqoY5CAdEjMFmqHj-sgNAb/pub?gid=0&single=true&output=csv';
 
 const ID_COLUMN = 'ID';
-const OBS_COLUMN = 'Observaciones ';
+const OBS_COLUMN = 'Observaciones';
 
 const categorias = {
 
@@ -148,29 +149,7 @@ function normalize(text){
 
 }
 
-function parseCSV(text){
 
-  const rows=text.trim().split('\n');
-
-  const headers=rows[0]
-    .split(',')
-    .map(x=>x.replace(/"/g,''));
-
-  return rows.slice(1).map(r=>{
-
-    const cols=r.split(',');
-
-    const obj={};
-
-    headers.forEach((h,i)=>{
-      obj[h]=cols[i] || '';
-    });
-
-    return obj;
-
-  });
-
-}
 
 async function analizar(){
 
@@ -185,7 +164,10 @@ async function analizar(){
   console.log(text.includes('30508'));
 console.log(text.substring(text.indexOf('30508'), text.indexOf('30508') + 1000));
 
-  const rows=parseCSV(text);
+  const rows = Papa.parse(text,{
+  header:true,
+  skipEmptyLines:true
+}).data;
   const fila30508 = rows.find(r => String(r.ID).trim() === '30508');
   console.log(
   'OBS REAL:',
