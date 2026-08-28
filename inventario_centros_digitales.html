@@ -2332,13 +2332,29 @@ function detectFindingsIA(texto){
 
 function detectStatusIA(texto,hallazgos){
   const n=normalizeIA(texto);
-  const positivo=/operativo|operatividad|servicio restablecido|pruebas exitosas|todo ok|todo okay|velocidad ok|se normaliza|normalizado/.test(n);
-  const pendiente=/pendiente|requiere cambio|requiere reemplazo|se solicita|en espera|no cumple|por debajo del rango|novedad/.test(n);
+  const positivo =
+/operativo|operatividad|servicio restablecido|pruebas exitosas|todo ok|todo okay|velocidad ok|se normaliza|normalizado|sin novedad|sin novedades/.test(n);
+
+const sinNovedad =
+/sin novedad|sin novedades|sin hallazgos|sin afectacion|sin afectación/.test(n);
+
+const pendiente =
+/pendiente|requiere cambio|requiere reemplazo|se solicita|en espera|no cumple|por debajo del rango/.test(n);
   const noAcceso=/cerrad|sin acceso|no se puede ingresar|no hay atencion|sin atencion|receso/.test(n);
-  if(noAcceso && !positivo) return 'No atendido';
-  if(pendiente && positivo) return 'Operativo con novedad';
-  if(pendiente && !positivo) return 'Pendiente';
-  if(positivo) return 'Operativo';
+  if(sinNovedad)
+  return 'Operativo';
+
+if(noAcceso && !positivo)
+  return 'No atendido';
+
+if(pendiente && positivo)
+  return 'Operativo con novedad';
+
+if(pendiente && !positivo)
+  return 'Pendiente';
+
+if(positivo)
+  return 'Operativo';
   return hallazgos.length ? 'Requiere seguimiento' : 'Sin determinar';
 }
 
