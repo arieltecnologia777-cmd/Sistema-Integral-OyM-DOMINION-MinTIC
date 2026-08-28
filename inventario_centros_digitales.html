@@ -2121,11 +2121,41 @@ const categoriasIA = {
     'manipulación de terceros','manipulacion de terceros','terceros','desvalijado','daño intencional'
   ],
   '🏗️ Infraestructura': [
-    'poste','cable','cableado','acometida','gabinete','rack','pedestal','base de concreto','concreto',
-    'señalética','señaletica','sticker','stickers','tornillos','anclaje','oxidado','sulfatado','sulfatación',
-    'sulfatacion','maleza','vegetación','vegetacion','monopolo','mástil','mastil','estructura','torre',
-    'caja spt','caja del dps','tablero','puerto','conector','rj45','rg6','utp'
-  ],
+  'poste',
+  'cable',
+  'cableado',
+  'acometida',
+  'gabinete',
+  'rack',
+  'pedestal',
+  'base de concreto',
+  'concreto',
+  'sticker',
+  'stickers',
+  'tornillos',
+  'anclaje',
+  'oxidado',
+  'sulfatado',
+  'sulfatación',
+  'sulfatacion',
+  'maleza',
+  'vegetación',
+  'vegetacion',
+  'monopolo',
+  'mástil',
+  'mastil',
+  'estructura',
+  'torre',
+  'caja spt',
+  'caja del dps',
+  'tablero',
+  'puerto',
+  'conector',
+  'rj45',
+  'rg6',
+  'utp'
+],
+
   '🛰️ Infraestructura satelital': [
     'kit satelital','kid satelital','kit fotovoltaico','kid fotovoltaico','antena satelital','módem satelital',
     'modem satelital','apuntamiento','desnivelada','nivelación','nivelacion','línea de vista','linea de vista',
@@ -2141,6 +2171,15 @@ const categoriasIA = {
     'pqr','petición','peticion','queja','reclamo','carta','traslado','cierre de ot','cierre de orden',
     'oracle service','gestión','gestion','mesa de ayuda','noc integral','vo.bo','vobo','aprobado','aprobación','aprobacion'
   ],
+  '📋 Señalética': [
+  'señaletica',
+  'señalética',
+  'placa',
+  'sap',
+  'instala el sap',
+  'instalacion de señaletica',
+  'instalación de señalética'
+],
   '🌧️ Condiciones externas': [
     'lluvia','lluvias','tormenta','vendaval','tempestad','descarga atmosférica','descarga atmosferica',
     'derrumbe','derrumbes','deslizamiento','inundación','inundacion','bloqueo vial','vía cerrada','via cerrada',
@@ -2172,6 +2211,13 @@ const causasIA = {
   'Restricción de movilidad': ['derrumbe','derrumbes','deslizamiento','bloqueo vial','via cerrada','vía cerrada','carretera cerrada','lluvia impide','lluvias impiden'],
   'Vandalismo / daño físico': ['vandalismo','vandalizada','vandalizado','daño intencional','manipulacion de terceros','manipulación de terceros'],
   'Deterioro de señalética': ['señaletica en mal estado','señalética en mal estado','señaletica deteriorada','señalética deteriorada','letrero ilegible','sticker desgastado','tornillos oxidado','pedestal enterrado'],
+  'Instalación de señalética': [
+  'instala el sap',
+  'instalacion de señaletica',
+  'instalación de señalética',
+  'placa',
+  'sap'
+],
   'Mantenimiento preventivo': ['mantenimiento preventivo','seguimiento y monitoreo','limpieza de equipos','limpieza general','ajuste y limpieza','pruebas preventivas'],
   'Mantenimiento correctivo': ['mantenimiento correctivo','se realiza cambio','se reemplaza','se procede a cambiar','se reconfigura','se realiza reinicio'],
   'Configuración / parametrización': ['configuracion de ups','configuración de ups','reconfiguracion','reconfiguración','configuracion del ap','configuración del ap','actualizacion de firmware','actualización de firmware'],
@@ -2179,7 +2225,26 @@ const causasIA = {
 };
 
 const hallazgosIA = {
-  'Hurto': ['hurto','hurtada','hurtado','robo','robado','robada','desvalijado'],
+  'Hurto': ['hurto','hurtada','hurtado','robo','robado','robada','desvalijado'],'Señalética':[
+  'señaletica',
+  'señalética',
+  'placa',
+  'sap',
+  'instalacion de señaletica',
+  'instalación de señalética',
+  'instala el sap'
+],
+  'Actividad programada':[
+  'desplazamiento',
+  'visita',
+  'seguimiento',
+  'instalacion',
+  'instalación',
+  'validacion',
+  'validación',
+  'normaliza',
+  'actividad programada'
+],
   'Sin energía': ['sin energia','sin energía','sin luz','apagón','apagon','sin servicio electrico','sin servicio eléctrico','falla electrica','falla eléctrica'],
   'Variación eléctrica': ['bajones de luz','bajon de luz','voltaje inestable','energia inestable','sobrevoltaje','sobretension','sobretensión','picos de energia','picos de energía','variacion electrica','variación eléctrica'],
   'Cortocircuito': ['corto','cortocircuito','en corto','poe en corto'],
@@ -2289,6 +2354,8 @@ function inferImpactIA(hallazgos,causa,status){
   if(hallazgos.includes('Apuntamiento / línea de vista')) return 'La calidad del enlace se ve condicionada por el apuntamiento o por obstrucciones en la línea de vista.';
   if(hallazgos.includes('Señalética deteriorada')) return 'Se identifica deterioro de elementos de señalización física, sin evidencia necesaria de afectación al servicio de conectividad.';
   if(hallazgos.includes('Derrumbe') || hallazgos.includes('Inundación')) return 'Las condiciones externas generan restricciones para el desplazamiento y/o la atención del Centro Digital.';
+  if(hallazgos.includes('Señalética'))
+  return 'Se ejecutó satisfactoriamente la instalación de señalética asociada al Centro Digital sin evidenciar afectaciones operativas del servicio.';
   if(status==='Operativo') return 'Las actividades realizadas permiten mantener el Centro Digital operativo, sin novedades críticas que afecten el servicio.';
   return 'Se identifica una condición operativa que requiere seguimiento técnico.';
 }
@@ -2323,6 +2390,12 @@ function buildExecutiveSummaryIA(texto,categoria,causa,hallazgos,severidad,statu
   else if(hallazgos.includes('Daño UPS') && hallazgos.includes('Variación eléctrica')) body='se identificó una novedad en el sistema UPS asociada a condiciones inestables del suministro eléctrico';
   else if(hallazgos.includes('Batería afectada')) body='se identificó una condición anómala en el sistema de batería que requiere atención';
   else if(hallazgos.includes('Apuntamiento / línea de vista')) body='se identificó una condición de apuntamiento o línea de vista que afectaba el desempeño del enlace';
+   else if(
+  hallazgos.includes('Señalética')
+){
+  body =
+    'se ejecutó la instalación de material de señalización del Centro Digital conforme a la actividad programada';
+} 
   else if(hallazgos.includes('Señalética deteriorada')) body='se identificó deterioro en la señalética de la sede y se ejecutaron labores de recuperación';
   else if(hallazgos.includes('Sin acceso') || hallazgos.includes('Receso escolar')) body='no fue posible completar la atención debido a restricciones de acceso a la sede';
   else if(hallazgos.includes('Centro operativo') && hallazgos.includes('Mantenimiento')) body='se ejecutó mantenimiento y verificación integral, sin evidenciar novedades críticas que afectaran el servicio';
