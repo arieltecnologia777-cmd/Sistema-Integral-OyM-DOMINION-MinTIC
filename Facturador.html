@@ -823,17 +823,7 @@ function calcularKPIs(){
             .includes('NO FACTURABLE')
         ).length;
 
-    const valorFacturado =
-    dataFiltrada.reduce((total,r)=>{
-
-        const valor =
-            Number(
-                r['ESTIMADO A FACTURAR'] || 0
-            );
-
-        return total + valor;
-
-    },0);
+    const valorFacturado = 0;
     const efectividad =
         total
         ? ((aprobados / total) * 100).toFixed(1)
