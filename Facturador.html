@@ -295,6 +295,11 @@ Dashboard Ejecutivo de Facturación
 </div>
 
     <div class="kpi green">
+    <h4>Estimado a Facturar</h4>
+    <div class="value" id="kpiValorFacturado">$0</div>
+</div>
+    
+    <div class="kpi green">
     <h4>Valor Facturado</h4>
     <div class="value" id="kpiValorFacturado">$0</div>
 </div>
@@ -857,7 +862,18 @@ const valorFacturado =
         return total + valor;
 
     },0);
-    
+
+    const valorFacturado =
+    dataFiltrada.reduce((total,r)=>{
+
+        const valor =
+            Number(
+                r['ESTIMADO A FACTURAR'] || 0
+            );
+
+        return total + valor;
+
+    },0);
     const efectividad =
         total
         ? ((aprobados / total) * 100).toFixed(1)
@@ -868,7 +884,18 @@ const valorFacturado =
     document.getElementById('kpiRechazados').textContent = rechazados;
     document.getElementById('kpiPendientes').textContent = pendientes;
     document.getElementById('kpiFacturados').textContent = facturados;
-
+    
+document.getElementById(
+    'kpiValorFacturado'
+).textContent =
+    valorFacturado.toLocaleString(
+        'es-CO',
+        {
+            style:'currency',
+            currency:'COP',
+            maximumFractionDigits:0
+        }
+    );
     document.getElementById(
     'kpiValorFacturado'
 ).textContent =
