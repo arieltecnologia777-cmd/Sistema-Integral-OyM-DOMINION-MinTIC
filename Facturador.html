@@ -820,14 +820,23 @@ function calcularKPIs(){
             .toUpperCase()
             .includes('NO FACTURABLE')
         ).length;
-
-   const valorFacturado =
+const valorFacturado =
     dataFiltrada.reduce((total,r)=>{
 
-        return total +
-            Number(
-                r['ESTIMADO A FACTURAR'] || 0
-            );
+        const valor =
+            parseFloat(
+                String(
+                    r[
+                        Object.keys(r).find(x =>
+                            x.includes('ESTIMADO')
+                        )
+                    ] || '0'
+                )
+                .replace(/\./g,'')
+                .replace(',','.')
+            ) || 0;
+
+        return total + valor;
 
     },0);
     const efectividad =
