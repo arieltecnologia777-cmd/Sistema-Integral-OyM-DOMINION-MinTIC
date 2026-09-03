@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Portal de Facturación MCI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<style>
+
+:root{
+    --bg:#080b25;
+    --bg2:#101448;
+    --text:#ffffff;
+    --muted:#aeb7da;
+    --card:#141b47;
+    --line:rgba(255,255,255,.12);
+    --cyan:#25e6ff;
+    --green:#45e0a1;
+    --red:#ff5c7a;
+    --orange:#ffb347;
+    --purple:#9b5cff;
+    --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Segoe UI,sans-serif;
+}
+
+header{
+    height:80px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    border-bottom:1px solid var(--line);
+    background:rgba(12,18,60,.8);
+    backdrop-filter:blur(12px);
+}
+
+.logo{
+    font-size:22px;
+    font-weight:800;
+}
+
+.logo span{
+    color:var(--cyan);
+}
+
+.container{
+    width:95%;
+    margin:auto;
+}
+
+.section-title{
+    margin:25px 0;
+    font-size:26px;
+    font-weight:700;
+}
+
+.kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:15px;
+}
+
+.kpi{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:var(--shadow);
+}
+
+.kpi h4{
+    color:var(--muted);
+    font-size:12px;
+    text-transform:uppercase;
+}
+
+.kpi .value{
+    margin-top:10px;
+    font-size:30px;
+    font-weight:900;
+}
+
+.kpi.green{
+    border-left:5px solid var(--green);
+}
+
+.kpi.red{
+    border-left:5px solid var(--red);
+}
+
+.kpi.orange{
+    border-left:5px solid var(--orange);
+}
+
+.kpi.cyan{
+    border-left:5px solid var(--cyan);
+}
+
+.kpi.purple{
+    border-left:5px solid var(--purple);
+}
+
+.filters{
+    margin-top:25px;
+    background:var(--card);
+    padding:20px;
+    border-radius:20px;
+    border:1px solid var(--line);
+
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:15px;
+}
+
+.filters label{
+    display:block;
+    margin-bottom:6px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.filters select,
+.filters input{
+    width:100%;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:#0f1438;
+    color:white;
+}
+
+.chart-grid{
+    margin-top:25px;
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.chart-card{
+    background:var(--card);
+    border-radius:20px;
+    padding:20px;
+    border:1px solid var(--line);
+}
+
+.chart-card h3{
+    margin-bottom:15px;
+}
+
+.table-card{
+    margin-top:25px;
+    background:var(--card);
+    border-radius:20px;
+    border:1px solid var(--line);
+    padding:20px;
+}
+
+.table-card h3{
+    margin-bottom:15px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#0f1438;
+}
+
+th,td{
+    padding:12px;
+    text-align:left;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+}
+
+.estado{
+    padding:5px 10px;
+    border-radius:999px;
+    font-weight:700;
+}
+
+.aprobado{
+    background:rgba(69,224,161,.20);
+    color:var(--green);
+}
+
+.rechazado{
+    background:rgba(255,92,122,.20);
+    color:var(--red);
+}
+
+.pendiente{
+    background:rgba(255,179,71,.20);
+    color:var(--orange);
+}
+
+button{
+    cursor:pointer;
+    border:none;
+}
+
+.btn{
+    background:linear-gradient(90deg,#25e6ff,#9b5cff);
+    color:white;
+    padding:10px 18px;
+    border-radius:12px;
+    font-weight:700;
+}
+
+@media(max-width:1200px){
+
+    .kpi-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .filters{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .chart-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<header>
+
+    <div class="logo">
+        FACTURACIÓN <span>MCI</span>
+    </div>
+
+    <button
+    class="btn"
+    onclick="exportarExcel()"
+>
+    Exportar Excel
+</button>
+
+</header>
+
+<div class="container">
+
+<h2 class="section-title">
+Dashboard Ejecutivo de Facturación
+</h2>
+
+<div class="kpi-grid">
+
+<div class="kpi cyan">
+    <h4>Total Registros</h4>
+    <div class="value" id="kpiTotal">0</div>
+</div>
+
+<div class="kpi green">
+    <h4>Aprobados</h4>
+    <div class="value" id="kpiAprobados">0</div>
+</div>
+
+<div class="kpi red">
+    <h4>Rechazados</h4>
+    <div class="value" id="kpiRechazados">0</div>
+</div>
+
+<div class="kpi orange">
+    <h4>Pendientes</h4>
+    <div class="value" id="kpiPendientes">0</div>
+</div>
+
+<div class="kpi purple">
+    <h4>Facturados</h4>
+    <div class="value" id="kpiFacturados">0</div>
+</div>
+
+<div class="kpi cyan">
+    <h4>% Aprobación</h4>
+    <div class="value" id="kpiPorcentaje">0%</div>
+</div>
+
+<div class="kpi green">
+    <h4>Efectividad</h4>
+    <div class="value" id="kpiEfectividad">0%</div>
+</div>
+
+<div class="kpi cyan">
+    <h4>FACT. MCI</h4>
+    <div class="value" id="kpiMCI">0</div>
+</div>
+
+<div class="kpi purple">
+    <h4>FACT. AMRTX</h4>
+    <div class="value" id="kpiAMRTX">0</div>
+</div>
+
+<div class="kpi orange">
+    <h4>MIXTO</h4>
+    <div class="value" id="kpiMIXTO">0</div>
+</div>
+
+<div class="kpi red">
+    <h4>NO FACTURABLE</h4>
+    <div class="value" id="kpiNoFacturable">0</div>
+</div>
+
+<div class="kpi cyan">
+    <h4>BACKLOG</h4>
+    <div class="value" id="kpiBacklog">0</div>
+</div>
+
+<div class="kpi green">
+    <h4>Regional Líder</h4>
+    <div class="value" id="kpiRegionalTop">-</div>
+</div>
+
+</div>
+
+<!-- FILTROS -->
+<div class="filters">
+
+    <div>
+        <label>Regional</label>
+        <select id="fRegional">
+            <option value="">Todas</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Departamento</label>
+        <select id="fDepartamento">
+            <option value="">Todos</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Mes</label>
+        <select id="fMes">
+            <option value="">Todos</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Año</label>
+        <select id="fAnio">
+            <option value="">Todos</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Tipo Facturación</label>
+        <select id="fFacturacion">
+            <option value="">Todos</option>
+            <option>FACT. MCI</option>
+            <option>FACT. AMRTX</option>
+            <option>MIXTO</option>
+            <option>NO FACTURABLE</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Buscar</label>
+        <input
+            type="text"
+            id="txtBuscar"
+            placeholder="OT, IM, ID, Técnico..."
+        >
+    </div>
+
+</div>
+
+
+<!-- GRÁFICOS -->
+
+<div class="chart-grid">
+
+    <div class="chart-card">
+        <h3>Aprobación Regional</h3>
+        <canvas id="chartAprobacion"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Tipos de Facturación</h3>
+        <canvas id="chartFacturacion"></canvas>
+    </div>
+
+</div>
+
+
+<div class="chart-grid">
+
+    <div class="chart-card">
+        <h3>Facturación por Regional</h3>
+        <canvas id="chartRegional"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Causas de Rechazo</h3>
+        <canvas id="chartRechazo"></canvas>
+    </div>
+
+</div>
+
+
+<div class="chart-grid">
+
+    <div class="chart-card">
+        <h3>Estados Documentales</h3>
+        <canvas id="chartDocumentos"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Embudo de Facturación</h3>
+        <canvas id="chartEmbudo"></canvas>
+    </div>
+
+</div>
+
+
+<!-- TOP -->
+
+<div class="chart-grid">
+
+    <div class="chart-card">
+        <h3>Top Técnicos Facturados</h3>
+        <canvas id="chartTecnicos"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Top Regionales</h3>
+        <canvas id="chartRanking"></canvas>
+    </div>
+
+</div>
+
+
+<!-- TABLA -->
+
+<div class="table-card">
+
+    <h3>Detalle de Facturación</h3>
+
+    <div style="overflow:auto;">
+
+        <table id="tablaFacturacion">
+
+            <thead>
+
+                <tr>
+
+                    <th>OT</th>
+                    <th>IM</th>
+                    <th>ID</th>
+                    <th>Regional</th>
+                    <th>Técnico</th>
+                    <th>Facturación</th>
+                    <th>Aprobación</th>
+                    <th>Estado Doc.</th>
+                    <th>Estado Fact.</th>
+                    <th>Causa Rechazo</th>
+                    <th>Acciones</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="tbodyFacturas">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL DETALLE -->
+
+<div
+    id="modalDetalle"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.75);
+        backdrop-filter:blur(5px);
+        z-index:999;
+        align-items:center;
+        justify-content:center;
+    "
+>
+
+    <div
+        style="
+            width:900px;
+            max-width:95%;
+            background:#101448;
+            border-radius:20px;
+            padding:25px;
+            border:1px solid rgba(255,255,255,.10);
+            max-height:90vh;
+            overflow:auto;
+        "
+    >
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:20px;
+            "
+        >
+
+            <h2>Detalle de Facturación</h2>
+
+            <button
+                class="btn"
+                onclick="document.getElementById('modalDetalle').style.display='none'"
+            >
+                Cerrar
+            </button>
+
+        </div>
+
+        <div id="detalleContenido">
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+let chartAprobacion;
+let chartFacturacion;
+let chartRegional;
+let chartRechazo;
+let chartDocumentos;
+let chartEmbudo;
+let chartTecnicos;
+let chartRanking;
+
+let dataOriginal = [];
+let dataFiltrada = [];
+
+const columnas = {
+    regional      : 'REGION',
+    mes           : 'MES',
+    anio          : 'AÑO',
+    tecnico       : 'Técnico asignado',
+    departamento  : 'Departamento',
+    facturacion   : 'Facturacion',
+    aprobacion    : 'APROBACION REGIONAL',
+    estadoDoc     : 'ESTADO DOC.',
+    estadoFact    : 'ESTADO FACT.',
+    rechazo       : 'CAUSA RECHAZO',
+    ot            : 'OT',
+    im            : 'IM',
+    id            : 'ID'
+};
+
+async function cargarExcel(){
+
+    const response = await fetch('Ejemplo.xlsx');
+
+    const data = await response.arrayBuffer();
+
+    const workbook =
+        XLSX.read(data,{
+            type:'array'
+        });
+
+    const hoja =
+        workbook.Sheets[
+            workbook.SheetNames[0]
+        ];
+
+    dataOriginal =
+        XLSX.utils.sheet_to_json(hoja);
+
+    dataFiltrada = [...dataOriginal];
+
+    llenarFiltros();
+
+    actualizarDashboard();
+}
+
+function llenarFiltros(){
+
+    llenarSelect(
+        'fRegional',
+        columnas.regional
+    );
+
+    llenarSelect(
+        'fDepartamento',
+        columnas.departamento
+    );
+
+    llenarSelect(
+        'fMes',
+        columnas.mes
+    );
+
+    llenarSelect(
+        'fAnio',
+        columnas.anio
+    );
+}
+
+function llenarSelect(id,columna){
+
+    const select =
+        document.getElementById(id);
+
+    const valores =
+        [...new Set(
+            dataOriginal
+                .map(r=>r[columna])
+                .filter(Boolean)
+        )]
+        .sort();
+
+    valores.forEach(valor=>{
+
+        const opt =
+            document.createElement('option');
+
+        opt.value = valor;
+        opt.textContent = valor;
+
+        select.appendChild(opt);
+
+    });
+
+}
+
+function aplicarFiltros(){
+
+    const regional =
+        document.getElementById('fRegional').value;
+
+    const departamento =
+        document.getElementById('fDepartamento').value;
+
+    const mes =
+        document.getElementById('fMes').value;
+
+    const anio =
+        document.getElementById('fAnio').value;
+
+    const facturacion =
+        document.getElementById('fFacturacion').value;
+
+    const buscar =
+        document
+        .getElementById('txtBuscar')
+        .value
+        .toLowerCase();
+
+    dataFiltrada =
+        dataOriginal.filter(r=>{
+
+            if(
+                regional &&
+                r[columnas.regional] != regional
+            ) return false;
+
+            if(
+                departamento &&
+                r[columnas.departamento] != departamento
+            ) return false;
+
+            if(
+                mes &&
+                r[columnas.mes] != mes
+            ) return false;
+
+            if(
+                anio &&
+                r[columnas.anio] != anio
+            ) return false;
+
+            if(
+                facturacion &&
+                r[columnas.facturacion] != facturacion
+            ) return false;
+
+            if(buscar){
+
+                const texto =
+                    JSON.stringify(r)
+                    .toLowerCase();
+
+                if(
+                    !texto.includes(buscar)
+                ) return false;
+            }
+
+            return true;
+
+        });
+
+    actualizarDashboard();
+}
+
+function actualizarDashboard(){
+
+    calcularKPIs();
+
+    actualizarTabla();
+
+    actualizarGraficos();
+}
+
+function calcularKPIs(){
+
+    const total = dataFiltrada.length;
+
+    const aprobados =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.aprobacion] || ''
+            )
+            .toUpperCase()
+            .includes('ACEPT')
+        ).length;
+
+    const rechazados =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.aprobacion] || ''
+            )
+            .toUpperCase()
+            .includes('RECHAZ')
+        ).length;
+
+    const pendientes =
+        total -
+        aprobados -
+        rechazados;
+
+    const facturados =
+    dataFiltrada.filter(r=>
+        String(
+            r[columnas.estadoFact] || ''
+        )
+        .toUpperCase()
+        .trim() === 'FACTURADO'
+    ).length;
+
+    const backlog =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.estadoFact] || ''
+            )
+            .toUpperCase()
+            .includes('NO FACTURADO')
+        ).length;
+
+    const mci =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.facturacion] || ''
+            )
+            .toUpperCase()
+            .includes('MCI')
+        ).length;
+
+    const amrtx =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.facturacion] || ''
+            )
+            .toUpperCase()
+            .includes('AMRTX')
+        ).length;
+
+    const mixto =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.facturacion] || ''
+            )
+            .toUpperCase()
+            .includes('MIXTO')
+        ).length;
+
+    const noFacturable =
+        dataFiltrada.filter(r=>
+            String(
+                r[columnas.facturacion] || ''
+            )
+            .toUpperCase()
+            .includes('NO FACTURABLE')
+        ).length;
+
+    const efectividad =
+        total
+        ? ((aprobados / total) * 100).toFixed(1)
+        : 0;
+
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiAprobados').textContent = aprobados;
+    document.getElementById('kpiRechazados').textContent = rechazados;
+    document.getElementById('kpiPendientes').textContent = pendientes;
+    document.getElementById('kpiFacturados').textContent = facturados;
+
+    document.getElementById('kpiBacklog').textContent = backlog;
+    document.getElementById('kpiMCI').textContent = mci;
+    document.getElementById('kpiAMRTX').textContent = amrtx;
+    document.getElementById('kpiMIXTO').textContent = mixto;
+    document.getElementById('kpiNoFacturable').textContent = noFacturable;
+
+    document.getElementById('kpiEfectividad').textContent =
+        efectividad + '%';
+
+    document.getElementById('kpiPorcentaje').textContent =
+        efectividad + '%';
+
+    const regionales = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const reg = r[columnas.regional];
+
+        if(!reg) return;
+
+        regionales[reg] =
+            (regionales[reg] || 0) + 1;
+
+    });
+
+    const topRegional =
+        Object.entries(regionales)
+            .sort((a,b)=>b[1]-a[1])[0];
+
+    document.getElementById(
+        'kpiRegionalTop'
+    ).textContent =
+        topRegional
+            ? topRegional[0]
+            : '-';
+
+pintarSemaforos(
+    Number(efectividad)
+);
+
+}
+
+function actualizarTabla(){
+
+    const tbody =
+        document.getElementById(
+            'tbodyFacturas'
+        );
+
+    tbody.innerHTML = '';
+
+    dataFiltrada.forEach((fila,index)=>{
+
+        tbody.innerHTML += `
+        <tr>
+
+            <td>${fila[columnas.ot] || ''}</td>
+            <td>${fila[columnas.im] || ''}</td>
+            <td>${fila[columnas.id] || ''}</td>
+            <td>${fila[columnas.regional] || ''}</td>
+            <td>${fila[columnas.tecnico] || ''}</td>
+            <td>${fila[columnas.facturacion] || ''}</td>
+            <td>${fila[columnas.aprobacion] || ''}</td>
+            <td>${fila[columnas.estadoDoc] || ''}</td>
+            <td>${fila[columnas.estadoFact] || ''}</td>
+            <td>${fila[columnas.rechazo] || ''}</td>
+
+            <td>
+                <button
+                    class="btn"
+                    onclick="verDetalle(${index})"
+                >
+                    Ver
+                </button>
+            </td>
+
+        </tr>`;
+    });
+
+}
+
+function verDetalle(index){
+
+    const f =
+        dataFiltrada[index];
+
+    let html =
+        '<table style="width:100%">';
+
+    Object.keys(f).forEach(k=>{
+
+        html += `
+        <tr>
+            <td><b>${k}</b></td>
+            <td>${f[k] || ''}</td>
+        </tr>`;
+    });
+
+    html += '</table>';
+
+    document.getElementById(
+        'detalleContenido'
+    ).innerHTML = html;
+
+    document.getElementById(
+        'modalDetalle'
+    ).style.display = 'flex';
+}
+
+document
+.querySelectorAll(
+    '#fRegional,#fDepartamento,#fMes,#fAnio,#fFacturacion'
+)
+.forEach(c=>{
+
+    c.addEventListener(
+        'change',
+        aplicarFiltros
+    );
+
+});
+
+document
+.getElementById('txtBuscar')
+.addEventListener(
+    'input',
+    aplicarFiltros
+);
+
+function inicializarGraficos(){
+
+    chartAprobacion = new Chart(
+        document.getElementById('chartAprobacion'),
+        {
+            type:'doughnut',
+            data:{
+                labels:[
+                    'Aprobados',
+                    'Rechazados',
+                    'Pendientes'
+                ],
+                datasets:[{
+                    data:[0,0,0]
+                }]
+            }
+        }
+    );
+
+    chartFacturacion = new Chart(
+        document.getElementById('chartFacturacion'),
+        {
+            type:'pie',
+            data:{
+                labels:[],
+                datasets:[{
+                    data:[]
+                }]
+            }
+        }
+    );
+
+    chartRegional = new Chart(
+        document.getElementById('chartRegional'),
+        {
+            type:'bar',
+            data:{
+                labels:[],
+                datasets:[{
+                    data:[]
+                }]
+            }
+        }
+    );
+
+    chartRechazo = new Chart(
+        document.getElementById('chartRechazo'),
+        {
+            type:'bar',
+            data:{
+                labels:[],
+                datasets:[{
+                    data:[]
+                }]
+            }
+        }
+    );
+
+    chartDocumentos = new Chart(
+        document.getElementById('chartDocumentos'),
+        {
+            type:'doughnut',
+            data:{
+                labels:[],
+                datasets:[{
+                    data:[]
+                }]
+            }
+        }
+    );
+
+    chartEmbudo = new Chart(
+        document.getElementById('chartEmbudo'),
+        {
+            type:'bar',
+            data:{
+                labels:[
+                    'Postulados',
+                    'Validados',
+                    'Aceptados',
+                    'Facturados'
+                ],
+                datasets:[{
+                    data:[0,0,0,0]
+                }]
+            }
+        }
+    );
+
+    chartTecnicos = new Chart(
+        document.getElementById('chartTecnicos'),
+        {
+            type:'bar',
+            data:{
+                labels:[],
+                datasets:[{
+                    data:[]
+                }]
+            }
+        }
+    );
+
+    chartRanking = new Chart(
+        document.getElementById('chartRanking'),
+        {
+            type:'bar',
+            data:{
+                labels:[],
+                datasets:[{
+                    data:[]
+                }]
+            }
+        }
+    );
+
+}
+
+window.addEventListener(
+    'load',
+    ()=>{
+        inicializarGraficos();
+        cargarExcel();
+    }
+);
+function actualizarGraficos(){
+
+    actualizarGraficoAprobacion();
+
+    actualizarGraficoFacturacion();
+
+    actualizarGraficoRegional();
+
+    actualizarGraficoRechazo();
+
+    actualizarGraficoDocumentos();
+
+    actualizarGraficoEmbudo();
+
+    actualizarGraficoTecnicos();
+
+    actualizarGraficoRanking();
+}
+
+function contarPorCampo(campo){
+
+    const conteo = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const valor =
+            r[campo] || 'Sin dato';
+
+        conteo[valor] =
+            (conteo[valor] || 0) + 1;
+    });
+
+    return conteo;
+}
+
+function actualizarGraficoAprobacion(){
+
+    const aprobados =
+        dataFiltrada.filter(r=>
+        String(r[columnas.aprobacion] || '')
+        .toUpperCase()
+        .includes('ACEPT')
+    ).length;
+
+    const rechazados =
+        dataFiltrada.filter(r=>
+        String(r[columnas.aprobacion] || '')
+        .toUpperCase()
+        .includes('RECHAZ')
+    ).length;
+
+    const pendientes =
+        dataFiltrada.length -
+        aprobados -
+        rechazados;
+
+    chartAprobacion.data.datasets[0].data = [
+        aprobados,
+        rechazados,
+        pendientes
+    ];
+
+    chartAprobacion.update();
+}
+
+function actualizarGraficoFacturacion(){
+
+    const tipos = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const tipo =
+            r[columnas.facturacion] ||
+            'Sin dato';
+
+        tipos[tipo] =
+            (tipos[tipo] || 0) + 1;
+
+    });
+
+    chartFacturacion.data.labels =
+        Object.keys(tipos);
+
+    chartFacturacion.data.datasets[0].data =
+        Object.values(tipos);
+
+    chartFacturacion.update();
+}
+
+function actualizarGraficoRegional(){
+
+    const regionales =
+        contarPorCampo(
+            columnas.regional
+        );
+
+    chartRegional.data.labels =
+        Object.keys(regionales);
+
+    chartRegional.data.datasets[0].data =
+        Object.values(regionales);
+
+    chartRegional.update();
+}
+
+function actualizarGraficoRechazo(){
+
+    const rechazo = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const causa =
+            r[columnas.rechazo];
+
+        if(!causa) return;
+
+        rechazo[causa] =
+            (rechazo[causa] || 0) + 1;
+    });
+
+    const top =
+        Object.entries(rechazo)
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,10);
+
+    chartRechazo.data.labels =
+        top.map(x=>x[0]);
+
+    chartRechazo.data.datasets[0].data =
+        top.map(x=>x[1]);
+
+    chartRechazo.update();
+}
+
+function actualizarGraficoDocumentos(){
+
+    const estados = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const estado =
+            r[columnas.estadoDoc] ||
+            'Sin dato';
+
+        estados[estado] =
+            (estados[estado] || 0) + 1;
+    });
+
+    chartDocumentos.data.labels =
+        Object.keys(estados);
+
+    chartDocumentos.data.datasets[0].data =
+        Object.values(estados);
+
+    chartDocumentos.update();
+}
+
+function actualizarGraficoEmbudo(){
+
+    const postulados =
+        dataFiltrada.filter(r=>
+        String(
+            r.POSTULADO || ''
+        )
+        .includes('POSTULADO')
+    ).length;
+
+    const validados =
+        dataFiltrada.filter(r=>
+        String(
+            r['VERIFICACION CLARO'] || ''
+        ).trim() !== ''
+    ).length;
+
+    const aceptados =
+        dataFiltrada.filter(r=>
+        String(
+            r['ESTADO CALCULADO'] || ''
+        )
+        .includes('ACEPTADO')
+    ).length;
+
+    const facturados =
+    dataFiltrada.filter(r=>
+        String(
+            r[columnas.estadoFact] || ''
+        )
+        .toUpperCase()
+        .trim() === 'FACTURADO'
+    ).length;
+
+    chartEmbudo.data.datasets[0].data = [
+
+        postulados,
+        validados,
+        aceptados,
+        facturados
+
+    ];
+
+    chartEmbudo.update();
+}
+
+function actualizarGraficoTecnicos(){
+
+    const tecnicos = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const tecnico =
+            r[columnas.tecnico];
+
+        if(!tecnico) return;
+
+        tecnicos[tecnico] =
+            (tecnicos[tecnico] || 0) + 1;
+
+    });
+
+    const top =
+        Object.entries(tecnicos)
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,10);
+
+    chartTecnicos.data.labels =
+        top.map(x=>x[0]);
+
+    chartTecnicos.data.datasets = [{
+        label:'Facturaciones',
+        data:top.map(x=>x[1]),
+        backgroundColor:'#25e6ff'
+    }];
+
+    chartTecnicos.update();
+}
+
+function actualizarGraficoRanking(){
+
+    const ranking = {};
+
+    dataFiltrada.forEach(r=>{
+
+        const region =
+            r[columnas.regional];
+
+        ranking[region] =
+            (ranking[region] || 0) + 1;
+    });
+
+    const top =
+        Object.entries(ranking)
+        .sort((a,b)=>b[1]-a[1]);
+
+    chartRanking.data.labels =
+        top.map(x=>x[0]);
+
+    chartRanking.data.datasets = [{
+
+        label:'Registros',
+
+        data:top.map(x=>x[1]),
+
+        backgroundColor:[
+            '#25e6ff',
+            '#9b5cff',
+            '#45e0a1',
+            '#ffb347',
+            '#ff5c7a'
+        ]
+
+    }];
+
+    chartRanking.update();
+}
+function pintarSemaforos(valor){
+
+    const kpi =
+        document.getElementById(
+            'kpiEfectividad'
+        );
+
+    if(!kpi) return;
+
+    if(valor >= 95){
+
+        kpi.style.color =
+            '#45e0a1';
+
+    }
+    else if(valor >= 85){
+
+        kpi.style.color =
+            '#ffb347';
+
+    }
+    else{
+
+        kpi.style.color =
+            '#ff5c7a';
+
+    }
+
+}
+
+function exportarExcel(){
+
+    const hoja =
+        XLSX.utils.json_to_sheet(
+            dataFiltrada
+        );
+
+    const libro =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        libro,
+        hoja,
+        'Facturacion'
+    );
+
+    XLSX.writeFile(
+        libro,
+        'Facturacion_MCI.xlsx'
+    );
+
+}
+</script>
+
+</body>
+</html>
