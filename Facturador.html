@@ -836,36 +836,6 @@ function calcularKPIs(){
     const valorFacturado =
     dataFiltrada.reduce((total,r)=>{
 
-        return total +
-            Number(
-                r['ULTM. FACT.'] || 0
-            );
-
-    },0);
-
-    const columnaFact =
-    Object.keys(dataOriginal[0])
-        .find(x => x.includes("ULTM"));
-
-const valorFacturado =
-    dataFiltrada.reduce((total,r)=>{
-
-        const valor =
-            Number(
-                String(
-                    r[columnaFact] || 0
-                )
-                .replace(/\./g,'')
-                .replace(',','.')
-            );
-
-        return total + valor;
-
-    },0);
-
-    const valorFacturado =
-    dataFiltrada.reduce((total,r)=>{
-
         const valor =
             Number(
                 r['ESTIMADO A FACTURAR'] || 0
