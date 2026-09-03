@@ -824,12 +824,10 @@ function calcularKPIs(){
    const valorFacturado =
     dataFiltrada.reduce((total,r)=>{
 
-        const valor =
+        return total +
             Number(
-                r['ESTIMADO A FACTURAR '] || 0
+                r['ESTIMADO A FACTURAR'] || 0
             );
-
-        return total + valor;
 
     },0);
     const efectividad =
