@@ -896,7 +896,19 @@ function actualizarTabla(){
 
     tbody.innerHTML = '';
 
-    dataFiltrada.forEach((fila,index)=>{
+    function actualizarTabla(){
+
+    const tbody =
+        document.getElementById(
+            'tbodyFacturas'
+        );
+
+    tbody.innerHTML = '';
+
+    const registros =
+        dataFiltrada.slice(0,100);
+
+    registros.forEach((fila,index)=>{
 
         tbody.innerHTML += `
         <tr>
@@ -925,7 +937,6 @@ function actualizarTabla(){
     });
 
 }
-
 function verDetalle(index){
 
     const f =
