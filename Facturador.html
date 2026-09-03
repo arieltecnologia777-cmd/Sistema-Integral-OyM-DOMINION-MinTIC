@@ -294,6 +294,11 @@ Dashboard Ejecutivo de Facturación
     <div class="value" id="kpiFacturados">0</div>
 </div>
 
+    <div class="kpi green">
+    <h4>Valor Facturado COP</h4>
+    <div class="value" id="kpiValorFacturado">$0</div>
+</div>
+    
 <div class="kpi cyan">
     <h4>% Aprobación</h4>
     <div class="value" id="kpiPorcentaje">0%</div>
@@ -818,6 +823,16 @@ function calcularKPIs(){
             .includes('NO FACTURABLE')
         ).length;
 
+    const valorFacturado =
+    dataFiltrada.reduce((total,r)=>{
+
+        return total +
+            Number(
+                r['ULTM. FACT.'] || 0
+            );
+
+    },0);
+    
     const efectividad =
         total
         ? ((aprobados / total) * 100).toFixed(1)
@@ -828,6 +843,18 @@ function calcularKPIs(){
     document.getElementById('kpiRechazados').textContent = rechazados;
     document.getElementById('kpiPendientes').textContent = pendientes;
     document.getElementById('kpiFacturados').textContent = facturados;
+
+    document.getElementById(
+    'kpiValorFacturado'
+).textContent =
+    valorFacturado.toLocaleString(
+        'es-CO',
+        {
+            style:'currency',
+            currency:'COP',
+            maximumFractionDigits:0
+        }
+    );
 
     document.getElementById('kpiBacklog').textContent = backlog;
     document.getElementById('kpiMCI').textContent = mci;
