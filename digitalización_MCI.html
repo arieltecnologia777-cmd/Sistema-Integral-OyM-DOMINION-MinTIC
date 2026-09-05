@@ -4348,22 +4348,31 @@ body:not(.logged-in) .main{
 
     /* MEDICIÓN ELÉCTRICA 1 - DOS FOTOS */
 
-.p-item[data-title="Medición eléctrica 1"] .indoor-wrapper{
-    height: 170px;
-}
-
-.p-item[data-title="Medición eléctrica 1"] .indoor-row{
-    height: 100%;
-}
-
-.p-item[data-title="Medición eléctrica 1"] .indoor-box{
-    height: 100%;
-}
-
 .p-item[data-title="Medición eléctrica 1"] .photo-cell.indoor-mini{
-    min-height: 100% !important;
+    min-height: 120px !important;
     max-height: none !important;
-    height: 100% !important;
+    height: auto !important;
+}
+
+@media (max-width: 860px){
+
+    .p-item[data-title="Medición eléctrica 1"] .indoor-box{
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+
+    .p-item[data-title="Medición eléctrica 1"] .photo-cell.indoor-mini{
+        min-height: 70px !important;
+        max-height: none !important;
+        height: auto !important;
+        width: 100% !important;
+    }
+
+    .p-item[data-title="Medición eléctrica 1"] .placeholder div{
+        font-size: 11px !important;
+        line-height: 1.1 !important;
+    }
+
 }
 
     /* =================================================
