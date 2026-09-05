@@ -5574,7 +5574,8 @@ const photoInputs = [
   "img-senal-int",
   "img-respaldo",
   "img-print-ups",
-  "img-med1",
+  "img-med1-0",
+  "img-med1-1",
   "img-med2",
   "img-nav-indoor-0",
   "img-nav-indoor-1",
@@ -6638,7 +6639,11 @@ async function exportarMCI(){
         senalInt   : await getFoto('img-senal-int'),
         respaldo   : await getFoto('img-respaldo'),
         printUps   : await getFoto('img-print-ups'),
-        med1       : await getFoto('img-med1'),
+        med1       : await getFoto('img-med1'),med1: [
+  await getFoto('img-med1-0'),
+  await getFoto('img-med1-1')
+],
+
         med2       : await getFoto('img-med2'),
 
         navIndoor: [
