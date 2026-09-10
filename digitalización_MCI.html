@@ -4413,6 +4413,37 @@ body:not(.logged-in) .main{
     max-height:none !important;
     height:150px !important;
 }
+
+    /* ===== VISOR DE FOTO ===== */
+.photo-viewer{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:99999;
+}
+
+.photo-viewer img{
+  max-width:90vw;
+  max-height:90vh;
+  object-fit:contain;
+  border-radius:12px;
+}
+
+.photo-viewer-close{
+  position:absolute;
+  top:20px;
+  right:20px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  font-size:24px;
+  background:white;
+}
   </style>
 </head>
 <body class="theme-pro">
@@ -5960,14 +5991,39 @@ function makeRow() {
           const tb = document.createElement('div');
           tb.className = 'photo-toolbar';
           tb.innerHTML = `
-            <div class="chip" data-act="change" title="Cambiar foto">Cambiar</div>
-            <div class="chip" data-act="remove" title="Quitar foto">Quitar</div>
-          `;
+            tb.innerHTML = `
+  <div class="chip" data-act="view" title="Ver foto">👁 Ver</div>
+  <div class="chip" data-act="change" title="Cambiar foto">Cambiar</div>
+  <div class="chip" data-act="remove" title="Quitar foto">Quitar</div>
+`;
           cell.appendChild(tb);
           tb.addEventListener('click',(e)=>{
             const act = e.target.closest('.chip')?.dataset.act;
             if (!act) return;
             if (act==='change') input.click();
+            if (act==='view'){
+  const img = cell.querySelector('img');
+  if (!img) return;
+
+  const viewer = document.createElement('div');
+  viewer.className = 'photo-viewer';
+
+  viewer.innerHTML = `
+    <button class="photo-viewer-close">×</button>
+    ${img.src}
+  `;
+
+  viewer.addEventListener('click',(e)=>{
+    if(
+      e.target === viewer ||
+      e.target.classList.contains('photo-viewer-close')
+    ){
+      viewer.remove();
+    }
+  });
+
+  document.body.appendChild(viewer);
+}
            if (act==='remove'){
   const img = cell.querySelector('img'); if (img) img.remove();
   cell.classList.remove('has-image');
