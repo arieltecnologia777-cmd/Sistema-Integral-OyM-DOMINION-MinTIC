@@ -6010,9 +6010,9 @@ function makeRow() {
   viewer.className = 'photo-viewer';
 
   viewer.innerHTML = `
-    <button class="photo-viewer-close">×</button>
-    ${img.src}
-  `;
+  <button class="photo-viewer-close">×</button>
+  <img src="${img.src}" alt="Imagen">
+`;
 
   viewer.addEventListener('click',(e)=>{
     if(
