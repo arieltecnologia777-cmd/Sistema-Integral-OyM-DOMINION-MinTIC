@@ -7489,7 +7489,7 @@ if (logoutBtn) {
   <script>
 document.querySelectorAll(".remove-btn").forEach(btn => {
   btn.addEventListener("click", async (e) => {
-
+e.stopPropagation();
     const cell = e.target.closest(".photo-cell");
     if (!cell) return;
 
@@ -7544,9 +7544,9 @@ document.querySelectorAll(".view-btn").forEach(btn => {
     viewer.className = "photo-viewer";
 
     viewer.innerHTML = `
-      <button class="photo-viewer-close">×</button>
-      ${img.src}
-    `;
+  <button class="photo-viewer-close">×</button>
+  <img src="${img.src}" alt="Imagen">
+`;
 
     viewer.addEventListener("click", (ev) => {
       if (
