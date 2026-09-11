@@ -4104,21 +4104,30 @@ body.theme-pro #sec-pruebas
 }
     
 /* Botoncitos */
-.mini-btn {
-    width* 18px;
-    height: 18px;
-    paddi*g: 0;
+.mini-btn{
+    appearance:none !important;
+    -webkit-appearance:none !important;
 
-    display: flex;
-    alig*-items: center;
-   *justify-content: center;
+    width:24px;
+    height:24px;
 
-    font*size: 10px;
-    border-radius: 5px*
-    background* rgba(15,23,42,0.70);
-   *color: #fff;
-    border* 1px solid rgba(255*255,255,0.25);
-    cursor: pointer*
+    padding:0 !important;
+    margin:0 !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(15,23,42,.75) !important;
+    color:#fff !important;
+
+    border:1px solid rgba(255,255,255,.20) !important;
+    border-radius:6px !important;
+
+    font-size:11px !important;
+    line-height:1 !important;
+
+    cursor:pointer;
 }
 
 /* Mostrar toolbar solo cuando haya foto */
