@@ -7516,6 +7516,50 @@ document.querySelectorAll(".remove-btn").forEach(btn => {
   });
 });
 
+    document.querySelectorAll(".change-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const cell = e.target.closest(".photo-cell");
+    if (!cell) return;
+
+    const input = cell.querySelector("input[type='file']");
+    if (!input) return;
+
+    input.click();
+  });
+});
+
+document.querySelectorAll(".view-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const cell = e.target.closest(".photo-cell");
+    if (!cell) return;
+
+    const img = cell.querySelector("img");
+    if (!img) return;
+
+    const viewer = document.createElement("div");
+    viewer.className = "photo-viewer";
+
+    viewer.innerHTML = `
+      <button class="photo-viewer-close">×</button>
+      ${img.src}
+    `;
+
+    viewer.addEventListener("click", (ev) => {
+      if (
+        ev.target === viewer ||
+        ev.target.classList.contains("photo-viewer-close")
+      ) {
+        viewer.remove();
+      }
+    });
+
+    document.body.appendChild(viewer);
+  });
+});
 
     // 🔥 ESTADO INICIAL (DESHABILITADO)
 const subsanarBtn = document.getElementById("subsanarBtn");
