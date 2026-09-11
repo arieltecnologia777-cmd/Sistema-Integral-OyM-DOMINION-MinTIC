@@ -4087,16 +4087,18 @@ body.theme-pro #sec-pruebas
     position: relative !important;
 }
 
-/* Toolbar pequeña abajo a la derecha */
+/* Toolbar vertical para minicards */
 .indoor-toolbar {
     position: absolute;
-    bottom: 6px;
-    left: 4px;
     right: 4px;
+    bottom: 4px;
+
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+
     gap: 2px;
     z-index: 5;
+
     opacity: 0;
     transition: opacity .2s ease;
 }
