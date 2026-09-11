@@ -7510,7 +7510,7 @@ e.stopPropagation();
     cell.classList.remove("has-image");
 
     // ✅ BORRAR DE INDEXEDDB (CLAVE REAL)
-    const tx = db.transaction("photos", "readwrite");
+    const tx = mciDB.transaction("photos", "readwrite");
     tx.objectStore("photos").delete(id);
 
   });
