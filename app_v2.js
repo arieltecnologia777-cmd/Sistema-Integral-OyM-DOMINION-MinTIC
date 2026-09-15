@@ -1009,13 +1009,13 @@ if (spanRechazadoPorFinal && item.rechazadoPor) {
 console.log("ITEM COMPLETO:", item);
    const txtHistorial = document.getElementById("txtHistorial");
 
-if (txtHistorial && item.observacion) {
-  txtHistorial.value = item.observacion;
+if (txtHistorial) {
+  txtHistorial.value =
+    item.observacion?.trim() || "Sin historial";
 
   txtHistorial.style.height = "auto";
   txtHistorial.style.height = txtHistorial.scrollHeight + "px";
 }
-
    const lblNuevaObservacion =
   document.getElementById("lblNuevaObservacion");
 
