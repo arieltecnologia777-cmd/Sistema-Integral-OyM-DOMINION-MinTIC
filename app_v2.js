@@ -1397,6 +1397,16 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
    const observacion =
   document.getElementById("txtObservacion")?.value?.trim() || "";
 
+   const historialAnterior =
+  item.observacion?.trim() || "";
+   const fecha = new Date().toLocaleString("es-CO");
+
+const observacionCompleta =
+  (historialAnterior
+    ? historialAnterior + "\n\n────────────────────────\n\n"
+    : "") +
+  `[${fecha}] RECHAZADO - ${nombreUsuario}\n\n${observacion}`;
+
 if (!observacion) {
   alert("Debe ingresar una observación.");
   return;
@@ -1424,7 +1434,7 @@ if (!observacion) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
   rechazadoPor: nombreUsuario,
-  observacion
+  observacion: observacionCompleta
 })
 
     }
@@ -1434,7 +1444,8 @@ if (!observacion) {
 if (index !== -1) {
   window.datosActuales[index].estadoKV = "rechazado";
   window.datosActuales[index].rechazadoPor = nombreUsuario;
-  window.datosActuales[index].observacion = observacion;
+  window.datosActuales[index].observacion = observacionCompleta;
+
 }
 
 renderTabla();
