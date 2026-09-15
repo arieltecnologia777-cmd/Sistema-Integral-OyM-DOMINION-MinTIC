@@ -954,12 +954,32 @@ visor.innerHTML = `
   </div>
 
   <h3 style="font-weight:800; margin-bottom:10px;">
-  Observaciones de aprobación / rechazo
+  Historial de obervaciones
+</h3>
+
+<textarea
+  id="txtHistorial"
+  readonly
+  placeholder="Ingrese observaciones..."
+  style="
+    width:100%;
+    min-height:90px;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    resize:vertical;
+    margin-bottom:15px;
+    font-family:inherit;
+  "
+></textarea>
+
+<h3 style="font-weight:800; margin-bottom:10px;">
+  Nueva observación
 </h3>
 
 <textarea
   id="txtObservacion"
-  placeholder="Ingrese observaciones..."
+  placeholder="Ingrese una nueva observación..."
   style="
     width:100%;
     min-height:90px;
@@ -988,10 +1008,10 @@ if (spanRechazadoPorFinal && item.rechazadoPor) {
 }
    console.log("OBSERVACION ITEM:", item.observacion);
 console.log("ITEM COMPLETO:", item);
-   const txtObservacion = document.getElementById("txtObservacion");
+   const txtHistorial = document.getElementById("txtHistorial");
 
-if (txtObservacion && item.observacion) {
-  txtObservacion.value = item.observacion;
+if (txtHistorial && item.observacion) {
+  txtHistorial.value = item.observacion;
 }
 
 if (
