@@ -953,9 +953,25 @@ visor.innerHTML = `
   </div>
 
   <h3 style="font-weight:800; margin-bottom:10px;">
-    Observaciones de aprobación / rechazo
-  </h3>
-  <div id="visorFotos"></div>
+  Observaciones de aprobación / rechazo
+</h3>
+
+<textarea
+  id="txtObservacion"
+  placeholder="Ingrese observaciones..."
+  style="
+    width:100%;
+    min-height:90px;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    resize:vertical;
+    margin-bottom:15px;
+    font-family:inherit;
+  "
+></textarea>
+
+<div id="visorFotos"></div>
 `;
 
    renderInfoInforme(infoInforme);
