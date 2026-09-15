@@ -1347,7 +1347,7 @@ if (!observacion) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
   aprobadoPor: nombreUsuario,
-  observacion
+  observacion: observacionCompleta
 })
   }
 );
@@ -1358,7 +1358,7 @@ const index = window.datosActuales.findIndex(d => d.mciId === mciId);
 if (index !== -1) {
   window.datosActuales[index].estadoKV = "aprobado";
   window.datosActuales[index].aprobadoPor = nombreUsuario;
-  window.datosActuales[index].observacion = observacion;
+ window.datosActuales[index].observacion = observacionCompleta;
 }
 
 // ✅ 2. refrescar tabla inmediato
