@@ -1274,19 +1274,15 @@ if (!observacion) {
 
   // ✅ Aprobar informe (UNA SOLA VEZ)
   await fetch(
-    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      const observacion =
-  document.getElementById("txtObservacion")?.value?.trim() || "";
-
-body: JSON.stringify({
-  aprobadoPor: nombreUsuario,
-  observacion
-})
-    }
-  );
+  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/aprobar/${mciId}`,
+  {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      aprobadoPor: nombreUsuario
+    })
+  }
+);
 
 
   // ✅ 1. actualizar visual inmediato (YA se guardó en KV arriba)
