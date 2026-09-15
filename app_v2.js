@@ -1307,9 +1307,9 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
 const observacionCompleta =
   (historialAnterior
-    ? historialAnterior.replace(/─+/g, "").trim() + "\n"
+    ? historialAnterior.replace(/─+/g, "").trim() + "\n\n\n"
     : "") +
-  `[${fecha}] APROBADO - ${nombreUsuario}\n${observacion}`;
+  `[${fecha}] ✅ APROBADO - ${nombreUsuario}\n${observacion}\n`
 if (!observacion) {
   alert("Debe ingresar una observación.");
   return;
@@ -1407,7 +1407,7 @@ const observacionCompleta =
   (historialAnterior
     ? historialAnterior.replace(/─+/g, "").trim() + "\n"
     : "") +
-  `[${fecha}] RECHAZADO - ${nombreUsuario}\n${observacion}`;
+  `[${fecha}] ⛔ RECHAZADO - ${nombreUsuario}\n${observacion}\n`
 
 if (!observacion) {
   alert("Debe ingresar una observación.");
