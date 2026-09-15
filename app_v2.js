@@ -986,6 +986,11 @@ if (spanAprobadoPorFinal && item.aprobadoPor) {
 if (spanRechazadoPorFinal && item.rechazadoPor) {
   spanRechazadoPorFinal.innerText = item.rechazadoPor;
 }
+   const txtObservacion = document.getElementById("txtObservacion");
+
+if (txtObservacion && item.observacion) {
+  txtObservacion.value = item.observacion;
+}
    
 // ==============================
 // Fallback de datos base (SÍ llegan siempre)
