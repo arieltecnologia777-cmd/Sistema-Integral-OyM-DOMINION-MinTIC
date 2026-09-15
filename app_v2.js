@@ -1307,7 +1307,7 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
 const observacionCompleta =
   (historialAnterior
-    ? historialAnterior.replace(/─+/g, "").trim() + "\n\n\n"
+    ? historialAnterior.replace(/─+/g, "").trim() + "\n\n"
     : "") +
   `[${fecha}] ✅ APROBADO - ${nombreUsuario}\n${observacion}\n`
 if (!observacion) {
@@ -1405,7 +1405,7 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
 
 const observacionCompleta =
   (historialAnterior
-    ? historialAnterior.replace(/─+/g, "").trim() + "\n"
+    ? historialAnterior.replace(/─+/g, "").trim() + "\n\n"
     : "") +
   `[${fecha}] ⛔ RECHAZADO - ${nombreUsuario}\n${observacion}\n`
 
