@@ -993,6 +993,15 @@ console.log("ITEM COMPLETO:", item);
 if (txtObservacion && item.observacion) {
   txtObservacion.value = item.observacion;
 }
+
+if (
+  txtObservacion &&
+  (item.estadoKV === "aprobado" || item.estadoKV === "rechazado")
+) {
+  txtObservacion.readOnly = true;
+  txtObservacion.style.background = "#f3f4f6";
+  txtObservacion.style.cursor = "default";
+}
    
 // ==============================
 // Fallback de datos base (SÍ llegan siempre)
