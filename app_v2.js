@@ -1297,6 +1297,17 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
    const observacion =
   document.getElementById("txtObservacion")?.value?.trim() || "";
 
+   const historialAnterior =
+  item.observacion?.trim() || "";
+
+   const fecha = new Date().toLocaleString("es-CO");
+
+const observacionCompleta =
+  (historialAnterior
+    ? historialAnterior + "\n\n────────────────────────\n\n"
+    : "") +
+  `[${fecha}] APROBADO - ${nombreUsuario}\n\n${observacion}`;
+
 if (!observacion) {
   alert("Debe ingresar una observación.");
   return;
