@@ -954,13 +954,12 @@ visor.innerHTML = `
   </div>
 
   <h3 style="font-weight:800; margin-bottom:10px;">
-  Historial de obervaciones
+  Historial de observaciones
 </h3>
 
 <textarea
   id="txtHistorial"
   readonly
-  placeholder="Ingrese observaciones..."
   style="
     width:100%;
     min-height:90px;
