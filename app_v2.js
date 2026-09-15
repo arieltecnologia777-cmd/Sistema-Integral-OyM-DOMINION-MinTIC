@@ -507,9 +507,10 @@ async function cargarDatosModulo() {
     jsonFileId: reg.jsonFileId,
 
     // ✅ Estado auditor
-    aprobadoPor: reg.aprobadoPor,
-    rechazadoPor: reg.rechazadoPor
-  };
+aprobadoPor: reg.aprobadoPor,
+rechazadoPor: reg.rechazadoPor,
+observacion: reg.observacion
+};
 });
   // ✅ 4) Ordenar por fecha descendente
   window.datosActuales.sort((a, b) => {
