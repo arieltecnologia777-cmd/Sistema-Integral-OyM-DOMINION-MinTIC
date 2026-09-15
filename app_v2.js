@@ -1270,9 +1270,13 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        aprobadoPor: nombreUsuario
-      })
+      const observacion =
+  document.getElementById("txtObservacion")?.value?.trim() || "";
+
+body: JSON.stringify({
+  aprobadoPor: nombreUsuario,
+  observacion
+})
     }
   );
 
