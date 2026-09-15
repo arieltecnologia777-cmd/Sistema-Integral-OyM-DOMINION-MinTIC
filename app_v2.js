@@ -986,6 +986,8 @@ if (spanAprobadoPorFinal && item.aprobadoPor) {
 if (spanRechazadoPorFinal && item.rechazadoPor) {
   spanRechazadoPorFinal.innerText = item.rechazadoPor;
 }
+   console.log("OBSERVACION ITEM:", item.observacion);
+console.log("ITEM COMPLETO:", item);
    const txtObservacion = document.getElementById("txtObservacion");
 
 if (txtObservacion && item.observacion) {
