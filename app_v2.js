@@ -1308,6 +1308,7 @@ const index = window.datosActuales.findIndex(d => d.mciId === mciId);
 if (index !== -1) {
   window.datosActuales[index].estadoKV = "aprobado";
   window.datosActuales[index].aprobadoPor = nombreUsuario;
+  window.datosActuales[index].observacion = observacion;
 }
 
 // ✅ 2. refrescar tabla inmediato
@@ -1383,6 +1384,7 @@ if (!observacion) {
 if (index !== -1) {
   window.datosActuales[index].estadoKV = "rechazado";
   window.datosActuales[index].rechazadoPor = nombreUsuario;
+  window.datosActuales[index].observacion = observacion;
 }
 
 renderTabla();
