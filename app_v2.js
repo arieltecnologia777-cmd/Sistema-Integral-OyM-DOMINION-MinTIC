@@ -1238,6 +1238,14 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
   const emailUsuario = usuario?.username || usuario?.email || "";
   const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
 
+   const observacion =
+  document.getElementById("txtObservacion")?.value?.trim() || "";
+
+if (!observacion) {
+  alert("Debe ingresar una observación.");
+  return;
+}
+
   // ✅ Mostrar "Aprobado por" en el modal
   const spanAprobadoPor = document.getElementById("infoAprobadoPor");
   if (spanAprobadoPor) {
@@ -1320,6 +1328,14 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
   const usuario = usuarioActual();
   const emailUsuario = usuario?.username || usuario?.email || "";
   const nombreUsuario = nombreBonitoDesdeEmail(emailUsuario);
+
+   const observacion =
+  document.getElementById("txtObservacion")?.value?.trim() || "";
+
+if (!observacion) {
+  alert("Debe ingresar una observación.");
+  return;
+}
 
   // ✅ Guardar metadata necesaria
   await fetch(
