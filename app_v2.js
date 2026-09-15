@@ -1014,6 +1014,25 @@ if (txtHistorial && item.observacion) {
   txtHistorial.value = item.observacion;
 }
 
+   const lblNuevaObservacion =
+  document.getElementById("lblNuevaObservacion");
+
+const txtObservacion =
+  document.getElementById("txtObservacion");
+
+if (
+  item.estadoKV === "aprobado" ||
+  item.estadoKV === "rechazado"
+) {
+  if (lblNuevaObservacion) {
+    lblNuevaObservacion.style.display = "none";
+  }
+
+  if (txtObservacion) {
+    txtObservacion.style.display = "none";
+  }
+}
+   
 if (
   txtObservacion &&
   (item.estadoKV === "aprobado" || item.estadoKV === "rechazado")
