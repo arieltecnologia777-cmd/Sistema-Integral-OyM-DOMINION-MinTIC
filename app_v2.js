@@ -973,7 +973,7 @@ visor.innerHTML = `
   "
 ></textarea>
 
-<h3 style="font-weight:800; margin-bottom:10px;">
+<h3 id="lblNuevaObservacion" style="font-weight:800; margin-bottom:10px;">
   Nueva observación
 </h3>
 
