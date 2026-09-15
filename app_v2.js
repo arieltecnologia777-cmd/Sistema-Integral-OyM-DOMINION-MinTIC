@@ -1279,8 +1279,9 @@ if (!observacion) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      aprobadoPor: nombreUsuario
-    })
+  aprobadoPor: nombreUsuario,
+  observacion
+})
   }
 );
 
@@ -1354,8 +1355,10 @@ if (!observacion) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        rechazadoPor: nombreUsuario
-      })
+  rechazadoPor: nombreUsuario,
+  observacion
+})
+
     }
   );
 
