@@ -1012,6 +1012,9 @@ console.log("ITEM COMPLETO:", item);
 
 if (txtHistorial && item.observacion) {
   txtHistorial.value = item.observacion;
+
+  txtHistorial.style.height = "auto";
+  txtHistorial.style.height = txtHistorial.scrollHeight + "px";
 }
 
    const lblNuevaObservacion =
@@ -1304,10 +1307,9 @@ document.getElementById("visorAprobar").addEventListener("click", async () => {
 
 const observacionCompleta =
   (historialAnterior
-    ? historialAnterior + "\n\n────────────────────────\n\n"
+   ? historialAnterior + "\n\n"
     : "") +
-  `[${fecha}] APROBADO - ${nombreUsuario}\n\n${observacion}`;
-
+  `[${fecha}] APROBADO - ${nombreUsuario}\n${observacion}`;
 if (!observacion) {
   alert("Debe ingresar una observación.");
   return;
@@ -1403,9 +1405,9 @@ document.getElementById("visorRechazar").addEventListener("click", async () => {
 
 const observacionCompleta =
   (historialAnterior
-    ? historialAnterior + "\n\n────────────────────────\n\n"
+    ? historialAnterior + "\n\n"
     : "") +
-  `[${fecha}] RECHAZADO - ${nombreUsuario}\n\n${observacion}`;
+  `[${fecha}] RECHAZADO - ${nombreUsuario}\n${observacion}`;
 
 if (!observacion) {
   alert("Debe ingresar una observación.");
