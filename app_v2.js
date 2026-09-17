@@ -1256,7 +1256,9 @@ btn.addEventListener("click", async () => {
     a.href = url;
 
     // ✅ NOMBRE LIMPIO
-    const nombre = (item.nombre || `MCI_${item.mciId}.xlsx`).replace(/^MCI_/, '');
+    const nombre = item.nombre?.startsWith("MCI_")
+  ? item.nombre
+  : `MCI_${item.nombre || `${item.mciId}.xlsx`}`;
     a.download = nombre;
 
     document.body.appendChild(a);
