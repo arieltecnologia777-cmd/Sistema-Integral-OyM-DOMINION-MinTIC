@@ -6399,27 +6399,55 @@ function fileToDataURL(file) {
   });
 }
 
-function downscaleDataUrl(dataUrl, maxPx = 1600, quality = 0.85) {
+function downscaleDataUrl(dataUrl) {
   return new Promise((resolve) => {
     try {
       const img = new Image();
+
       img.onload = () => {
-        const w = img.naturalWidth || img.width;
-        const h = img.naturalHeight || img.height;
-        const scale = Math.min(1, maxPx / Math.max(w, h));
-        if (scale < 1) {
-          const canvas = document.createElement("canvas");
-          canvas.width = Math.round(w * scale);
-          canvas.height = Math.round(h * scale);
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL("image/jpeg", quality));
-        } else {
-          resolve(dataUrl);
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
+        const MAX_SIZE = 1280;
+
+        const scale = Math.min(
+          1,
+          MAX_SIZE / Math.max(width, height)
+        );
+
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let quality = 0.82;
+        let result = canvas.toDataURL("image/jpeg", quality);
+
+        const MAX_BASE64_SIZE = 450000;
+
+        while (
+          result.length > MAX_BASE64_SIZE &&
+          quality > 0.60
+        ) {
+          quality -= 0.05;
+          result = canvas.toDataURL(
+            "image/jpeg",
+            quality
+          );
         }
+
+        resolve(result);
       };
+
       img.onerror = () => resolve(dataUrl);
+
       img.src = dataUrl;
+
     } catch {
       resolve(dataUrl);
     }
