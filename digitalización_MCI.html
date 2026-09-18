@@ -6551,20 +6551,20 @@ async function registrarEnKV({
     
     
     // ✅ Obtiene foto desde input file o desde IndexedDB si fue restaurada
-async function getFoto(id, maxPx = 1600, quality = 0.85) {
+async function getFoto(id) {
   const input = document.getElementById(id);
 
   // ✅ 1. Si hay archivo en el input (caso ideal)
   if (input && input.files && input.files[0]) {
     const raw = await fileToDataURL(input.files[0]);
-    return await downscaleDataUrl(raw, maxPx, quality);
+    return await downscaleDataUrl(raw);
   }
 
   // ✅ 2. FALLBACK → buscar en IndexedDB (ESTO ES LA SOLUCIÓN)
   return new Promise(resolve => {
     cargarFotoOffline(id, async base64 => {
       if (!base64) return resolve(null);
-      const scaled = await downscaleDataUrl(base64, maxPx, quality);
+      const scaled = await downscaleDataUrl(base64);
       resolve(scaled);
     });
   });
