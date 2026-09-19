@@ -6886,10 +6886,34 @@ if (currentFlowUrl === FLOW_SUBSANAR_URL) await fetch(`https://cloudflare-index.
 setStatus("✅ Informe enviado para revisión del auditor", "ok");
 alert("El informe fue enviado correctamente. El auditor lo revisará y aprobará.");
     }catch(err){
-        console.error(err);
+
+    console.error(err);
+
+    if (
+        err.message &&
+        err.message.toLowerCase().includes("failed to fetch")
+    ) {
+
+        setStatus('Error de conexión', 'err');
+
+        alert(
+            "No fue posible enviar el informe debido a una falla de conexión.\n\n" +
+            "Verifique que dispone de acceso estable a Internet y vuelva a intentarlo.\n\n" +
+            "Si se encuentra en un sitio con conectividad satelital, espere unos minutos y realice un nuevo intento."
+        );
+
+    } else {
+
         setStatus('Error al generar: ' + err.message, 'err');
-        alert('No se pudo generar el Excel: ' + err.message);
-    }finally{
+
+        alert(
+            'No se pudo generar el informe: ' +
+            err.message
+        );
+
+    }
+
+}finally{
         setWorking(false);
         clearDraft();
     }
