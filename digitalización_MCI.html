@@ -6408,7 +6408,7 @@ function downscaleDataUrl(dataUrl) {
         let width = img.naturalWidth || img.width;
         let height = img.naturalHeight || img.height;
 
-        const MAX_SIZE = 1280;
+        const MAX_SIZE = 1600;
 
         const scale = Math.min(
           1,
@@ -6425,16 +6425,21 @@ function downscaleDataUrl(dataUrl) {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        let quality = 0.82;
-        let result = canvas.toDataURL("image/jpeg", quality);
+        let quality = 0.90;
 
-        const MAX_BASE64_SIZE = 450000;
+        let result = canvas.toDataURL(
+          "image/jpeg",
+          quality
+        );
+
+        const MAX_BASE64_SIZE = 550000;
 
         while (
           result.length > MAX_BASE64_SIZE &&
-          quality > 0.60
+          quality > 0.75
         ) {
-          quality -= 0.05;
+          quality -= 0.03;
+
           result = canvas.toDataURL(
             "image/jpeg",
             quality
@@ -6453,7 +6458,6 @@ function downscaleDataUrl(dataUrl) {
     }
   });
 }
-
 
       // ⚙️ URL del Flow (generar Excel)
 const FLOW_URL = "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dc99f30c70a64d57b309dce1c13d1290/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMxJMh4pAr98EPpIwDJGzHb5_glsVkAv-A1TVjR9zsA";
