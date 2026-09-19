@@ -6425,14 +6425,14 @@ function downscaleDataUrl(dataUrl) {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        let quality = 0.90;
+        let quality = 0.87;
 
         let result = canvas.toDataURL(
           "image/jpeg",
           quality
         );
 
-        const MAX_BASE64_SIZE = 550000;
+        const MAX_BASE64_SIZE = 475000;
 
         while (
           result.length > MAX_BASE64_SIZE &&
