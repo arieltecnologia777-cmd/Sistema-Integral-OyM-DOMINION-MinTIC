@@ -6402,9 +6402,11 @@ function fileToDataURL(file) {
 function downscaleDataUrl(dataUrl) {
   return new Promise((resolve) => {
     try {
+
       const img = new Image();
 
       img.onload = () => {
+
         let width = img.naturalWidth || img.width;
         let height = img.naturalHeight || img.height;
 
@@ -6425,20 +6427,21 @@ function downscaleDataUrl(dataUrl) {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        let quality = 0.87;
+        let quality = 0.85;
 
         let result = canvas.toDataURL(
           "image/jpeg",
           quality
         );
 
-        const MAX_BASE64_SIZE = 475000;
+        const MAX_BASE64_SIZE = 425000;
 
         while (
           result.length > MAX_BASE64_SIZE &&
           quality > 0.75
         ) {
-          quality -= 0.03;
+
+          quality -= 0.02;
 
           result = canvas.toDataURL(
             "image/jpeg",
@@ -6447,6 +6450,7 @@ function downscaleDataUrl(dataUrl) {
         }
 
         resolve(result);
+
       };
 
       img.onerror = () => resolve(dataUrl);
@@ -6454,7 +6458,9 @@ function downscaleDataUrl(dataUrl) {
       img.src = dataUrl;
 
     } catch {
+
       resolve(dataUrl);
+
     }
   });
 }
