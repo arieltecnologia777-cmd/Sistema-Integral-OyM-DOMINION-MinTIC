@@ -466,13 +466,17 @@ async function cargarDatosModulo() {
   }
 
   // ✅ 3) Cargar datos desde KV (usuario AUTORIZADO)
-  const tecnico = "usuario"; // o auditor logueado
-  const respKV = await fetch(
-    `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
-  );
+ const tecnico = "usuario";
 
-  const listaKV = await respKV.json();
+console.time("CONSULTAR_KV");
 
+const respKV = await fetch(
+  `https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar/${tecnico}`
+);
+
+const listaKV = await respKV.json();
+
+console.timeEnd("CONSULTAR_KV");
   // ✅ Mapear datos correctamente desde el KV
   window.datosActuales = listaKV.map(reg => {
   const fechaTexto = reg.fechaGenerado || "";
