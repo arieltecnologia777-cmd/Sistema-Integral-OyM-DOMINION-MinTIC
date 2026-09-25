@@ -516,15 +516,20 @@ rechazadoPor: reg.rechazadoPor,
 observacion: reg.observacion
 };
 });
-  // ✅ 4) Ordenar por fecha descendente
-  window.datosActuales.sort((a, b) => {
-    const fa = Date.parse(b.fechaReal || "") || 0;
-    const fb = Date.parse(a.fechaReal || "") || 0;
-    return fa - fb;
-  });
+// ✅ 4) Ordenar por fecha descendente
+window.datosActuales.sort((a, b) => {
+  const fa = Date.parse(b.fechaReal || "") || 0;
+  const fb = Date.parse(a.fechaReal || "") || 0;
+  return fa - fb;
+});
 
-  renderTabla();
-  setTimeout(() => activarOrdenamientoFecha(), 0);
+console.time("RENDER_TABLA");
+
+renderTabla();
+
+console.timeEnd("RENDER_TABLA");
+
+setTimeout(() => activarOrdenamientoFecha(), 0);
 }
 
 /* ======================================================================
