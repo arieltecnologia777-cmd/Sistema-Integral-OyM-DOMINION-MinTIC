@@ -6870,7 +6870,12 @@ block2     : (await getFoto('img-block2')) || "",
     try{
         setStatus('Enviando al Flow…');
         setWorking(true, 'Enviando…');
-      
+
+      console.log("MED1", imgsJson.med1);
+console.log("NAVINDOOR", imgsJson.navIndoor);
+console.log("NAVOUTDOOR", imgsJson.navOutdoor);
+console.log("SPEEDTEST", imgsJson.speedtest);
+console.log("PORTAL", imgsJson.portal);
 
         const resp = await fetch(currentFlowUrl, {
   method: "POST",
