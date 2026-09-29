@@ -7067,14 +7067,16 @@ document.addEventListener("change", async function(e) {
         const cell = e.target.closest('.photo-cell.indoor-mini');
         const file = e.target.files[0];
 
-        const fixedFile = await normalizarFirma(file) || file;
+        const fixedFile = file;
 
         if (fixedFile) {
             cell.classList.add("has-image");
 
             const reader = new FileReader();
+
             reader.onload = function(ev) {
                 let existing = cell.querySelector("img");
+
                 if (existing) existing.remove();
 
                 let img = document.createElement("img");
