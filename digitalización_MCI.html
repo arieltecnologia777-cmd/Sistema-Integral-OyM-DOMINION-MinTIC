@@ -6804,28 +6804,28 @@ async function exportarMCI(){
         respaldo   : await getFoto('img-respaldo'),
         printUps   : await getFoto('img-print-ups'),
         med1       : await getFoto('img-med1'),med1: [
-  await getFoto('img-med1-0'),
-  await getFoto('img-med1-1')
+  (await getFoto('img-med1-0')) || "",
+  (await getFoto('img-med1-1')) || ""
 ],
 
         med2       : await getFoto('img-med2'),
 
         navIndoor: [
-          await getFoto('img-nav-indoor-0'),
-          await getFoto('img-nav-indoor-1'),
-          await getFoto('img-nav-indoor-2')
-        ],
+  (await getFoto('img-nav-indoor-0')) || "",
+  (await getFoto('img-nav-indoor-1')) || "",
+  (await getFoto('img-nav-indoor-2')) || ""
+],
 
         navOutdoor: [
-          await getFoto('img-nav-outdoor-0'),
-          await getFoto('img-nav-outdoor-1'),
-          await getFoto('img-nav-outdoor-2')
-        ],
+  (await getFoto('img-nav-outdoor-0')) || "",
+  (await getFoto('img-nav-outdoor-1')) || "",
+  (await getFoto('img-nav-outdoor-2')) || ""
+],
 
-        speedtest  : await getFoto('img-speedtest'),
-        portal     : await getFoto('img-portal'),
-        block1     : await getFoto('img-block1'),
-        block2     : await getFoto('img-block2'),
+        speedtest  : (await getFoto('img-speedtest')) || "",
+portal     : (await getFoto('img-portal')) || "",
+block1     : (await getFoto('img-block1')) || "",
+block2     : (await getFoto('img-block2')) || "",
 
         despues    : fotosDespues
     };
